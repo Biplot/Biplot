@@ -15,14 +15,14 @@
 <svg id="s" xmlns="http://www.w3.org/2000/svg"></svg>
 <script src="../datos.js"></script>
 <script src="../elenco.js"></script>
-<script src="../piso1.js"></script>
+<script src="../barrio.js"></script>
 <script src="../escena.js"></script>
 <script>
   var q = new URLSearchParams(location.search);
   var esc = Escena.construir(document.getElementById('s'), { animado: true });
-  // ?piso=1 muestra el piso de los proyectos
-  if (q.get('piso') === '1') { var L = esc.piso(1); document.getElementById('s').setAttribute('viewBox', [L.x0, L.y0, L.x1 - L.x0, L.y1 - L.y0].join(' ')); }
-  if (q.get('vb')) document.getElementById('s').setAttribute('viewBox', q.get('vb'));
+  // ?vb=x,y,ancho,alto encuadra una parte; ?lejos=1 muestra los locales cerrados (como se ven de lejos)
+  if (q.get('vb')) document.getElementById('s').setAttribute('viewBox', q.get('vb').replace(/,/g, ' '));
+  esc.lod(q.get('lejos') === '1' ? 0.1 : 1);
   esc.iniciar();
   window.esc = esc;
 </script>

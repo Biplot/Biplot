@@ -1,13 +1,15 @@
 /*
  * Oficina BiPlot · escena isométrica
- * Dibuja la oficina en un <svg> (proyección 2:1): la planta baja con el equipo trabajando y el piso 1 con las salas
- * de proyecto (piso1.js). Ubica al equipo y lo hace caminar. Sin librerías.
+ * Dibuja en un <svg> (proyección 2:1) la oficina con el equipo trabajando y, por delante, el barrio: la calle principal
+ * con un local por proyecto, la plaza, El Archivo y una calle por rubro para los demás casos (barrio.js + datos.js).
+ * Ubica al equipo y a la gente de la vereda y los hace caminar. Sin librerías.
  * La usan la oficina (oficina.js, con cámara e interfaz) y el kit de Instagram (kit/, en modo quieto).
  *
  * Coordenadas del mundo: x hacia abajo a la derecha, y hacia abajo a la izquierda, z hacia arriba.
- * La planta baja mide ANCHO × FONDO baldosas. El orden de dibujo es por profundidad (x + y), en capas.
+ * La oficina mide ANCHO × FONDO baldosas; el barrio queda a la derecha (x > 24) y por delante (y > 20), así que se
+ * dibuja después. El orden de dibujo es por profundidad (x + y), en capas.
  *
- * Escena.construir(svg, { animado }) → { zonas, actores, limites, P, piso(n), vitrina(ids), iniciar(), detener() }
+ * Escena.construir(svg, { animado }) → { zonas, actores, limites, P, vitrina(ids), barrio, lod(zoom), iniciar(), detener() }
  */
 (function () {
   'use strict';
@@ -199,6 +201,129 @@
     }
   };
 
+  /* ─────────── El barrio ─────────── */
+  // Cómo se ve el local de un caso según su fase del motor (la marca el CRM; mientras tanto, datos.js)
+  var FASE_LOCAL = ['arriendo', 'diagnostico', 'obra', 'obra', 'obra', 'obra', 'obra', 'inauguracion', 'abierto', 'abierto'];
+  function estadoDeFase(f) { var n = parseInt(String(f || 'E9').replace(/\D/g, ''), 10); return FASE_LOCAL[isNaN(n) ? 9 : Math.max(0, Math.min(9, n))]; }
+  // Oscurece (hacia #060606) o aclara (hacia el blanco) un color, igual que las plantillas al dibujarse
+  function tonoHex(c, t, hacia) { return '#' + hex2rgb(c).map(function (v) { return ('0' + Math.round(v + (hacia - v) * t).toString(16)).slice(-2); }).join(''); }
+  function escXml(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // Reemplaza las marcas §…§ de una pieza del barrio (barrio.js) con el color, el nombre y los textos del caso
+  function pintar(svg, o) {
+    var n = o.nombre || '', largo = n.length, color = /^#[0-9a-f]{6}$/i.test(o.color || '') ? o.color : '#7FD8CF';
+    return svg.replace(/§C(?:\.([tc])(\d+))?§/g, function (_, tipo, pct) { return tipo ? tonoHex(color, pct / 100, tipo === 't' ? 6 : 255) : color; })
+      .replace(/§NF:(\d+):(\d+):(\d+)§/g, function (_, a, b, c) { return largo <= 9 ? a : largo <= 12 ? b : c; })
+      .replace(/§NTL:(\d+):(\d+)§/g, function (_, a, b) { var l = +(largo <= 12 ? a : b); return l ? 'textLength="' + l + '" lengthAdjust="spacingAndGlyphs"' : ''; })
+      .replace(/§N§/g, function () { return escXml(n); }).replace(/§LEMA§/g, function () { return escXml(o.lema || 'Tu sistema, al día'); })
+      .replace(/§L([123])§/g, function (_, i) { return escXml((o.lineas || ['Pedidos', 'Stock', 'Cobros'])[i - 1] || ''); })
+      .replace(/§CALLE§/g, function () { return escXml(o.calle || ''); });
+  }
+  // Una pieza dibujada en su origen, llevada al punto (x, y) del piso: la proyección es lineal, basta trasladarla
+  function en(x, y, svg) { var p = P(x, y, 0); return '<g transform="translate(' + r1(p[0]) + ' ' + r1(p[1]) + ')">' + svg + '</g>'; }
+  var CB = { paseo: '#2A4560', paseoLinea: 'rgba(185,200,216,.09)', solera: '#4A6582', calle: '#18222F', calleLinea: 'rgba(233,238,244,.55)', losaIzq: '#0E2A47', losaDer: '#091D33' };
+  function losaB(x0, y0, x1, y1, frente, derecha) {
+    var s = poly([[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]], 'fill="' + CB.paseo + '"');
+    if (frente) s += poly([[x0, y1, 0], [x1, y1, 0], [x1, y1, -0.4], [x0, y1, -0.4]], 'fill="' + CB.losaIzq + '"');
+    if (derecha) s += poly([[x1, y0, 0], [x1, y1, 0], [x1, y1, -0.4], [x1, y0, -0.4]], 'fill="' + CB.losaDer + '"');
+    return s;
+  }
+  function baldosas(x0, y0, x1, y1) {
+    var l = '', x, y;
+    for (x = x0 + 1; x < x1 - 0.01; x += 1) l += '<polyline points="' + pts([[x, y0, 0.007], [x, y1, 0.007]]) + '"/>';
+    for (y = y0 + 1; y < y1 - 0.01; y += 1) l += '<polyline points="' + pts([[x0, y, 0.007], [x1, y, 0.007]]) + '"/>';
+    return '<g stroke="' + CB.paseoLinea + '" stroke-width="1.2" fill="none">' + l + '</g>';
+  }
+  // Calzada a lo largo de x (de y0 a y0 + 2), con su solera y la línea al medio
+  function calzadaX(x0, x1, y0) {
+    var s = poly([[x0, y0, 0.008], [x1, y0, 0.008], [x1, y0 + 2, 0.008], [x0, y0 + 2, 0.008]], 'fill="' + CB.calle + '"') +
+      poly([[x0, y0, 0.009], [x1, y0, 0.009], [x1, y0 + 0.14, 0.009], [x0, y0 + 0.14, 0.009]], 'fill="' + CB.solera + '"');
+    for (var x = x0 + 0.6; x < x1 - 1; x += 2.4) s += poly([[x, y0 + 0.94, 0.01], [x + 1.2, y0 + 0.94, 0.01], [x + 1.2, y0 + 1.06, 0.01], [x, y0 + 1.06, 0.01]], 'fill="' + CB.calleLinea + '"');
+    return s;
+  }
+  // La avenida que une las calles por rubro, a lo largo de y
+  function avenida(x0, y0, y1) {
+    var s = poly([[x0, y0, 0.008], [x0 + 2.6, y0, 0.008], [x0 + 2.6, y1, 0.008], [x0, y1, 0.008]], 'fill="' + CB.calle + '"');
+    for (var y = y0 + 0.6; y < y1 - 1; y += 2.4) s += poly([[x0 + 1.24, y, 0.01], [x0 + 1.36, y, 0.01], [x0 + 1.36, y + 1.2, 0.01], [x0 + 1.24, y + 1.2, 0.01]], 'fill="' + CB.calleLinea + '"');
+    return s;
+  }
+  // Nombre que muestra el local: el del caso o, si el caso no se nombra, su rubro
+  function letreroDe(p) {
+    if (p.permiso === 'rubro') return String(p.rubro || '').split(' · ')[0].split(',')[0].toUpperCase();
+    return String(p.letrero || p.nombre || '').toUpperCase();
+  }
+  function nombreDe(p) { return p.permiso === 'rubro' ? String(p.rubro || '').split(' · ').join(', ') : p.nombre; }
+
+  // Arma el barrio desde barrio.js (lo dibujado) y datos.js (los casos): la calle principal con los locales hechos a mano
+  // y, por delante, una calle por rubro, en el orden en que llegó el primer caso de cada rubro. Cada calle termina con un
+  // local que se arrienda y completa siete lotes.
+  function armarBarrio(D, B) {
+    var G = B.geo, W = 4.6, FD = 4.3, proy = D.proyectos || [], nombres = (D.barrio && D.barrio.calles) || {};
+    var enPrincipal = {}; B.principal.locales.forEach(function (l) { enPrincipal[l.id] = true; });
+    var porId = {}; proy.forEach(function (p) { porId[p.id] = p; });
+    var casos = proy.filter(function (p) { return !p.libre; });
+    var calles = [], porCalle = {};
+    casos.forEach(function (p) {
+      if (enPrincipal[p.id] || p.permiso === 'archivo' || !p.calle) return;
+      var c = porCalle[p.calle];
+      if (!c) { c = porCalle[p.calle] = { id: p.calle, nombre: nombres[p.calle] || 'Calle ' + p.calle, casos: [] }; calles.push(c); }
+      c.casos.push(p);
+    });
+    var n = casos.length, pisos = Math.max(1, Math.min(4, Math.ceil(n / 10)));
+    var suelo = B.principal.suelo, filas = '', cajas = [B.principal.caja];
+    var atras = B.principal.atras.replace(/§CASOS§/g, n + (n === 1 ? ' caso' : ' casos')).replace(/§NCASOS§/g, n + (n === 1 ? ' CASO' : ' CASOS'));
+    var zonas = B.principal.zonas.map(function (z) {
+      var p = porId[z.id];
+      return { id: z.id, nombre: z.id === 'archivo' ? 'El Archivo' : z.id === 'pasaje' ? 'El pasaje' : p ? p.nombre : z.id, caja: z.caja, foco: z.foco, zoom: 2.1, barrio: true, calle: 'principal' };
+    });
+    var L = B.local, yFin = G.y1, xFin = G.x1;
+    if (calles.length) suelo += losaB(G.avenida[0], 20, 0, G.y1, false, false);
+    calles.forEach(function (c, r) {
+      var Y = G.y1 + r * G.fila, slots = Math.max(7, c.casos.length + 1), X1 = Math.max(G.x1, 0.15 + slots * G.paso + 0.4), obj = [];
+      xFin = Math.max(xFin, X1); yFin = Y + G.fila;
+      c.x1 = X1; c.y = Y;
+      suelo += losaB(G.avenida[0], Y, X1, Y + G.fila, true, true) + baldosas(-0.2, Y + FD + 0.15, X1, Y + 9) + calzadaX(G.avenida[1], X1, Y + 9);
+      var locales = '';
+      for (var j = 0; j < slots; j++) {
+        var ox = 0.15 + j * G.paso, oy = Y + 0.15, p = c.casos[j];
+        if (p || j === c.casos.length) {
+          var libre = !p, estado = libre ? 'arriendo' : estadoDeFase(p.fase), id = libre ? 'libre-' + c.id : p.id;
+          var o = libre ? { color: '#7FD8CF', nombre: 'SE ARRIENDA' } : { color: p.acento, nombre: letreroDe(p), lema: p.lema, lineas: p.lineas };
+          var adentro = estado === 'abierto' || estado === 'inauguracion' ? L.interior[p.plantilla] || L.interior.basica : L.interior[estado];
+          if (estado === 'inauguracion') adentro += '§FRENTE§' + L.extra.inauguracion; else adentro += '§FRENTE§';
+          if (estado === 'abierto' && String(p.fase || 'E9') === 'E9') adentro += L.extra.placa90;
+          locales += '<g class="loc" data-local="' + escXml(id) + '">' + en(ox, oy, '<g class="loc-abierto">' + pintar(adentro.replace('§FRENTE§', function () { return L.frente; }), o) + '</g>' +
+            '<g class="loc-cerrado">' + pintar(L.cerrado[estado], o) + '</g>') + '</g>';
+          suelo += en(ox, oy, pintar(L.suelo, o));
+          // El letrero colgante sobresale a la vereda: va con lo de la vereda, no con el local
+          obj.push([ox + 4.5 + oy + 5.0, en(ox, oy, '<g class="loc-abierto">' + pintar(L.bandera, o) + '</g>')]);
+          zonas.push({ id: id, nombre: libre ? 'Tu proyecto aquí' : nombreDe(p), caja: [ox, oy, ox + W, oy + FD, 2.4], foco: [ox + W / 2, oy + FD / 2, 1.0], zoom: 2.1, barrio: true, calle: c.id, libre: libre });
+        } else suelo += en(ox, oy, L.fantasma + (j === c.casos.length + 1 ? L.sitioLibre : ''));
+      }
+      // La vereda de la calle: faroles, árboles, el letrero con su nombre y gente de paso
+      for (var xf = 3; xf < X1 - 1; xf += 9.4) { suelo += en(xf, Y + 8.65, B.fila.farolSuelo); obj.push([xf + Y + 8.65, en(xf, Y + 8.65, B.fila.farol)]); }
+      for (var xa = 7.5; xa < X1 - 1; xa += 9.4) obj.push([xa + Y + 8.55, en(xa, Y + 8.55, B.fila.arbol)]);
+      obj.push([Y + 9, en(0.45, Y + 8.55, pintar(B.fila.letrero, { calle: c.nombre.toUpperCase() }))]);
+      [[4 + r, 6.0], [12 + 2 * r, 6.6], [22 - r, 5.8]].forEach(function (g, i) {
+        var quien = B.dePaso[(r * 3 + i) % B.dePaso.length];
+        obj.push([g[0] + Y + g[1], en(g[0], Y + g[1], B.personas[quien][i % 2 ? 'i' : 'd'])]);
+      });
+      obj.sort(function (a, b) { return a[0] - b[0]; });
+      filas += '<g class="fila" data-calle="' + escXml(c.id) + '">' + locales + obj.map(function (o) { return o[1]; }).join('') + '</g>';
+    });
+    // La avenida y los límites en pantalla del barrio completo
+    if (calles.length) {
+      suelo += avenida(G.avenida[0], 20, yFin);
+      var a = P(G.avenida[0], yFin, 0), b = P(xFin, yFin, -0.4), c = P(xFin, G.y1, 3);
+      cajas.push({ x0: a[0] - 20, y0: B.principal.caja.y0, x1: Math.max(B.principal.caja.x1, c[0] + 20), y1: b[1] + 20 });
+    }
+    var caja = cajas.reduce(function (m, k) { return { x0: Math.min(m.x0, k.x0), y0: Math.min(m.y0, k.y0), x1: Math.max(m.x1, k.x1), y1: Math.max(m.y1, k.y1) }; });
+    return {
+      defs: B.defs, suelo: suelo, atras: atras, frente: B.principal.frente, filas: filas, zonas: zonas, caja: caja, pisos: pisos,
+      calles: calles.map(function (c) { return { id: c.id, nombre: c.nombre, casos: c.casos.map(function (p) { return p.id; }), y: c.y }; }),
+      principal: B.principal.locales.map(function (l) { return l.id; }), total: n
+    };
+  }
+
   /* ─────────── Construcción ─────────── */
   function construir(svg, opciones) {
     opciones = opciones || {};
@@ -236,7 +361,6 @@
       piso += poly([[x0, y0, 0], [x1, y0, 0], [x1, y1, 0], [x0, y1, 0]], 'fill="' + color + '"' + (borde ? ' stroke="' + borde + '" stroke-width="1.5"' : ''));
     }
     function lineaPiso(a, b, attr) { piso += '<polyline points="' + pts([a, b]) + '" fill="none" ' + attr + '/>'; }
-    var proyectos = (window.OFICINA_DATOS && window.OFICINA_DATOS.proyectos) || [];
     alfombra(0.1, 10.9, 5.3, 15.5, M.alfombra, 'rgba(23,195,178,.35)');
     alfombra(20.3, 17.7, 23.8, 19.8, '#17446F', 'rgba(23,195,178,.5)');
     piso += enPlano(planoZ(20.3, 17.7, 0), texto(70, 128, 'PASA', 62, 'rgba(242,244,247,.8)', 700, 'letter-spacing="10"'));
@@ -247,12 +371,11 @@
     alfombra(8, 0.1, 11.88, 4.5, '#2C323B');
     [3.75, 4.15].forEach(function (y) { lineaPiso([8.3, y, 0.01], [11.6, y, 0.01], 'stroke="rgba(245,136,58,.45)" stroke-width="2"'); });
     lineaPiso([8, 0.15, 0.02], [8, 4.45, 0.02], 'stroke="url(#linea-dos)" stroke-width="3" stroke-dasharray="8 6"');
-    // El set, el laboratorio y el vestíbulo del ascensor
+    // El set, el laboratorio y la sala de reuniones
     alfombra(12.12, 0.1, 15.88, 4.5, '#15324F');
     piso += enPlano(planoZ(13.5, 2.25, 0.01), '<path d="M0 0L50 50M50 0L0 50" stroke="' + C.cian + '" stroke-width="7" stroke-linecap="round"/>');
     alfombra(16.12, 0.1, 19.88, 4.5, M.alfombra2);
     alfombra(20.12, 0.1, 23.9, 4.5, '#1B4670');
-    piso += enPlano(planoZ(21.85, 2.75, 0.01), '<path d="M25 110V20M5 42L25 18L45 42" fill="none" stroke="' + C.cian + '" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>');
 
     /* Muros de fondo */
     // muro izquierdo (plano x = 0) y muro derecho (plano y = 0)
@@ -361,31 +484,21 @@
     tramos(agregar, 16, 4.6, 20, 4.6, ALTO_VIDRIO, [1.4, 2.6]);
     obj(18, 4.7, placa(16.45, 4.62, 310, 'LABORATORIO', [C.cian]));
 
-    /* ── Ascensor al piso 1 ── */
+    /* ── Sala de reuniones: mesa redonda y la pantalla con el avance de la semana ── */
     tramos(agregar, 20, 0, 20, 4.6, ALTO_VIDRIO);
-    (function () {
-      var x0 = 21.0, x1 = 23.2, y0 = 0.2, y1 = 2.3, s = '';
-      // cabina con puertas de acero y la luz de adentro
-      s += caja(x0 + 0.1, y0 + 0.1, 0, x1 - x0 - 0.2, y1 - y0 - 0.2, 2.35, { t: '#2A5A88', l: '#1D4A72', r: '#163A60' });
-      s += enPlano(planoY(x0 + 0.1, y1 - 0.1 + 0.002, 2.35), '<rect x="8" y="22" width="97" height="213" fill="' + C.a300 + '"/><rect x="105" y="22" width="97" height="213" fill="' + C.a200 + '"/>' +
-        '<path d="M105 22V235" stroke="' + C.a500 + '" stroke-width="3"/><rect x="8" y="22" width="194" height="213" fill="none" stroke="' + C.a700 + '" stroke-width="4"/>' +
-        '<rect x="70" y="4" width="70" height="14" rx="3" fill="#0B2B45"/><path d="M84 15L90 7L96 15Z" fill="' + C.cian + '"/>' + mono(103, 15, 'PB·1', 9, C.c300));
-      // pozo de vidrio hasta el techo
-      [[x0, y1], [x1, y1], [x1, y0]].forEach(function (c) { s += '<polyline points="' + pts([[c[0], c[1], 0], [c[0], c[1], ALTO_MURO]]) + '" stroke="' + M.marco + '" stroke-width="3" fill="none"/>'; });
-      s += poly([[x0, y1, 0], [x1, y1, 0], [x1, y1, ALTO_MURO], [x0, y1, ALTO_MURO]], 'fill="rgba(127,216,207,.06)" stroke="' + M.vidrioBorde + '" stroke-width="1"');
-      s += poly([[x1, y0, 0], [x1, y1, 0], [x1, y1, ALTO_MURO], [x1, y0, ALTO_MURO]], 'fill="rgba(127,216,207,.05)" stroke="' + M.vidrioBorde + '" stroke-width="1"');
-      s += poly([[x0, y0, ALTO_MURO], [x1, y0, ALTO_MURO], [x1, y1, ALTO_MURO], [x0, y1, ALTO_MURO]], 'fill="rgba(127,216,207,.1)" stroke="' + M.marco + '" stroke-width="2.5"');
-      obj(x1, y1, s);
-      // botón para llamarlo
-      obj(23.55, 2.7, caja(23.5, 2.65, 0, 0.1, 0.1, 1.15, C.a600) + (function () { var q = P(23.55, 2.75, 1.05); return '<circle class="boton-ascensor" cx="' + r1(q[0]) + '" cy="' + r1(q[1]) + '" r="4.5" fill="' + C.cian + '"/>'; })());
-      // directorio del edificio
-      var dir = '<rect x="0" y="0" width="70" height="146" rx="4" fill="#0B2B45"/>' + mono(7, 16, 'DIRECTORIO', 8, C.c300) +
-        '<rect x="7" y="24" width="18" height="12" rx="2" fill="' + C.cian + '"/>' + mono(10, 33, '1', 9, C.a800) + mono(30, 33, 'PROYECTOS', 7, C.niebla);
-      proyectos.filter(function (p) { return !p.libre; }).forEach(function (p, i) { dir += '<rect x="9" y="' + (43 + i * 13) + '" width="5" height="5" rx="1" fill="' + p.acento + '"/>' + mono(18, 49 + i * 13, p.nombre, 7, C.a300); });
-      dir += '<rect x="7" y="116" width="18" height="12" rx="2" fill="' + C.a300 + '"/>' + mono(8, 125, 'PB', 9, C.a800) + mono(30, 125, 'OFICINA', 7, C.niebla);
-      obj(20.75, 3.45, caja(20.35, 3.3, 0, 0.8, 0.12, 1.65, C.a700) + enPlano(planoY(20.4, 3.421, 1.58), dir));
-    })();
-    obj(22, 4.7, placa(20.35, 4.62, 330, 'ASCENSOR · PISO 1', [C.cian]));
+    muros += pantallaY(20.55, 23.45, 0, 1.95, 0.95, function (w, h) {
+      var s = texto(12, 22, 'ESTA SEMANA', 13, C.niebla, 600, 'letter-spacing="2"');
+      [['Diagnóstico', C.cian, .8], ['Plano', C.c300, .55], ['Máquinas', NARANJO, .35]].forEach(function (f, i) {
+        s += mono(12, 46 + i * 20, f[0], 10, C.a300) + '<rect x="110" y="' + (38 + i * 20) + '" width="' + r1((w - 130) * f[2]) + '" height="9" rx="3" fill="' + f[1] + '"/>';
+      });
+      return s;
+    });
+    obj(22.1, 2.5, cilindro(22.1, 2.5, 0, 0.09, 0.72, { t: C.a300, l: C.a500 }) + cilindro(22.1, 2.5, 0.72, 0.8, 0.07, { t: M.mesa, l: M.mesaDer }) +
+      (function () { var p = P(21.8, 2.4, 0.8); return '<path d="M' + r1(p[0] - 12) + ' ' + r1(p[1]) + ' l12 6 l12 -6 l-12 -6 Z" fill="' + C.niebla + '"/>'; })() +
+      cilindro(22.55, 2.3, 0.79, 0.07, 0.12, { t: C.niebla, l: C.a300 }));
+    [[21.0, 2.0], [21.2, 3.4], [23.3, 3.2]].forEach(function (c) { obj(c[0], c[1], cilindro(c[0], c[1], 0, 0.22, 0.46, { t: C.a600, l: C.a700 })); });
+    obj(23.5, 0.6, planta(23.5, 0.6, 0.95));
+    obj(22, 4.7, placa(20.45, 4.62, 280, 'REUNIONES', [C.cian]));
 
     /* ── Estantería del núcleo (muro izquierdo) ── */
     [[4.9, 6.7], [6.8, 8.6], [8.7, 10.5]].forEach(function (u, k) {
@@ -585,7 +698,7 @@
       { id: 'planos', nombre: 'Planos y máquinas', caja: [4, 0, 12, 4.6, 2.3], foco: [8, 2.3, 1.1], zoom: 1.8 },
       { id: 'set', nombre: 'El set', caja: [12, 0, 16, 4.6, 2.3], foco: [14, 2.3, 1.1], zoom: 2.1 },
       { id: 'laboratorio', nombre: 'Laboratorio de métricas', caja: [16, 0, 20, 4.6, 2.3], foco: [18, 2.3, 1.1], zoom: 2.1 },
-      { id: 'ascensor', nombre: 'Ascensor', caja: [20, 0, 24, 4.6, 3.0], foco: [22, 2.3, 1.3], zoom: 2.1 }
+      { id: 'reuniones', nombre: 'Sala de reuniones', caja: [20, 0, 24, 4.6, 2.3], foco: [22, 2.3, 1.0], zoom: 2.1 }
     ];
     function silueta(z) {
       var b = z.caja;
@@ -593,20 +706,11 @@
       z.suelo = pts([[b[0], b[1], 0], [b[2], b[1], 0], [b[2], b[3], 0], [b[0], b[3], 0]]);
       return '<polygon class="zona-hit" data-zona="' + z.id + '" points="' + z.silueta + '"/>';
     }
-    zonas.forEach(function (z) { z.piso = 0; hits += silueta(z); });
+    zonas.forEach(function (z) { hits += silueta(z); });
 
-    /* ── Piso 1: las salas de proyecto (piso1.js) ── */
-    var P1 = window.Piso1, piso1 = '', limites1 = null;
-    if (P1) {
-      var hits1 = '';
-      P1.zonas.forEach(function (z0) {
-        var z = { id: z0.id, nombre: z0.nombre, caja: z0.caja, foco: z0.foco, zoom: 2.1, piso: 1 };
-        hits1 += silueta(z); zonas.push(z);
-      });
-      var vb = P1.vb.split(' ').map(Number);
-      limites1 = { x0: vb[0], y0: vb[1], x1: vb[0] + vb[2], y1: vb[1] + vb[3] };
-      piso1 = '<g class="piso piso-1" style="display:none"><g class="capa-hit">' + hits1 + '</g><g class="capa-p1' + (animado ? '' : ' quieto') + '">' + P1.svg + '</g></g>';
-    }
+    /* ── El barrio: la calle principal, la plaza y las calles por rubro (barrio.js + datos.js) ── */
+    var BR = window.Barrio ? armarBarrio(window.OFICINA_DATOS || {}, window.Barrio) : null;
+    if (BR) BR.zonas.forEach(function (z) { hits += silueta(z); zonas.push(z); });
 
     /* ── Montaje del SVG ── */
     var defs = E.defs().replace('</defs>',
@@ -614,13 +718,35 @@
       '<radialGradient id="halo-cian"><stop offset="0" stop-color="#17C3B2" stop-opacity=".45"/><stop offset="1" stop-color="#17C3B2" stop-opacity="0"/></radialGradient>' +
       '<linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#081A2E"/><stop offset="1" stop-color="#1A4670"/></linearGradient>' +
       '<linearGradient id="linea-dos" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#17C3B2"/><stop offset="1" stop-color="' + NARANJO + '"/></linearGradient>' +
-      '</defs>');
+      (BR ? BR.defs : '') + '</defs>');
     var html = defs + '<g class="piso piso-0"><g class="capa-piso">' + piso + '</g><g class="capa-muros">' + muros + '</g><g class="capa-hit">' + hits + '</g><g class="capa-obj">';
     for (var c = 0; c < BUCKETS; c++) html += '<g data-p="' + c + '">' + cubos[c] + '</g>';
-    html += '</g></g>' + piso1 + '<g class="capa-resalte"></g>';
+    html += '</g></g>';
+    // El barrio va después de la oficina: todo lo suyo está a la derecha (x > 24) o por delante (y > 20)
+    if (BR) html += '<g class="barrio' + (animado ? '' : ' quieto') + '"><g class="barrio-suelo">' + BR.suelo + '</g><g class="barrio-atras">' + BR.atras + '</g>' +
+      '<g class="barrio-caminantes"></g><g class="barrio-frente">' + BR.frente + '</g><g class="barrio-filas">' + BR.filas + '</g></g>';
+    html += '<g class="capa-resalte"></g>';
     svg.innerHTML = html;
 
     var capaObj = svg.querySelector('.capa-obj');
+    if (BR) {
+      // El Archivo de lejos: el edificio con un piso cada diez casos
+      Array.prototype.slice.call(svg.querySelectorAll('.loc-cerrado[data-pisos]')).forEach(function (g) { if (+g.getAttribute('data-pisos') !== BR.pisos) g.parentNode.removeChild(g); });
+      // El directorio del pasaje: cada calle con sus locales abiertos
+      var dir = svg.querySelector('.directorio-lista');
+      if (dir) {
+        var lineas = [['CALLE PRINCIPAL', BR.principal.length + ' locales']];
+        BR.calles.forEach(function (c) { lineas.push([c.nombre.toUpperCase(), c.casos.length + (c.casos.length === 1 ? ' caso' : ' casos')]); });
+        var yy = 46, out = '';
+        lineas.slice(0, 6).forEach(function (l) {
+          out += '<text x="12" y="' + yy + '" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="10" fill="' + C.niebla + '" textLength="' + Math.min(84, l[0].length * 6.4) + '" lengthAdjust="spacingAndGlyphs">' + escXml(l[0]) + '</text>' +
+            '<text x="12" y="' + (yy + 12) + '" font-family="Space Mono, monospace" font-weight="700" font-size="8" fill="' + C.c300 + '">' + escXml(l[1]) + '</text>';
+          yy += 26;
+        });
+        if (lineas.length > 6) out += '<text x="12" y="' + yy + '" font-family="Space Mono, monospace" font-weight="700" font-size="8" fill="' + C.a300 + '">y ' + (lineas.length - 6) + ' calles más</text>';
+        dir.innerHTML = out;
+      }
+    }
     function cubo(x, y) { var k = Math.max(0, Math.min(BUCKETS - 1, Math.floor((x + y + 0.3) * 2))); return capaObj.children[k]; }
 
     /* ── Actores ── */
@@ -657,6 +783,30 @@
     }
     function mirar(a, der) { if (a.der === der) return; a.der = der; a.g.querySelector('.actor-dir').setAttribute('transform', der ? '' : 'scale(-1 1)'); }
 
+    /* ── La gente que camina por la vereda de la calle principal (entre los locales y los faroles) ── */
+    var caminantes = [];
+    if (BR) {
+      var capaCam = svg.querySelector('.barrio-caminantes'), GB = window.Barrio.geo, lista = window.Barrio.caminantes;
+      lista.forEach(function (id, i) {
+        var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'caminante');
+        var w = { id: id, g: g, x: 4 + i * 13.5, y: GB.banda[0] + 0.2 + i * (GB.banda[1] - GB.banda[0] - 0.4) / Math.max(1, lista.length - 1), der: i % 2 === 0, vel: 0.55 + i * 0.14, espera: 1 + i * 2 };
+        capaCam.appendChild(g); caminantes.push(w); vestir(w); ponerCaminante(w);
+      });
+    }
+    function vestir(w) { w.g.innerHTML = '<g class="caminante-anda">' + window.Barrio.personas[w.id][w.der ? 'd' : 'i'] + '</g>'; }
+    function ponerCaminante(w) { var p = P(w.x, w.y, 0); w.g.setAttribute('transform', 'translate(' + r1(p[0]) + ' ' + r1(p[1]) + ')'); }
+    // Caminan de punta a punta; de vez en cuando se detienen a mirar una vitrina
+    function andar(w, dt) {
+      if (w.espera > 0) { w.espera -= dt; if (w.espera <= 0) w.g.classList.add('camina'); return; }
+      w.x += (w.der ? 1 : -1) * w.vel * dt;
+      var x1 = window.Barrio.geo.x1 - 0.8;
+      if (w.x > x1 || w.x < 0.8) { w.x = Math.max(0.8, Math.min(x1, w.x)); w.der = !w.der; vestir(w); }
+      else if (Math.random() < dt / 14) { w.espera = 1.5 + Math.random() * 2.5; w.g.classList.remove('camina'); }
+      w.g.classList.add('camina');
+      if (w.espera > 0) w.g.classList.remove('camina');
+      ponerCaminante(w);
+    }
+
     /* ── Animación: recorridos ── */
     var VEL = 1.25, corriendo = false, ultimo = 0, raf = 0;
     var eventos = { toma: function () {}, entrega: lanzar, recoge: function () {} };
@@ -668,6 +818,7 @@
     function paso(t) {
       if (!corriendo) return;
       var dt = Math.min(0.05, (t - (ultimo || t)) / 1000); ultimo = t;
+      caminantes.forEach(function (w) { andar(w, dt); });
       Object.keys(actores).forEach(function (id) {
         var a = actores[id]; if (!a.ruta) return;
         if (a.espera > 0) { a.espera -= dt; if (a.espera <= 0) a.g.classList.remove('parado'); return; }
@@ -689,6 +840,7 @@
     function detener() {
       corriendo = false; cancelAnimationFrame(raf);
       Object.keys(actores).forEach(function (id) { actores[id].g.classList.remove('camina'); });
+      caminantes.forEach(function (w) { w.g.classList.remove('camina'); });
     }
     // Ruta: cada actor parte en su primer punto con su espera
     Object.keys(actores).forEach(function (id) { var a = actores[id]; if (a.ruta) a.espera = (a.ruta[0][2] || 0) * (0.3 + Math.random() * 0.5); });
@@ -707,17 +859,19 @@
     }
     reloj(); var relojInt = setInterval(reloj, 30000);
 
+    // Límites de la vista: la oficina y, si está, el barrio completo
     var limites = { x0: -680, y0: -150, x1: 800, y1: 735 };
+    if (BR) limites = { x0: Math.min(limites.x0, BR.caja.x0), y0: Math.min(limites.y0, BR.caja.y0), x1: Math.max(limites.x1, BR.caja.x1), y1: Math.max(limites.y1, BR.caja.y1) };
     svg.setAttribute('viewBox', [limites.x0, limites.y0, limites.x1 - limites.x0, limites.y1 - limites.y0].join(' '));
 
-    // Cambia de piso: 0 es la planta baja, 1 el piso de los proyectos. Devuelve los límites de ese piso.
-    var pisoActual = 0;
-    function cambiarPiso(n) {
-      if (n === 1 && !P1) n = 0;
-      pisoActual = n;
-      svg.querySelector('.piso-0').style.display = n === 1 ? 'none' : '';
-      var g1 = svg.querySelector('.piso-1'); if (g1) g1.style.display = n === 1 ? '' : 'none';
-      return n === 1 ? limites1 : limites;
+    // De lejos, los locales se ven cerrados (menos que dibujar); de cerca, abiertos con su gente.
+    // zoom: píxeles de pantalla por unidad del dibujo. Un local mide (4,6 + 4,3) × 32 unidades de ancho.
+    var lejos = false;
+    function lod(zoom) {
+      if (!BR) return false;
+      var ancho = 284.8 * zoom, nuevo = lejos ? ancho < 112 : ancho < 96;
+      if (nuevo !== lejos) { lejos = nuevo; svg.querySelector('.barrio').classList.toggle('lejos', lejos); }
+      return lejos;
     }
     // La vitrina muestra otros tres casos (los que elige Plotty según el rubro)
     function cambiarVitrina(ids, titulo) {
@@ -730,8 +884,8 @@
     }
 
     return {
-      zonas: zonas, actores: actores, limites: limites, limites1: limites1, P: P, iniciar: iniciar, detener: detener, lanzar: lanzar,
-      piso: cambiarPiso, pisoActual: function () { return pisoActual; }, vitrina: cambiarVitrina,
+      zonas: zonas, actores: actores, limites: limites, P: P, iniciar: iniciar, detener: detener, lanzar: lanzar, vitrina: cambiarVitrina,
+      barrio: BR ? { calles: BR.calles, principal: BR.principal, total: BR.total } : null, lod: lod, caminantes: caminantes,
       destruir: function () { detener(); clearInterval(lanzador); clearInterval(relojInt); },
       corriendo: function () { return corriendo; }
     };

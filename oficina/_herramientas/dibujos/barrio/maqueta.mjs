@@ -1,6 +1,7 @@
-// Motor de maquetas isométricas (misma proyección que escena.js). Lo usa salas.mjs para dibujar el piso 1.
+// Motor de maquetas isométricas (la misma proyección de escena.js): el barrio, sus locales y las salas grandes.
 import { readFileSync } from 'fs';
 const MED = JSON.parse(readFileSync(new URL('../cabezones/medidas.json', import.meta.url), 'utf8'));
+export function registrarMedida(id, m) { MED[id] = m; }
 const TW = 32, TH = 16, ZH = 39;
 const r1 = (n) => Math.round(n * 10) / 10;
 export const P = (x, y, z = 0) => [(x - y) * TW, (x + y) * TH - z * ZH];
@@ -75,11 +76,13 @@ export function escena() {
     },
     // Personaje vectorial (definido una vez en el documento como #v-id)
     pj(id, x, y, z = 0, dir = 'd', e = 1.4, k) {
-      const m = MED[id]; const [px, py] = P(x, y, z); const [fx, fy] = P(x, y, 0);
-      const flota = z > 0;
+      const sinSombra = dir.includes('s'), encima = dir.includes('e'); dir = dir.replace(/[se]/g, '');
+      const m = MED[id]; const [px, py] = P(x, y, z); const [fx, fy] = P(x, y, encima ? z : 0);
+      const flota = z > 0 && !m.sentado && !m.sobre && !encima;
       marca(x, y, z + (m.alto * e) / ZH);
-      const sombraPiso = `<ellipse cx="${r1(fx)}" cy="${r1(fy)}" rx="${r1(e * (flota ? 8 : 11))}" ry="${r1(e * (flota ? 3 : 4))}" fill="#091D33" opacity="${flota ? .3 : .45}"/>`;
-      return E.add(k ?? x + y + 0.2, sombraPiso + `<g transform="translate(${r1(px)} ${r1(py)}) scale(${dir === 'i' ? -e : e} ${e}) translate(${-m.cx} ${-m.pie})"><use href="#v-${id}"/></g>`);
+      const sombraPiso = m.sentado ? '' : `<ellipse cx="${r1(fx)}" cy="${r1(fy)}" rx="${r1(e * (flota ? 8 : 11))}" ry="${r1(e * (flota ? 3 : 4))}" fill="#091D33" opacity="${flota ? .3 : .45}"/>`;
+      const clase = m.sentado ? 'pj-sentado' : flota ? 'pj-flota' : 'pj-cuerpo';
+      return E.add(k ?? x + y + 0.2, (sinSombra ? '' : sombraPiso) + `<g transform="translate(${r1(px)} ${r1(py)}) scale(${dir === 'i' ? -e : e} ${e})"><g class="${clase}"><g transform="translate(${-m.cx} ${-m.pie})"><use href="#v-${id}"/></g></g></g>`);
     },
     // Cilindro vertical (torre, maceteros, mesas redondas)
     cilindro(x, y, z, r, h, top, lado, k) {
@@ -97,6 +100,22 @@ export function escena() {
       const g = o.g ?? 0.09;
       return E.add(k ?? -600, E.poly([[x0 + g, y0 + g, z], [x1 - g, y0 + g, z], [x1 - g, y1 - g, z], [x0 + g, y1 - g, z]], `fill="${o.fill || 'rgba(127,216,207,.035)'}" stroke="rgba(127,216,207,.5)" stroke-width="1.6" stroke-dasharray="6 6"`));
     },
+    // Contenido 2D en planos del mundo (100 unidades = 1 baldosa)
+    planoZ(x0, y0, z, svg, k, ancho = 0, alto = 0) { const [px, py] = P(x0, y0, z); marca(x0, y0, z); if (ancho) marca(x0 + ancho / 100, y0 + alto / 100, z); return E.add(k, `<g transform="matrix(${TW / 100},${TH / 100},${-TW / 100},${TH / 100},${r1(px)},${r1(py)})">${svg}</g>`); },
+    planoY(x0, y0, zTop, svg, k, ancho = 0, alto = 0) { const [px, py] = P(x0, y0, zTop); marca(x0, y0, zTop); if (ancho) marca(x0 + ancho / 100, y0, zTop - alto / 100); return E.add(k, `<g transform="matrix(${TW / 100},${TH / 100},0,${ZH / 100},${r1(px)},${r1(py)})">${svg}</g>`); },
+    planoX(x0, y0, zTop, svg, k, ancho = 0, alto = 0) { const [px, py] = P(x0, y0, zTop); marca(x0, y0, zTop); if (ancho) marca(x0, y0 - ancho / 100, zTop - alto / 100); return E.add(k, `<g transform="matrix(${TW / 100},${-TH / 100},0,${ZH / 100},${r1(px)},${r1(py)})">${svg}</g>`); },
+    linea(pts, color, w, k, extra = '') { const d = pts.map(([x, y, z], i) => { marca(x, y, z); const q = P(x, y, z); return (i ? 'L' : 'M') + r1(q[0]) + ' ' + r1(q[1]); }).join(''); return E.add(k, `<path d="${d}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${extra}/>`); },
+    // Todo lo que dibuja fn queda como una sola pieza con profundidad k (una sala entera, por ejemplo)
+    bloque(k, fn, clase, attrs = '') {
+      const antes = piezas.length; fn();
+      const nuevas = piezas.splice(antes).sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+      const arriba = nuevas.filter(p => p[0] >= 900000), abajo = nuevas.filter(p => p[0] < 900000);
+      const abre = clase || attrs ? `<g${clase ? ` class="${clase}"` : ''}${attrs ? ' ' + attrs : ''}>` : '';
+      piezas.push([k, piezas.length, abre + abajo.map(p => p[2]).join('') + (abre ? '</g>' : '')]);
+      for (const p of arriba) piezas.push(p);
+      return E;
+    },
+    caja0,
     svg(pad = 24, extra = '') {
       const vb = [caja0.x0 - pad, caja0.y0 - pad - 30, caja0.x1 - caja0.x0 + pad * 2, caja0.y1 - caja0.y0 + pad * 2 + 30].map(r1);
       const cuerpo = piezas.sort((p, q) => p[0] - q[0] || p[1] - q[1]).map(p => p[2]).join('');

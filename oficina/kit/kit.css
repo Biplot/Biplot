@@ -106,6 +106,36 @@
 .k-quien { gap: 8px; }
 .k-quien svg { border-radius: 50%; background: #17446F; overflow: hidden; }
 
+/* La sala de cada empresa: vista previa del enlace (og), publicación e historia */
+.p-sala .loc-b, .p-sala .loc-cinta-b { opacity: 0; }
+.p-sala .pin { display: none; }
+.s-nombre { left: 56px; top: 98px; font: 700 88px/.95 var(--bp-f-display); letter-spacing: -.04em; z-index: 2; }
+.s-rubro { left: 60px; top: 196px; width: 430px; font: 600 24px/1.25 var(--bp-f-display); color: #17C3B2; z-index: 2; }
+.s-esencia { left: 60px; top: 262px; width: 400px; font: 500 30px/1.22 var(--bp-f-display); color: #D5E2EE; z-index: 2; }
+.s-url { left: 60px; top: 452px; font: 500 26px/1 var(--bp-f-display); color: #D5E2EE; z-index: 2; }
+.s-url b { color: #FFFFFF; font-weight: 700; }
+.s-escena { overflow: visible; filter: drop-shadow(0 24px 40px rgba(0, 0, 0, .35)); }
+.f-og.p-sala .s-escena { left: 440px; top: 20px; width: 780px; height: 600px; }
+.s-pie { left: 60px; bottom: 52px; z-index: 2; }
+.s-pie .k-iso { width: 44px; height: 44px; }
+.s-pie .bp-wordmark { font-size: 31px; }
+.f-og.p-sala::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 10px; background: var(--acento); }
+.f-og.p-sala .k-eyebrow { left: 60px; top: 64px; font-size: 19px; }
+.f-4x5.p-sala .k-eyebrow { top: 84px; }
+.f-4x5.p-sala .s-nombre { left: 74px; top: 124px; font-size: 150px; }
+.f-4x5.p-sala .s-rubro { left: 80px; top: 292px; width: 900px; font-size: 36px; }
+.f-4x5.p-sala .s-escena { left: 20px; top: 360px; width: 1040px; height: 760px; }
+.s-burbuja { left: auto; right: 70px; top: 1030px; width: 560px; font-size: 34px; }
+.s-burbuja::after { right: auto; left: 70px; top: -26px; border: 16px solid transparent; border-bottom: 28px solid #F2F4F7; border-top: 0; }
+.f-9x16.p-sala .k-eyebrow { top: 290px; }
+.f-9x16.p-sala .s-nombre { left: 74px; top: 330px; font-size: 170px; }
+.f-9x16.p-sala .s-rubro { left: 80px; top: 518px; width: 920px; font-size: 40px; }
+.f-9x16.p-sala .s-escena { left: 10px; top: 600px; width: 1060px; height: 780px; }
+.f-9x16.p-sala .s-esencia { left: 80px; top: 1372px; width: 920px; font-size: 44px; color: #F2F4F7; }
+.s-sticker { left: 50%; transform: translateX(-50%); top: 1448px; display: flex; align-items: center; gap: 14px; padding: 22px 34px; border-radius: 22px; background: #F2F4F7; color: #0E2A47;
+  font: 700 38px/1 var(--bp-f-display); box-shadow: 0 20px 40px rgba(0, 0, 0, .35); white-space: nowrap; }
+.s-sticker svg { width: 40px; height: 40px; color: #17C3B2; }
+
 /* Galería */
 .galeria { padding: 32px 24px 64px; max-width: 1400px; margin: 0 auto; }
 .galeria-cab h1 { margin: 0 0 8px; font: 700 40px/1.1 var(--bp-f-display); }

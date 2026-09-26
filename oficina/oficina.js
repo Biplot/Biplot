@@ -1,7 +1,8 @@
 /*
  * Oficina BiPlot · interfaz
- * Cámara (arrastrar, rueda, pellizco, teclado), pisos, menú "Recorre la oficina", recorrido guiado, paneles y el chat de
- * Plotty. Todo lo que se puede hacer con el mouse en la escena también se puede hacer desde el menú con teclado.
+ * Cámara (arrastrar, rueda, pellizco, teclado), menú «Recorre la oficina» con el barrio y su buscador, recorrido guiado,
+ * paneles, la sala de cada empresa (salas.js, se carga al entrar), El Archivo, el chat de Plotty y los enlaces directos.
+ * Todo lo que se puede hacer con el mouse en la escena también se puede hacer desde el menú con teclado.
  */
 (function () {
   'use strict';
@@ -13,11 +14,14 @@
   var CASOS = {}; D.casos.forEach(function (c) { CASOS[c.id] = c; });
   var SALAS = D.salas;
   var reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var MEDIOS = 'media/salas/';
 
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function guardar(k, v) { try { localStorage.setItem('oficina-' + k, v); } catch (e) { /* sin almacenamiento */ } }
   function leer(k) { try { return localStorage.getItem('oficina-' + k); } catch (e) { return null; } }
   function quieta() { return document.documentElement.classList.contains('oficina-quieta'); }
+  // Para buscar sin importar tildes ni mayúsculas
+  function normal(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
 
   /* ── Escena ── */
   var escenaEl = $('#escena'), svg = $('#svg-escena');
@@ -30,8 +34,37 @@
     raiz.appendChild(n);
   });
   svg.appendChild(raiz);
-  var L = esc3.limites, P = esc3.P, pisoActual = 0;
+  var L = esc3.limites, P = esc3.P, BARRIO = esc3.barrio;
   var capaResalte = svg.querySelector('.capa-resalte');
+
+  /* ── El barrio: qué hay en cada calle ── */
+  // En la calle principal están los proyectos con sala dibujada a mano (salas.js), el local libre y El Archivo.
+  var ORDEN_PRINCIPAL = BARRIO ? BARRIO.principal.slice() : [];
+  if (ORDEN_PRINCIPAL.indexOf('eleven') > -1) ORDEN_PRINCIPAL.splice(ORDEN_PRINCIPAL.indexOf('eleven') + 1, 0, 'pasaje');
+  var CON_SALA = ORDEN_PRINCIPAL.filter(function (id) { return PROYECTOS[id] && !PROYECTOS[id].libre; });
+  function tieneSala(id) { return CON_SALA.indexOf(id) > -1; }
+  var FASE_LOCAL = ['arriendo', 'diagnostico', 'obra', 'obra', 'obra', 'obra', 'obra', 'inauguracion', 'abierto', 'abierto'];
+  function estadoDe(pr) {
+    if (!pr || pr.libre) return 'libre';
+    if (tieneSala(pr.id)) return 'abierto';
+    var n = parseInt(String(pr.fase || 'E9').replace(/\D/g, ''), 10);
+    return FASE_LOCAL[isNaN(n) ? 9 : Math.max(0, Math.min(9, n))];
+  }
+  var ESTADO_TXT = { arriendo: 'Se arrienda', diagnostico: 'En diagnóstico', obra: 'En obra', inauguracion: 'Inauguración', abierto: 'Abierto', libre: 'Disponible' };
+  function faseDe(pr) { var f = String(pr.fase || ''); return D.fases.filter(function (x) { return x.id === f; })[0]; }
+  // Nombre público de un caso: el suyo, o sólo su rubro si el cliente no se nombra
+  function nombreCaso(pr) { return pr.permiso === 'rubro' ? String(pr.rubro || '').split(' · ').join(', ') : pr.nombre; }
+  function chipCaso(pr) { return pr.corto || ESTADO_TXT[estadoDe(pr)]; }
+  function calleDe(id) {
+    if (ORDEN_PRINCIPAL.indexOf(id) > -1) return 'Calle principal';
+    if (/^libre-/.test(id)) { var c = calleId(id.slice(6)); return c ? c.nombre : ''; }
+    var z = zonaPorId(id); if (z && z.calle && z.calle !== 'principal') { var k = calleId(z.calle); return k ? k.nombre : ''; }
+    return '';
+  }
+  function calleId(id) { return BARRIO ? BARRIO.calles.filter(function (c) { return c.id === id; })[0] : null; }
+  function rubroTxt(id) { var o = D.plotty.preguntas[0].opciones.filter(function (x) { return x[0] === id; })[0]; return o ? o[1] : ''; }
+  // Los casos de un rubro (los de la calle principal y los de su calle), para Plotty y El Archivo
+  function casosDelRubro(rubro) { return D.proyectos.filter(function (p) { return !p.libre && p.calle === rubro && p.permiso !== 'archivo'; }); }
 
   /* ── Sprites de avatares (quietos): la cabeza y el torso de cada uno; las mascotas, enteras ── */
   var sprite = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -58,7 +91,6 @@
     }
     var guia = $('#guia'); if (guia && !guia.hidden && !m.aba) m.aba = r.bottom - guia.getBoundingClientRect().top + 8;
     var intro = $('#intro'); if (intro && !intro.hidden && !m.aba && window.innerWidth < 900) m.aba = r.bottom - intro.getBoundingClientRect().top + 8;
-    var pisos = $('#pisos'); if (pisos) m.arr = Math.max(0, pisos.getBoundingClientRect().bottom - r.top);
     return m;
   }
   function zAjuste() {
@@ -71,9 +103,10 @@
     var r = rect(); if (!r.width) return;
     var lz = limitesZ(); cam.z = Math.max(lz[0], Math.min(lz[1], cam.z));
     var w = r.width / cam.z, h = r.height / cam.z;
-    // Mantiene la oficina a la vista: el centro no se sale de los límites.
+    // Mantiene el barrio a la vista: el centro no se sale de los límites.
     cam.x = Math.max(L.x0, Math.min(L.x1, cam.x)); cam.y = Math.max(L.y0, Math.min(L.y1, cam.y));
     svg.setAttribute('viewBox', [cam.x - w / 2, cam.y - h / 2, w, h].map(function (n) { return Math.round(n * 100) / 100; }).join(' '));
+    esc3.lod(cam.z);
     moverRotulo();
   }
   // Centro de cámara que deja el punto (sx, sy) al centro del área libre (descontando menú y panel).
@@ -81,10 +114,10 @@
     var m = margenes();
     return { x: sx - (m.izq - m.der) / 2 / z, y: sy - (m.arr - m.aba) / 2 / z };
   }
-  function volar(sx, sy, z, dur) {
+  function volar(sx, sy, z, dur, fin) {
     var c = centroPara(sx, sy, z), desde = { x: cam.x, y: cam.y, z: cam.z }, t0 = performance.now();
     if (vuelo) cancelAnimationFrame(vuelo);
-    if (reducido || dur === 0) { cam.x = c.x; cam.y = c.y; cam.z = z; aplicar(); return; }
+    if (reducido || dur === 0) { cam.x = c.x; cam.y = c.y; cam.z = z; aplicar(); if (fin) fin(); return; }
     dur = dur || 700;
     (function cuadro(t) {
       var k = Math.min(1, (t - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
@@ -92,7 +125,7 @@
       cam.z = Math.exp(Math.log(desde.z) + (Math.log(z) - Math.log(desde.z)) * e);
       cam.x = desde.x + (c.x - desde.x) * e; cam.y = desde.y + (c.y - desde.y) * e;
       aplicar();
-      if (k < 1) vuelo = requestAnimationFrame(cuadro); else vuelo = null;
+      if (k < 1) vuelo = requestAnimationFrame(cuadro); else { vuelo = null; if (fin) fin(); }
     })(t0);
   }
   function verTodo(dur) { var z = zAjuste(); volar((L.x0 + L.x1) / 2, (L.y0 + L.y1) / 2 + 10, z, dur); }
@@ -102,61 +135,45 @@
     return Math.max(lz[0], Math.min(lz[1], Math.min(w / ventana, h / (ventana * .62))));
   }
   function zonaPorId(id) { return esc3.zonas.filter(function (z) { return z.id === id; })[0]; }
-  function pisoDe(obj) { if (obj.tipo === 'zona') { var z = zonaPorId(obj.id); return z ? z.piso : pisoActual; } return obj.tipo === 'actor' ? 0 : pisoActual; }
   function altoActor(a) { return a.z + E.alto[a.id] * window.Escena.ESCALA_ACTOR / 39; }
-  function irA(obj, dur) {
+  function irA(obj, dur, fin) {
     if (obj.tipo === 'actor') {
       var a = esc3.actores[obj.id], p = P(a.x, a.y, a.z + 0.9);
-      volar(p[0], p[1], Math.min(zPara(window.innerWidth < 700 ? 330 : 360), 2.3), dur);
+      volar(p[0], p[1], Math.min(zPara(window.innerWidth < 700 ? 330 : 360), 2.3), dur, fin);
     } else if (obj.tipo === 'zona') {
       var zn = zonaPorId(obj.id); if (!zn) return;
       var q = P(zn.foco[0], zn.foco[1], zn.foco[2]);
-      var ventana = zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.piso === 1 ? 470 : 520;
-      volar(q[0], q[1], zPara(ventana), dur);
+      var ventana = zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.barrio ? 470 : 520;
+      volar(q[0], q[1], zPara(obj.ventana || ventana), dur, fin);
     }
   }
-
-  /* ── Pisos ── */
-  var pisosEl = $('#pisos');
-  function marcarPisos() {
-    pisosEl.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-piso') === pisoActual ? 'true' : 'false'); });
-    escenaEl.setAttribute('aria-label', (pisoActual === 1 ? 'Piso 1, las salas de proyecto' : 'Planta baja de la oficina') + '. Usa las flechas para moverte, + y − para acercarte y 0 para ver todo.');
+  // Encuadra un grupo de lugares del barrio (una calle, los casos de un rubro)
+  function irAGrupo(ids, dur) {
+    var xs = [], ys = [];
+    ids.forEach(function (id) {
+      var zn = zonaPorId(id); if (!zn) return; var b = zn.caja;
+      [[b[0], b[1], b[4]], [b[2], b[1], b[4]], [b[2], b[3], 0], [b[0], b[3], 0]].forEach(function (c) { var p = P(c[0], c[1], c[2]); xs.push(p[0]); ys.push(p[1]); });
+    });
+    if (!xs.length) return;
+    var x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs), y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+    volar((x0 + x1) / 2, (y0 + y1) / 2, zPara(Math.max(470, (x1 - x0) * 1.25, (y1 - y0) * 2)), dur);
   }
-  // Cambia de piso; con `encuadrar`, muestra el piso completo. Devuelve true si cambió.
-  function irAlPiso(n, encuadrar) {
-    if (n === pisoActual) return false;
-    pisoActual = n; L = esc3.piso(n);
-    resaltar(null); marcarPisos();
-    if (n === 1) esc3.detener(); else if (!quieta()) esc3.iniciar();
-    if (!reducido) { svg.classList.remove('cambia-piso'); void svg.getBoundingClientRect(); svg.classList.add('cambia-piso'); }
-    if (encuadrar) encuadrePiso(0);
-    return true;
-  }
-  // En celular el piso 1 completo queda muy chico: se muestra más de cerca, centrado en el pasillo.
-  function encuadrePiso(dur) {
-    if (window.innerWidth < 700 && pisoActual === 1) { var p = P(7, 5, 0.4); volar(p[0], p[1], zPara(560), dur); }
-    else verTodo(dur);
-  }
-  pisosEl.addEventListener('click', function (e) {
-    var b = e.target.closest('button[data-piso]'); if (!b) return;
-    var n = +b.getAttribute('data-piso');
-    if (!panel.hidden && abierto && abierto.tipo !== 'chat' && pisoDe(abierto) !== n) cerrarPanel();
-    if (irAlPiso(n, true)) escenaEl.focus({ preventScroll: true });
-  });
 
   /* ── Resalte y rótulo ── */
   var resaltado = null;
-  function resaltar(obj) {
+  function resaltar(obj, extras) {
     resaltado = obj; capaResalte.innerHTML = '';
     if (!obj || obj.tipo === 'chat') { ocultarRotulo(); return; }
     var ns = 'http://www.w3.org/2000/svg';
     if (obj.tipo === 'zona') {
-      var zn = zonaPorId(obj.id); if (!zn || zn.piso !== pisoActual) { ocultarRotulo(); return; }
-      var pg = document.createElementNS(ns, 'polygon'); pg.setAttribute('points', zn.silueta); pg.setAttribute('class', 'resalte');
-      var pb = document.createElementNS(ns, 'polygon'); pb.setAttribute('points', zn.suelo); pb.setAttribute('class', 'resalte-suelo');
-      capaResalte.appendChild(pb); capaResalte.appendChild(pg);
+      [obj.id].concat(extras || []).forEach(function (id) {
+        var zn = zonaPorId(id); if (!zn) return;
+        var pg = document.createElementNS(ns, 'polygon'); pg.setAttribute('points', zn.silueta); pg.setAttribute('class', 'resalte');
+        var pb = document.createElementNS(ns, 'polygon'); pb.setAttribute('points', zn.suelo); pb.setAttribute('class', 'resalte-suelo');
+        capaResalte.appendChild(pb); capaResalte.appendChild(pg);
+      });
+      if (!zonaPorId(obj.id)) { ocultarRotulo(); return; }
     } else {
-      if (pisoActual !== 0) { ocultarRotulo(); return; }
       var el = document.createElementNS(ns, 'ellipse'); el.setAttribute('class', 'resalte-actor'); el.setAttribute('rx', 30); el.setAttribute('ry', 13);
       capaResalte.appendChild(el);
     }
@@ -165,22 +182,25 @@
   var rotulo = $('#rotulo');
   function textoRotulo(obj) {
     if (obj.tipo === 'actor') { var p = PERSONAL[obj.id]; return '<b>' + esc(p.nombre) + '</b><span>' + esc(p.rol) + ' · ' + p.placa + '</span>'; }
-    var zn = zonaPorId(obj.id), accion = 'Ver más';
-    if (obj.id === 'libre') accion = 'Conversar con Plotty';
-    else if (PROYECTOS[obj.id]) accion = 'Entrar a la sala';
-    else if (obj.id === 'ascensor') accion = 'Subir al piso 1';
+    var zn = zonaPorId(obj.id), accion = 'Ver más', pr = PROYECTOS[obj.id];
+    if (obj.id === 'libre' || zn.libre) accion = 'Conversar con Plotty';
+    else if (tieneSala(obj.id)) accion = 'Entrar a la sala';
+    else if (pr) accion = ESTADO_TXT[estadoDe(pr)] + ' · Ver el local';
+    else if (obj.id === 'archivo') accion = 'Ver todos los casos';
+    else if (obj.id === 'pasaje') accion = 'Ver el directorio';
     else if (obj.id === 'puerta-404') accion = 'No se abre';
-    return '<b>' + esc(zn.nombre) + '</b><span>' + accion + '</span>';
+    return '<b>' + esc(zn.nombre) + '</b><span>' + esc(accion) + '</span>';
   }
   function moverRotulo() {
-    if (!resaltado || resaltado.tipo === 'chat') return;
+    if (!resaltado || resaltado.tipo === 'chat' || enSala) return;
     var r = rect(), vb = svg.viewBox.baseVal, sx, sy;
     if (resaltado.tipo === 'actor') {
       var a = esc3.actores[resaltado.id], p0 = P(a.x, a.y, 0), p1 = P(a.x, a.y, altoActor(a) + 0.1);
       var el = capaResalte.querySelector('.resalte-actor'); if (el) { el.setAttribute('cx', p0[0]); el.setAttribute('cy', p0[1]); }
       sx = p1[0]; sy = p1[1];
     } else {
-      var zn = zonaPorId(resaltado.id), b = zn.caja, t = P((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, b[4] + .35);
+      var zn = zonaPorId(resaltado.id); if (!zn) return;
+      var b = zn.caja, t = P((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, b[4] + .35);
       sx = t[0]; sy = t[1];
     }
     var cx = (sx - vb.x) * (r.width / vb.width), cy = (sy - vb.y) * (r.height / vb.height);
@@ -200,7 +220,7 @@
     var r = rect(), vb = svg.viewBox.baseVal;
     var sx = vb.x + (clx - r.left) * vb.width / r.width, sy = vb.y + (cly - r.top) * vb.height / r.height;
     var x = (sx / 32 + sy / 16) / 2, y = (sy / 16 - sx / 32) / 2;
-    var z = esc3.zonas.filter(function (zn) { var b = zn.caja; return zn.piso === pisoActual && x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]; })[0];
+    var z = esc3.zonas.filter(function (zn) { var b = zn.caja; return x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]; })[0];
     return z ? { tipo: 'zona', id: z.id } : null;
   }
   function objetoEn(el, clx, cly) {
@@ -222,7 +242,7 @@
   window.addEventListener('pointermove', function (e) {
     if (punteros[e.pointerId]) punteros[e.pointerId] = { x: e.clientX, y: e.clientY };
     if (!arrastre) {
-      if (e.pointerType === 'mouse' && e.target && svg.contains(e.target)) {
+      if (e.pointerType === 'mouse' && e.target && svg.contains(e.target) && !enSala) {
         var o = objetoEn(e.target, e.clientX, e.clientY);
         if (!o && resaltado && resaltado.origen === 'mouse') resaltar(null);
         else if (o && (!resaltado || resaltado.id !== o.id)) { o.origen = 'mouse'; resaltar(o); }
@@ -286,14 +306,35 @@
     b.querySelector('.txt').textContent = si ? 'Seguir' : 'Pausar';
     b.setAttribute('aria-label', si ? 'Reanudar la animación' : 'Pausar la animación');
     document.documentElement.classList.toggle('oficina-quieta', si);
-    if (si || pisoActual === 1) esc3.detener(); else esc3.iniciar();
+    if (si || enSala) esc3.detener(); else esc3.iniciar();
     guardar('pausa', si ? '1' : '0');
   }
 
-  /* ── Menú: recorre la oficina ── */
-  var ZONAS_PB = ['recepcion', 'vitrina', 'diagnostico', 'planos', 'set', 'laboratorio', 'estanteria', 'muro', 'ascensor', 'puerta-404'];
+  /* ── Menú: recorre la oficina y el barrio ── */
+  var ZONAS_OFICINA = ['recepcion', 'vitrina', 'diagnostico', 'planos', 'set', 'laboratorio', 'reuniones', 'estanteria', 'muro', 'puerta-404'];
   function subZona(id) { return id === 'vitrina' ? 'Casos para tu rubro' : SALAS[id].sub; }
   function nombreZona(id) { return id === 'vitrina' ? 'La vitrina' : SALAS[id].nombre; }
+  // Un lugar del barrio en el menú y en el directorio: nombre, detalle, color y estado (para el filtro)
+  function lugar(id) {
+    var pr = PROYECTOS[id];
+    if (id === 'pasaje') return { id: id, nombre: SALAS.pasaje.nombre, sub: SALAS.pasaje.sub, estado: 'lugar' };
+    if (id === 'archivo') return { id: id, nombre: SALAS.archivo.nombre, sub: (BARRIO ? BARRIO.total : 0) + ' casos, por rubro', estado: 'lugar', color: '#7FD8CF' };
+    if (id === 'libre' || /^libre-/.test(id)) return { id: id, nombre: PROYECTOS.libre.nombre, sub: 'Local disponible', estado: 'libre', color: '#7FD8CF', libre: true };
+    if (!pr) return null;
+    return { id: id, nombre: nombreCaso(pr), sub: pr.permiso === 'rubro' ? 'Caso sin nombre' : pr.rubro, estado: estadoDe(pr), chip: chipCaso(pr), color: pr.acento };
+  }
+  function callesDelBarrio() {
+    var g = [{ id: 'principal', nombre: 'Calle principal', ids: ORDEN_PRINCIPAL }];
+    if (BARRIO) BARRIO.calles.forEach(function (c) { g.push({ id: c.id, nombre: c.nombre, ids: c.casos.concat(['libre-' + c.id]) }); });
+    return g;
+  }
+  // Se busca por nombre, rubro, estado y calle
+  function itemLugar(l, calle) {
+    var pr = PROYECTOS[l.id], rubro = pr && pr.calle ? rubroTxt(pr.calle) : '';
+    return '<li data-estado="' + l.estado + '" data-busca="' + esc(normal([l.nombre, l.sub, l.chip, rubro, calle].join(' '))) + '"><button type="button" data-tipo="zona" data-id="' + esc(l.id) + '">' +
+      (l.estado === 'lugar' && !l.color ? '<span class="punto lugar" aria-hidden="true"></span>' : '<span class="punto' + (l.libre ? ' libre' : '') + '" style="background:' + esc(l.color || '#35679A') + '" aria-hidden="true"></span>') +
+      '<span class="mt"><b>' + esc(l.nombre) + '</b><span>' + esc(l.sub || '') + '</span></span>' + (l.chip ? '<span class="chip-mini">' + esc(l.chip) + '</span>' : '') + '</button></li>';
+  }
   function construirMenu() {
     var h = '<h2 class="menu-t" id="recorrer-t">Recorre la oficina</h2>' +
       '<button type="button" class="menu-guia" data-guia="1"><span class="ico" aria-hidden="true">' + icono('ruta') + '</span>Hacer el recorrido guiado</button>' +
@@ -303,30 +344,54 @@
       var p = PERSONAL[id];
       h += '<li><button type="button" data-tipo="actor" data-id="' + id + '">' + avatar(id) + '<span class="mt"><b>' + esc(p.nombre) + '</b><span>' + esc(p.rol) + '</span></span><span class="placa-mini">' + p.placa + '</span></button></li>';
     });
-    h += '</ul><h3 class="menu-sub">Planta baja</h3><ul class="menu-lista">';
-    ZONAS_PB.forEach(function (id) { h += '<li><button type="button" data-tipo="zona" data-id="' + id + '"><span class="mt"><b>' + esc(nombreZona(id)) + '</b><span>' + esc(subZona(id)) + '</span></span></button></li>'; });
-    h += '</ul><h3 class="menu-sub">Piso 1 · Proyectos</h3><ul class="menu-lista">';
-    D.proyectos.forEach(function (pr) {
-      h += '<li><button type="button" data-tipo="zona" data-id="' + pr.id + '"><span class="punto' + (pr.libre ? ' libre' : '') + '" style="background:' + pr.acento + '" aria-hidden="true"></span><span class="mt"><b>' + esc(pr.nombre) + '</b><span>' + esc(pr.rubro) + '</span></span></button></li>';
-    });
+    h += '</ul><h3 class="menu-sub">La oficina</h3><ul class="menu-lista">';
+    ZONAS_OFICINA.forEach(function (id) { h += '<li><button type="button" data-tipo="zona" data-id="' + id + '"><span class="mt"><b>' + esc(nombreZona(id)) + '</b><span>' + esc(subZona(id)) + '</span></span></button></li>'; });
     h += '</ul>';
+    if (BARRIO) {
+      h += '<h3 class="menu-sub">El barrio</h3>' +
+        '<div class="menu-busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" id="busca-barrio" placeholder="Busca un caso o un rubro" aria-label="Buscar en el barrio" autocomplete="off"></div>' +
+        '<div class="menu-filtros" role="group" aria-label="Qué locales mostrar"><button type="button" data-filtro="todos" aria-pressed="true">Todos</button><button type="button" data-filtro="abierto" aria-pressed="false">Abiertos</button><button type="button" data-filtro="obra" aria-pressed="false">En obra</button></div>' +
+        '<div class="menu-calles">' + callesDelBarrio().map(function (c) {
+          return '<div class="menu-calle" data-calle="' + esc(c.id) + '"><h4>' + esc(c.nombre) + '</h4><ul class="menu-lista">' + c.ids.map(function (id) { var l = lugar(id); return l ? itemLugar(l, c.nombre) : ''; }).join('') + '</ul></div>';
+        }).join('') + '</div><p class="menu-vacio" hidden>No hay locales con ese nombre. Prueba con el rubro, o pregúntale a Plotty.</p>';
+    }
     $('#recorrer-cuerpo').innerHTML = h;
   }
   construirMenu();
-  var menu = $('#recorrer');
+  var menu = $('#recorrer'), filtroBarrio = 'todos';
+  function filtrarBarrio() {
+    var q = normal(($('#busca-barrio') || {}).value || '').trim(), hay = 0;
+    menu.querySelectorAll('.menu-calle').forEach(function (g) {
+      var visibles = 0;
+      g.querySelectorAll('li').forEach(function (li) {
+        var est = li.getAttribute('data-estado');
+        var pasa = (filtroBarrio === 'todos' || est === filtroBarrio || (filtroBarrio === 'obra' && est === 'diagnostico') || (filtroBarrio === 'abierto' && est === 'inauguracion')) &&
+          (!q || li.getAttribute('data-busca').indexOf(q) > -1);
+        li.hidden = !pasa; if (pasa) visibles++;
+      });
+      g.hidden = !visibles; hay += visibles;
+    });
+    var v = menu.querySelector('.menu-vacio'); if (v) v.hidden = hay > 0;
+  }
+  menu.addEventListener('input', function (e) { if (e.target.id === 'busca-barrio') filtrarBarrio(); });
   menu.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     if (b.id === 'recorrer-toggle') { alternarMenu(); return; }
+    if (b.hasAttribute('data-filtro')) {
+      filtroBarrio = b.getAttribute('data-filtro');
+      menu.querySelectorAll('[data-filtro]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      filtrarBarrio(); return;
+    }
     if (window.innerWidth < 900) alternarMenu(false);
     if (b.hasAttribute('data-guia')) { iniciarGuia(0); return; }
     if (b.hasAttribute('data-chat')) { abrir({ tipo: 'chat', id: 'plotty' }, false, b); return; }
     abrir({ tipo: b.getAttribute('data-tipo'), id: b.getAttribute('data-id') }, false, b);
   });
   // Al recorrer el menú con teclado, la cámara muestra dónde está cada cosa.
+  var devolviendoFoco = false;
   menu.addEventListener('focusin', function (e) {
-    var b = e.target.closest('button[data-id]'); if (!b || !b.matches(':focus-visible')) return;
+    var b = e.target.closest('button[data-id]'); if (!b || !b.matches(':focus-visible') || enSala || devolviendoFoco) return;
     var obj = { tipo: b.getAttribute('data-tipo'), id: b.getAttribute('data-id') };
-    if (pisoDe(obj) !== pisoActual) return;
     resaltar(obj); irA(obj);
   });
   function alternarMenu(abrirlo) {
@@ -338,6 +403,7 @@
     $('#recorrer-toggle').setAttribute('aria-expanded', abrirlo ? 'true' : 'false');
     $('#recorrer-toggle span').textContent = abrirlo && angosto ? 'Cerrar' : 'Recorrer';
     if (!angosto) guardar('menu', abrirlo ? '1' : '0');
+    if (enSala) acomodarSala();
   }
 
   /* ── Panel ── */
@@ -345,30 +411,39 @@
   function tituloPanel(obj) {
     if (obj.tipo === 'actor') return PERSONAL[obj.id].rol + ' · ' + PERSONAL[obj.id].placa;
     if (obj.tipo === 'chat') return 'Recepción · E0';
-    if (PROYECTOS[obj.id]) return 'Piso 1 · ' + (PROYECTOS[obj.id].libre ? 'Sala disponible' : 'Sala de proyecto');
+    if (obj.tipo === 'sala') return 'La sala · ' + calleDe(obj.id);
+    var zn = zonaPorId(obj.id);
+    if (zn && zn.libre || obj.id === 'libre') return 'Local disponible · ' + calleDe(obj.id);
+    if (PROYECTOS[obj.id]) return 'Local · ' + calleDe(obj.id);
     return obj.id === 'vitrina' ? 'Recepción · La vitrina' : SALAS[obj.id].etiqueta;
   }
   function abrir(obj, desdeEscena, boton) {
+    if (obj.tipo === 'zona' && tieneSala(obj.id)) { entrarSala(obj.id, { boton: boton }); return; }
     if (obj.tipo === 'zona' && !zonaPorId(obj.id)) return;
+    if (enSala) salirSala({ sinCamara: true });
+    // Los locales libres del barrio abren la conversación con Plotty
+    var zn = obj.tipo === 'zona' ? zonaPorId(obj.id) : null;
+    var chatLibre = zn && (zn.libre || obj.id === 'libre');
     detenerMedios();
     invocador = boton || document.activeElement;
     abierto = obj;
-    var destino = pisoDe(obj);
-    if (obj.tipo !== 'chat' && destino !== pisoActual) irAlPiso(destino, false);
-    panelCuerpo.innerHTML = obj.tipo === 'actor' ? htmlPersonaje(obj.id) : obj.tipo === 'chat' ? htmlChatPanel() : htmlZona(obj.id);
-    panel.hidden = false; document.body.classList.add('panel-abierto');
+    panelCuerpo.innerHTML = obj.tipo === 'actor' ? htmlPersonaje(obj.id) : obj.tipo === 'chat' ? htmlChatPanel() : chatLibre ? htmlLibre(obj.id) : htmlZona(obj.id);
+    panel.hidden = false; document.body.classList.add('panel-abierto'); panel.classList.remove('panel-sala');
     $('#panel-nombre').textContent = tituloPanel(obj);
-    panel.setAttribute('aria-label', obj.tipo === 'actor' ? PERSONAL[obj.id].nombre : obj.tipo === 'chat' ? 'Conversación con Plotty' : zonaPorId(obj.id).nombre);
+    $('#panel-cerrar').setAttribute('aria-label', 'Cerrar');
+    panel.setAttribute('aria-label', obj.tipo === 'actor' ? PERSONAL[obj.id].nombre : obj.tipo === 'chat' ? 'Conversación con Plotty' : zn.nombre);
     panel.scrollTop = 0; panelCuerpo.scrollTop = 0;
     activarMedios();
     if (panelCuerpo.querySelector('.chat')) iniciarChat(panelCuerpo.querySelector('.chat'));
+    if (panelCuerpo.querySelector('.archivo-busca')) iniciarArchivo();
     if (obj.tipo === 'actor') conIlustraciones(function () { pintarIlustracion(obj.id); });
     if (obj.tipo === 'chat') resaltar({ tipo: 'actor', id: 'plotty' }); else resaltar(obj);
-    requestAnimationFrame(function () { irA(obj.tipo === 'chat' ? (pisoActual === 0 ? { tipo: 'actor', id: 'plotty' } : { tipo: 'zona', id: 'libre' }) : obj); });
+    requestAnimationFrame(function () { irA(obj.tipo === 'chat' ? { tipo: 'actor', id: 'plotty' } : obj); });
     var t = $('#panel-titulo'); if (t) t.focus({ preventScroll: true });
     cerrarIntro();
   }
   function cerrarPanel() {
+    if (enSala) { salirSala(); return; }
     detenerMedios();
     panel.hidden = true; abierto = null; resaltar(null); document.body.classList.remove('panel-abierto');
     if (invocador && invocador.focus && document.contains(invocador)) invocador.focus({ preventScroll: true });
@@ -379,6 +454,7 @@
     if (e.key !== 'Escape') return;
     if (window.innerWidth < 900 && !menu.classList.contains('cerrado')) { alternarMenu(false); $('#recorrer-toggle').focus(); return; }
     if ($('#lightbox') && !$('#lightbox').hidden) { cerrarLightbox(); return; }
+    if (enSala) { salirSala(); return; }
     if (!panel.hidden) cerrarPanel();
     else if (!$('#guia').hidden) terminarGuia();
   });
@@ -387,8 +463,12 @@
     if (b) { e.preventDefault(); var v = b.getAttribute('data-abrir').split(':'); abrir({ tipo: v[0], id: v[1] }, false, invocador); return; }
     var g = e.target.closest('[data-grande]');
     if (g) { e.preventDefault(); abrirLightbox(g.getAttribute('data-grande'), g.getAttribute('data-grande-v')); return; }
-    var pi = e.target.closest('[data-piso]');
-    if (pi) { e.preventDefault(); cerrarPanel(); irAlPiso(+pi.getAttribute('data-piso'), true); return; }
+    var ru = e.target.closest('[data-rubro]');
+    if (ru) { e.preventDefault(); verRubro(ru.getAttribute('data-rubro'), true); return; }
+    var pi = e.target.closest('[data-pin]');
+    if (pi) { elegirPin(+pi.getAttribute('data-pin'), false); return; }
+    var cp = e.target.closest('.copiar'); if (cp) { copiar(cp); return; }
+    var co = e.target.closest('.compartir'); if (co) { compartir(co); return; }
     var go = e.target.closest('[data-golpe]');
     if (go) { var gs = SALAS['puerta-404'].golpes, out = panelCuerpo.querySelector('.golpe'); out.textContent = gs[golpes++ % gs.length]; }
   });
@@ -399,8 +479,8 @@
       ruta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/></svg>',
       afuera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
       play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
-      sube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
-      baja: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>'
+      calle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L9 4M20 20L15 4M12 6v2M12 11v2M12 16v2"/></svg>',
+      compartir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>'
     };
     return I[n] || '';
   }
@@ -415,6 +495,7 @@
     }).join('') + '</ul>';
   }
   function botonChat(texto) { return '<button type="button" class="bp-btn primario" data-abrir="chat:plotty">' + avatar('plotty', 'mini') + esc(texto || 'Conversar con Plotty') + '</button>'; }
+  // Vista de un lugar de la escena (reutiliza el dibujo con <use>)
   function vistaSala(id) {
     var zn = zonaPorId(id), b = zn.caja;
     var pts = [P(b[0], b[1], b[4] + .6), P(b[2], b[1], b[4] + .6), P(b[2], b[3], 0), P(b[0], b[3], 0), P(b[2], b[1], 0), P(b[0], b[1], 0)];
@@ -423,16 +504,11 @@
     var w = x1 - x0, h = w * 9 / 16, cy = (y0 + y1) / 2;
     return '<div class="media media-sala"><svg viewBox="' + [x0, cy - h / 2, w, h].map(Math.round).join(' ') + '" role="img" aria-label="Vista de ' + esc(zn.nombre) + '"><use href="#escena-raiz"/></svg></div>';
   }
-  // Las salas del piso 1 se muestran con su primer plano dibujado
-  function salaP1(id) {
-    var s = window.Piso1 && window.Piso1.salas[id]; if (!s) return '';
-    return '<div class="media media-sala sala-p1' + (reducido ? ' quieto' : '') + '"><svg viewBox="' + s.vb + '" role="img" aria-label="La sala ' + esc(PROYECTOS[id].nombre) + ': ' + esc(PROYECTOS[id].esencia) + '">' + s.svg + '</svg></div>';
-  }
   function htmlMedia(pr) {
-    if (!pr.media) return salaP1(pr.id);
     return '<div class="media"><video class="panel-video" muted loop playsinline preload="none" poster="' + esc(pr.media.poster) + '" data-src="' + esc(pr.media.h) + '" aria-label="Video de ' + esc(pr.nombre) + '"></video>' +
       '<button type="button" class="media-grande" data-grande="' + esc(pr.media.h) + '" data-grande-v="' + esc(pr.media.v || '') + '">' + icono('play') + 'Ver con sonido</button></div>';
   }
+  function whatsapp(texto) { return 'https://wa.me/' + D.whatsapp + '?text=' + encodeURIComponent(texto); }
 
   /* ── Fichas: la ilustración se carga recién con la primera ficha ── */
   var ilusCargando = false, ilusEspera = [];
@@ -455,7 +531,7 @@
   }
   function htmlPersonaje(id) {
     var p = PERSONAL[id], masc = E.mascotas.indexOf(id) > -1;
-    var proys = D.proyectos.filter(function (pr) { return pr.equipo.indexOf(id) > -1; });
+    var proys = D.proyectos.filter(function (pr) { return (pr.equipo || []).indexOf(id) > -1 && pr.permiso !== 'archivo'; });
     var fases = D.fases.filter(function (f) { return f.quien.indexOf(id) > -1; });
     var ahora = p.ahora[Math.floor(Math.random() * p.ahora.length)];
     var a = E.alto[id], w = E.ancho[id];
@@ -473,7 +549,7 @@
       '<h3>' + (masc ? 'Sus tareas' : 'Cómo es') + '</h3><ul class="rasgos">' + p.rasgos.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>' +
       '<blockquote class="frase">«' + esc(p.frase) + '»</blockquote>' +
       (fases.length ? '<h3>En el motor</h3><ul class="fases-mini">' + fases.map(function (f) { return '<li><span class="cod">' + f.id + '</span>' + esc(f.nombre) + '</li>'; }).join('') + '</ul>' : '') +
-      (proys.length ? '<h3>Trabajó en</h3><ul class="chips">' + proys.map(function (pr) { return '<li><a href="#" data-abrir="zona:' + pr.id + '">' + esc(pr.nombre) + '</a></li>'; }).join('') + '</ul>' : '') +
+      (proys.length ? '<h3>Trabajó en</h3><ul class="chips">' + proys.map(function (pr) { return '<li><a href="#" data-abrir="zona:' + pr.id + '">' + esc(nombreCaso(pr)) + '</a></li>'; }).join('') + '</ul>' : '') +
       (p.de ? '<h3>Es la mascota de</h3>' + chipsEquipo([p.de]) : '') +
       (vive && vive !== 'estaciones' ? '<h3>Dónde está</h3><ul class="chips"><li><a href="#" data-abrir="zona:' + vive + '">' + esc(nombreZona(vive)) + '</a></li></ul>' : '') +
       '<p class="look"><b>Cómo ' + (p.genero === 'f' ? 'reconocerla' : 'reconocerlo') + ':</b> ' + esc(p.look) + '</p>';
@@ -482,38 +558,75 @@
   function listaVitrina() {
     return '<ul class="vitrina">' + vitrinaIds.map(function (id) {
       var pr = PROYECTOS[id], c = CASOS[id];
-      if (pr) return '<li><span class="punto" style="background:' + pr.acento + '" aria-hidden="true"></span><div><b>' + esc(pr.nombre) + '</b><span>' + esc(pr.rubro) + '</span><a href="#" data-abrir="zona:' + id + '">Ver la sala</a></div></li>';
+      if (pr) return '<li><span class="punto" style="background:' + pr.acento + '" aria-hidden="true"></span><div><b>' + esc(pr.nombre) + '</b><span>' + esc(pr.rubro) + '</span><a href="#" data-abrir="zona:' + id + '">' + (tieneSala(id) ? 'Entrar a la sala' : 'Ver el local') + '</a></div></li>';
       if (c) return '<li><span class="num">' + c.num + '</span><div><b>' + esc(c.nombre) + '</b><span>' + esc(c.rubro) + ' · caso de referencia</span><a href="' + esc(c.demo) + '">Ver la demo</a> · <a href="' + esc(c.caso) + '">Leer el caso</a></div></li>';
       return '';
     }).join('') + '</ul>';
   }
+  // El directorio: cada calle con sus locales (lo que muestra el tótem del pasaje)
+  function htmlDirectorio() {
+    return '<div class="directorio">' + callesDelBarrio().map(function (c) {
+      return '<section><h3>' + esc(c.nombre) + '</h3><ul class="lugares">' + c.ids.filter(function (id) { return id !== 'pasaje'; }).map(function (id) {
+        var l = lugar(id); if (!l) return '';
+        return '<li><a href="#" data-abrir="zona:' + esc(id) + '"><span class="punto' + (l.libre ? ' libre' : '') + '" style="background:' + esc(l.color || '#35679A') + '" aria-hidden="true"></span><span class="mt"><b>' + esc(l.nombre) + '</b><span>' + esc(l.sub || '') + '</span></span>' + (l.chip ? '<span class="chip-mini">' + esc(l.chip) + '</span>' : '') + '</a></li>';
+      }).join('') + '</ul></section>';
+    }).join('') + '</div>';
+  }
+  // El Archivo: todos los casos, por rubro, con buscador
+  function htmlArchivo() {
+    var S = SALAS.archivo, grupos = D.plotty.preguntas[0].opciones.map(function (o) {
+      var lista = D.proyectos.filter(function (p) { return !p.libre && p.calle === o[0]; });
+      return lista.length ? '<section class="archivo-grupo"><h3>' + esc(o[1]) + '</h3><ul class="lugares">' + lista.map(function (p) {
+        var st = p.permiso === 'archivo' ? 'Sólo en El Archivo' : chipCaso(p);
+        var accion = p.permiso === 'archivo' ? '' : '<a href="#" data-abrir="zona:' + esc(p.id) + '">' + (tieneSala(p.id) ? 'Entrar a la sala' : 'Ver el local') + '</a>';
+        return '<li data-busca="' + esc(normal(nombreCaso(p) + ' ' + p.rubro + ' ' + o[1])) + '"><span class="punto" style="background:' + esc(p.acento || '#35679A') + '" aria-hidden="true"></span><span class="mt"><b>' + esc(nombreCaso(p)) + '</b><span>' + esc(p.permiso === 'rubro' ? 'Caso sin nombre' : p.rubro) + ' · ' + esc(st) + '</span>' + accion + '</span></li>';
+      }).join('') + '</ul></section>' : '';
+    }).join('');
+    return vistaSala('archivo') + '<p class="bp-etiqueta">' + esc(S.etiqueta) + '</p><h2 id="panel-titulo" tabindex="-1">' + esc(S.titulo) + '</h2><p>' + esc(S.texto) + '</p>' +
+      '<div class="menu-busca archivo-busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" placeholder="Busca por nombre o rubro" aria-label="Buscar en El Archivo" autocomplete="off"></div>' +
+      '<div class="archivo-lista">' + grupos + '</div><p class="archivo-vacio nota" hidden>No hay casos con ese nombre o rubro.</p>' +
+      '<p class="nota">Los casos de referencia del núcleo (negocios ilustrativos, no clientes) están en la estantería.</p>' + chipsEquipo(['pepa']);
+  }
+  function iniciarArchivo() {
+    var inp = panelCuerpo.querySelector('.archivo-busca input');
+    inp.addEventListener('input', function () {
+      var q = normal(inp.value).trim(), hay = 0;
+      panelCuerpo.querySelectorAll('.archivo-grupo').forEach(function (g) {
+        var n = 0; g.querySelectorAll('li').forEach(function (li) { var si = !q || li.getAttribute('data-busca').indexOf(q) > -1; li.hidden = !si; if (si) n++; });
+        g.hidden = !n; hay += n;
+      });
+      panelCuerpo.querySelector('.archivo-vacio').hidden = hay > 0;
+    });
+  }
+  // Un local con plantilla: su vista, en qué fase va y quién trabaja en él
+  function htmlCaso(pr) {
+    var est = estadoDe(pr), f = faseDe(pr);
+    return vistaSala(pr.id) + '<p class="bp-etiqueta">' + esc(pr.permiso === 'rubro' ? 'Caso sin nombre' : pr.rubro) + '</p>' +
+      '<h2 id="panel-titulo" tabindex="-1">' + esc(nombreCaso(pr)) + '</h2>' +
+      '<p class="lema">' + (pr.cliente && pr.permiso !== 'rubro' ? esc(pr.cliente) + ' · ' : '') + '<span class="estado">' + esc(ESTADO_TXT[est]) + '</span></p>' +
+      (pr.esencia ? '<p class="esencia">' + esc(pr.esencia) + '</p>' : '') + (pr.resumen ? '<p>' + esc(pr.resumen) + '</p>' : '') +
+      (f ? '<h3>En qué va</h3><ul class="fases-mini"><li><span class="cod">' + f.id + '</span>' + esc(f.nombre) + '</li></ul><p class="nota">' + esc(f.texto) + '</p>' : '') +
+      (pr.puntos && pr.puntos.length ? '<ul class="puntos">' + pr.puntos.map(function (x) { return '<li><b>' + esc(x[0]) + '</b>' + esc(x[1]) + '</li>'; }).join('') + '</ul>' : '') +
+      (pr.enlaces && pr.enlaces.length ? '<div class="acciones">' + pr.enlaces.map(function (l) { return enlaceExterno(l.texto, l.url); }).join('') + '</div>' : '') +
+      (pr.equipo && pr.equipo.length ? '<h3>Quién trabaja aquí</h3>' + chipsEquipo(pr.equipo) : '') +
+      '<div class="acciones"><a class="bp-cta" href="' + whatsapp('Hola BiPlot, vi ' + nombreCaso(pr) + ' en el barrio de la oficina y quiero agendar un diagnóstico.') + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a></div>';
+  }
+  function htmlLibre(id) {
+    var pr = PROYECTOS.libre, calle = calleDe(id);
+    return vistaSala(id) + '<p class="bp-etiqueta">' + esc(pr.rubro) + (calle ? ' · ' + esc(calle) : '') + '</p>' +
+      '<h2 id="panel-titulo" tabindex="-1">' + esc(pr.nombre) + '</h2>' +
+      '<p class="lema">' + esc(pr.esencia) + '</p><p>' + esc(pr.resumen) + '</p>' + htmlChat();
+  }
 
   function htmlZona(id) {
-    if (PROYECTOS[id]) {
-      var pr = PROYECTOS[id];
-      if (pr.libre) {
-        return salaP1(id) + '<p class="bp-etiqueta">' + esc(pr.rubro) + '</p>' +
-          '<h2 id="panel-titulo" tabindex="-1">' + esc(pr.nombre) + '</h2>' +
-          '<p class="lema">' + esc(pr.esencia) + '</p><p>' + esc(pr.resumen) + '</p>' + htmlChat();
-      }
-      return htmlMedia(pr) +
-        '<p class="bp-etiqueta">' + esc(pr.rubro) + '</p>' +
-        '<h2 id="panel-titulo" tabindex="-1">' + esc(pr.nombre) + '</h2>' +
-        '<p class="lema">' + esc(pr.cliente) + ' · <span class="estado">' + esc(pr.estado) + '</span></p>' +
-        '<p class="esencia">' + esc(pr.esencia) + '</p>' +
-        '<p>' + esc(pr.resumen) + '</p>' +
-        '<ul class="puntos">' + pr.puntos.map(function (x) { return '<li><b>' + esc(x[0]) + '</b>' + esc(x[1]) + '</li>'; }).join('') + '</ul>' +
-        (pr.enlaces.length ? '<div class="acciones">' + pr.enlaces.map(function (l) { return enlaceExterno(l.texto, l.url); }).join('') + '</div>' : '') +
-        (pr.nota ? '<p class="nota">' + esc(pr.nota) + '</p>' : '') +
-        '<h3>Quién trabajó aquí</h3>' + chipsEquipo(pr.equipo);
-    }
+    if (PROYECTOS[id] && !tieneSala(id)) return htmlCaso(PROYECTOS[id]);
     var S = SALAS[id] || {}, cab = function () { return '<p class="bp-etiqueta">' + esc(S.etiqueta) + '</p><h2 id="panel-titulo" tabindex="-1">' + esc(S.titulo) + '</h2><p>' + esc(S.texto) + '</p>'; };
     var puntos = function () { return S.puntos ? '<ul class="puntos">' + S.puntos.map(function (x) { return '<li><b>' + esc(x[0]) + '</b>' + esc(x[1]) + '</li>'; }).join('') + '</ul>' : ''; };
     if (id === 'recepcion') {
       return '<div class="media"><video class="panel-video" muted loop playsinline preload="none" poster="../assets/casos/teaser-biplot-h.jpg" data-src="../assets/casos/teaser-biplot-h.mp4" aria-label="Teaser de BiPlot"></video>' +
         '<button type="button" class="media-grande" data-grande="../assets/casos/teaser-biplot-h.mp4" data-grande-v="../assets/casos/teaser-biplot-v.mp4">' + icono('play') + 'Ver con sonido</button></div>' +
         cab() + '<div class="acciones">' + botonChat() + '</div>' + chipsEquipo(['plotty', 'lupe']) +
-        '<h3>Cómo moverte</h3><ul class="rasgos"><li>Arrastra para moverte y usa la rueda o los botones para acercarte.</li><li>Toca a alguien del equipo o una sala para ver más.</li><li>Arriba están los proyectos: usa el ascensor o el botón «Piso 1».</li><li>Con teclado: el menú «Recorre la oficina», las flechas y las teclas + y −.</li></ul>';
+        '<h3>Cómo moverte</h3><ul class="rasgos"><li>Arrastra para moverte y usa la rueda o los botones para acercarte.</li><li>Toca a alguien del equipo o una sala para ver más.</li><li>Afuera está la calle: toca un local para entrar a la sala de esa empresa.</li><li>Con teclado: el menú «Recorre la oficina», las flechas y las teclas + y −.</li></ul>';
     }
     if (id === 'vitrina') {
       return vistaSala('vitrina') + '<p class="bp-etiqueta">Recepción · La vitrina</p><h2 id="panel-titulo" tabindex="-1">' + (rubroElegido ? 'Casos para tu rubro' : 'Nuestros casos') + '</h2>' +
@@ -531,10 +644,9 @@
     if (id === 'planos') return vistaSala('planos') + cab() + puntos() + chipsEquipo(['architect', 'engine', 'atlas']);
     if (id === 'set') return vistaSala('set') + cab() + chipsEquipo(['aby']);
     if (id === 'laboratorio') return vistaSala('laboratorio') + cab() + puntos() + chipsEquipo(['celda', 'lupe']);
-    if (id === 'ascensor') {
-      return vistaSala('ascensor') + cab() + '<div class="acciones"><button type="button" class="bp-btn primario" data-piso="1"><span class="ico" aria-hidden="true">' + icono('sube') + '</span>Subir al piso 1</button></div>' +
-        '<h3>En el piso 1</h3><ul class="chips">' + D.proyectos.map(function (pr) { return '<li><a href="#" data-abrir="zona:' + pr.id + '">' + esc(pr.nombre) + '</a></li>'; }).join('') + '</ul>';
-    }
+    if (id === 'reuniones') return vistaSala('reuniones') + cab() + '<div class="acciones">' + botonChat('Agendar con Plotty') + '</div>';
+    if (id === 'pasaje') return vistaSala('pasaje') + cab() + htmlDirectorio();
+    if (id === 'archivo') return htmlArchivo();
     if (id === 'puerta-404') {
       return vistaSala('puerta-404') + cab() + '<div class="acciones"><button type="button" class="bp-btn" data-golpe="1">Golpear la puerta</button></div><p class="golpe" aria-live="polite"></p>';
     }
@@ -553,7 +665,171 @@
     return '';
   }
 
-  /* ── El chat de Plotty: tres preguntas, un camino y la vitrina para tu rubro ── */
+  /* ── La sala de cada empresa (salas.js): el local por dentro, un punto por módulo y el panel con todo lo real ── */
+  var salaEl = $('#sala'), salaCaja = $('#sala-dibujo-caja'), enSala = null, pinActual = 0;
+  var salasCargando = false, salasEspera = [];
+  function conSalas(fn) {
+    if (window.Salas) { fn(); return; }
+    salasEspera.push(fn); if (salasCargando) return; salasCargando = true;
+    var s = document.createElement('script'); s.src = 'salas.js';
+    s.onload = function () {
+      var defs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      defs.setAttribute('class', 'sprite-quieto'); defs.setAttribute('aria-hidden', 'true');
+      defs.innerHTML = '<defs>' + window.Salas.defs + '</defs>';
+      document.body.appendChild(defs);
+      salasEspera.splice(0).forEach(function (f) { f(); });
+    };
+    s.onerror = function () { salasEspera = []; salasCargando = false; };
+    document.head.appendChild(s);
+  }
+  function urlSala(id) { return 'https://biplot.cl/oficina/' + id + '/'; }
+  function htmlSala(pr) {
+    var pines = pr.pines || [], conImg = pines.some(function (p) { return p[3]; });
+    return '<div class="sala-cab" style="--acento:' + esc(pr.acento) + '"><p class="bp-etiqueta">' + esc(pr.rubro) + '</p>' +
+      '<h2 id="panel-titulo" tabindex="-1">' + esc(pr.nombre) + '</h2><p class="sala-cliente">' + esc(pr.cliente) + '</p><span class="chip">' + esc(pr.corto || pr.estado) + '</span></div>' +
+      '<p class="esencia">' + esc(pr.esencia) + '</p>' +
+      '<section class="sala-bloque sala-construimos" style="--acento:' + esc(pr.acento) + '"><h3>Lo que construimos</h3><div class="visor" aria-live="polite"></div>' +
+      '<div class="tira' + (conImg ? '' : ' sin-img') + '" role="group" aria-label="Módulos de ' + esc(pr.nombre) + '">' + pines.map(function (p, i) {
+        return '<button type="button" data-pin="' + (i + 1) + '" aria-pressed="false" aria-label="' + esc((i + 1) + '. ' + p[0] + ': ' + p[1]) + '">' + (p[3] ? '<img src="' + MEDIOS + esc(p[3]) + '.webp" alt="" loading="lazy" width="160" height="90">' : '') +
+          '<span class="n">' + (i + 1) + '</span>' + (p[3] ? '' : '<span class="m">' + esc(p[0]) + '</span>') + '</button>';
+      }).join('') + '</div>' + (pr.nota ? '<p class="nota">' + esc(pr.nota) + '</p>' : '') + '</section>' +
+      '<section class="sala-bloque"><h3>Lo que resolvimos</h3><p>' + esc(pr.resumen) + '</p><ul class="puntos">' + pr.puntos.map(function (x) { return '<li><b>' + esc(x[0]) + '</b>' + esc(x[1]) + '</li>'; }).join('') + '</ul></section>' +
+      (pr.media ? '<section class="sala-bloque"><h3>Míralo funcionar</h3>' + htmlMedia(pr) + '</section>' : '') +
+      (pr.enlaces.length ? '<section class="sala-bloque"><h3>Visítalos</h3>' + pr.enlaces.map(function (l) {
+        return '<a class="sala-enlace" style="--acento:' + esc(pr.acento) + '" href="' + esc(l.url) + '" target="_blank" rel="noopener"><span>' + esc(l.texto) + '<small>' + esc(l.url.replace(/^https?:\/\//, '')) + '</small></span><span class="ico" aria-hidden="true">' + icono('afuera') + '</span><span class="sr">(se abre en otra pestaña)</span></a>';
+      }).join('') + '</section>' : '') +
+      '<section class="sala-bloque"><h3>El equipo que lo hizo</h3>' + chipsEquipo(pr.equipo) + '</section>' +
+      '<section class="sala-bloque"><h3>Resultados</h3><ol class="medicion"><li><b>Día 30</b><span>Pendiente</span></li><li><b>Día 60</b><span>Pendiente</span></li><li><b>Día 90</b><span>Pendiente</span></li></ol><p class="nota">' + esc(pr.medicion || '') + '</p></section>' +
+      '<section class="sala-bloque sala-comparte"><h3>Comparte esta sala</h3><div class="enlace-copia"><code>' + esc(urlSala(pr.id).replace(/^https:\/\/|\/$/g, '')) + '</code><button type="button" class="copiar" data-url="' + esc(urlSala(pr.id)) + '">Copiar</button></div>' +
+      (navigator.share ? '<button type="button" class="bp-btn compartir" data-url="' + esc(urlSala(pr.id)) + '"><span class="ico" aria-hidden="true">' + icono('compartir') + '</span>Compartir</button>' : '') +
+      '<p class="nota">Abre la oficina directo en esta sala, y al pegarlo en un chat se ve su imagen.</p></section>' +
+      '<div class="sala-final"><p>¿Tu negocio se parece a este?</p><div class="acciones"><a class="bp-cta" href="' + whatsapp('Hola BiPlot, vi la sala de ' + pr.nombre + ' en la oficina y quiero agendar un diagnóstico.') + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>' + botonChat() + '</div></div>';
+  }
+  // Deja el dibujo de la sala en el espacio libre: al lado del panel (escritorio) o arriba de él (celular)
+  function acomodarSala() {
+    if (!enSala) return;
+    var m = margenes(), marco = $('#sala-marco');
+    marco.style.left = m.izq + 'px'; marco.style.right = m.der + 'px'; marco.style.bottom = m.aba + 'px';
+  }
+  function entrarSala(id, o) {
+    o = o || {};
+    var pr = PROYECTOS[id]; if (!pr) return;
+    if (!guia.hidden) { guia.hidden = true; }
+    cerrarIntro();
+    var ya = enSala;
+    detenerMedios();
+    // Cada sala tiene su dirección (#haru): el botón «atrás» del navegador vuelve a la calle. Si ya hay una entrada nuestra
+    // en el historial (otra sala o la calle a la que se volvió), se reemplaza, para no llenarlo.
+    if (!o.sinHistoria && location.hash !== '#' + id) {
+      var nuestra = history.state && (history.state.sala || history.state.calle);
+      history[ya || nuestra ? 'replaceState' : 'pushState']({ sala: id }, '', '#' + id);
+    }
+    enSala = id; invocador = o.boton || invocador || document.activeElement; abierto = { tipo: 'sala', id: id };
+    document.body.classList.add('en-sala');
+    resaltar({ tipo: 'zona', id: id }); ocultarRotulo();
+    // El panel con todo lo de la empresa
+    panelCuerpo.innerHTML = htmlSala(pr);
+    panel.hidden = false; panel.classList.add('panel-sala'); document.body.classList.add('panel-abierto');
+    $('#panel-nombre').textContent = tituloPanel({ tipo: 'sala', id: id });
+    $('#panel-cerrar').setAttribute('aria-label', 'Volver a la calle');
+    panel.setAttribute('aria-label', 'La sala de ' + pr.nombre);
+    panel.scrollTop = 0; panelCuerpo.scrollTop = 0;
+    esc3.detener();
+    var mostrar = function () {
+      conSalas(function () {
+        if (enSala !== id) return;
+        pintarSala(id);
+        salaEl.hidden = false; acomodarSala();
+        requestAnimationFrame(function () { salaEl.classList.add('visible'); });
+        activarMedios();
+        var t = $('#panel-titulo'); if (t) t.focus({ preventScroll: true });
+      });
+    };
+    // La cámara entra al local y, al llegar, se abre la sala
+    if (ya || o.directo) { mostrar(); return; }
+    salaEl.classList.remove('visible');
+    requestAnimationFrame(function () { irA({ tipo: 'zona', id: id, ventana: 300 }, 650, mostrar); });
+  }
+  function pintarSala(id) {
+    var S = window.Salas.salas[id], pr = PROYECTOS[id]; if (!S) return;
+    salaCaja.innerHTML = '<svg class="sala-svg" viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid meet" role="group" aria-label="La sala de ' + esc(pr.nombre) + ': ' + esc(pr.esencia) + '">' +
+      '<g id="sala-dibujo" class="sala-dibujo' + (reducido ? ' quieto' : '') + '">' + S.svg.replace(/§M§/g, MEDIOS) + '</g></svg>';
+    salaCaja.querySelectorAll('.pin').forEach(function (g) {
+      var p = (pr.pines || [])[g.getAttribute('data-pin') - 1];
+      g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
+      g.setAttribute('aria-label', p ? g.getAttribute('data-pin') + '. ' + p[0] + ': ' + p[1] : 'Punto ' + g.getAttribute('data-pin'));
+    });
+    $('#sala-nombre').textContent = pr.nombre;
+    // Las salas vecinas, en el orden de la calle
+    var i = CON_SALA.indexOf(id), ant = CON_SALA[i - 1], sig = CON_SALA[i + 1];
+    var bA = $('#sala-ant'), bS = $('#sala-sig');
+    bA.hidden = !ant; bS.hidden = !sig;
+    if (ant) { bA.setAttribute('data-sala', ant); bA.querySelector('span').textContent = PROYECTOS[ant].nombre; }
+    if (sig) { bS.setAttribute('data-sala', sig); bS.querySelector('span').textContent = PROYECTOS[sig].nombre; }
+    elegirPin(1, false, true);
+  }
+  // Un punto de la sala: la pantalla real de ese módulo (o, si no hay, el rincón de la sala donde está)
+  function elegirPin(n, mover, inicial) {
+    var pr = PROYECTOS[enSala], p = pr && (pr.pines || [])[n - 1]; if (!p) return;
+    pinActual = n;
+    var visor = panelCuerpo.querySelector('.visor'); if (!visor) return;
+    var S = window.Salas && window.Salas.salas[enSala], pin = S && S.pines.filter(function (x) { return x.n === n; })[0];
+    visor.innerHTML = (p[3] ? '<img src="' + MEDIOS + esc(p[3]) + '.webp" alt="' + esc(pr.nombre + ': ' + p[1]) + '" width="1280" height="720">'
+      : pin ? '<svg class="visor-sala" viewBox="' + [pin.x - 150, pin.y - 92, 300, 169].map(Math.round).join(' ') + '" role="img" aria-label="' + esc(p[0] + ' en la sala de ' + pr.nombre) + '"><use href="#sala-dibujo"/></svg>' : '') +
+      '<div class="visor-txt"><span class="mod">' + esc(n + ' · ' + p[0]) + '</span><b>' + esc(p[1]) + '</b><span>' + esc(p[2]) + '</span></div>';
+    panelCuerpo.querySelectorAll('.tira button').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-pin') === n ? 'true' : 'false'); });
+    salaCaja.querySelectorAll('.pin').forEach(function (g) { g.classList.toggle('activo', +g.getAttribute('data-pin') === n); });
+    if (mover) {
+      var bloque = panelCuerpo.querySelector('.sala-construimos');
+      if (bloque) panelCuerpo.scrollTo({ top: bloque.offsetTop - 12, behavior: reducido ? 'auto' : 'smooth' });
+    }
+    if (!inicial && !mover) { /* el foco queda en el botón de la tira */ }
+  }
+  function salirSala(o) {
+    o = o || {};
+    if (!enSala) return;
+    var id = enSala;
+    enSala = null;
+    salaEl.classList.remove('visible'); salaEl.hidden = true; salaCaja.innerHTML = '';
+    document.body.classList.remove('en-sala');
+    detenerMedios();
+    panel.hidden = true; panel.classList.remove('panel-sala'); abierto = null; document.body.classList.remove('panel-abierto');
+    $('#panel-cerrar').setAttribute('aria-label', 'Cerrar');
+    if (!o.sinHistoria && location.hash) history.replaceState({ calle: true }, '', location.pathname + location.search);
+    if (!quieta()) esc3.iniciar();
+    if (!o.sinCamara) {
+      // Vuelve a la calle, un poco más lejos, con el local marcado
+      resaltar({ tipo: 'zona', id: id });
+      irA({ tipo: 'zona', id: id, ventana: 900 }, 650);
+      var b = document.querySelector('#recorrer [data-id="' + id + '"]');
+      devolviendoFoco = true;
+      if (invocador && invocador.focus && document.contains(invocador) && invocador !== document.body) invocador.focus({ preventScroll: true });
+      else if (b && !menu.classList.contains('cerrado')) b.focus({ preventScroll: true }); else escenaEl.focus({ preventScroll: true });
+      devolviendoFoco = false;
+    } else resaltar(null);
+    aplicar();
+  }
+  $('#sala-volver').addEventListener('click', function () { salirSala(); });
+  $('#sala-ant').addEventListener('click', function () { var s = this.getAttribute('data-sala'); if (s) entrarSala(s, { directo: true }); });
+  $('#sala-sig').addEventListener('click', function () { var s = this.getAttribute('data-sala'); if (s) entrarSala(s, { directo: true }); });
+  salaCaja.addEventListener('click', function (e) { var g = e.target.closest('.pin'); if (g) elegirPin(+g.getAttribute('data-pin'), true); });
+  salaCaja.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var g = e.target.closest && e.target.closest('.pin'); if (!g) return;
+    e.preventDefault(); elegirPin(+g.getAttribute('data-pin'), true);
+  });
+  function copiar(btn) {
+    var url = btn.getAttribute('data-url'), code = btn.parentNode.querySelector('code');
+    function listo() { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1600); }
+    function seleccionar() { var r = document.createRange(); r.selectNodeContents(code); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); }
+    try { navigator.clipboard.writeText(url).then(listo, seleccionar); } catch (e) { seleccionar(); }
+  }
+  function compartir(btn) {
+    var pr = PROYECTOS[enSala];
+    try { navigator.share({ title: pr.nombre + ' · La oficina de BiPlot', text: pr.esencia, url: btn.getAttribute('data-url') }).catch(function () {}); } catch (e) { /* sin compartir */ }
+  }
+
+  /* ── El chat de Plotty: tres preguntas, los casos de tu rubro y un camino ── */
   var C = D.plotty, rubroElegido = leer('rubro'), vitrinaIds = D.vitrina.porDefecto.slice();
   if (rubroElegido && D.vitrina.rubros[rubroElegido]) { vitrinaIds = D.vitrina.rubros[rubroElegido].slice(); esc3.vitrina(vitrinaIds, 'PARA TU RUBRO'); } else rubroElegido = null;
   function htmlChat() {
@@ -562,6 +838,18 @@
   }
   function htmlChatPanel() {
     return '<p class="bp-etiqueta">Recepción · E0</p><h2 id="panel-titulo" tabindex="-1">Tres preguntas</h2><p class="lema">' + esc(PERSONAL.plotty.frase) + '</p>' + htmlChat();
+  }
+  // La cámara va a los casos del rubro: los de la calle principal y, si existe, la calle de ese rubro.
+  // Sin casos de ese rubro, al local libre. Devuelve los casos que mostró.
+  function verRubro(rubro, cerrar) {
+    var ids = casosDelRubro(rubro).map(function (p) { return p.id; }).filter(function (id) { return zonaPorId(id); });
+    var calle = calleId(rubro);
+    if (calle) ids = ids.concat(['libre-' + rubro]);
+    if (cerrar && !panel.hidden) cerrarPanel();
+    var marcar = ids.length ? ids : ['libre'];
+    resaltar({ tipo: 'zona', id: marcar[0] }, marcar.slice(1));
+    irAGrupo(marcar, 900);
+    return ids.filter(function (id) { return PROYECTOS[id]; });
   }
   function iniciarChat(caja) {
     var lista = caja.querySelector('.chat-mensajes'), opciones = caja.querySelector('.chat-opciones'), resp = {}, paso = 0;
@@ -588,7 +876,8 @@
       decir(C.vitrina);
       var msj = C.mensaje.replace('{rubro}', minus(etiqueta('rubro', resp.rubro))).replace('{donde}', minus(etiqueta('donde', resp.donde))).replace('{horas}', minus(etiqueta('horas', resp.horas)));
       var fin = document.createElement('div'); fin.className = 'chat-fin';
-      fin.innerHTML = '<a class="bp-cta" href="https://wa.me/' + D.whatsapp + '?text=' + encodeURIComponent(msj) + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>' +
+      fin.innerHTML = '<a class="bp-cta" href="' + whatsapp(msj) + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>' +
+        '<button type="button" class="bp-btn" data-rubro="' + esc(resp.rubro) + '"><span class="ico" aria-hidden="true">' + icono('calle') + '</span>Ver casos como el tuyo</button>' +
         '<button type="button" class="bp-btn" data-abrir="zona:vitrina">Ver la vitrina</button><button type="button" class="bp-btn chat-otra">Empezar de nuevo</button>';
       caja.appendChild(fin);
       fin.querySelector('.bp-cta').focus({ preventScroll: true });
@@ -598,6 +887,11 @@
       var b = e.target.closest('button[data-v]'); if (!b) return;
       var q = C.preguntas[paso]; resp[q.id] = b.getAttribute('data-v');
       decir(b.textContent, 'tu');
+      // Con el rubro, la cámara va a los casos como el tuyo
+      if (q.id === 'rubro' && BARRIO) {
+        var casos = verRubro(resp.rubro, false);
+        decir(casos.length ? C.rubroCasos.replace('{casos}', casos.map(function (id) { return nombreCaso(PROYECTOS[id]); }).join(', ')) : C.rubroSinCasos);
+      }
       paso++;
       if (paso < C.preguntas.length) preguntar(); else terminar();
     });
@@ -636,17 +930,19 @@
     ['zona', 'laboratorio', 'Laboratorio de métricas', 'A los 30, 60 y 90 días se mide contra la línea base. Si no bajó, se dice.'],
     ['zona', 'estanteria', 'Estantería del núcleo', 'Pepa guarda aquí lo que sirve para el próximo. También están los casos de referencia.'],
     ['zona', 'set', 'El set', 'Aquí graba Aby, la corresponsal. La única cara real de la oficina.'],
-    ['zona', 'ascensor', 'Ascensor', 'Arriba están los proyectos: una sala por cada uno.'],
+    ['zona', 'pasaje', 'El pasaje', 'Por aquí se sale a la calle: un local por proyecto. Toca uno y entras a la sala de esa empresa.'],
+    ['zona', 'nuhome', 'Nu Home 360', 'Casas modulares: del primer contacto a la entrega, en una sola plataforma.'],
     ['zona', 'fundos', 'Fundos 360', 'Venta de parcelas: el terreno sobre la mesa y el ciclo de venta completo.'],
     ['zona', 'haru', 'Haru 360', 'Una barra de sushi con ventas, cocina, delivery y caja en un solo sistema.'],
     ['zona', 'eleven', 'Eleven 360', 'Un gimnasio que suma socios y no los suelta.'],
-    ['zona', 'nuhome', 'Nu Home 360', 'Casas modulares: del primer contacto a la entrega, en una sola plataforma.'],
     ['zona', 'rumbo', 'Rumbo', 'Nuestra app para ordenar lo personal, un día a la vez.'],
-    ['zona', 'libre', 'Tu proyecto aquí', 'Esta sala está esperando el próximo proyecto. ¿Conversamos?']
-  ];
+    ['zona', 'archivo', 'El Archivo', 'Todos los casos tienen su carpeta, por rubro. Cuando llega un rubro nuevo, se abre su calle.'],
+    ['zona', 'libre', 'Tu proyecto aquí', 'Este local está esperando el próximo proyecto. ¿Conversamos?']
+  ].filter(function (g) { return g[0] === 'actor' || zonaPorId(g[1]); });
   var guia = $('#guia'), pasoGuia = 0;
   $('#guia-atlas').innerHTML = avatar('atlas');
   function iniciarGuia(i) {
+    if (enSala) salirSala({ sinCamara: true });
     if (!panel.hidden) { detenerMedios(); panel.hidden = true; document.body.classList.remove('panel-abierto'); }
     cerrarIntro();
     guia.hidden = false; mostrarPaso(i || 0);
@@ -654,16 +950,15 @@
   }
   function mostrarPaso(i) {
     pasoGuia = Math.max(0, Math.min(GUIA.length - 1, i));
-    var g = GUIA[pasoGuia], obj = { tipo: g[0], id: g[1] }, cambio = false;
-    var destino = pisoDe(obj);
-    if (destino !== pisoActual) { irAlPiso(destino, true); cambio = true; }
+    var g = GUIA[pasoGuia], obj = { tipo: g[0], id: g[1] };
     $('#guia-n').textContent = (pasoGuia + 1) + ' de ' + GUIA.length;
     $('#guia-t').textContent = g[2];
     $('#guia-txt').textContent = g[3];
     $('#guia-ant').disabled = pasoGuia === 0;
     $('#guia-sig').textContent = pasoGuia === GUIA.length - 1 ? 'Conversar con Plotty' : 'Siguiente';
+    $('#guia-mas').textContent = tieneSala(g[1]) ? 'Entrar a la sala' : 'Ver más';
     resaltar(obj);
-    requestAnimationFrame(function () { irA(obj, cambio ? 0 : 900); });
+    requestAnimationFrame(function () { irA(obj, 900); });
   }
   function terminarGuia() { guia.hidden = true; resaltar(null); verTodo(); }
   $('#guia-ant').addEventListener('click', function () { mostrarPaso(pasoGuia - 1); });
@@ -682,26 +977,32 @@
   if (leer('visto') === '1') intro.hidden = true;
 
   /* ── Inicio ── */
-  marcarPisos();
   if (window.innerWidth < 900 || leer('menu') === '0') alternarMenu(false);
-  window.addEventListener('resize', function () { aplicar(); });
+  window.addEventListener('resize', function () { aplicar(); acomodarSala(); });
   if (leer('pausa') === '1' || reducido) pausar(true); else esc3.iniciar();
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) esc3.detener(); else if (!quieta() && pisoActual === 0) esc3.iniciar();
+    if (document.hidden) esc3.detener(); else if (!quieta() && !enSala) esc3.iniciar();
   });
-  // Encuadre inicial: toda la oficina en escritorio; la recepción en celular.
+  // Encuadre inicial: la oficina y la calle en escritorio; la recepción y el pasaje en celular.
   function encuadreInicial(animar) {
-    if (window.innerWidth < 700 && pisoActual === 0) { var p = P(19.5, 15.5, 0.8); volar(p[0], p[1], zPara(620), animar ? 600 : 0); }
+    if (window.innerWidth < 700) { var p = P(20.5, 18.5, 0.8); volar(p[0], p[1], zPara(700), animar ? 600 : 0); }
     else verTodo(animar ? 600 : 0);
   }
   requestAnimationFrame(function () { encuadreInicial(false); document.documentElement.classList.add('lista'); });
-  // Enlace directo: oficina/#fundos, #lupe, #piso-1 o #conversar
+  // Enlaces directos: oficina/#haru (la sala), #lupe, #archivo, #calle-salud o #conversar. biplot.cl/oficina/haru/ trae aquí.
   function desdeHash() {
-    var h = decodeURIComponent(location.hash.replace('#', '')); if (!h) return;
-    if (h === 'piso-1' || h === 'planta-baja') { irAlPiso(h === 'piso-1' ? 1 : 0, true); return; }
+    var h = decodeURIComponent(location.hash.replace('#', ''));
+    if (!h) { if (enSala) salirSala({ sinHistoria: true }); return; }
+    if (h === enSala) return;
+    if (tieneSala(h)) { entrarSala(h, { sinHistoria: true, directo: !document.documentElement.classList.contains('navegado') }); return; }
+    if (enSala) salirSala({ sinHistoria: true, sinCamara: true });
     if (h === 'conversar') { abrir({ tipo: 'chat', id: 'plotty' }); return; }
+    if (h === 'piso-1' || h === 'calle' || h === 'barrio') { resaltar({ tipo: 'zona', id: 'pasaje' }); irAGrupo(ORDEN_PRINCIPAL, 0); return; }
+    if (h === 'planta-baja' || h === 'oficina') { verTodo(0); return; }
+    if (/^calle-/.test(h) && calleId(h.slice(6))) { var c = calleId(h.slice(6)); irAGrupo(c.casos.concat(['libre-' + c.id]), 0); return; }
     if (PERSONAL[h]) abrir({ tipo: 'actor', id: h }); else if (zonaPorId(h)) abrir({ tipo: 'zona', id: h });
   }
-  setTimeout(desdeHash, 60);
+  setTimeout(function () { desdeHash(); document.documentElement.classList.add('navegado'); }, 60);
+  window.addEventListener('popstate', desdeHash);
   window.addEventListener('hashchange', desdeHash);
 })();

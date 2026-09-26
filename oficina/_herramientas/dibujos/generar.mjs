@@ -2,17 +2,26 @@
 // Genera los dibujos de la oficina a partir de sus fuentes (sin dependencias: Node 22+):
 //   oficina/elenco.js         el elenco cabezón que vive en la escena (window.Elenco)
 //   oficina/ilustraciones.js  las ilustraciones de las fichas y del kit (window.Ilustraciones)
-//   oficina/piso1.js          el piso 1: las seis salas de proyecto y sus primeros planos (window.Piso1)
+//   oficina/barrio.js         la calle de la oficina: locales, plaza, pasaje, El Archivo y las piezas de las calles por
+//                             rubro, que escena.js arma a partir de datos.js (window.Barrio)
+//   oficina/salas.js          la sala grande de cada empresa, con su gente y un punto por módulo (window.Salas);
+//                             se carga recién cuando alguien entra a una sala
+//   oficina/<sala>/index.html la página para compartir cada sala (biplot.cl/oficina/haru): trae su vista previa
+//                             (kit/png/sala-<sala>-og.png) y lleva a la oficina, directo a esa sala (#haru)
 //
 // Uso, desde la raíz del repo:  node oficina/_herramientas/dibujos/generar.mjs
 //
-// Fuentes: cabezones/ (personajes de oficina), ilustracion/ (personajes de ficha y redes) y piso1/ (salas).
+// Fuentes: cabezones/ (personajes de oficina), ilustracion/ (personajes de ficha y redes) y barrio/ (la calle, sus
+// locales, las plantillas por rubro, la gente del barrio y las salas grandes).
 // Las medidas de cada cabezón (caja, centro y pies) están en cabezones/medidas.json.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { VECTOR } from './cabezones/todos.mjs';
-import * as SALAS from './piso1/salas.mjs';
+import { callePrincipal, piezas, G, PRINCIPAL, CAMINANTES, DE_PASO } from './barrio/barrio.mjs';
+import { SALAS_GRANDES } from './barrio/salas-grandes.mjs';
+import { VISITANTES } from './barrio/visitantes.mjs';
+import { DEFS_ENTORNO } from './barrio/entorno.mjs';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const oficina = path.resolve(aqui, '..', '..');
@@ -146,17 +155,113 @@ window.Ilustraciones = ${JSON.stringify(ILUS)};
 writeFileSync(path.join(oficina, 'ilustraciones.js'), ilus);
 console.log('ilustraciones.js', kb(ilus));
 
-/* ───────── Piso 1 ───────── */
-// Plotty vive en la sala libre: se dibuja con su cabezón (la maqueta lo referencia con <use>).
-const conPlotty = (svg) => svg.replace(/<use href="#v-plotty"\/>/g, redondear(VECTOR.plotty().svg()));
-const piso = SALAS.piso1();
-const salas = {};
-for (const s of SALAS.SALAS) { const r = SALAS.salaSola(s.id); salas[s.id] = { vb: r.vb, svg: conPlotty(r.svg) }; }
-const p1 = CABECERA('piso 1') + `/*
- * El piso 1: seis salas de proyecto, cada una con la esencia de su negocio, y el primer plano de cada sala
- * para su panel. Todo lo que se mueve lleva una clase «p1-…» (oficina.css). Coordenadas del mundo de escena.js.
+/* ───────── Barrio y salas grandes ───────── */
+// Los datos reales (nombres y colores de cada proyecto) salen de datos.js, igual que en la oficina.
+const ventana = {}; new Function('window', readFileSync(path.join(oficina, 'datos.js'), 'utf8'))(ventana);
+const DATOS = ventana.OFICINA_DATOS;
+// Cada personaje se define una vez por documento (#v-id) y el barrio lo usa con <use>. La silueta (el contorno grueso)
+// se dibuja una vez y se repite corrida con <use>, como en el elenco.
+const defsDe = (ids) => [...ids].sort().map((id) => {
+  const f = VECTOR[id] || VISITANTES[id];
+  if (!f) throw new Error('Personaje sin dibujo: ' + id);
+  const p = f().svg({ partes: true });
+  return `<g id="v-${id}"><g id="v-${id}-s">${redondear(p.sil)}</g><use href="#v-${id}-s" transform="translate(.28 .36)"/>${redondear(p.color)}</g>`;
+}).join('');
+const calle = callePrincipal(DATOS), pz = piezas();
+const enBarrio = new Set([...calle.usados, ...pz.usados]);
+const barrio = CABECERA('barrio') + `/*
+ * La calle de la oficina: la principal con los locales hechos a mano, el pasaje con el directorio, la plaza y El Archivo,
+ * más las piezas con que escena.js arma las calles por rubro desde datos.js (plantillas, estados y frentes con marcas
+ * §…§ para el color y el nombre de cada caso). Coordenadas del mundo de escena.js; la oficina ocupa x 0..24, y 0..20.
  */
-window.Piso1 = ${JSON.stringify({ vb: piso.vb, svg: conPlotty(piso.svg), zonas: piso.zonas, salas })};
+window.Barrio = ${JSON.stringify({
+  geo: G,
+  principal: { locales: PRINCIPAL.map(([id, x]) => ({ id, x })), zonas: calle.zonas, caja: calle.caja,
+    suelo: redondear(calle.suelo), atras: redondear(calle.atras), frente: redondear(calle.frente) },
+  local: Object.fromEntries(Object.entries(pz.local).map(([k, v]) => [k, typeof v === 'string' ? redondear(v) : Object.fromEntries(Object.entries(v).map(([a, b]) => [a, redondear(b)]))])),
+  fila: Object.fromEntries(Object.entries(pz.fila).map(([k, v]) => [k, redondear(v)])),
+  personas: Object.fromEntries(Object.entries(pz.personas).map(([id, v]) => [id, { d: redondear(v.d), i: redondear(v.i) }])),
+  caminantes: CAMINANTES, dePaso: DE_PASO,
+  defs: DEFS_ENTORNO + defsDe(enBarrio)
+})};
 `;
-writeFileSync(path.join(oficina, 'piso1.js'), p1);
-console.log('piso1.js', kb(p1));
+writeFileSync(path.join(oficina, 'barrio.js'), barrio);
+console.log('barrio.js', kb(barrio), '·', enBarrio.size, 'personajes');
+
+// Las salas grandes: el alto del cuadro se recorta arriba (ahí iban los carteles de la maqueta)
+const DEFS_SALA = `<linearGradient id="luz-cocina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E0B341" stop-opacity="0"/><stop offset="1" stop-color="#E0B341" stop-opacity=".35"/></linearGradient>` +
+  `<linearGradient id="brillo-pantalla" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".16"/><stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>`;
+const salas = {}, enSalas = new Set();
+for (const [id, fn] of Object.entries(SALAS_GRANDES)) {
+  const r = fn(), vb = r.vb.split(' ').map(Number);
+  vb[1] += 36; vb[3] -= 30;
+  r.usados.forEach((u) => { if (!enBarrio.has(u)) enSalas.add(u); });
+  salas[id] = { vb: vb.map((n) => Math.round(n * 10) / 10).join(' '), svg: redondear(r.svg), pines: r.pines };
+}
+const salasJs = CABECERA('salas grandes') + `/*
+ * La sala de cada empresa por dentro: su gente, sus pantallas reales (§M§ = carpeta de medios) y un punto por módulo.
+ * pines: [{ n, x, y }] en coordenadas del dibujo; los textos e imágenes de cada punto están en datos.js.
+ * defs: los personajes que no están en el barrio (barrio.js ya define los demás).
+ */
+window.Salas = ${JSON.stringify({ defs: DEFS_SALA + defsDe(enSalas), salas })};
+`;
+writeFileSync(path.join(oficina, 'salas.js'), salasJs);
+console.log('salas.js', kb(salasJs), '·', Object.keys(salas).join(', '));
+
+/* ───────── Páginas para compartir cada sala ───────── */
+// Quien pega biplot.cl/oficina/haru en un chat ve la imagen de la sala; quien lo abre llega a la oficina, en esa sala.
+const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const ICONO = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='1.7' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='11.5' cy='20.5' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='16' cy='17' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='23' cy='11' r='2.8' fill='%23FF6B4A'/%3E%3C/svg%3E`;
+for (const id of Object.keys(SALAS_GRANDES)) {
+  const pr = DATOS.proyectos.find((p) => p.id === id);
+  if (!pr) continue;
+  const url = `https://biplot.cl/oficina/${id}/`, img = `https://biplot.cl/oficina/kit/png/sala-${id}-og.png`;
+  const titulo = `${pr.nombre} · La oficina de BiPlot`, desc = `${pr.esencia} Pasa a la sala de ${pr.nombre} en la oficina de BiPlot y mira lo que construimos.`;
+  const html = `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escHtml(titulo)}</title>
+<!-- Generado por _herramientas/dibujos/generar.mjs desde datos.js. No se edita a mano. -->
+<meta name="description" content="${escHtml(desc)}">
+<meta name="theme-color" content="#0E2A47">
+<link rel="canonical" href="${url}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BiPlot">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="${escHtml(titulo)}">
+<meta property="og:description" content="${escHtml(desc)}">
+<meta property="og:url" content="${url}">
+<meta property="og:image" content="${img}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${escHtml(`La sala de ${pr.nombre} dibujada, con su gente. ${pr.esencia}`)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${img}">
+<link rel="icon" href="${ICONO}">
+<script>location.replace('../#${id}');</script>
+<style>
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box; background: #0E2A47; color: #F2F4F7;
+  font: 16px/1.5 Inter, "Segoe UI", system-ui, sans-serif; text-align: center; }
+main { max-width: 600px; }
+img { display: block; width: 100%; height: auto; border-radius: 12px; }
+h1 { margin: 20px 0 6px; font: 700 32px/1.1 "Space Grotesk", "Segoe UI", system-ui, sans-serif; }
+p { margin: 0 0 16px; color: #B9C8D8; }
+a { color: #17C3B2; font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <img src="../kit/png/sala-${id}-og.png" alt="${escHtml(`La sala de ${pr.nombre}`)}" width="1200" height="630">
+  <h1>${escHtml(pr.nombre)}</h1>
+  <p>${escHtml(pr.esencia)}</p>
+  <p><a href="../#${id}">Entrar a la sala en la oficina de BiPlot</a></p>
+</main>
+</body>
+</html>
+`;
+  mkdirSync(path.join(oficina, id), { recursive: true });
+  writeFileSync(path.join(oficina, id, 'index.html'), html);
+}
+console.log('páginas para compartir:', Object.keys(SALAS_GRANDES).map((id) => `oficina/${id}/`).join(', '));

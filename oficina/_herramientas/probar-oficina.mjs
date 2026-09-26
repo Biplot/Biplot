@@ -1,8 +1,11 @@
 #!/usr/bin/env node
 // Prueba funcional de la oficina con Edge o Chrome sin interfaz (sin dependencias, Node 22+). Levanta su propio
-// servidor estático sobre la raíz del repo y recorre la página en escritorio y celular: menú, los dos pisos, recorrido
-// guiado, el chat de Plotty y la vitrina, teclado, enlaces directos (#lupe, #nuhome, #piso-1, #conversar), Escape,
-// pausa, movimiento reducido, errores de consola y desborde horizontal. NAVEGADOR=<ruta> usa otro Chromium.
+// servidor estático sobre la raíz del repo y recorre la página en escritorio y celular: menú y buscador del barrio,
+// recorrido guiado, la sala de una empresa (puntos, pantallas reales, volver), el chat de Plotty con la cámara en el
+// rubro y la vitrina, El Archivo, teclado, enlaces directos (#lupe, #nuhome, #archivo, #conversar y biplot.cl/oficina/haru),
+// Escape, pausa, la vista de lejos, movimiento reducido, errores de consola y desborde horizontal. Al final carga casos
+// de prueba (sólo en el navegador de la prueba, no en datos.js) para revisar las calles por rubro, las plantillas y las
+// fases. NAVEGADOR=<ruta> usa otro Chromium.
 //
 // Uso (desde la raíz del repo biplot):  node oficina/_herramientas/probar-oficina.mjs [--url http://…/oficina/]
 import fs from 'node:fs';
@@ -18,7 +21,7 @@ const arg = (n, d) => { const i = process.argv.indexOf('--' + n); return i > -1 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml',
-  '.png': 'image/png', '.jpg': 'image/jpeg', '.mp4': 'video/mp4', '.webmanifest': 'application/manifest+json' };
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.mp4': 'video/mp4', '.webmanifest': 'application/manifest+json' };
 const servidor = http.createServer((req, res) => {
   let ruta = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (ruta.endsWith('/')) ruta += 'index.html';
@@ -65,10 +68,20 @@ async function abrir(w, h, movil, reducir, hash) {
   const listo = new Promise((r) => { cargada = r; setTimeout(r, 15000); });
   await cdp('Page.navigate', { url: url + (hash || '') });
   await listo; cargada = null;
-  for (let i = 0; i < 60; i++) { try { if (await js("document.documentElement.classList.contains('lista') && document.querySelectorAll('.actor').length === 12")) break; } catch { /* navegando */ } await sleep(250); }
+  for (let i = 0; i < 60; i++) { try { if (await js("document.documentElement.classList.contains('lista') && document.querySelectorAll('.actor').length === 12 && document.documentElement.classList.contains('navegado')")) break; } catch { /* navegando */ } await sleep(250); }
   await sleep(700);
 }
 const W = (ms) => `new Promise(r => setTimeout(r, ${ms}))`;
+
+const clicEn = async (x, y) => {
+  // Un punto del piso llevado a coordenadas de pantalla, y un clic de verdad ahí
+  const c = await js(`(() => { const s = document.querySelector('#svg-escena'), r = s.getBoundingClientRect(), vb = s.viewBox.baseVal;
+    const sx = (${x} - ${y}) * 32, sy = (${x} + ${y}) * 16; return [r.left + (sx - vb.x) * r.width / vb.width, r.top + (sy - vb.y) * r.height / vb.height]; })()`);
+  for (const t of ['mousePressed', 'mouseReleased']) await cdp('Input.dispatchMouseEvent', { type: t, x: c[0], y: c[1], button: 'left', clickCount: 1, pointerType: 'mouse' });
+  await sleep(300);
+  return js("document.querySelector('#panel').hidden ? 'panel cerrado' : document.querySelector('#panel-titulo')?.textContent");
+};
+const enSala = () => js("!document.querySelector('#sala').hidden && document.body.classList.contains('en-sala')");
 
 for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, true]]) {
   console.log(`\n${w}×${h}${movil ? ' (celular)' : ''}`);
@@ -77,24 +90,28 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   await js("try{localStorage.clear()}catch(e){}; true"); await abrir(w, h, movil, false);
   ok(await js("!document.querySelector('#intro').hidden"), 'la bienvenida aparece en la primera visita');
   ok(await js('document.documentElement.scrollWidth <= innerWidth'), 'sin desborde horizontal');
-  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 28"), 'el menú lista 10 integrantes, 2 mascotas, 10 salas de la planta baja y 6 del piso 1');
+  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 30"), 'el menú lista 10 integrantes, 2 mascotas, 10 lugares de la oficina y 8 del barrio (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
   ok(await js("document.querySelectorAll('.actor').length === 12"), 'los 10 integrantes y las 2 mascotas están en la escena');
+  ok(await js("document.querySelectorAll('.barrio .loc-abierto[data-local]').length === 7 && document.querySelectorAll('.caminante').length === 3"), 'la calle principal tiene sus 7 locales y 3 personas caminando por la vereda');
   ok(await js("[...document.querySelectorAll('button, a[href]')].every(b => { const r = b.getBoundingClientRect(); return r.width === 0 || (r.width >= 24 && r.height >= 24); })"), 'todo botón o enlace visible mide al menos 24 px');
   // Recorrido guiado completo
   const pasos = await js(`(async () => { document.querySelector('#intro-guia').click(); await ${W(300)}; const t = [];
-    const pisos = new Set();
-    for (let i = 0; i < 18; i++) { t.push(document.querySelector('#guia-t').textContent); pisos.add(document.querySelector('#pisos [aria-pressed="true"]').dataset.piso); document.querySelector('#guia-sig').click(); await ${W(120)}; }
-    return { t, pisos: pisos.size, oculto: document.querySelector('#guia').hidden, intro: document.querySelector('#intro').hidden, chat: !!document.querySelector('#panel:not([hidden]) .chat') }; })()`);
-  ok(pasos.t.length === 18 && pasos.oculto && pasos.intro && pasos.pisos === 2, 'el recorrido guiado pasa por 18 paradas en los dos pisos (' + pasos.t[0] + ' → ' + pasos.t[17] + ')');
+    for (let i = 0; i < 19; i++) { t.push(document.querySelector('#guia-t').textContent); document.querySelector('#guia-sig').click(); await ${W(120)}; }
+    return { t, oculto: document.querySelector('#guia').hidden, intro: document.querySelector('#intro').hidden, chat: !!document.querySelector('#panel:not([hidden]) .chat') }; })()`);
+  ok(pasos.t.length === 19 && pasos.oculto && pasos.intro && pasos.t.includes('El pasaje') && pasos.t.includes('El Archivo'), 'el recorrido guiado pasa por 19 paradas, de la oficina a la calle (' + pasos.t[0] + ' → ' + pasos.t[18] + ')');
   ok(pasos.chat, 'al terminar el recorrido se abre la conversación con Plotty');
-  // Cada entrada del menú abre su panel con título
+  // Cada entrada del menú abre su panel con título (las salas de las empresas, con su vista de sala)
   const paneles = await js(`(async () => { const r = []; for (const b of document.querySelectorAll('#recorrer [data-id]')) {
-      b.click(); await ${W(150)}; const t = document.querySelector('#panel-titulo'); r.push([b.dataset.id, t ? t.textContent : null, !document.querySelector('#panel').hidden]); }
+      b.click(); await ${W(160)}; const t = document.querySelector('#panel-titulo'); r.push([b.dataset.id, t ? t.textContent : null, !document.querySelector('#panel').hidden]); }
     return r; })()`);
-  ok(paneles.every((p) => p[1] && p[2]), 'las 28 entradas del menú abren su panel con título' + (paneles.every((p) => p[1] && p[2]) ? '' : ': ' + paneles.filter((p) => !p[1]).map((p) => p[0]).join(', ')));
+  ok(paneles.every((p) => p[1] && p[2]), 'las 30 entradas del menú abren su panel con título' + (paneles.every((p) => p[1] && p[2]) ? '' : ': ' + paneles.filter((p) => !p[1]).map((p) => p[0]).join(', ')));
   const desb = await js("document.querySelector('#panel-cuerpo').scrollWidth <= document.querySelector('#panel-cuerpo').clientWidth + 1");
   ok(desb, 'el panel no desborda a lo ancho');
   ok(await js(`(async () => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(100)}; return document.querySelector('#panel').hidden; })()`), 'Escape cierra el panel');
+  // Buscador y filtros del barrio
+  const busca = await js(`(async () => { const i = document.querySelector('#busca-barrio'); i.value = 'restaurante'; i.dispatchEvent(new Event('input', { bubbles: true })); await ${W(50)};
+    const r = [...document.querySelectorAll('#recorrer .menu-calle:not([hidden]) li:not([hidden]) b')].map(b => b.textContent); i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); return r; })()`);
+  ok(busca.length === 1 && busca[0] === 'Haru 360', 'el buscador del barrio encuentra por rubro (' + busca.join(', ') + ')');
   // Teclado sobre la escena
   ok(await js(`(async () => { const s = document.querySelector('#svg-escena'), e = document.querySelector('#escena'); e.focus(); const a = s.getAttribute('viewBox');
       e.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })); e.dispatchEvent(new KeyboardEvent('keydown', { key: '+', bubbles: true })); await ${W(60)};
@@ -102,38 +119,98 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   // Pausa
   ok(await js(`(async () => { const b = document.querySelector('#controles [data-accion="pausa"]'); b.click(); await ${W(60)};
       const r = document.documentElement.classList.contains('oficina-quieta') && b.getAttribute('aria-pressed') === 'true'; b.click(); return r; })()`), 'el botón de pausa detiene la animación');
-  // Clic real sobre una sala de la escena (en la planta baja, con todo a la vista)
-  await js(`(async () => { document.querySelector('#panel-cerrar').click(); document.querySelector('#pisos [data-piso="0"]').click(); await ${W(100)};
-    document.querySelector('#controles [data-accion="todo"]').click(); await ${W(900)}; return true; })()`);
-  // Un punto del piso llevado a coordenadas de pantalla, y un clic de verdad ahí
-  const clicEn = async (x, y) => {
-    const c = await js(`(() => { const s = document.querySelector('#svg-escena'), r = s.getBoundingClientRect(), vb = s.viewBox.baseVal;
-      const sx = (${x} - ${y}) * 32, sy = (${x} + ${y}) * 16; return [r.left + (sx - vb.x) * r.width / vb.width, r.top + (sy - vb.y) * r.height / vb.height]; })()`);
-    for (const t of ['mousePressed', 'mouseReleased']) await cdp('Input.dispatchMouseEvent', { type: t, x: c[0], y: c[1], button: 'left', clickCount: 1, pointerType: 'mouse' });
-    await sleep(300);
-    return js("document.querySelector('#panel').hidden ? 'panel cerrado' : document.querySelector('#panel-titulo')?.textContent");
-  };
-  const tPlanos = await clicEn(9.2, 3.8);
+  // Clic real sobre una sala de la oficina y sobre un local de la calle, con todo a la vista
+  await js(`(async () => { document.querySelector('#panel-cerrar').click(); document.querySelector('#controles [data-accion="todo"]').click(); await ${W(900)}; return true; })()`);
+  if (movil) await js(`(async () => { for (let i = 0; i < 3; i++) { document.querySelector('#svg-escena').dispatchEvent(new WheelEvent('wheel', { deltaY: -240, clientX: innerWidth / 2, clientY: innerHeight / 2, bubbles: true, cancelable: true })); await ${W(40)}; } return true; })()`);
+  // (un punto del piso de Planos lejos de las rutas del equipo, para que no lo tape nadie caminando)
+  const tPlanos = await clicEn(5.0, 4.0);
   ok(tPlanos === 'Uno dibuja, el otro construye', 'un clic sobre el piso de Planos y máquinas abre su sala (' + tPlanos + ')');
-  await js(`(async () => { document.querySelector('#panel-cerrar').click(); document.querySelector('#pisos [data-piso="1"]').click(); await ${W(100)};
-    document.querySelector('#controles [data-accion="todo"]').click(); await ${W(900)}; return true; })()`);
-  ok(await js("document.querySelector('.piso-1').style.display !== 'none' && document.querySelector('.piso-0').style.display === 'none'"), 'el botón «Proyectos» sube al piso 1');
-  const tFundos = await clicEn(7.0, 2.6);
-  ok(tFundos === 'Fundos 360', 'un clic sobre el piso de Fundos abre su sala (' + tFundos + ')');
-  // El chat de Plotty: tres respuestas, el enlace a WhatsApp y la vitrina para el rubro
-  const chat = await js(`(async () => { document.querySelector('#panel-cerrar').click(); document.querySelector('#recorrer [data-chat]').click(); await ${W(200)};
-    for (const v of ['inmobiliaria', 'planillas', '5a15']) { document.querySelector('.chat-opciones [data-v="' + v + '"]').click(); await ${W(80)}; }
-    const a = document.querySelector('.chat-fin .bp-cta'); return { wa: a ? a.href : '', vitrina: document.querySelector('.vitrina-dinamica').textContent, califica: !!document.querySelector('.chat.califica') }; })()`);
+  await js(`(async () => { document.querySelector('#panel-cerrar').click(); document.querySelector('#controles [data-accion="todo"]').click(); await ${W(900)}; return true; })()`);
+  const tHaru = await clicEn(11.8, 22.3);
+  await sleep(1200);
+  ok(tHaru === 'Haru 360' && await enSala() && (await js('location.hash')) === '#haru', 'un clic sobre el local de Haru en la calle entra a su sala (' + tHaru + ', ' + await js('location.hash') + ')');
+  const pin = await js(`(async () => { document.querySelector('#sala-dibujo-caja .pin[data-pin="3"]').dispatchEvent(new MouseEvent('click', { bubbles: true })); await ${W(150)};
+    const img = document.querySelector('.visor img'); return { src: img ? img.getAttribute('src') : '', activo: document.querySelector('#sala-dibujo-caja .pin.activo')?.dataset.pin, tira: document.querySelector('.tira [aria-pressed="true"]')?.dataset.pin }; })()`);
+  ok(/media\/salas\/haru-3-comandas\.webp$/.test(pin.src) && pin.activo === '3' && pin.tira === '3', 'el punto 3 de la sala muestra la pantalla real de las comandas');
+  ok(await js("[...document.querySelectorAll('.visor img, .tira img')].every(i => i.complete && i.naturalWidth > 0)"), 'las pantallas reales de la sala cargan');
+  ok(await js("!!document.querySelector('#panel .enlace-copia code') && document.querySelector('#panel .enlace-copia code').textContent === 'biplot.cl/oficina/haru'"), 'la sala muestra su enlace para compartir');
+  const vecina = await js(`(async () => { document.querySelector('#sala-sig').click(); await ${W(400)}; return [document.querySelector('#panel-titulo').textContent, location.hash]; })()`);
+  ok(vecina[0] === 'Eleven 360' && vecina[1] === '#eleven', 'el botón de la sala vecina pasa a Eleven 360');
+  const sinImg = await js("!!document.querySelector('.visor svg.visor-sala use')");
+  ok(sinImg, 'en una sala sin capturas, el punto muestra su rincón de la sala');
+  ok(await js(`(async () => { document.querySelector('#sala-volver').click(); await ${W(300)}; return document.querySelector('#sala').hidden && !location.hash && document.querySelector('#panel').hidden; })()`), '«Volver a la calle» cierra la sala y limpia la dirección');
+  // El chat de Plotty: el rubro lleva la cámara a la calle, tres respuestas, WhatsApp y la vitrina para el rubro
+  const chat = await js(`(async () => { document.querySelector('#recorrer [data-chat]').click(); await ${W(200)};
+    document.querySelector('.chat-opciones [data-v="inmobiliaria"]').click(); await ${W(80)};
+    const marcado = [...document.querySelectorAll('.capa-resalte .resalte')].length, msj = document.querySelector('.chat-mensajes').children[3]?.textContent || '';
+    for (const v of ['planillas', '5a15']) { document.querySelector('.chat-opciones [data-v="' + v + '"]').click(); await ${W(80)}; }
+    const a = document.querySelector('.chat-fin .bp-cta'); return { wa: a ? a.href : '', vitrina: document.querySelector('.vitrina-dinamica').textContent, califica: !!document.querySelector('.chat.califica'), marcado, msj }; })()`);
+  ok(chat.marcado >= 1 && /Fundos 360/.test(chat.msj), 'con el rubro, Plotty marca en la calle los casos como el tuyo (' + chat.msj + ')');
   ok(/^https:\/\/wa\.me\/\d+\?text=.*inmobiliaria/.test(chat.wa) && chat.califica, 'Plotty hace las tres preguntas y arma el mensaje de WhatsApp');
   ok(/Fundos 360/.test(chat.vitrina) && /Nu Home 360/.test(chat.vitrina), 'la vitrina de la recepción muestra los casos del rubro (' + chat.vitrina.replace(/\s+/g, ' ').trim() + ')');
+  // El Archivo y su buscador
+  const archivo = await js(`(async () => { document.querySelector('#panel-cerrar').click(); document.querySelector('#recorrer [data-id="archivo"]').click(); await ${W(200)};
+    const n = document.querySelectorAll('.archivo-grupo li').length, i = document.querySelector('.archivo-busca input'); i.value = 'gimnasio'; i.dispatchEvent(new Event('input', { bubbles: true })); await ${W(50)};
+    return { n, vis: [...document.querySelectorAll('.archivo-grupo:not([hidden]) li:not([hidden]) b')].map(b => b.textContent) }; })()`);
+  ok(archivo.n === 5 && archivo.vis.join() === 'Eleven 360', 'El Archivo lista los 5 casos por rubro y los busca (' + archivo.vis.join(', ') + ')');
+  // De lejos, los locales se ven cerrados
+  const lejos = await js(`(async () => { document.querySelector('#panel-cerrar').click(); for (let i = 0; i < 8; i++) { document.querySelector('#svg-escena').dispatchEvent(new WheelEvent('wheel', { deltaY: 400, clientX: innerWidth / 2, clientY: innerHeight / 2, bubbles: true, cancelable: true })); await ${W(30)}; }
+    const s = document.querySelector('#svg-escena'), z = s.getBoundingClientRect().width / s.viewBox.baseVal.width; return { z, lejos: document.querySelector('.barrio').classList.contains('lejos') }; })()`);
+  ok(lejos.z * 284.8 < 96 ? lejos.lejos : !lejos.lejos, 'la vista de lejos cierra los locales solo cuando se ven chicos (zoom ' + lejos.z.toFixed(2) + (lejos.lejos ? ', cerrados' : ', abiertos') + ')');
   // Enlaces directos
   await abrir(w, h, movil, false, '#lupe');
   ok((await js("document.querySelector('#panel-titulo')?.textContent")) === 'Lupe', 'oficina/#lupe abre la ficha de Lupe');
   await abrir(w, h, movil, false, '#nuhome');
-  ok((await js("document.querySelector('#panel-titulo')?.textContent")) === 'Nu Home 360' && (await js("document.querySelector('#pisos [data-piso=\"1\"]').getAttribute('aria-pressed')")) === 'true', 'oficina/#nuhome sube al piso 1 y abre la sala de Nu Home');
+  await sleep(600);
+  ok((await js("document.querySelector('#panel-titulo')?.textContent")) === 'Nu Home 360' && await enSala(), 'oficina/#nuhome abre la sala de Nu Home');
+  await abrir(w, h, movil, false, '#archivo');
+  ok((await js("document.querySelector('#panel-titulo')?.textContent")) === 'Todos los casos tienen su carpeta', 'oficina/#archivo abre El Archivo');
   await abrir(w, h, movil, false, '#conversar');
   ok((await js("!!document.querySelector('#panel:not([hidden]) .chat')")), 'oficina/#conversar abre la conversación con Plotty');
+  // La página para compartir de una sala lleva a la oficina, dentro de la sala
+  {
+    const listo = new Promise((r) => { cargada = r; setTimeout(r, 15000); });
+    await cdp('Page.navigate', { url: url + 'haru/' });
+    await listo; cargada = null;
+    for (let i = 0; i < 60; i++) { try { if (await js("location.hash === '#haru' && document.documentElement.classList.contains('lista')")) break; } catch { /* navegando */ } await sleep(250); }
+    await sleep(900);
+    ok((await js("document.querySelector('#panel-titulo')?.textContent")) === 'Haru 360' && await enSala(), 'biplot.cl/oficina/haru/ lleva a la oficina, dentro de la sala de Haru');
+    const og = fs.readFileSync(path.join(raiz, 'oficina', 'haru', 'index.html'), 'utf8');
+    ok(/og:image" content="https:\/\/biplot\.cl\/oficina\/kit\/png\/sala-haru-og\.png"/.test(og) && fs.existsSync(path.join(raiz, 'oficina', 'kit', 'png', 'sala-haru-og.png')), 'la página de Haru trae su vista previa para compartir');
+  }
   ok(consola.length === 0, 'sin errores de consola' + (consola.length ? ': ' + [...new Set(consola)].join(' | ') : ''));
+}
+
+// Las calles por rubro, con casos de prueba que sólo existen en el navegador de la prueba
+console.log('\nCalles por rubro (casos de prueba)');
+{
+  const prueba = `(function () { var g; Object.defineProperty(window, 'OFICINA_DATOS', { configurable: true, get: function () { return g; }, set: function (D) {
+    function c(o) { var x = { puntos: [], enlaces: [], equipo: ['lupe'], esencia: 'Caso de prueba.', resumen: 'Caso de prueba.' }; for (var k in o) x[k] = o[k]; return x; }
+    D.proyectos.push(c({ id: 'prueba-a', nombre: 'Clínica de Prueba', rubro: 'Clínica dental · Arica', calle: 'salud', plantilla: 'clinica', fase: 'E9', acento: '#3E9C95' }),
+      c({ id: 'prueba-b', nombre: 'Óptica de Prueba', rubro: 'Óptica', calle: 'salud', plantilla: 'basica', fase: 'E5', acento: '#8E6BB8' }),
+      c({ id: 'prueba-c', nombre: 'Taller de Prueba', rubro: 'Taller mecánico · Arica', calle: 'servicios', plantilla: 'taller', fase: 'E7', acento: '#E0524A' }),
+      c({ id: 'prueba-d', nombre: 'Nombre reservado', rubro: 'Distribuidora de alimentos · Iquique', calle: 'comercio', fase: 'E1', permiso: 'rubro', acento: '#35679A' }),
+      c({ id: 'prueba-e', nombre: 'Sólo archivo', rubro: 'Minería', calle: 'otro', permiso: 'archivo', acento: '#6B7A8C' }));
+    g = D; } }); })();`;
+  const { identifier } = await cdp('Page.addScriptToEvaluateOnNewDocument', { source: prueba });
+  consola = [];
+  await abrir(1440, 900, false, false);
+  const r = await js(`(async () => {
+    const filas = [...document.querySelectorAll('.barrio .fila')].map(f => f.dataset.calle), locales = [...document.querySelectorAll('.fila .loc')].map(l => l.dataset.local);
+    const texto = document.querySelector('.barrio-filas').textContent;
+    document.querySelector('#recorrer [data-id="prueba-c"]').click(); await ${W(200)};
+    const titulo = document.querySelector('#panel-titulo').textContent, fase = document.querySelector('#panel .fases-mini')?.textContent;
+    document.querySelector('#recorrer [data-id="archivo"]').click(); await ${W(200)};
+    const archivo = [...document.querySelectorAll('.archivo-grupo li b')].map(b => b.textContent);
+    const menu = [...document.querySelectorAll('#recorrer [data-id]')].map(b => b.dataset.id);
+    return { filas, locales, titulo, fase, archivo, menu, anonimo: texto.includes('Nombre reservado'), letrero: texto.includes('DISTRIBUIDORA DE ALIMENTOS'), reservado: menu.includes('prueba-e') }; })()`);
+  ok(r.filas.join() === 'salud,servicios,comercio', 'cada rubro abre su calle, en el orden en que llegó su primer caso (' + r.filas.join(', ') + ')');
+  ok(r.locales.join() === 'prueba-a,prueba-b,libre-salud,prueba-c,libre-servicios,prueba-d,libre-comercio', 'cada calle termina con un local que se arrienda');
+  ok(r.titulo === 'Taller de Prueba' && /E7/.test(r.fase || ''), 'el local de un caso con plantilla abre su panel con su fase (' + r.titulo + ', ' + r.fase + ')');
+  ok(!r.anonimo && r.letrero, 'un caso sin permiso para su nombre muestra sólo su rubro');
+  ok(r.archivo.includes('Sólo archivo') && !r.reservado, 'un caso «sólo en El Archivo» no tiene local, pero está en El Archivo');
+  ok(consola.length === 0, 'sin errores de consola' + (consola.length ? ': ' + [...new Set(consola)].join(' | ') : ''));
+  await cdp('Page.removeScriptToEvaluateOnNewDocument', { identifier });
 }
 
 console.log('\nMovimiento reducido');
