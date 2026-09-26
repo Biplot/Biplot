@@ -5,7 +5,7 @@
 //
 // Uso (desde la raíz del repo biplot):
 //   node oficina/_herramientas/exportar-kit.mjs                 → todas las piezas a oficina/kit/png/
-//   node oficina/_herramientas/exportar-kit.mjs --solo ficha-lupe,oficina
+//   node oficina/_herramientas/exportar-kit.mjs --solo ficha-lupe,oficina,sala-haru
 //   node oficina/_herramientas/exportar-kit.mjs --capturas <carpeta>   → además, la oficina a 1920/1440/1366/375 px
 import fs from 'node:fs';
 import os from 'node:os';
@@ -23,14 +23,17 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const IDS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'aby'];
 const PIEZAS = IDS.map((id) => 'ficha-' + id).concat(['oficina', 'elenco', 'motor', 'quien']);
 const FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630] };
+// La sala de cada empresa: vista previa del enlace biplot.cl/oficina/<sala>; Haru 360, además, publicación e historia
+const SALAS = ['fundos', 'haru', 'eleven', 'nuhome', 'rumbo'], FORMATOS_SALA = { haru: ['og', '4x5', '9x16'] };
 let trabajos = [];
 for (const p of PIEZAS) for (const f of ['4x5', '9x16']) trabajos.push([p, f]);
 trabajos.push(['oficina', 'og']);
+for (const id of SALAS) for (const f of FORMATOS_SALA[id] || ['og']) trabajos.push(['sala-' + id, f]);
 if (arg('solo')) { const s = arg('solo').split(','); trabajos = trabajos.filter(([p]) => s.includes(p)); }
 
 // Servidor estático mínimo
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml',
-  '.png': 'image/png', '.jpg': 'image/jpeg', '.mp4': 'video/mp4', '.json': 'application/json', '.webmanifest': 'application/manifest+json' };
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.mp4': 'video/mp4', '.json': 'application/json', '.webmanifest': 'application/manifest+json' };
 const servidor = http.createServer((req, res) => {
   let ruta = decodeURIComponent(new URL(req.url, 'http://x').pathname);
   if (ruta.endsWith('/')) ruta += 'index.html';
@@ -96,7 +99,8 @@ for (const [pieza, f] of trabajos) {
   console.log('✓', path.relative(raiz, archivo), Math.round(fs.statSync(archivo).size / 1024) + ' KB');
 }
 
-// Capturas de la oficina para el PR (1920, 1440, 1366 y 375 px): la planta baja, el piso 1, una sala y una ficha.
+// Capturas de la oficina para el PR (1920, 1440, 1366 y 375 px): la oficina y la calle, la sala de una empresa, un local
+// visto desde la calle y una ficha del equipo.
 const capturas = arg('capturas');
 if (capturas) {
   fs.mkdirSync(capturas, { recursive: true });
@@ -108,15 +112,15 @@ if (capturas) {
     await sleep(1600);
     let c = await cdp('Page.captureScreenshot', { format: 'png' });
     fs.writeFileSync(path.join(capturas, `oficina-${w}.png`), Buffer.from(c.data, 'base64'));
-    await js("document.querySelector('#pisos [data-piso=\"1\"]').click(); true");
-    await sleep(1400);
-    c = await cdp('Page.captureScreenshot', { format: 'png' });
-    fs.writeFileSync(path.join(capturas, `oficina-${w}-piso-1.png`), Buffer.from(c.data, 'base64'));
-    await js("document.querySelector('#recorrer [data-id=\"fundos\"]').click(); true");
-    await sleep(1800);
+    await js("document.querySelector('#recorrer [data-id=\"haru\"]').click(); true");
+    await sleep(2200);
     c = await cdp('Page.captureScreenshot', { format: 'png' });
     fs.writeFileSync(path.join(capturas, `oficina-${w}-sala.png`), Buffer.from(c.data, 'base64'));
-    await js("document.querySelector('#panel-cerrar').click(); document.querySelector('#recorrer [data-id=\"lupe\"]').click(); true");
+    await js("document.querySelector('#sala-volver').click(); true");
+    await sleep(1400);
+    c = await cdp('Page.captureScreenshot', { format: 'png' });
+    fs.writeFileSync(path.join(capturas, `oficina-${w}-calle.png`), Buffer.from(c.data, 'base64'));
+    await js("document.querySelector('#recorrer [data-id=\"lupe\"]').click(); true");
     await sleep(1800);
     c = await cdp('Page.captureScreenshot', { format: 'png' });
     fs.writeFileSync(path.join(capturas, `oficina-${w}-personal.png`), Buffer.from(c.data, 'base64'));

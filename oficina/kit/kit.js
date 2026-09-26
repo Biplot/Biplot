@@ -4,6 +4,8 @@
  * exacto, lista para capturar (window.KIT_LISTO = true cuando cargaron las fuentes). La exporta
  * _herramientas/exportar-kit.mjs.
  * En redes el equipo va en ilustración (ilustraciones.js); el cabezón queda para la oficina y la credencial.
+ * Las piezas «sala-<id>» muestran la sala de cada empresa (salas.js): la vista previa del enlace biplot.cl/oficina/<id>
+ * (1200 × 630) y, para Haru 360, también la publicación y la historia.
  */
 (function () {
   'use strict';
@@ -12,16 +14,26 @@
   var PERSONAL = {}; D.personal.concat(D.mascotas).forEach(function (p) { PERSONAL[p.id] = p; });
   var FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630] };
   var PIEZAS = E.ids.map(function (id) { return 'ficha-' + id; }).concat(['oficina', 'elenco', 'motor', 'quien']);
+  var PROY = {}; D.proyectos.forEach(function (p) { PROY[p.id] = p; });
+  // Las salas con dibujo grande; cada una tiene su vista previa y Haru 360, además, publicación e historia
+  var SALAS_KIT = window.Salas ? Object.keys(window.Salas.salas) : [];
+  var FORMATOS_SALA = { haru: ['og', '4x5', '9x16'] };
+  if (window.Salas) {
+    // Los personajes del barrio y de las salas, definidos una vez para todo el documento
+    var defs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    defs.setAttribute('width', '0'); defs.setAttribute('height', '0'); defs.setAttribute('aria-hidden', 'true');
+    defs.style.position = 'absolute';
+    defs.innerHTML = '<defs>' + (window.Barrio ? window.Barrio.defs : '') + window.Salas.defs + '</defs>';
+    document.body.appendChild(defs);
+  }
 
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   var ISO = '<svg class="k-iso" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="bp-sq-k" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c426d"/><stop offset="1" stop-color="#0d2642"/></linearGradient></defs>' +
     E.isotipo.replace('url(#bp-sq)', 'url(#bp-sq-k)') + '</svg>';
 
-  function pie(texto) {
-    return '<footer class="k-pie"><span class="k-marca">' + ISO + '<span class="bp-wordmark"><span class="bi">Bi</span><span class="plot">Plot</span></span></span>' +
-      '<span class="k-url">' + (texto || 'biplot.cl/oficina') + '</span></footer>';
-  }
+  function marca() { return '<span class="k-marca">' + ISO + '<span class="bp-wordmark"><span class="bi">Bi</span><span class="plot">Plot</span></span></span>'; }
+  function pie(texto) { return '<footer class="k-pie">' + marca() + '<span class="k-url">' + (texto || 'biplot.cl/oficina') + '</span></footer>'; }
   // Ilustración completa, o sólo la cabeza con «cabeza».
   function ilustracion(id, clase, cabeza) {
     var il = I[id];
@@ -57,12 +69,12 @@
     return '<div class="k-halo"></div>' +
       '<p class="k-eyebrow">La oficina</p>' +
       '<h1 class="k-titulo">' + titulo + '</h1>' +
-      '<p class="k-bajada">Una oficina que puedes recorrer: el equipo trabajando y una sala por proyecto.</p>' +
+      '<p class="k-bajada">Una oficina que puedes recorrer: el equipo trabajando y una sala por empresa.</p>' +
       (f === 'og' ? '<p class="k-url-og">biplot.cl/oficina</p>' : '') +
       '<svg class="k-escena" id="k-escena" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>' +
       (f === 'og' ? '' : pie('Recórrela en <b>biplot.cl/oficina</b>'));
   }
-  var ENCUADRE = { '4x5': '-660 -150 1450 880', '9x16': '-340 10 900 835', og: '-520 -150 1320 885' };
+  var ENCUADRE = { '4x5': '-1010 -150 2290 1390', '9x16': '-800 -100 2000 1580', og: '-1000 -170 2300 1930' };
 
   /* ── El equipo completo ── */
   function elenco(f) {
@@ -110,7 +122,22 @@
       pie(f === '9x16' ? 'Averígualo en <b>biplot.cl/oficina</b>' : null);
   }
 
+  /* ── La sala de cada empresa ── */
+  function dibujoSala(id, clase) {
+    var S = window.Salas.salas[id], vb = S.vb.split(' ').map(Number);
+    return '<svg class="' + clase + '" viewBox="' + vb.join(' ') + '" aria-hidden="true"><g class="quieto">' + S.svg.replace(/§M§/g, '../media/salas/') + '</g></svg>';
+  }
+  function sala(id, f) {
+    var p = PROY[id], url = 'biplot.cl/oficina/<b>' + id + '</b>';
+    var cab = '<div class="k-halo"></div><p class="k-eyebrow">Pasa a la sala</p><h1 class="s-nombre">' + esc(p.nombre) + '</h1><p class="s-rubro">' + esc(p.rubro) + '</p>';
+    if (f === 'og') return cab + '<p class="s-esencia">' + esc(p.esencia) + '</p><p class="s-url">' + url + '</p>' + dibujoSala(id, 's-escena') + '<footer class="s-pie">' + marca() + '</footer>';
+    if (f === '9x16') return cab + dibujoSala(id, 's-escena') + '<p class="s-esencia">' + esc(p.esencia) + '</p>' +
+      '<div class="s-sticker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>biplot.cl/oficina/' + id + '</div>' + pie('Toca el enlace y pasa');
+    return cab + dibujoSala(id, 's-escena') + '<div class="k-burbuja s-burbuja">«' + esc(p.esencia) + '»</div>' + pie('Entra en <b>biplot.cl/oficina/' + id + '</b>');
+  }
+
   function contenido(pieza, f) {
+    if (pieza.indexOf('sala-') === 0) return sala(pieza.slice(5), f);
     if (pieza.indexOf('ficha-') === 0) return ficha(pieza.slice(6), f);
     if (pieza === 'oficina') return oficina(f);
     if (pieza === 'elenco') return elenco(f);
@@ -120,7 +147,8 @@
   }
   function montar(destino, pieza, f) {
     var tam = FORMATOS[f], div = document.createElement('div');
-    div.className = 'pieza f-' + f + ' p-' + pieza.replace(/^ficha-.*/, 'ficha') + (pieza.indexOf('ficha-') === 0 ? ' pj-fondo-' + pieza.slice(6) : '');
+    div.className = 'pieza f-' + f + ' p-' + pieza.replace(/^ficha-.*/, 'ficha').replace(/^sala-.*/, 'sala') + (pieza.indexOf('ficha-') === 0 ? ' pj-fondo-' + pieza.slice(6) : '');
+    if (pieza.indexOf('sala-') === 0) div.style.setProperty('--acento', PROY[pieza.slice(5)].acento);
     div.style.width = tam[0] + 'px'; div.style.height = tam[1] + 'px';
     div.innerHTML = contenido(pieza, f);
     destino.appendChild(div);
@@ -128,6 +156,7 @@
     if (sv) {
       var e = window.Escena.construir(sv, { animado: false });
       sv.setAttribute('viewBox', ENCUADRE[f] || ENCUADRE['4x5']);
+      e.lod(1);
       sv.querySelector('#paquete') && sv.querySelector('#paquete').classList.add('quieto');
       div._escena = e;
     }
@@ -147,6 +176,7 @@
     var lista = [];
     PIEZAS.forEach(function (p) { ['4x5', '9x16'].forEach(function (f) { lista.push([p, f]); }); });
     lista.push(['oficina', 'og']);
+    SALAS_KIT.forEach(function (id) { (FORMATOS_SALA[id] || ['og']).forEach(function (f) { lista.push(['sala-' + id, f]); }); });
     lista.forEach(function (it) {
       var fig = document.createElement('figure'), tam = FORMATOS[it[1]], k = 300 / tam[0];
       fig.className = 'miniatura';

@@ -1,6 +1,6 @@
 /*
  * Oficina BiPlot · datos
- * El equipo, las fases del motor, las salas de cada piso, los proyectos, la vitrina y las preguntas de Plotty.
+ * El equipo, las fases del motor, las salas de la oficina, los proyectos y el barrio, la vitrina y las preguntas de Plotty.
  * Es lo único que hay que tocar para cambiar textos, enlaces o quién trabajó en qué.
  * A futuro lo genera el CRM de BiPlot (ver README.md, "Conexión con el CRM"): mismo formato.
  * Reglas: sólo datos públicos y sin cifras de clientes. Los textos hablan de integrantes, todos con placa y con el mismo trato.
@@ -13,7 +13,7 @@
     encodeURIComponent('Hola BiPlot, vengo de la oficina virtual y quiero agendar un diagnóstico.');
 
   window.OFICINA_DATOS = {
-    version: '2026-09-25',
+    version: '2026-09-26',
     cta: { texto: 'Agenda tu diagnóstico', url: WHATSAPP },
     whatsapp: TELEFONO,
     sitio: { texto: 'biplot.cl', url: '../' },
@@ -149,7 +149,7 @@
       { id: 'E9', nombre: 'Cosecha', texto: 'Lo que sirve para el próximo, al núcleo.', quien: ['pepa'] }
     ],
 
-    /* Las salas de la planta baja: lo que cuenta el panel de cada una. */
+    /* Las salas de la oficina y los lugares del barrio: lo que cuenta el panel de cada uno. */
     salas: {
       recepcion: { nombre: 'Recepción', sub: 'Plotty y la vitrina', etiqueta: 'Recepción',
         titulo: 'Pasa, esta es la oficina',
@@ -168,9 +168,15 @@
         titulo: 'Antes y después, sin adornos',
         texto: 'Aquí se mide si funcionó. A los 30, 60 y 90 días, Lupe y Celda comparan contra la línea base del diagnóstico: horas al mes, errores y tiempos de respuesta.',
         puntos: [['Línea base', 'cómo se trabajaba antes, medido en horas'], ['Día 30, 60 y 90', 'la misma medición, después'], ['Sin adornos', 'si no bajó, se dice']] },
-      ascensor: { nombre: 'Ascensor', sub: 'Al piso 1 · Proyectos', etiqueta: 'Ascensor',
-        titulo: 'Arriba están los proyectos',
-        texto: 'En el piso 1 hay una sala por proyecto, cada una con la esencia de su negocio. Cuando se llena un piso, se abre el siguiente.' },
+      reuniones: { nombre: 'Sala de reuniones', sub: 'Donde te atienden', etiqueta: 'Sala de reuniones',
+        titulo: 'Aquí te atienden',
+        texto: 'Las reuniones contigo son aquí, con una persona del equipo, con su nombre y su rol. En la pantalla, cómo avanza cada proyecto esta semana.' },
+      pasaje: { nombre: 'El pasaje', sub: 'La entrada y el directorio', etiqueta: 'El pasaje · Directorio',
+        titulo: 'La calle de los proyectos',
+        texto: 'Por el pasaje se entra a la oficina. Afuera está la calle: un local por proyecto, cada uno con la sala de su empresa. Los proyectos que se muestran con su propio dibujo están en la calle principal; los demás, en la calle de su rubro.' },
+      archivo: { nombre: 'El Archivo', sub: 'Todos los casos, por rubro', etiqueta: 'El Archivo',
+        titulo: 'Todos los casos tienen su carpeta',
+        texto: 'Aquí está cada caso, también los que no muestran su nombre o ya terminaron. Pepa los ordena por rubro. El edificio sube un piso cada diez casos.' },
       estanteria: { nombre: 'Estantería del núcleo', sub: 'Pepa · E9', etiqueta: 'Estantería del núcleo · E9',
         titulo: 'Lo que ya sabemos hacer',
         texto: 'Aquí Pepa guarda lo que sirvió en un proyecto y le sirve al siguiente. Por eso cada sistema nuevo parte con ventaja.' },
@@ -183,11 +189,29 @@
         golpes: ['Nadie contesta.', 'Se oye un teclado. Después, silencio.', 'Una voz pregunta: «¿Quién es?».', 'Alguien apaga la luz de adentro.'] }
     },
 
-    /* Proyectos del piso 1, una sala cada uno. `media` usa los teasers del sitio; sin media, el panel muestra la sala.
-       La sala `libre` es la que espera al próximo proyecto. */
+    /* Los proyectos: un local en el barrio y, adentro, la sala de la empresa. `calle` es su rubro (los mismos de la primera
+       pregunta de Plotty). Los que tienen sala dibujada a mano (barrio.js) van en la calle principal; los demás, en la
+       calle de su rubro, con una plantilla. `media` usa los teasers del sitio. `pines`: un punto por módulo en la sala,
+       [módulo, título, detalle, pantalla en media/salas/ o null]. `medicion` dice en qué va la medición (sin cifras
+       hasta que se midan y el cliente lo autorice). El local `libre` es el que espera al próximo proyecto.
+       Un caso nuevo con plantilla, mientras el CRM no esté conectado, se suma aquí con este formato:
+         { id, nombre, cliente, rubro: 'Clínica dental · Arica', calle: 'salud', plantilla: 'clinica' | 'taller' | 'basica',
+           fase: 'E0'…'E9' (cómo se ve el local), permiso: 'nombre' | 'rubro' (sólo el rubro) | 'archivo' (sólo en El Archivo),
+           acento: '#3E9C95', letrero, lema y lineas (plantilla basica), esencia, resumen, puntos, enlaces, equipo } */
     proyectos: [
       {
         id: 'fundos', nombre: 'Fundos 360', cliente: 'Fundos Inmobiliaria', rubro: 'Inmobiliaria · venta de parcelas', estado: 'Plataforma a la medida',
+        calle: 'inmobiliaria', corto: 'A la medida',
+        pines: [
+          ['01 · Leads', 'Cada contacto, con seguimiento.', 'Del primer llamado a la visita y la reserva, en un tablero.', 'fundos-1-leads'],
+          ['03 · Parcelas', 'El inventario, fundo por fundo.', 'Precio y estado de cada lote, con su vendedor asignado.', 'fundos-2-parcelas'],
+          ['05 · Reservas', 'Reservar, sin calculadora.', 'Valor, promoción y reserva en una sola ficha.', 'fundos-3-reservas'],
+          ['06 · Escrituras y calendario', 'Cada plazo, a tiempo.', 'Cuotas, firmas y entregas de cada escritura, en un calendario.', 'fundos-4-escrituras'],
+          ['10 · Postventa', 'Hasta el Conservador.', 'Aranceles e inscripción de cada parcela después de escriturar.', 'fundos-5-postventa'],
+          ['02 · Dashboard', 'El negocio, en una pantalla.', 'Comercial, inventario, financiero y postventa, en claro u oscuro.', 'fundos-6-dashboard'],
+          ['La plataforma', 'Doce módulos. Un solo recorrido.', 'Del primer contacto comercial a la inscripción en el Conservador.', 'fundos-7-modulos']
+        ],
+        medicion: 'Sin cifras publicadas todavía. Aparecen cuando se midan contra la línea base del diagnóstico y Fundos lo autorice.',
         acento: '#6FAF6B',
         esencia: 'Una sala de ventas de parcelas, con el terreno sobre la mesa.',
         resumen: 'Un ciclo de venta largo —contacto, reserva, escritura, facturación al inversionista, posventa y comisiones— vivía repartido entre planillas, WhatsApp y papel. Fundos 360 lo digitaliza completo, con permisos por rol.',
@@ -203,6 +227,17 @@
       },
       {
         id: 'haru', nombre: 'Haru 360', cliente: 'Haru Isidora', rubro: 'Restaurante · cocina japonesa, Arica', estado: 'Sistema a la medida · en implementación',
+        calle: 'comida', corto: 'En implementación',
+        pines: [
+          ['01 · Dashboard', 'Tu restaurante, en una pantalla.', 'Ventas, costo, margen y alertas del día, en vivo.', 'haru-1-dashboard'],
+          ['02 · Mesas y comandas', 'Cada mesa, en tiempo real.', 'El garzón toma el pedido en su celular y la cocina lo recibe al instante.', 'haru-2-mesas'],
+          ['03 · Cocina y barra', 'Comandas sin papel.', 'Cada plato con su cronómetro y alerta de atraso.', 'haru-3-comandas'],
+          ['04 · Inventario y recetas', 'El costo real de cada plato.', 'Escandallos con merma, stock mínimo y compras.', 'haru-4-costo'],
+          ['05 · Finanzas', 'Rentabilidad por canal y por plato.', 'Comisiones de apps, propinas y arqueo de caja.', 'haru-5-rentabilidad'],
+          ['06 · Carta y delivery', 'Pedidos directos, delivery en vivo.', 'Carta online sin comisiones y el repartidor en el mapa.', 'haru-6-delivery'],
+          ['07 · Perfiles', 'Cada rol ve lo suyo.', 'Del dueño al repartidor, con tema claro y oscuro.', 'haru-7-perfiles']
+        ],
+        medicion: 'La medición parte con la puesta en marcha: día 30, 60 y 90, contra la línea base del diagnóstico.',
         acento: '#E0524A',
         esencia: 'Una barra de sushi a la hora de almuerzo.',
         resumen: 'Caja, máquinas de pago, apps de delivery y una planilla a mano: los totales no cuadraban y nadie sabía el costo real de cada plato. Haru 360 junta ventas, cocina, delivery, bodega y caja. Y la carta digital deja pedir desde la mesa con un QR.',
@@ -218,6 +253,14 @@
       },
       {
         id: 'eleven', nombre: 'Eleven 360', cliente: 'Eleven Club Fitness and BXO', rubro: 'Gimnasio, Arica', estado: 'Propuesta',
+        calle: 'servicios', corto: 'Propuesta',
+        pines: [
+          ['Sitio al día', 'Planes, horarios y clases.', 'Desde un solo archivo, siempre al día.', null],
+          ['Rescate de socios', 'Aviso a tiempo.', 'Quién dejó de venir, antes de que se vaya.', null],
+          ['Tienda y ficha', 'Lo que compra afuera, adentro.', 'La tienda y la ficha de cada socio, juntas.', null],
+          ['Antes y después de la huella', 'No reemplaza su acceso.', 'Se conecta a su lector de huella de siempre.', null]
+        ],
+        medicion: 'Es una propuesta: todavía no hay nada que medir.',
         acento: '#17C3B2',
         esencia: 'Un gimnasio con las clases llenas y el acceso con huella.',
         resumen: 'Sitio y experiencia digital para un gimnasio. La idea: más socios, que se queden y que vuelvan por más. No reemplaza su sistema de acceso con huella: se conecta a él y trabaja antes y después de la huella.',
@@ -233,6 +276,17 @@
       },
       {
         id: 'nuhome', nombre: 'Nu Home 360', cliente: 'Nu Home', rubro: 'Casas modulares', estado: 'Plataforma a la medida · en desarrollo',
+        calle: 'construccion', corto: 'En desarrollo',
+        pines: [
+          ['01 · Diseñador 3D', 'Diseña tu casa, pieza por pieza.', 'Terreno a escala, segundo piso y precio referencial al instante.', 'nuhome-1-disenador'],
+          ['02 · Leads', 'Del cotizador, directo al CRM.', 'Llega con su maqueta y queda asignado a un ejecutivo.', 'nuhome-2-leads'],
+          ['03 · Cotización', 'Aceptada, en línea.', 'Ingeniería la visa y el cliente la acepta con su nombre.', 'nuhome-3-cotizacion'],
+          ['04 · Visita técnica', 'El terreno, sin sorpresas.', 'Informe con acceso, topografía y servicios, visible para todos.', 'nuhome-4-visita'],
+          ['05 · Fabricación', 'Cada partida, a tiempo.', 'Carta Gantt en días hábiles, con alerta antes del atraso.', 'nuhome-5-fabricacion'],
+          ['06 · Portal del cliente', 'Tu casa, paso a paso.', 'Avance, fotos y pagos en un link privado, sin costos a la vista.', 'nuhome-6-portal'],
+          ['07 · Entrega', 'Entrega firmada, sin papel.', 'Acta de recepción conforme, firmada en el celular en terreno.', 'nuhome-7-entrega']
+        ],
+        medicion: 'En construcción. La medición parte cuando la plataforma esté en uso.',
         acento: '#E0B341',
         esencia: 'La casa se arma por módulos, frente a quien visita.',
         resumen: 'Nu Home fabrica casas modulares. Nu Home 360 junta en una sola plataforma todo lo que pasa entre el primer contacto y la entrega de la casa: ventas, cotizaciones, fábrica, bodega, pagos y un portal para cada cliente.',
@@ -248,6 +302,13 @@
       },
       {
         id: 'rumbo', nombre: 'Rumbo', cliente: 'Producto propio de BiPlot', rubro: 'App de desarrollo personal', estado: 'Producto propio · publicado',
+        calle: 'otro', corto: 'Publicado',
+        pines: [
+          ['Ritual diario', 'Apertura y cierre del día.', 'Con recordatorio, para no soltarlo.', null],
+          ['Todo junto', 'Hábitos, finanzas y metas.', 'En una sola pantalla.', null],
+          ['Recompensas', 'Rangos e insignias.', 'Para seguir un día más.', null]
+        ],
+        medicion: 'Producto de BiPlot. Sin cifras de uso publicadas todavía.',
         acento: '#3E9C95',
         esencia: 'Un rincón tranquilo donde cada día es un paso.',
         resumen: 'Tu vida en un solo lugar. Una app de BiPlot para ordenar lo personal: ritual de mañana y de noche, hábitos, finanzas, metas, lecturas, salud y diario, con rangos e insignias para no soltarlo.',
@@ -262,13 +323,22 @@
         nota: 'Racha y hábitos de ejemplo.'
       },
       {
-        id: 'libre', nombre: 'Tu proyecto aquí', cliente: '', rubro: 'Sala disponible', estado: 'Disponible', libre: true,
+        id: 'libre', nombre: 'Tu proyecto aquí', cliente: '', rubro: 'Local disponible', estado: 'Disponible', libre: true, corto: 'Disponible',
         acento: '#7FD8CF',
-        esencia: 'La sala que espera al próximo proyecto.',
-        resumen: 'Esta sala está esperando un proyecto. Cuéntale a Plotty cómo trabajas hoy: son tres preguntas y te dice por dónde partir.',
+        esencia: 'El local que espera al próximo proyecto.',
+        resumen: 'Este local está esperando un proyecto. Cuéntale a Plotty cómo trabajas hoy: son tres preguntas y te dice por dónde partir.',
         puntos: [], enlaces: [], equipo: [], media: null
       }
     ],
+
+    /* El barrio: una calle por rubro para los casos con plantilla, con los mismos rubros de la primera pregunta de Plotty.
+       Cada calle aparece cuando llega su primer caso. */
+    barrio: {
+      calles: {
+        inmobiliaria: 'Calle Inmobiliaria', comida: 'Calle Comida', servicios: 'Calle Servicios', construccion: 'Calle Construcción',
+        comercio: 'Calle Comercio', salud: 'Calle Salud', otro: 'Calle Otros rubros'
+      }
+    },
 
     /* Casos de referencia del núcleo: negocios ilustrativos, no clientes. Copias servidas desde casos/. */
     casos: [
@@ -322,6 +392,8 @@
       califica: 'Con eso ya hay por dónde partir. Agenda tu diagnóstico: la primera sesión es sin costo, y la tomas con una persona del equipo.',
       noCalifica: 'Con menos de 5 horas a la semana, quizás todavía no te hace falta automatizar. Recorre la oficina, y si algo te hace sentido, escríbenos igual.',
       vitrina: 'Te dejé en la vitrina de la recepción los tres casos más cercanos a tu rubro.',
+      rubroCasos: 'Mira la calle: te marqué los casos de tu rubro: {casos}. Toca uno para verlo por dentro.',
+      rubroSinCasos: 'Todavía no hay un caso de tu rubro en la calle. Te marqué el local libre: puede ser el tuyo.',
       mensaje: 'Hola BiPlot, vengo de la oficina. Mi negocio: {rubro}. Mi operación vive {donde}. Horas a la semana en tareas que se repiten: {horas}. Quiero agendar un diagnóstico.'
     }
   };

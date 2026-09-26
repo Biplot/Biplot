@@ -103,17 +103,24 @@ button { font: inherit; color: inherit; }
 .menu-lista .punto { width: 12px; height: 12px; border-radius: 4px; flex: none; margin: 0 11px; }
 .placa-mini { font: 700 12px/1 var(--bp-f-mono); color: var(--bp-sobre-acento); background: var(--bp-acento); border-radius: 6px; padding: 5px 6px; }
 
-/* Pisos: planta baja y piso 1 */
-.pisos { position: absolute; z-index: 16; top: 16px; left: 158px; display: flex; gap: 4px; padding: 4px; border-radius: var(--bp-radio-pill);
-  background: rgba(14, 42, 71, .94); border: 1.5px solid var(--bp-borde-fuerte); box-shadow: var(--bp-sombra-2); }
-.pisos button { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 6px 14px 6px 6px; border: 0; border-radius: var(--bp-radio-pill); background: none;
-  color: var(--bp-texto-2); font: 600 14px/1 var(--bp-f-display); cursor: pointer; }
-.pisos button:hover { color: var(--bp-texto); background: var(--bp-superficie-2); }
-.pisos .piso-n { display: grid; place-items: center; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 99px; border: 1.5px solid var(--bp-borde-fuerte); font: 700 12px/1 var(--bp-f-mono); }
-.pisos [aria-pressed="true"] { background: var(--bp-acento-suave); color: var(--bp-texto); }
-.pisos [aria-pressed="true"] .piso-n { background: var(--bp-acento); border-color: var(--bp-acento); color: var(--bp-sobre-acento); }
-#svg-escena.cambia-piso { animation: cambia-piso .45s ease-out; }
-@keyframes cambia-piso { from { opacity: .15; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+/* El barrio en el menú: buscador, filtros y una lista por calle */
+.menu-busca { position: relative; margin: 4px 2px 8px; }
+.menu-busca svg { position: absolute; left: 12px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); fill: none; stroke: var(--bp-texto-3); stroke-width: 2; stroke-linecap: round; pointer-events: none; }
+.menu-busca input { width: 100%; min-height: 44px; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1.5px solid var(--bp-borde-fuerte); background: #0B2440; color: var(--bp-texto);
+  font: 500 15px/1.2 var(--bp-f-texto); }
+.menu-busca input::placeholder { color: var(--bp-texto-3); }
+.menu-busca input:focus-visible { border-color: var(--bp-acento); }
+.menu-filtros { display: flex; gap: 6px; margin: 0 2px 6px; }
+.menu-filtros button { flex: 1; min-height: 36px; padding: 6px 8px; border-radius: var(--bp-radio-pill); border: 1.5px solid var(--bp-borde-fuerte); background: none; color: var(--bp-texto-2);
+  font: 600 13px/1 var(--bp-f-display); cursor: pointer; }
+.menu-filtros button:hover { color: var(--bp-texto); border-color: var(--bp-acento); }
+.menu-filtros [aria-pressed="true"] { background: var(--bp-acento-suave); border-color: var(--bp-acento); color: var(--bp-texto); }
+.menu-calle h4 { margin: 12px 8px 4px; font: 700 12px/1.3 var(--bp-f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--bp-acento-texto); }
+.menu-calle[hidden], .menu-lista li[hidden], .lugares li[hidden], .archivo-grupo[hidden] { display: none; }
+.menu-vacio { margin: 10px 8px; font-size: 14px; color: var(--bp-texto-3); }
+.menu-lista .punto.lugar { background: none; border: 2px solid var(--bp-texto-3); border-radius: 50%; }
+.chip-mini { flex: none; max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 700 10.5px/1 var(--bp-f-mono); letter-spacing: .02em; color: var(--bp-acento-texto);
+  border: 1px solid rgba(127, 216, 207, .4); border-radius: 99px; padding: 5px 7px; }
 
 /* Controles */
 .controles { position: absolute; z-index: 15; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
@@ -123,6 +130,7 @@ button { font: inherit; color: inherit; }
 .controles svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .controles .con-texto { width: auto; display: flex; gap: 6px; padding: 0 12px; font: 600 13px/1 var(--bp-f-display); }
 .controles [aria-pressed="true"] { border-color: var(--bp-acento); background: #14445A; }
+.en-sala .controles, .en-sala .rotulo { display: none; }
 
 /* Bienvenida y recorrido guiado */
 .intro, .guia { position: absolute; z-index: 25; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(560px, calc(100% - 32px));
@@ -261,6 +269,93 @@ button { font: inherit; color: inherit; }
 .guia-n { display: flex; align-items: center; gap: 6px; }
 .guia-atlas .avatar { width: 30px; height: 30px; background: none; }
 
+/* La sala de cada empresa: el local por dentro, sobre la calle */
+.sala { position: absolute; inset: 0; z-index: 14; background: var(--bp-fondo-marca); opacity: 0; transition: opacity .35s ease; }
+.sala.visible { opacity: 1; }
+.sala[hidden] { display: none; }
+.sala::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(23, 195, 178, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(23, 195, 178, .05) 1px, transparent 1px); background-size: 72px 72px; }
+.sala-marco { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+.sala-dibujo-caja { position: absolute; inset: 64px 16px 60px; transform: scale(.94); transition: transform .45s ease; }
+.sala.visible .sala-dibujo-caja { transform: none; }
+.sala-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.sala-volver { position: absolute; top: 16px; left: 16px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 10px 16px 10px 12px;
+  border-radius: var(--bp-radio-pill); border: 1.5px solid var(--bp-borde-fuerte); background: rgba(14, 42, 71, .94); color: var(--bp-texto); font: 600 15px/1 var(--bp-f-display);
+  cursor: pointer; box-shadow: var(--bp-sombra-2); }
+.sala-volver:hover { border-color: var(--bp-acento); }
+.sala-volver svg, .sala-vecinos svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.sala-ayuda { position: absolute; left: 16px; bottom: 16px; margin: 0; font: 700 12px/1 var(--bp-f-mono); letter-spacing: .04em; color: var(--bp-sobre-acento); background: var(--bp-marca-cian);
+  border-radius: 8px; padding: 9px 11px; }
+.sala-vecinos { position: absolute; right: 16px; bottom: 12px; display: flex; gap: 8px; }
+.sala-vecinos button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 8px 14px; border-radius: var(--bp-radio-pill); border: 1.5px solid var(--bp-borde-fuerte);
+  background: rgba(14, 42, 71, .94); color: var(--bp-texto); font: 600 14px/1 var(--bp-f-display); cursor: pointer; }
+.sala-vecinos button:hover { border-color: var(--bp-acento); }
+.sala-vecinos button[hidden] { display: none; }
+/* Los puntos de la sala (uno por módulo) */
+.pin { cursor: pointer; outline: none; }
+.pin-cabeza { transition: transform .2s; transform-box: fill-box; transform-origin: 50% 100%; }
+.pin:hover .pin-cabeza, .pin:focus-visible .pin-cabeza { transform: scale(1.14); }
+.pin.activo .pin-cabeza { transform: scale(1.22); }
+.pin.activo .pin-cabeza path, .pin:focus-visible .pin-cabeza path { stroke: #F2F4F7; stroke-width: 3; }
+.pin-onda { transform-box: fill-box; transform-origin: center; animation: onda 1.9s ease-out infinite; }
+.pin:not(.activo) .pin-onda { animation-duration: 2.6s; opacity: .7; }
+@keyframes onda { 0% { transform: scale(.6); opacity: .95; } 100% { transform: scale(2.1); opacity: 0; } }
+.quieto .pin-onda { animation: none; opacity: 0; }
+/* El panel de la sala */
+.sala-cab { display: grid; gap: 6px; border-left: 4px solid var(--acento); padding-left: 14px; margin-bottom: 14px; }
+.sala-cab .bp-etiqueta { margin: 0; letter-spacing: .18em; }
+.sala-cliente { margin: 0 !important; font: 500 15px/1.3 var(--bp-f-texto); color: var(--bp-texto-2); }
+.chip { display: inline-flex; align-items: center; width: fit-content; font: 700 11px/1 var(--bp-f-mono); letter-spacing: .06em; text-transform: uppercase; border-radius: 99px; padding: 6px 10px;
+  background: rgba(23, 195, 178, .14); color: var(--bp-acento-texto); border: 1px solid rgba(127, 216, 207, .35); }
+.sala-bloque { padding-top: 4px; }
+.sala-bloque + .sala-bloque, .sala-construimos { border-top: 1px solid var(--bp-borde); margin-top: 18px; }
+.visor { display: grid; gap: 10px; }
+.visor img, .visor-sala { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; border: 1px solid var(--bp-borde-fuerte); background: #0B1726; }
+.visor-sala { background: var(--bp-fondo-marca); }
+.visor-txt { display: grid; gap: 3px; }
+.visor-txt .mod { font: 700 11px/1.4 var(--bp-f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--acento, var(--bp-acento-texto)); }
+.visor-txt b { font: 600 18px/1.25 var(--bp-f-display); }
+.visor-txt span:last-child { font-size: 14.5px; color: var(--bp-texto-2); }
+.tira { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 6px; margin: 12px 0 10px; }
+.tira button { position: relative; padding: 0; border: 1.5px solid var(--bp-borde); border-radius: 8px; overflow: hidden; background: #0B1726; cursor: pointer; aspect-ratio: 16 / 10; min-height: 32px; }
+.tira img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: .72; }
+.tira .n { position: absolute; left: 4px; top: 4px; display: grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; background: var(--acento); color: #0B1726; font: 700 10.5px/1 var(--bp-f-mono); }
+.tira.sin-img { grid-template-columns: 1fr; }
+.tira.sin-img button { aspect-ratio: auto; min-height: 44px; display: flex; align-items: center; gap: 10px; padding: 8px 10px; text-align: left; }
+.tira.sin-img .n { position: static; flex: none; }
+.tira .m { font: 600 14px/1.2 var(--bp-f-display); color: var(--bp-texto); }
+.tira button[aria-pressed="true"] { border-color: var(--acento); box-shadow: 0 0 0 2px var(--acento); }
+.tira button[aria-pressed="true"] img { opacity: 1; }
+.sala-enlace { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 52px; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--acento);
+  color: var(--bp-texto); text-decoration: none; font: 600 15.5px/1.25 var(--bp-f-display); margin-bottom: 8px; }
+.sala-enlace:hover { background: rgba(255, 255, 255, .04); }
+.sala-enlace small { display: block; font: 500 12.5px/1.3 var(--bp-f-texto); color: var(--bp-texto-3); }
+.sala-enlace .ico svg { width: 18px; height: 18px; display: block; }
+.medicion { list-style: none; margin: 0 0 10px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.medicion li { display: grid; gap: 5px; padding: 10px 6px; border-radius: 10px; border: 1.5px dashed var(--bp-borde-fuerte); text-align: center; }
+.medicion b { font: 600 14px/1 var(--bp-f-display); }
+.medicion span { font: 700 10px/1 var(--bp-f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--bp-texto-3); }
+.enlace-copia { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; border-radius: 12px; background: #0B1726; border: 1px solid var(--bp-borde-fuerte); margin-bottom: 10px; }
+.enlace-copia code { flex: 1; min-width: 0; font: 500 13.5px/1.3 var(--bp-f-mono); color: var(--bp-texto); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.enlace-copia button { flex: none; min-height: 40px; border: 0; border-radius: 9px; padding: 9px 14px; background: var(--bp-acento); color: var(--bp-sobre-acento); font: 700 13.5px/1 var(--bp-f-display); cursor: pointer; }
+.sala-comparte .bp-btn { margin-bottom: 10px; }
+.sala-final { margin-top: 20px; padding: 16px; border-radius: 14px; background: linear-gradient(135deg, rgba(255, 107, 74, .14), rgba(23, 195, 178, .08)); border: 1px solid rgba(255, 107, 74, .4); }
+.sala-final p { margin: 0 0 10px; font: 600 17px/1.3 var(--bp-f-display); }
+.sala-final .acciones { margin: 0; }
+/* Directorio y El Archivo: los locales de cada calle */
+.lugares { list-style: none; margin: 0 0 8px; padding: 0; display: grid; gap: 6px; }
+.lugares li, .lugares a { display: flex; align-items: center; gap: 10px; }
+.lugares li { padding: 8px 10px; border-radius: 10px; background: var(--bp-superficie-2); }
+.lugares a { flex: 1; min-width: 0; min-height: 40px; color: var(--bp-texto); text-decoration: none; }
+.directorio .lugares li { padding: 0 10px; }
+.lugares .punto { width: 12px; height: 12px; border-radius: 4px; flex: none; }
+.lugares .punto.libre { background: none !important; border: 2px dashed var(--bp-marca-cian); }
+.lugares .mt { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.lugares .mt b { font: 600 15px/1.25 var(--bp-f-display); }
+.lugares .mt > span { font-size: 13px; color: var(--bp-texto-3); line-height: 1.3; }
+.lugares .mt a { font-size: 14px; color: var(--bp-acento-texto); min-height: 32px; }
+.archivo-busca { margin: 14px 0 6px; }
+
 /* Video grande */
 .lightbox { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(9, 29, 51, .94); padding: 56px 16px 16px; }
 .lightbox[hidden] { display: none; }
@@ -304,8 +399,12 @@ button { font: inherit; color: inherit; }
   .ficha-hero { min-height: 200px; }
   .ficha-pj { height: 190px; }
   .ficha-ilus { height: 200px; }
-  .pisos { top: 12px; left: 50%; transform: translateX(-50%); }
-  .pisos button { min-height: 40px; }
+  .panel.panel-sala { max-height: 56%; }
+  .sala-dibujo-caja { inset: 60px 8px 12px; }
+  .sala-ayuda { display: none; }
+  .sala-vecinos { top: 16px; bottom: auto; right: 12px; }
+  .sala-vecinos button span { display: none; }
+  .sala-vecinos button { padding: 8px 12px; }
   .panel-cuerpo h2 { font-size: 28px; }
 }
 @media (max-width: 420px) {
@@ -332,7 +431,7 @@ button { font: inherit; color: inherit; }
 /* ── Escena: objetos animados y actores ── */
 .zona-hit { fill: transparent; pointer-events: all; cursor: pointer; }
 .actor-hit { fill: transparent; pointer-events: all; cursor: pointer; }
-.capa-piso, .capa-muros, .capa-obj, .capa-resalte, .capa-p1 { pointer-events: none; }
+.capa-piso, .capa-muros, .capa-obj, .capa-resalte { pointer-events: none; }
 .capa-obj .actor { pointer-events: auto; }
 .actor .actor-anda { transform-box: fill-box; transform-origin: 50% 100%; }
 .actor.camina .actor-anda { animation: anda .46s ease-in-out infinite; }
@@ -357,7 +456,7 @@ button { font: inherit; color: inherit; }
 .paquete.quieto { opacity: 1; transform: translateY(-70px); }
 .paquete.sube { animation: sube 2.6s ease-in forwards; }
 @keyframes sube { 0% { transform: translateY(0); opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(-150px); opacity: 0; } }
-/* Planta baja: el tubo del plano, los racks, Atlas, el set, la Puerta 404, el ascensor y el laboratorio */
+/* La oficina: el tubo del plano, los racks, Atlas, el set, la Puerta 404 y el laboratorio */
 .capsula { animation: capsula 5.5s ease-in-out infinite; }
 .capsula.quieto { animation: none; transform: translateX(40px); }
 @keyframes capsula { 0%, 12% { transform: translateX(0); opacity: 0; } 20% { opacity: 1; } 75% { transform: translateX(84px); opacity: 1; } 85%, 100% { transform: translateX(84px); opacity: 0; } }
@@ -368,59 +467,69 @@ button { font: inherit; color: inherit; }
 @keyframes rec { 0%, 60% { opacity: 1; } 61%, 100% { opacity: .15; } }
 .luz-404 { animation: luz-404 7s linear infinite; }
 @keyframes luz-404 { 0%, 46%, 50%, 54%, 100% { opacity: .9; } 48%, 52% { opacity: .1; } }
-.boton-ascensor { animation: brillo 2.2s ease-in-out infinite; }
 .barra-despues { transform-box: fill-box; transform-origin: 50% 100%; animation: barra 6s ease-in-out infinite; }
 @keyframes barra { 0%, 12% { transform: scaleY(.1); } 35%, 100% { transform: scaleY(1); } }
 .bicho { animation: bicho 1.3s ease-in-out infinite alternate; }
 .bicho-2 { animation-delay: -.6s; }
 @keyframes bicho { from { transform: translate(0, 0); } to { transform: translate(2px, -3px); } }
 
-/* Piso 1: lo que se mueve en cada sala (piso1.js). Sin animación queda el primer estado. */
-.p1-b { opacity: 0; }
-.p1-lote { animation: p1-lote 9s ease-in-out infinite; }
-@keyframes p1-lote { 0%, 40% { fill: #9CCB8F; } 50%, 90% { fill: #E0B341; } 100% { fill: #9CCB8F; } }
-.p1-pin { animation: p1-pin 9s ease-in infinite; }
-@keyframes p1-pin { 0%, 44% { transform: translateY(-40px); opacity: 0; } 48% { opacity: 1; } 54% { transform: translateY(0); } 58% { transform: translateY(-5px); } 62%, 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(0); opacity: 0; } }
-.p1-comanda { animation: p1-comanda 8s ease-out infinite; }
-@keyframes p1-comanda { 0%, 10% { transform: translateX(-26px); opacity: 0; } 22%, 88% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(0); opacity: 0; } }
-.p1-vapor { animation: vapor 2.6s ease-in-out infinite; }
+/* ── El barrio (barrio.js) ── */
+.barrio, .barrio * { pointer-events: none; }
+/* De lejos los locales se ven cerrados; de cerca, abiertos con su gente (escena.js decide según el zoom) */
+.barrio:not(.lejos) .loc-cerrado, .barrio.lejos .loc-abierto { display: none; }
+.caminante-anda { transform-box: fill-box; transform-origin: 50% 100%; }
+.caminante.camina .caminante-anda { animation: anda .5s ease-in-out infinite; }
+.caminante.camina .pj-cuerpo { animation-play-state: paused; }
+.chorro { animation: chorro 1.8s ease-in-out infinite; }
+@keyframes chorro { 0%, 100% { opacity: .75; } 50% { opacity: .35; } }
+.loc-lampara { animation: brillo 3.2s ease-in-out infinite; }
+
+/* Los locales y las salas: lo que se mueve en cada uno. Sin animación queda el primer estado. */
+.loc-b { opacity: 0; }
+.loc-lote { animation: loc-lote 9s ease-in-out infinite; }
+@keyframes loc-lote { 0%, 40% { fill: #9CCB8F; } 50%, 90% { fill: #E0B341; } 100% { fill: #9CCB8F; } }
+.loc-pin { animation: loc-pin 9s ease-in infinite; }
+@keyframes loc-pin { 0%, 44% { transform: translateY(-40px); opacity: 0; } 48% { opacity: 1; } 54% { transform: translateY(0); } 58% { transform: translateY(-5px); } 62%, 90% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(0); opacity: 0; } }
+.loc-comanda { animation: loc-comanda 8s ease-out infinite; }
+@keyframes loc-comanda { 0%, 10% { transform: translateX(-26px); opacity: 0; } 22%, 88% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(0); opacity: 0; } }
+.loc-vapor { animation: vapor 2.6s ease-in-out infinite; }
 @keyframes vapor { 0% { transform: translateY(4px); opacity: 0; } 40% { opacity: .9; } 100% { transform: translateY(-10px); opacity: 0; } }
-.p1-farol { transform-box: fill-box; transform-origin: 50% 0; animation: p1-farol 4s ease-in-out infinite; }
-.p1-farol + .p1-farol { animation-delay: -1.7s; }
-@keyframes p1-farol { 0%, 100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
-.p1-cinta-b { opacity: 0; }
-.p1-cinta { animation: p1-cinta .5s steps(1) infinite; }
-.p1-cinta-b { animation-name: p1-cinta-b; }
-@keyframes p1-cinta { 0% { opacity: 1; } 50% { opacity: 0; } }
-@keyframes p1-cinta-b { 0% { opacity: 0; } 50% { opacity: 1; } }
-.p1-huella { animation: brillo 2.4s ease-in-out infinite; }
-.p1-grua { animation: p1-grua 7s ease-in-out infinite; }
-@keyframes p1-grua { 0%, 10% { transform: translateY(-14px); } 45%, 80% { transform: translateY(0); } 100% { transform: translateY(-14px); } }
-.p1-habito { animation: p1-habito 8s steps(1) infinite; }
-@keyframes p1-habito { 0%, 49% { fill: none; } 50%, 100% { fill: #17C3B2; } }
-.p1-bandera { transform-box: fill-box; transform-origin: 0 50%; animation: p1-bandera 1.6s ease-in-out infinite; }
-@keyframes p1-bandera { 0%, 100% { transform: scaleX(1) skewY(0); } 50% { transform: scaleX(.86) skewY(-6deg); } }
-.p1-camino { animation: p1-camino 8s ease-in-out infinite; }
-@keyframes p1-camino { 0% { stroke-dasharray: 0 100; } 70%, 88% { stroke-dasharray: 100 0; opacity: .9; } 100% { stroke-dasharray: 100 0; opacity: 0; } }
-.p1-flota { animation: pj-flota 2.8s ease-in-out infinite; }
-.p1-contorno { animation: p1-contorno 2.6s ease-in-out infinite; }
-@keyframes p1-contorno { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .35; } }
+.loc-farol { transform-box: fill-box; transform-origin: 50% 0; animation: loc-farol 4s ease-in-out infinite; }
+.loc-farol + .loc-farol { animation-delay: -1.7s; }
+@keyframes loc-farol { 0%, 100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+.loc-cinta-b { opacity: 0; }
+.loc-cinta { animation: loc-cinta .5s steps(1) infinite; }
+.loc-cinta-b { animation-name: loc-cinta-b; }
+@keyframes loc-cinta { 0% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes loc-cinta-b { 0% { opacity: 0; } 50% { opacity: 1; } }
+.loc-huella { animation: brillo 2.4s ease-in-out infinite; }
+.loc-grua { animation: loc-grua 7s ease-in-out infinite; }
+@keyframes loc-grua { 0%, 10% { transform: translateY(-14px); } 45%, 80% { transform: translateY(0); } 100% { transform: translateY(-14px); } }
+.loc-habito { animation: loc-habito 8s steps(1) infinite; }
+@keyframes loc-habito { 0%, 49% { fill: none; } 50%, 100% { fill: #17C3B2; } }
+.loc-bandera { transform-box: fill-box; transform-origin: 0 50%; animation: loc-bandera 1.6s ease-in-out infinite; }
+@keyframes loc-bandera { 0%, 100% { transform: scaleX(1) skewY(0); } 50% { transform: scaleX(.86) skewY(-6deg); } }
+.loc-camino { animation: loc-camino 8s ease-in-out infinite; }
+@keyframes loc-camino { 0% { stroke-dasharray: 0 100; } 70%, 88% { stroke-dasharray: 100 0; opacity: .9; } 100% { stroke-dasharray: 100 0; opacity: 0; } }
+.loc-flota { animation: pj-flota 2.8s ease-in-out infinite; }
+.loc-contorno { animation: loc-contorno 2.6s ease-in-out infinite; }
+@keyframes loc-contorno { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .35; } }
 /* Los textos que cambian (cupos, módulos, racha) se turnan */
-.p1-a { animation: p1-a 8s steps(1) infinite; }
-.p1-b { animation: p1-b 8s steps(1) infinite; }
-@keyframes p1-a { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-@keyframes p1-b { 0%, 49% { opacity: 0; } 50%, 100% { opacity: 1; } }
-.quieto .p1-a, .quieto .p1-b, .quieto [class^="p1-"], .quieto [class*=" p1-"] { animation: none; }
+.loc-a { animation: loc-a 8s steps(1) infinite; }
+.loc-b { animation: loc-b 8s steps(1) infinite; }
+@keyframes loc-a { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes loc-b { 0%, 49% { opacity: 0; } 50%, 100% { opacity: 1; } }
+.quieto .loc-a, .quieto .loc-b, .quieto [class^="loc-"], .quieto [class*=" loc-"], .quieto .pj-cuerpo, .quieto .pj-flota, .quieto .chorro { animation: none; }
 
 /* Pausa manual (botón) */
-.oficina-quieta .pj *, .oficina-quieta .pj, .oficina-quieta .capa-obj *, .oficina-quieta .capa-piso *, .oficina-quieta .capa-muros *, .oficina-quieta .capa-p1 *, .oficina-quieta .sala-p1 *, .oficina-quieta .pulso { animation-play-state: paused !important; }
+.oficina-quieta .pj *, .oficina-quieta .pj, .oficina-quieta .capa-obj *, .oficina-quieta .capa-piso *, .oficina-quieta .capa-muros *, .oficina-quieta .barrio *, .oficina-quieta .sala-dibujo *, .oficina-quieta .pulso { animation-play-state: paused !important; }
 
 /* Movimiento reducido: todo quieto, con los estados finales a la vista */
 @media (prefers-reduced-motion: reduce) {
   #svg-escena { transition: none; }
   .pulso { animation: none; }
-  .capa-obj *, .capa-piso *, .capa-muros *, .capa-p1 *, .sala-p1 *, .pj *, .pj { animation: none !important; }
-  .p1-b, .p1-cinta-b { opacity: 0; }
+  .capa-obj *, .capa-piso *, .capa-muros *, .barrio *, .sala-dibujo *, .pj *, .pj { animation: none !important; }
+  .loc-b, .loc-cinta-b { opacity: 0; }
   .capsula { transform: translateX(40px); }
   .dato-luz:nth-of-type(odd), .qa-ok { opacity: 1; }
   .traza { stroke-dashoffset: 0; }

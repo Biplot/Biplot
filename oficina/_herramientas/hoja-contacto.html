@@ -17,6 +17,8 @@
   ids.forEach(function (i) { lista.push('ficha-' + i + '-4x5', 'ficha-' + i + '-9x16'); });
   ['oficina', 'elenco', 'motor', 'quien'].forEach(function (p) { lista.push(p + '-4x5', p + '-9x16'); });
   lista.push('oficina-og');
+  ['fundos', 'haru', 'eleven', 'nuhome', 'rumbo'].forEach(function (s) { lista.push('sala-' + s + '-og'); });
+  lista.push('sala-haru-4x5', 'sala-haru-9x16');
   var q = new URLSearchParams(location.search).get('solo');
   if (q) lista = lista.filter(function (n) { return n.indexOf(q) > -1; });
   document.getElementById('g').innerHTML = lista.map(function (n) {
