@@ -7,6 +7,7 @@
 //   node oficina/_herramientas/exportar-kit.mjs                 → todas las piezas a oficina/kit/png/
 //   node oficina/_herramientas/exportar-kit.mjs --solo ficha-lupe,oficina,sala-haru
 //   node oficina/_herramientas/exportar-kit.mjs --capturas <carpeta>   → además, la oficina a 1920/1440/1366/375 px
+//     (el barrio, la vista previa de un local, su sala, la calle, la oficina por dentro y una ficha)
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -99,31 +100,34 @@ for (const [pieza, f] of trabajos) {
   console.log('✓', path.relative(raiz, archivo), Math.round(fs.statSync(archivo).size / 1024) + ' KB');
 }
 
-// Capturas de la oficina para el PR (1920, 1440, 1366 y 375 px): la oficina y la calle, la sala de una empresa, un local
-// visto desde la calle y una ficha del equipo.
+// Capturas de la oficina para el PR (1920, 1440, 1366 y 375 px): el barrio con la oficina cerrada, la vista previa de un
+// local, su sala, la vuelta a la calle, la oficina por dentro y una ficha del equipo.
 const capturas = arg('capturas');
 if (capturas) {
   fs.mkdirSync(capturas, { recursive: true });
   const vistas = [[1920, 1080, false], [1440, 900, false], [1366, 768, false], [375, 812, true]];
+  const foto = async (nombre) => { const c = await cdp('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(path.join(capturas, nombre), Buffer.from(c.data, 'base64')); };
   for (const [w, h, movil] of vistas) {
     await ir(`${base}/oficina/`, w, h, movil, false);
     await js("try{localStorage.setItem('oficina-visto','1')}catch(e){}; true");
     await ir(`${base}/oficina/`, w, h, movil, false);
     await sleep(1600);
-    let c = await cdp('Page.captureScreenshot', { format: 'png' });
-    fs.writeFileSync(path.join(capturas, `oficina-${w}.png`), Buffer.from(c.data, 'base64'));
+    await foto(`oficina-${w}.png`);
     await js("document.querySelector('#recorrer [data-id=\"haru\"]').click(); true");
+    await sleep(1800);
+    await foto(`oficina-${w}-vista.png`);
+    await js("document.querySelector('#panel [data-entrar=\"haru\"]').click(); true");
     await sleep(2200);
-    c = await cdp('Page.captureScreenshot', { format: 'png' });
-    fs.writeFileSync(path.join(capturas, `oficina-${w}-sala.png`), Buffer.from(c.data, 'base64'));
+    await foto(`oficina-${w}-sala.png`);
     await js("document.querySelector('#sala-volver').click(); true");
     await sleep(1400);
-    c = await cdp('Page.captureScreenshot', { format: 'png' });
-    fs.writeFileSync(path.join(capturas, `oficina-${w}-calle.png`), Buffer.from(c.data, 'base64'));
+    await foto(`oficina-${w}-calle.png`);
+    await js("document.querySelector('#recorrer [data-oficina]').click(); true");
+    await sleep(1800);
+    await foto(`oficina-${w}-adentro.png`);
     await js("document.querySelector('#recorrer [data-id=\"lupe\"]').click(); true");
     await sleep(1800);
-    c = await cdp('Page.captureScreenshot', { format: 'png' });
-    fs.writeFileSync(path.join(capturas, `oficina-${w}-personal.png`), Buffer.from(c.data, 'base64'));
+    await foto(`oficina-${w}-personal.png`);
     console.log('✓ capturas a', w, 'px');
   }
 }

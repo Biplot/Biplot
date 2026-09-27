@@ -2,14 +2,16 @@
  * Oficina BiPlot · escena isométrica
  * Dibuja en un <svg> (proyección 2:1) la oficina con el equipo trabajando y, por delante, el barrio: la calle principal
  * con un local por proyecto, la plaza, El Archivo y una calle por rubro para los demás casos (barrio.js + datos.js).
- * Ubica al equipo y a la gente de la vereda y los hace caminar. Sin librerías.
+ * Desde la calle, la oficina y los locales se ven cerrados, con su nombre y su logo en el techo; la oficina se abre al
+ * entrar (oficina(true)) y recién ahí se dibuja y se anima el equipo. Ubica a la gente y la hace caminar. Sin librerías.
  * La usan la oficina (oficina.js, con cámara e interfaz) y el kit de Instagram (kit/, en modo quieto).
  *
  * Coordenadas del mundo: x hacia abajo a la derecha, y hacia abajo a la izquierda, z hacia arriba.
  * La oficina mide ANCHO × FONDO baldosas; el barrio queda a la derecha (x > 24) y por delante (y > 20), así que se
  * dibuja después. El orden de dibujo es por profundidad (x + y), en capas.
  *
- * Escena.construir(svg, { animado }) → { zonas, actores, limites, P, vitrina(ids), barrio, lod(zoom), iniciar(), detener() }
+ * Escena.construir(svg, { animado, medios }) → { zonas, actores, limites, P, vitrina(ids), barrio, oficina(abrir, animar),
+ *   abierta(), iniciar(), detener() }
  */
 (function () {
   'use strict';
@@ -211,7 +213,8 @@
   // Reemplaza las marcas §…§ de una pieza del barrio (barrio.js) con el color, el nombre y los textos del caso
   function pintar(svg, o) {
     var n = o.nombre || '', largo = n.length, color = /^#[0-9a-f]{6}$/i.test(o.color || '') ? o.color : '#7FD8CF';
-    return svg.replace(/§C(?:\.([tc])(\d+))?§/g, function (_, tipo, pct) { return tipo ? tonoHex(color, pct / 100, tipo === 't' ? 6 : 255) : color; })
+    return svg.replace(/§LOGO§/g, function () { return o.logo || ''; }).replace(/§M§/g, function () { return o.medios || ''; })
+      .replace(/§C(?:\.([tc])(\d+))?§/g, function (_, tipo, pct) { return tipo ? tonoHex(color, pct / 100, tipo === 't' ? 6 : 255) : color; })
       .replace(/§NF:(\d+):(\d+):(\d+)§/g, function (_, a, b, c) { return largo <= 9 ? a : largo <= 12 ? b : c; })
       .replace(/§NTL:(\d+):(\d+)§/g, function (_, a, b) { var l = +(largo <= 12 ? a : b); return l ? 'textLength="' + l + '" lengthAdjust="spacingAndGlyphs"' : ''; })
       .replace(/§N§/g, function () { return escXml(n); }).replace(/§LEMA§/g, function () { return escXml(o.lema || 'Tu sistema, al día'); })
@@ -256,7 +259,12 @@
   // Arma el barrio desde barrio.js (lo dibujado) y datos.js (los casos): la calle principal con los locales hechos a mano
   // y, por delante, una calle por rubro, en el orden en que llegó el primer caso de cada rubro. Cada calle termina con un
   // local que se arrienda y completa siete lotes.
-  function armarBarrio(D, B) {
+  // El logo del techo de un caso: su archivo de logo (en la carpeta de medios) o el dibujo de su rubro
+  function logoDe(p, B, medios) {
+    if (p.logo && /^[\w.-]+\.(webp|png|svg|jpg)$/.test(p.logo)) return '<image href="' + medios + escXml(p.logo) + '" width="168" height="168"/>';
+    return B.local.insignias[p.calle] || B.local.insignias.otro;
+  }
+  function armarBarrio(D, B, medios) {
     var G = B.geo, W = 4.6, FD = 4.3, proy = D.proyectos || [], nombres = (D.barrio && D.barrio.calles) || {};
     var enPrincipal = {}; B.principal.locales.forEach(function (l) { enPrincipal[l.id] = true; });
     var porId = {}; proy.forEach(function (p) { porId[p.id] = p; });
@@ -270,10 +278,11 @@
     });
     var n = casos.length, pisos = Math.max(1, Math.min(4, Math.ceil(n / 10)));
     var suelo = B.principal.suelo, filas = '', cajas = [B.principal.caja];
-    var atras = B.principal.atras.replace(/§CASOS§/g, n + (n === 1 ? ' caso' : ' casos')).replace(/§NCASOS§/g, n + (n === 1 ? ' CASO' : ' CASOS'));
+    var atras = B.principal.atras.replace(/§CASOS§/g, n + (n === 1 ? ' caso' : ' casos')).replace(/§NCASOS§/g, n + (n === 1 ? ' CASO' : ' CASOS')).replace(/§M§/g, medios);
     var zonas = B.principal.zonas.map(function (z) {
       var p = porId[z.id];
-      return { id: z.id, nombre: z.id === 'archivo' ? 'El Archivo' : z.id === 'pasaje' ? 'El pasaje' : p ? p.nombre : z.id, caja: z.caja, foco: z.foco, zoom: 2.1, barrio: true, calle: 'principal' };
+      var nombre = z.id === 'oficina' ? 'BiPlot HQ' : z.id === 'archivo' ? 'El Archivo' : z.id === 'pasaje' ? 'El pasaje' : p ? p.nombre : z.id;
+      return { id: z.id, nombre: nombre, caja: z.caja, foco: z.foco, zoom: 2.1, barrio: true, hq: !!z.hq, calle: z.hq ? '' : 'principal' };
     });
     var L = B.local, yFin = G.y1, xFin = G.x1;
     if (calles.length) suelo += losaB(G.avenida[0], 20, 0, G.y1, false, false);
@@ -287,26 +296,19 @@
         var ox = 0.15 + j * G.paso, oy = Y + 0.15, p = c.casos[j];
         if (p || j === c.casos.length) {
           var libre = !p, estado = libre ? 'arriendo' : estadoDeFase(p.fase), id = libre ? 'libre-' + c.id : p.id;
-          var o = libre ? { color: '#7FD8CF', nombre: 'SE ARRIENDA' } : { color: p.acento, nombre: letreroDe(p), lema: p.lema, lineas: p.lineas };
-          var adentro = estado === 'abierto' || estado === 'inauguracion' ? L.interior[p.plantilla] || L.interior.basica : L.interior[estado];
-          if (estado === 'inauguracion') adentro += '§FRENTE§' + L.extra.inauguracion; else adentro += '§FRENTE§';
-          if (estado === 'abierto' && String(p.fase || 'E9') === 'E9') adentro += L.extra.placa90;
-          locales += '<g class="loc" data-local="' + escXml(id) + '">' + en(ox, oy, '<g class="loc-abierto">' + pintar(adentro.replace('§FRENTE§', function () { return L.frente; }), o) + '</g>' +
-            '<g class="loc-cerrado">' + pintar(L.cerrado[estado], o) + '</g>') + '</g>';
+          var o = libre ? { color: '#7FD8CF', nombre: 'SE ARRIENDA' } : { color: p.acento, nombre: letreroDe(p), logo: logoDe(p, B, medios) };
+          locales += '<g class="local" data-local="' + escXml(id) + '">' + en(ox, oy, pintar(L.cerrado[estado], o)) + '</g>';
           suelo += en(ox, oy, pintar(L.suelo, o));
-          // El letrero colgante sobresale a la vereda: va con lo de la vereda, no con el local
-          obj.push([ox + 4.5 + oy + 5.0, en(ox, oy, '<g class="loc-abierto">' + pintar(L.bandera, o) + '</g>')]);
-          zonas.push({ id: id, nombre: libre ? 'Tu proyecto aquí' : nombreDe(p), caja: [ox, oy, ox + W, oy + FD, 2.4], foco: [ox + W / 2, oy + FD / 2, 1.0], zoom: 2.1, barrio: true, calle: c.id, libre: libre });
+          zonas.push({ id: id, nombre: libre ? 'Tu proyecto aquí' : nombreDe(p), caja: [ox, oy, ox + W, oy + FD, 2.5], foco: [ox + W / 2, oy + FD / 2, 1.0], zoom: 2.1, barrio: true, calle: c.id, libre: libre });
         } else suelo += en(ox, oy, L.fantasma + (j === c.casos.length + 1 ? L.sitioLibre : ''));
       }
       // La vereda de la calle: faroles, árboles, el letrero con su nombre y gente de paso
       for (var xf = 3; xf < X1 - 1; xf += 9.4) { suelo += en(xf, Y + 8.65, B.fila.farolSuelo); obj.push([xf + Y + 8.65, en(xf, Y + 8.65, B.fila.farol)]); }
       for (var xa = 7.5; xa < X1 - 1; xa += 9.4) obj.push([xa + Y + 8.55, en(xa, Y + 8.55, B.fila.arbol)]);
       obj.push([Y + 9, en(0.45, Y + 8.55, pintar(B.fila.letrero, { calle: c.nombre.toUpperCase() }))]);
-      [[4 + r, 6.0], [12 + 2 * r, 6.6], [22 - r, 5.8]].forEach(function (g, i) {
-        var quien = B.dePaso[(r * 3 + i) % B.dePaso.length];
-        obj.push([g[0] + Y + g[1], en(g[0], Y + g[1], B.personas[quien][i % 2 ? 'i' : 'd'])]);
-      });
+      // Una persona de paso por calle (el barrio se ve tranquilo y pesa menos)
+      var gx = 6 + (r * 7.3) % 16, quien = B.dePaso[r % B.dePaso.length];
+      obj.push([gx + Y + 6.2, en(gx, Y + 6.2, B.personas[quien][r % 2 ? 'i' : 'd'])]);
       obj.sort(function (a, b) { return a[0] - b[0]; });
       filas += '<g class="fila" data-calle="' + escXml(c.id) + '">' + locales + obj.map(function (o) { return o[1]; }).join('') + '</g>';
     });
@@ -318,7 +320,7 @@
     }
     var caja = cajas.reduce(function (m, k) { return { x0: Math.min(m.x0, k.x0), y0: Math.min(m.y0, k.y0), x1: Math.max(m.x1, k.x1), y1: Math.max(m.y1, k.y1) }; });
     return {
-      defs: B.defs, suelo: suelo, atras: atras, frente: B.principal.frente, filas: filas, zonas: zonas, caja: caja, pisos: pisos,
+      defs: B.defs, suelo: suelo, atras: atras, frente: B.principal.frente, hq: B.principal.hq.replace(/§M§/g, medios), filas: filas, zonas: zonas, caja: caja, pisos: pisos,
       calles: calles.map(function (c) { return { id: c.id, nombre: c.nombre, casos: c.casos.map(function (p) { return p.id; }), y: c.y }; }),
       principal: B.principal.locales.map(function (l) { return l.id; }), total: n
     };
@@ -706,11 +708,16 @@
       z.suelo = pts([[b[0], b[1], 0], [b[2], b[1], 0], [b[2], b[3], 0], [b[0], b[3], 0]]);
       return '<polygon class="zona-hit" data-zona="' + z.id + '" points="' + z.silueta + '"/>';
     }
-    zonas.forEach(function (z) { hits += silueta(z); });
+    zonas.forEach(function (z) { z.adentro = true; hits += silueta(z); });
 
-    /* ── El barrio: la calle principal, la plaza y las calles por rubro (barrio.js + datos.js) ── */
-    var BR = window.Barrio ? armarBarrio(window.OFICINA_DATOS || {}, window.Barrio) : null;
-    if (BR) BR.zonas.forEach(function (z) { hits += silueta(z); zonas.push(z); });
+    /* ── El barrio: la oficina cerrada, la calle principal, la plaza y las calles por rubro (barrio.js + datos.js) ── */
+    // Sus zonas se tocan en su propia capa, encima de todo: la oficina de adentro sólo se toca con la oficina abierta.
+    var BR = window.Barrio ? armarBarrio(window.OFICINA_DATOS || {}, window.Barrio, opciones.medios || 'media/salas/') : null, hitsBarrio = '';
+    if (BR) BR.zonas.forEach(function (z) {
+      hitsBarrio += silueta(z); zonas.push(z);
+      // El pasaje hasta la puerta también es la entrada a la oficina
+      if (z.hq && window.Barrio.hq.entrada) { var e = window.Barrio.hq.entrada; hitsBarrio += '<polygon class="zona-hit" data-zona="oficina" points="' + pts([[e[0], e[1], e[4]], [e[2], e[1], e[4]], [e[2], e[1], 0], [e[2], e[3], 0], [e[0], e[3], 0], [e[0], e[3], e[4]]]) + '"/>'; }
+    });
 
     /* ── Montaje del SVG ── */
     var defs = E.defs().replace('</defs>',
@@ -722,16 +729,18 @@
     var html = defs + '<g class="piso piso-0"><g class="capa-piso">' + piso + '</g><g class="capa-muros">' + muros + '</g><g class="capa-hit">' + hits + '</g><g class="capa-obj">';
     for (var c = 0; c < BUCKETS; c++) html += '<g data-p="' + c + '">' + cubos[c] + '</g>';
     html += '</g></g>';
-    // El barrio va después de la oficina: todo lo suyo está a la derecha (x > 24) o por delante (y > 20)
-    if (BR) html += '<g class="barrio' + (animado ? '' : ' quieto') + '"><g class="barrio-suelo">' + BR.suelo + '</g><g class="barrio-atras">' + BR.atras + '</g>' +
-      '<g class="barrio-caminantes"></g><g class="barrio-frente">' + BR.frente + '</g><g class="barrio-filas">' + BR.filas + '</g></g>';
+    // La oficina cerrada tapa el interior; el barrio va después: todo lo suyo está a la derecha (x > 24) o por delante (y > 20)
+    if (BR) html += '<g class="hq-cerrada">' + BR.hq + '</g>' +
+      '<g class="barrio' + (animado ? '' : ' quieto') + '"><g class="barrio-suelo">' + BR.suelo + '</g><g class="barrio-atras">' + BR.atras + '</g>' +
+      '<g class="barrio-caminantes"></g><g class="barrio-frente">' + BR.frente + '</g><g class="barrio-filas">' + BR.filas + '</g></g>' +
+      '<g class="capa-hit capa-hit-barrio">' + hitsBarrio + '</g>';
     html += '<g class="capa-resalte"></g>';
     svg.innerHTML = html;
 
     var capaObj = svg.querySelector('.capa-obj');
     if (BR) {
-      // El Archivo de lejos: el edificio con un piso cada diez casos
-      Array.prototype.slice.call(svg.querySelectorAll('.loc-cerrado[data-pisos]')).forEach(function (g) { if (+g.getAttribute('data-pisos') !== BR.pisos) g.parentNode.removeChild(g); });
+      // El Archivo: el edificio sube un piso cada diez casos (se deja sólo el que corresponde)
+      Array.prototype.slice.call(svg.querySelectorAll('.local[data-pisos]')).forEach(function (g) { if (+g.getAttribute('data-pisos') !== BR.pisos) g.parentNode.removeChild(g); });
       // El directorio del pasaje: cada calle con sus locales abiertos
       var dir = svg.querySelector('.directorio-lista');
       if (dir) {
@@ -819,7 +828,8 @@
       if (!corriendo) return;
       var dt = Math.min(0.05, (t - (ultimo || t)) / 1000); ultimo = t;
       caminantes.forEach(function (w) { andar(w, dt); });
-      Object.keys(actores).forEach(function (id) {
+      // El equipo sólo se mueve con la oficina abierta (cerrada no se ve: no se dibuja)
+      if (abierta) Object.keys(actores).forEach(function (id) {
         var a = actores[id]; if (!a.ruta) return;
         if (a.espera > 0) { a.espera -= dt; if (a.espera <= 0) a.g.classList.remove('parado'); return; }
         var sig = a.ruta[(a.i + 1) % a.ruta.length], dx = sig[0] - a.x, dy = sig[1] - a.y, dist = Math.sqrt(dx * dx + dy * dy);
@@ -844,7 +854,7 @@
     }
     // Ruta: cada actor parte en su primer punto con su espera
     Object.keys(actores).forEach(function (id) { var a = actores[id]; if (a.ruta) a.espera = (a.ruta[0][2] || 0) * (0.3 + Math.random() * 0.5); });
-    var lanzador = setInterval(function () { if (corriendo) lanzar(); }, 14000);
+    var lanzador = setInterval(function () { if (corriendo && abierta) lanzar(); }, 14000);
 
     // Reloj con la hora de Chile
     function reloj() {
@@ -864,15 +874,35 @@
     if (BR) limites = { x0: Math.min(limites.x0, BR.caja.x0), y0: Math.min(limites.y0, BR.caja.y0), x1: Math.max(limites.x1, BR.caja.x1), y1: Math.max(limites.y1, BR.caja.y1) };
     svg.setAttribute('viewBox', [limites.x0, limites.y0, limites.x1 - limites.x0, limites.y1 - limites.y0].join(' '));
 
-    // De lejos, los locales se ven cerrados (menos que dibujar); de cerca, abiertos con su gente.
-    // zoom: píxeles de pantalla por unidad del dibujo. Un local mide (4,6 + 4,3) × 32 unidades de ancho.
-    var lejos = false;
-    function lod(zoom) {
-      if (!BR) return false;
-      var ancho = 284.8 * zoom, nuevo = lejos ? ancho < 112 : ancho < 96;
-      if (nuevo !== lejos) { lejos = nuevo; svg.querySelector('.barrio').classList.toggle('lejos', lejos); }
-      return lejos;
+    // La oficina se ve cerrada desde la calle y se abre al entrar: el techo se desvanece, el barrio queda en penumbra y el
+    // interior (el equipo, las salas) recién ahí se dibuja y se anima. Sin barrio, la oficina queda siempre abierta.
+    var piso0 = svg.querySelector('.piso-0'), hqG = svg.querySelector('.hq-cerrada'), barrioG = svg.querySelector('.barrio'), hitsB = svg.querySelector('.capa-hit-barrio');
+    var abierta = !BR, cierre = 0, DUR = animado ? 550 : 0;
+    [hqG, barrioG].forEach(function (g) { if (g && DUR) g.style.transition = 'opacity ' + DUR + 'ms ease'; });
+    // o.penumbra === false: la calle no se oscurece (el kit muestra la oficina abierta con su barrio)
+    function oficina(abrir, animar, o) {
+      if (!BR) return true;
+      abrir = !!abrir; o = o || {};
+      var dur = animar === false ? 0 : DUR;
+      clearTimeout(cierre);
+      if (abrir) {
+        piso0.style.display = '';
+        if (dur) void piso0.getBoundingClientRect();
+        hqG.style.opacity = '0'; hqG.style.pointerEvents = 'none'; barrioG.style.opacity = o.penumbra === false ? '' : '.12'; hitsB.style.display = 'none';
+        svg.classList.add('oficina-abierta');
+        if (!dur) hqG.style.visibility = 'hidden'; else cierre = setTimeout(function () { hqG.style.visibility = 'hidden'; }, dur);
+      } else {
+        hqG.style.visibility = ''; hqG.style.pointerEvents = '';
+        if (dur) void hqG.getBoundingClientRect();
+        hqG.style.opacity = '1'; barrioG.style.opacity = ''; hitsB.style.display = '';
+        svg.classList.remove('oficina-abierta');
+        var ocultar = function () { piso0.style.display = 'none'; Object.keys(actores).forEach(function (id) { actores[id].g.classList.remove('camina'); }); };
+        if (!dur) ocultar(); else cierre = setTimeout(ocultar, dur);
+      }
+      abierta = abrir;
+      return abierta;
     }
+    if (BR) oficina(false, false);
     // La vitrina muestra otros tres casos (los que elige Plotty según el rubro)
     function cambiarVitrina(ids, titulo) {
       var D = window.OFICINA_DATOS || {}, lista = (D.proyectos || []).concat(D.casos || []);
@@ -885,7 +915,8 @@
 
     return {
       zonas: zonas, actores: actores, limites: limites, P: P, iniciar: iniciar, detener: detener, lanzar: lanzar, vitrina: cambiarVitrina,
-      barrio: BR ? { calles: BR.calles, principal: BR.principal, total: BR.total } : null, lod: lod, caminantes: caminantes,
+      barrio: BR ? { calles: BR.calles, principal: BR.principal, total: BR.total } : null, caminantes: caminantes,
+      oficina: oficina, abierta: function () { return abierta; },
       destruir: function () { detener(); clearInterval(lanzador); clearInterval(relojInt); },
       corriendo: function () { return corriendo; }
     };
@@ -893,5 +924,5 @@
 
   function hexA(hex, a) { var c = hex2rgb(hex); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
 
-  window.Escena = { construir: construir, P: P, ESCALA_ACTOR: ESCALA_ACTOR };
+  window.Escena = { construir: construir, P: P, ESCALA_ACTOR: ESCALA_ACTOR, pintar: pintar };
 })();
