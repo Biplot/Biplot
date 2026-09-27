@@ -156,7 +156,7 @@
     if (sv) {
       var e = window.Escena.construir(sv, { animado: false });
       sv.setAttribute('viewBox', ENCUADRE[f] || ENCUADRE['4x5']);
-      e.lod(1);
+      e.oficina(true, false, { penumbra: false });
       sv.querySelector('#paquete') && sv.querySelector('#paquete').classList.add('quieto');
       div._escena = e;
     }

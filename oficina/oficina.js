@@ -1,7 +1,8 @@
 /*
  * Oficina BiPlot · interfaz
  * Cámara (arrastrar, rueda, pellizco, teclado), menú «Recorre la oficina» con el barrio y su buscador, recorrido guiado,
- * paneles, la sala de cada empresa (salas.js, se carga al entrar), El Archivo, el chat de Plotty y los enlaces directos.
+ * paneles, la oficina que se abre al entrar, la vista previa de cada local y la sala de cada empresa (salas.js, se carga
+ * con el primer local), El Archivo, el chat de Plotty y los enlaces directos.
  * Todo lo que se puede hacer con el mouse en la escena también se puede hacer desde el menú con teclado.
  */
 (function () {
@@ -106,7 +107,6 @@
     // Mantiene el barrio a la vista: el centro no se sale de los límites.
     cam.x = Math.max(L.x0, Math.min(L.x1, cam.x)); cam.y = Math.max(L.y0, Math.min(L.y1, cam.y));
     svg.setAttribute('viewBox', [cam.x - w / 2, cam.y - h / 2, w, h].map(function (n) { return Math.round(n * 100) / 100; }).join(' '));
-    esc3.lod(cam.z);
     moverRotulo();
   }
   // Centro de cámara que deja el punto (sx, sy) al centro del área libre (descontando menú y panel).
@@ -143,7 +143,7 @@
     } else if (obj.tipo === 'zona') {
       var zn = zonaPorId(obj.id); if (!zn) return;
       var q = P(zn.foco[0], zn.foco[1], zn.foco[2]);
-      var ventana = zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.barrio ? 470 : 520;
+      var ventana = zn.hq ? 1250 : zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.barrio ? 470 : 520;
       volar(q[0], q[1], zPara(obj.ventana || ventana), dur, fin);
     }
   }
@@ -183,8 +183,9 @@
   function textoRotulo(obj) {
     if (obj.tipo === 'actor') { var p = PERSONAL[obj.id]; return '<b>' + esc(p.nombre) + '</b><span>' + esc(p.rol) + ' · ' + p.placa + '</span>'; }
     var zn = zonaPorId(obj.id), accion = 'Ver más', pr = PROYECTOS[obj.id];
-    if (obj.id === 'libre' || zn.libre) accion = 'Conversar con Plotty';
-    else if (tieneSala(obj.id)) accion = 'Entrar a la sala';
+    if (zn.hq) accion = 'Entrar a la oficina';
+    else if (obj.id === 'libre' || zn.libre) accion = 'Conversar con Plotty';
+    else if (tieneSala(obj.id)) accion = 'Ver el local y su sala';
     else if (pr) accion = ESTADO_TXT[estadoDe(pr)] + ' · Ver el local';
     else if (obj.id === 'archivo') accion = 'Ver todos los casos';
     else if (obj.id === 'pasaje') accion = 'Ver el directorio';
@@ -220,13 +221,16 @@
     var r = rect(), vb = svg.viewBox.baseVal;
     var sx = vb.x + (clx - r.left) * vb.width / r.width, sy = vb.y + (cly - r.top) * vb.height / r.height;
     var x = (sx / 32 + sy / 16) / 2, y = (sy / 16 - sx / 32) / 2;
-    var z = esc3.zonas.filter(function (zn) { var b = zn.caja; return x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]; })[0];
+    var z = esc3.zonas.filter(function (zn) { var b = zn.caja; return zn.adentro && x >= b[0] && x <= b[2] && y >= b[1] && y <= b[3]; })[0];
     return z ? { tipo: 'zona', id: z.id } : null;
   }
   function objetoEn(el, clx, cly) {
     if (!el || !el.closest) return null;
     var a = el.closest('.actor'); if (a) return { tipo: 'actor', id: a.getAttribute('data-actor') };
-    if (el.classList && el.classList.contains('zona-hit')) return (clx !== undefined && zonaEnPiso(clx, cly)) || { tipo: 'zona', id: el.getAttribute('data-zona') };
+    if (el.classList && el.classList.contains('zona-hit')) {
+      var zn = zonaPorId(el.getAttribute('data-zona'));
+      return (zn && zn.adentro && clx !== undefined && zonaEnPiso(clx, cly)) || { tipo: 'zona', id: el.getAttribute('data-zona') };
+    }
     return null;
   }
   svg.addEventListener('pointerdown', function (e) {
@@ -337,6 +341,7 @@
   }
   function construirMenu() {
     var h = '<h2 class="menu-t" id="recorrer-t">Recorre la oficina</h2>' +
+      '<button type="button" class="menu-guia menu-oficina" data-oficina="1"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span><span class="txt">Entrar a la oficina</span></button>' +
       '<button type="button" class="menu-guia" data-guia="1"><span class="ico" aria-hidden="true">' + icono('ruta') + '</span>Hacer el recorrido guiado</button>' +
       '<button type="button" class="menu-guia menu-chat" data-chat="1">' + avatar('plotty', 'mini') + 'Conversar con Plotty</button>' +
       '<h3 class="menu-sub">El equipo</h3><ul class="menu-lista menu-personal">';
@@ -383,6 +388,7 @@
       filtrarBarrio(); return;
     }
     if (window.innerWidth < 900) alternarMenu(false);
+    if (b.hasAttribute('data-oficina')) { if (esc3.abierta()) { if (!panel.hidden && abierto && deAdentro(abierto)) cerrarPanel(); salirOficina(); } else entrarOficina({ boton: b }); return; }
     if (b.hasAttribute('data-guia')) { iniciarGuia(0); return; }
     if (b.hasAttribute('data-chat')) { abrir({ tipo: 'chat', id: 'plotty' }, false, b); return; }
     abrir({ tipo: b.getAttribute('data-tipo'), id: b.getAttribute('data-id') }, false, b);
@@ -392,6 +398,7 @@
   menu.addEventListener('focusin', function (e) {
     var b = e.target.closest('button[data-id]'); if (!b || !b.matches(':focus-visible') || enSala || devolviendoFoco) return;
     var obj = { tipo: b.getAttribute('data-tipo'), id: b.getAttribute('data-id') };
+    if (deAdentro(obj) !== esc3.abierta()) return;
     resaltar(obj); irA(obj);
   });
   function alternarMenu(abrirlo) {
@@ -417,17 +424,21 @@
     if (PROYECTOS[obj.id]) return 'Local · ' + calleDe(obj.id);
     return obj.id === 'vitrina' ? 'Recepción · La vitrina' : SALAS[obj.id].etiqueta;
   }
+  // Lo de adentro (el equipo, Plotty, las salas de la oficina) se ve con la oficina abierta; lo del barrio, desde la calle
+  function deAdentro(obj) { var zn = obj.tipo === 'zona' && zonaPorId(obj.id); return obj.tipo === 'actor' || obj.tipo === 'chat' || !!(zn && zn.adentro); }
   function abrir(obj, desdeEscena, boton) {
-    if (obj.tipo === 'zona' && tieneSala(obj.id)) { entrarSala(obj.id, { boton: boton }); return; }
+    if (obj.tipo === 'zona' && obj.id === 'oficina') { entrarOficina({ boton: boton }); return; }
     if (obj.tipo === 'zona' && !zonaPorId(obj.id)) return;
     if (enSala) salirSala({ sinCamara: true });
+    if (deAdentro(obj)) { if (!esc3.abierta()) entrarOficina({ sinCamara: true }); }
+    else if (esc3.abierta()) salirOficina({ sinCamara: true });
     // Los locales libres del barrio abren la conversación con Plotty
     var zn = obj.tipo === 'zona' ? zonaPorId(obj.id) : null;
     var chatLibre = zn && (zn.libre || obj.id === 'libre');
     detenerMedios();
     invocador = boton || document.activeElement;
     abierto = obj;
-    panelCuerpo.innerHTML = obj.tipo === 'actor' ? htmlPersonaje(obj.id) : obj.tipo === 'chat' ? htmlChatPanel() : chatLibre ? htmlLibre(obj.id) : htmlZona(obj.id);
+    panelCuerpo.innerHTML = obj.tipo === 'actor' ? htmlPersonaje(obj.id) : obj.tipo === 'chat' ? htmlChatPanel() : chatLibre ? htmlLibre(obj.id) : tieneSala(obj.id) ? htmlProyecto(PROYECTOS[obj.id]) : htmlZona(obj.id);
     panel.hidden = false; document.body.classList.add('panel-abierto'); panel.classList.remove('panel-sala');
     $('#panel-nombre').textContent = tituloPanel(obj);
     $('#panel-cerrar').setAttribute('aria-label', 'Cerrar');
@@ -437,6 +448,7 @@
     if (panelCuerpo.querySelector('.chat')) iniciarChat(panelCuerpo.querySelector('.chat'));
     if (panelCuerpo.querySelector('.archivo-busca')) iniciarArchivo();
     if (obj.tipo === 'actor') conIlustraciones(function () { pintarIlustracion(obj.id); });
+    pintarVistas();
     if (obj.tipo === 'chat') resaltar({ tipo: 'actor', id: 'plotty' }); else resaltar(obj);
     requestAnimationFrame(function () { irA(obj.tipo === 'chat' ? { tipo: 'actor', id: 'plotty' } : obj); });
     var t = $('#panel-titulo'); if (t) t.focus({ preventScroll: true });
@@ -457,10 +469,13 @@
     if (enSala) { salirSala(); return; }
     if (!panel.hidden) cerrarPanel();
     else if (!$('#guia').hidden) terminarGuia();
+    else if (esc3.abierta()) salirOficina();
   });
   panelCuerpo.addEventListener('click', function (e) {
     var b = e.target.closest('[data-abrir]');
     if (b) { e.preventDefault(); var v = b.getAttribute('data-abrir').split(':'); abrir({ tipo: v[0], id: v[1] }, false, invocador); return; }
+    var en = e.target.closest('[data-entrar]');
+    if (en) { e.preventDefault(); entrarSala(en.getAttribute('data-entrar'), { boton: invocador }); return; }
     var g = e.target.closest('[data-grande]');
     if (g) { e.preventDefault(); abrirLightbox(g.getAttribute('data-grande'), g.getAttribute('data-grande-v')); return; }
     var ru = e.target.closest('[data-rubro]');
@@ -480,7 +495,8 @@
       afuera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
       play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
       calle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L9 4M20 20L15 4M12 6v2M12 11v2M12 16v2"/></svg>',
-      compartir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>'
+      compartir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>',
+      entrar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M4 12h11M11 8l4 4-4 4"/></svg>'
     };
     return I[n] || '';
   }
@@ -558,7 +574,7 @@
   function listaVitrina() {
     return '<ul class="vitrina">' + vitrinaIds.map(function (id) {
       var pr = PROYECTOS[id], c = CASOS[id];
-      if (pr) return '<li><span class="punto" style="background:' + pr.acento + '" aria-hidden="true"></span><div><b>' + esc(pr.nombre) + '</b><span>' + esc(pr.rubro) + '</span><a href="#" data-abrir="zona:' + id + '">' + (tieneSala(id) ? 'Entrar a la sala' : 'Ver el local') + '</a></div></li>';
+      if (pr) return '<li><span class="punto" style="background:' + pr.acento + '" aria-hidden="true"></span><div><b>' + esc(pr.nombre) + '</b><span>' + esc(pr.rubro) + '</span><a href="#" data-abrir="zona:' + id + '">Ver el local</a></div></li>';
       if (c) return '<li><span class="num">' + c.num + '</span><div><b>' + esc(c.nombre) + '</b><span>' + esc(c.rubro) + ' · caso de referencia</span><a href="' + esc(c.demo) + '">Ver la demo</a> · <a href="' + esc(c.caso) + '">Leer el caso</a></div></li>';
       return '';
     }).join('') + '</ul>';
@@ -578,7 +594,7 @@
       var lista = D.proyectos.filter(function (p) { return !p.libre && p.calle === o[0]; });
       return lista.length ? '<section class="archivo-grupo"><h3>' + esc(o[1]) + '</h3><ul class="lugares">' + lista.map(function (p) {
         var st = p.permiso === 'archivo' ? 'Sólo en El Archivo' : chipCaso(p);
-        var accion = p.permiso === 'archivo' ? '' : '<a href="#" data-abrir="zona:' + esc(p.id) + '">' + (tieneSala(p.id) ? 'Entrar a la sala' : 'Ver el local') + '</a>';
+        var accion = p.permiso === 'archivo' ? '' : '<a href="#" data-abrir="zona:' + esc(p.id) + '">Ver el local</a>';
         return '<li data-busca="' + esc(normal(nombreCaso(p) + ' ' + p.rubro + ' ' + o[1])) + '"><span class="punto" style="background:' + esc(p.acento || '#35679A') + '" aria-hidden="true"></span><span class="mt"><b>' + esc(nombreCaso(p)) + '</b><span>' + esc(p.permiso === 'rubro' ? 'Caso sin nombre' : p.rubro) + ' · ' + esc(st) + '</span>' + accion + '</span></li>';
       }).join('') + '</ul></section>' : '';
     }).join('');
@@ -598,10 +614,45 @@
       panelCuerpo.querySelector('.archivo-vacio').hidden = hay > 0;
     });
   }
-  // Un local con plantilla: su vista, en qué fase va y quién trabaja en él
+  // La vista previa de un local con sala: el video (o la sala dibujada), qué hicimos y el botón para entrar a la sala
+  function htmlProyecto(pr) {
+    return (pr.media ? htmlMedia(pr) : '<div class="media media-sala vista-sala" data-vista-sala="' + esc(pr.id) + '" role="img" aria-label="La sala de ' + esc(pr.nombre) + ' por dentro"></div>') +
+      '<p class="bp-etiqueta">' + esc(pr.rubro) + '</p>' +
+      '<h2 id="panel-titulo" tabindex="-1">' + esc(pr.nombre) + '</h2>' +
+      '<p class="lema">' + esc(pr.cliente) + ' · <span class="estado">' + esc(pr.corto || pr.estado) + '</span></p>' +
+      '<p class="esencia">' + esc(pr.esencia) + '</p>' +
+      '<div class="acciones entrar-sala"><button type="button" class="bp-btn primario" data-entrar="' + esc(pr.id) + '"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Entrar a la sala</button></div>' +
+      '<p>' + esc(pr.resumen) + '</p>' +
+      '<ul class="puntos">' + pr.puntos.map(function (x) { return '<li><b>' + esc(x[0]) + '</b>' + esc(x[1]) + '</li>'; }).join('') + '</ul>' +
+      (pr.enlaces.length ? '<div class="acciones">' + pr.enlaces.map(function (l) { return enlaceExterno(l.texto, l.url); }).join('') + '</div>' : '') +
+      (pr.nota ? '<p class="nota">' + esc(pr.nota) + '</p>' : '') +
+      '<h3>Quién trabajó aquí</h3>' + chipsEquipo(pr.equipo);
+  }
+  // Las vistas que se dibujan después de abrir el panel: la sala de un proyecto (salas.js) o el local por dentro (locales.js)
+  function pintarVistas() {
+    var vs = panelCuerpo.querySelector('[data-vista-sala]');
+    if (vs) conSalas(function () {
+      var S = window.Salas.salas[vs.getAttribute('data-vista-sala')]; if (!S || !document.contains(vs)) return;
+      vs.innerHTML = '<svg viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="quieto sin-pines">' + S.svg.replace(/§M§/g, MEDIOS) + '</g></svg>';
+    });
+    var vl = panelCuerpo.querySelector('[data-vista-local]');
+    if (vl) conLocales(function () {
+      var pr = PROYECTOS[vl.getAttribute('data-vista-local')], Lc = window.Locales; if (!pr || !document.contains(vl)) return;
+      var est = estadoDe(pr), adentro = est === 'abierto' || est === 'inauguracion' ? Lc.interior[pr.plantilla] || Lc.interior.basica : Lc.interior[est] || Lc.interior.basica;
+      adentro += Lc.frente + (est === 'inauguracion' ? Lc.extra.inauguracion : '') + (est === 'abierto' && String(pr.fase || 'E9') === 'E9' ? Lc.extra.placa90 : '');
+      var o = { color: pr.acento, nombre: pr.permiso === 'rubro' ? String(pr.rubro || '').split(' · ')[0].split(',')[0].toUpperCase() : String(pr.letrero || pr.nombre || '').toUpperCase(), lema: pr.lema, lineas: pr.lineas };
+      // El cuadro: el local entero (con su letrero colgante), en 16:9
+      var q = [P(0, 0, 2.3), P(4.6, 0, 2.3), P(4.6, 5.4, 0), P(0, 5.4, 0), P(0, 4.3, 0)];
+      var x0 = Math.min.apply(null, q.map(function (c) { return c[0]; })) - 16, x1 = Math.max.apply(null, q.map(function (c) { return c[0]; })) + 16;
+      var y0 = Math.min.apply(null, q.map(function (c) { return c[1]; })), y1 = Math.max.apply(null, q.map(function (c) { return c[1]; }));
+      var w = x1 - x0, h = w * 9 / 16, cy = (y0 + y1) / 2;
+      vl.innerHTML = '<svg viewBox="' + [x0, cy - h / 2, w, h].map(Math.round).join(' ') + '" aria-hidden="true"><g class="quieto">' + window.Escena.pintar(adentro, o) + '</g></svg>';
+    });
+  }
+  // Un local con plantilla: su vista por dentro, en qué fase va y quién trabaja en él
   function htmlCaso(pr) {
     var est = estadoDe(pr), f = faseDe(pr);
-    return vistaSala(pr.id) + '<p class="bp-etiqueta">' + esc(pr.permiso === 'rubro' ? 'Caso sin nombre' : pr.rubro) + '</p>' +
+    return '<div class="media media-sala vista-local" data-vista-local="' + esc(pr.id) + '" role="img" aria-label="' + esc(nombreCaso(pr)) + ' por dentro"></div>' + '<p class="bp-etiqueta">' + esc(pr.permiso === 'rubro' ? 'Caso sin nombre' : pr.rubro) + '</p>' +
       '<h2 id="panel-titulo" tabindex="-1">' + esc(nombreCaso(pr)) + '</h2>' +
       '<p class="lema">' + (pr.cliente && pr.permiso !== 'rubro' ? esc(pr.cliente) + ' · ' : '') + '<span class="estado">' + esc(ESTADO_TXT[est]) + '</span></p>' +
       (pr.esencia ? '<p class="esencia">' + esc(pr.esencia) + '</p>' : '') + (pr.resumen ? '<p>' + esc(pr.resumen) + '</p>' : '') +
@@ -665,6 +716,47 @@
     return '';
   }
 
+  /* ── La oficina: cerrada desde la calle; al entrar se abre (el techo se desvanece) y la cámara va adentro ── */
+  var salirBtn = $('#salir-oficina');
+  function entrarOficina(o) {
+    o = o || {};
+    if (enSala) salirSala({ sinCamara: true, sinHistoria: true });
+    var ya = esc3.abierta();
+    esc3.oficina(true, !o.directo);
+    document.body.classList.add('en-oficina'); salirBtn.hidden = false;
+    marcarOficina();
+    cerrarIntro();
+    // La oficina tiene su dirección (#oficina): el botón «atrás» del navegador vuelve a la calle
+    if (!ya && !o.sinHistoria && !desdeEnlace && location.hash !== '#oficina') {
+      var nuestra = history.state && (history.state.sala || history.state.calle || history.state.oficina);
+      history[nuestra ? 'replaceState' : 'pushState']({ oficina: true }, '', '#oficina');
+    }
+    // En escritorio se ve la oficina entera; en celular, la recepción de cerca
+    if (!o.sinCamara) {
+      resaltar(null);
+      if (window.innerWidth < 700) { var p = P(16.2, 14.6, 0.8); volar(p[0], p[1], zPara(600), o.directo ? 0 : 800); }
+      else irA({ tipo: 'zona', id: 'oficina' }, o.directo ? 0 : 800);
+    }
+  }
+  function salirOficina(o) {
+    o = o || {};
+    if (!esc3.abierta()) return;
+    esc3.oficina(false, !o.directo);
+    document.body.classList.remove('en-oficina'); salirBtn.hidden = true;
+    marcarOficina();
+    if (!o.sinHistoria && !desdeEnlace && location.hash === '#oficina') history.replaceState({ calle: true }, '', location.pathname + location.search);
+    if (!o.sinCamara) { resaltar({ tipo: 'zona', id: 'oficina' }); encuadreCalle(o.directo ? 0 : 700); }
+  }
+  // El botón del menú dice lo que se puede hacer: entrar o salir
+  function marcarOficina() {
+    var b = menu && menu.querySelector('[data-oficina]'); if (!b) return;
+    b.querySelector('.txt').textContent = esc3.abierta() ? 'Salir a la calle' : 'Entrar a la oficina';
+  }
+  salirBtn.addEventListener('click', function () {
+    if (!panel.hidden && abierto && deAdentro(abierto)) cerrarPanel();
+    salirOficina(); escenaEl.focus({ preventScroll: true });
+  });
+
   /* ── La sala de cada empresa (salas.js): el local por dentro, un punto por módulo y el panel con todo lo real ── */
   var salaEl = $('#sala'), salaCaja = $('#sala-dibujo-caja'), enSala = null, pinActual = 0;
   var salasCargando = false, salasEspera = [];
@@ -681,6 +773,23 @@
     };
     s.onerror = function () { salasEspera = []; salasCargando = false; };
     document.head.appendChild(s);
+  }
+  var localesCargando = false, localesEspera = [];
+  function conLocales(fn) {
+    if (window.Locales) { fn(); return; }
+    localesEspera.push(fn); if (localesCargando) return; localesCargando = true;
+    conSalas(function () {
+      var s = document.createElement('script'); s.src = 'locales.js';
+      s.onload = function () {
+        var defs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        defs.setAttribute('class', 'sprite-quieto'); defs.setAttribute('aria-hidden', 'true');
+        defs.innerHTML = '<defs>' + window.Locales.defs + '</defs>';
+        document.body.appendChild(defs);
+        localesEspera.splice(0).forEach(function (f) { f(); });
+      };
+      s.onerror = function () { localesEspera = []; localesCargando = false; };
+      document.head.appendChild(s);
+    });
   }
   function urlSala(id) { return 'https://biplot.cl/oficina/' + id + '/'; }
   function htmlSala(pr) {
@@ -716,6 +825,7 @@
     var pr = PROYECTOS[id]; if (!pr) return;
     if (!guia.hidden) { guia.hidden = true; }
     cerrarIntro();
+    if (esc3.abierta()) salirOficina({ sinCamara: true, sinHistoria: true });
     var ya = enSala;
     detenerMedios();
     // Cada sala tiene su dirección (#haru): el botón «atrás» del navegador vuelve a la calle. Si ya hay una entrada nuestra
@@ -842,6 +952,7 @@
   // La cámara va a los casos del rubro: los de la calle principal y, si existe, la calle de ese rubro.
   // Sin casos de ese rubro, al local libre. Devuelve los casos que mostró.
   function verRubro(rubro, cerrar) {
+    if (esc3.abierta()) salirOficina({ sinCamara: true });
     var ids = casosDelRubro(rubro).map(function (p) { return p.id; }).filter(function (id) { return zonaPorId(id); });
     var calle = calleId(rubro);
     if (calle) ids = ids.concat(['libre-' + rubro]);
@@ -919,6 +1030,7 @@
 
   /* ── Recorrido guiado: lo guía Atlas, que ve todo desde arriba ── */
   var GUIA = [
+    ['zona', 'oficina', 'BiPlot HQ', 'Desde la calle, la oficina se ve cerrada, con su isotipo en el techo. Adentro está el equipo que hace cada sistema: entremos.'],
     ['zona', 'recepcion', 'Recepción', 'Entras y te recibe Plotty. Tres preguntas y te dice por dónde partir.'],
     ['zona', 'diagnostico', 'Sala de diagnóstico', 'Lupe hace el diagnóstico: el proceso real, los dolores en horas y pesos, y la línea base contra la que se mide todo.'],
     ['zona', 'planos', 'Planos y máquinas', 'The Architect traza el mapa y The Engine lo convierte en sistemas. Una sola mesa, de punta a punta.'],
@@ -930,7 +1042,7 @@
     ['zona', 'laboratorio', 'Laboratorio de métricas', 'A los 30, 60 y 90 días se mide contra la línea base. Si no bajó, se dice.'],
     ['zona', 'estanteria', 'Estantería del núcleo', 'Pepa guarda aquí lo que sirve para el próximo. También están los casos de referencia.'],
     ['zona', 'set', 'El set', 'Aquí graba Aby, la corresponsal. La única cara real de la oficina.'],
-    ['zona', 'pasaje', 'El pasaje', 'Por aquí se sale a la calle: un local por proyecto. Toca uno y entras a la sala de esa empresa.'],
+    ['zona', 'pasaje', 'El pasaje', 'Por aquí se sale a la calle: un local por proyecto, con su nombre y su logo en el techo. Toca uno para ver qué hicimos y entrar a su sala.'],
     ['zona', 'nuhome', 'Nu Home 360', 'Casas modulares: del primer contacto a la entrega, en una sola plataforma.'],
     ['zona', 'fundos', 'Fundos 360', 'Venta de parcelas: el terreno sobre la mesa y el ciclo de venta completo.'],
     ['zona', 'haru', 'Haru 360', 'Una barra de sushi con ventas, cocina, delivery y caja en un solo sistema.'],
@@ -951,12 +1063,15 @@
   function mostrarPaso(i) {
     pasoGuia = Math.max(0, Math.min(GUIA.length - 1, i));
     var g = GUIA[pasoGuia], obj = { tipo: g[0], id: g[1] };
+    // Cada parada se ve desde donde está: adentro, con la oficina abierta; en la calle, con la oficina cerrada
+    if (deAdentro(obj)) { if (!esc3.abierta()) entrarOficina({ sinCamara: true, sinHistoria: true }); }
+    else if (esc3.abierta()) salirOficina({ sinCamara: true, sinHistoria: true });
     $('#guia-n').textContent = (pasoGuia + 1) + ' de ' + GUIA.length;
     $('#guia-t').textContent = g[2];
     $('#guia-txt').textContent = g[3];
     $('#guia-ant').disabled = pasoGuia === 0;
     $('#guia-sig').textContent = pasoGuia === GUIA.length - 1 ? 'Conversar con Plotty' : 'Siguiente';
-    $('#guia-mas').textContent = tieneSala(g[1]) ? 'Entrar a la sala' : 'Ver más';
+    $('#guia-mas').textContent = g[1] === 'oficina' ? 'Entrar' : tieneSala(g[1]) ? 'Ver el local' : 'Ver más';
     resaltar(obj);
     requestAnimationFrame(function () { irA(obj, 900); });
   }
@@ -972,6 +1087,7 @@
   /* ── Bienvenida ── */
   var intro = $('#intro');
   function cerrarIntro() { if (!intro.hidden) { intro.hidden = true; guardar('visto', '1'); } }
+  $('#intro-oficina').addEventListener('click', function () { entrarOficina({ boton: $('#intro-oficina') }); escenaEl.focus({ preventScroll: true }); });
   $('#intro-guia').addEventListener('click', function () { iniciarGuia(0); });
   $('#intro-libre').addEventListener('click', function () { cerrarIntro(); encuadreInicial(true); escenaEl.focus({ preventScroll: true }); });
   if (leer('visto') === '1') intro.hidden = true;
@@ -983,23 +1099,29 @@
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) esc3.detener(); else if (!quieta() && !enSala) esc3.iniciar();
   });
-  // Encuadre inicial: la oficina y la calle en escritorio; la recepción y el pasaje en celular.
-  function encuadreInicial(animar) {
-    if (window.innerWidth < 700) { var p = P(20.5, 18.5, 0.8); volar(p[0], p[1], zPara(700), animar ? 600 : 0); }
-    else verTodo(animar ? 600 : 0);
+  // Encuadre de la calle: la oficina cerrada y el barrio en escritorio; la entrada de la oficina y sus locales en celular.
+  function encuadreCalle(dur) {
+    if (window.innerWidth < 700) { var p = P(19.5, 21.5, 1.4); volar(p[0], p[1], zPara(760), dur); }
+    else verTodo(dur);
   }
+  function encuadreInicial(animar) { encuadreCalle(animar ? 600 : 0); }
   requestAnimationFrame(function () { encuadreInicial(false); document.documentElement.classList.add('lista'); });
-  // Enlaces directos: oficina/#haru (la sala), #lupe, #archivo, #calle-salud o #conversar. biplot.cl/oficina/haru/ trae aquí.
+  // Enlaces directos: oficina/#haru (la sala), #oficina (adentro), #lupe, #archivo, #calle-salud o #conversar.
+  // biplot.cl/oficina/haru/ trae aquí. Lo que abre un enlace no suma pasos al historial.
+  var desdeEnlace = false;
   function desdeHash() {
-    var h = decodeURIComponent(location.hash.replace('#', ''));
-    if (!h) { if (enSala) salirSala({ sinHistoria: true }); return; }
+    desdeEnlace = true;
+    try { irAlHash(decodeURIComponent(location.hash.replace('#', '')), !document.documentElement.classList.contains('navegado')); } finally { desdeEnlace = false; }
+  }
+  function irAlHash(h, primera) {
+    if (!h) { if (enSala) salirSala({ sinHistoria: true }); if (esc3.abierta()) salirOficina({ sinHistoria: true }); return; }
     if (h === enSala) return;
-    if (tieneSala(h)) { entrarSala(h, { sinHistoria: true, directo: !document.documentElement.classList.contains('navegado') }); return; }
+    if (tieneSala(h)) { entrarSala(h, { sinHistoria: true, directo: primera }); return; }
     if (enSala) salirSala({ sinHistoria: true, sinCamara: true });
+    if (h === 'oficina' || h === 'planta-baja') { entrarOficina({ sinHistoria: true, directo: primera }); return; }
     if (h === 'conversar') { abrir({ tipo: 'chat', id: 'plotty' }); return; }
-    if (h === 'piso-1' || h === 'calle' || h === 'barrio') { resaltar({ tipo: 'zona', id: 'pasaje' }); irAGrupo(ORDEN_PRINCIPAL, 0); return; }
-    if (h === 'planta-baja' || h === 'oficina') { verTodo(0); return; }
-    if (/^calle-/.test(h) && calleId(h.slice(6))) { var c = calleId(h.slice(6)); irAGrupo(c.casos.concat(['libre-' + c.id]), 0); return; }
+    if (h === 'piso-1' || h === 'calle' || h === 'barrio') { salirOficina({ sinHistoria: true, sinCamara: true }); resaltar({ tipo: 'zona', id: 'pasaje' }); irAGrupo(ORDEN_PRINCIPAL, 0); return; }
+    if (/^calle-/.test(h) && calleId(h.slice(6))) { salirOficina({ sinHistoria: true, sinCamara: true }); var c = calleId(h.slice(6)); irAGrupo(c.casos.concat(['libre-' + c.id]), 0); return; }
     if (PERSONAL[h]) abrir({ tipo: 'actor', id: h }); else if (zonaPorId(h)) abrir({ tipo: 'zona', id: h });
   }
   setTimeout(function () { desdeHash(); document.documentElement.classList.add('navegado'); }, 60);

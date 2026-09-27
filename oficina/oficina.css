@@ -188,6 +188,12 @@ button { font: inherit; color: inherit; }
 .media { position: relative; margin: -20px -24px 18px; aspect-ratio: 16 / 9; background: #091D33; border-radius: 0; overflow: hidden; }
 .media video, .media > svg { display: block; width: 100%; height: 100%; object-fit: cover; }
 .media-sala svg { pointer-events: none; background: var(--bp-fondo-marca); }
+/* Vista previa de un local: la sala de un proyecto (sin sus números) o el local de un caso por dentro */
+.vista-sala:empty, .vista-local:empty { background: linear-gradient(110deg, #0E2A47 30%, #17446F 50%, #0E2A47 70%) 0 0 / 300% 100%; animation: cargando 1.4s linear infinite; }
+@keyframes cargando { to { background-position: -150% 0; } }
+.sin-pines .pin { display: none; }
+.entrar-sala { margin: 4px 0 18px; }
+.entrar-sala .bp-btn { width: 100%; justify-content: center; }
 .media-grande { position: absolute; left: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 8px 14px; border-radius: var(--bp-radio-pill);
   border: 1px solid rgba(242, 244, 247, .4); background: rgba(9, 29, 51, .82); color: var(--bp-texto); font: 600 14px/1 var(--bp-f-display); cursor: pointer; }
 .media-grande svg { width: 16px; height: 16px; }
@@ -282,7 +288,15 @@ button { font: inherit; color: inherit; }
 .sala-volver { position: absolute; top: 16px; left: 16px; z-index: 2; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 10px 16px 10px 12px;
   border-radius: var(--bp-radio-pill); border: 1.5px solid var(--bp-borde-fuerte); background: rgba(14, 42, 71, .94); color: var(--bp-texto); font: 600 15px/1 var(--bp-f-display);
   cursor: pointer; box-shadow: var(--bp-sombra-2); }
-.sala-volver:hover { border-color: var(--bp-acento); }
+.sala-volver:hover, .salir-oficina:hover { border-color: var(--bp-acento); }
+/* Con la oficina abierta: volver a la calle (arriba, al centro del espacio libre) */
+.salir-oficina { position: absolute; z-index: 16; top: 16px; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 6px; min-height: 44px;
+  padding: 10px 18px 10px 14px; border-radius: var(--bp-radio-pill); border: 1.5px solid var(--bp-borde-fuerte); background: rgba(14, 42, 71, .94); color: var(--bp-texto);
+  font: 600 15px/1 var(--bp-f-display); cursor: pointer; box-shadow: var(--bp-sombra-2); }
+.salir-oficina[hidden] { display: none; }
+.salir-oficina svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.en-sala .salir-oficina, .panel-abierto .salir-oficina { display: none; }
+@media (min-width: 900px) { .panel-abierto .salir-oficina:not([hidden]) { display: inline-flex; left: calc(50% - 200px); } }
 .sala-volver svg, .sala-vecinos svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .sala-ayuda { position: absolute; left: 16px; bottom: 16px; margin: 0; font: 700 12px/1 var(--bp-f-mono); letter-spacing: .04em; color: var(--bp-sobre-acento); background: var(--bp-marca-cian);
   border-radius: 8px; padding: 9px 11px; }
@@ -474,9 +488,10 @@ button { font: inherit; color: inherit; }
 @keyframes bicho { from { transform: translate(0, 0); } to { transform: translate(2px, -3px); } }
 
 /* ── El barrio (barrio.js) ── */
-.barrio, .barrio * { pointer-events: none; }
-/* De lejos los locales se ven cerrados; de cerca, abiertos con su gente (escena.js decide según el zoom) */
-.barrio:not(.lejos) .loc-cerrado, .barrio.lejos .loc-abierto { display: none; }
+.barrio, .barrio *, .hq-cerrada, .hq-cerrada * { pointer-events: none; }
+/* Con la oficina abierta, la calle queda en penumbra y se toca sólo lo de adentro (escena.js).
+   Con la oficina cerrada, lo de adentro no se ve: sus animaciones quedan detenidas. */
+#svg-escena:not(.oficina-abierta) .piso-0 * { animation: none !important; }
 .caminante-anda { transform-box: fill-box; transform-origin: 50% 100%; }
 .caminante.camina .caminante-anda { animation: anda .5s ease-in-out infinite; }
 .caminante.camina .pj-cuerpo { animation-play-state: paused; }

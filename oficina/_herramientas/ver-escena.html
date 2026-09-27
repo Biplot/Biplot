@@ -20,9 +20,9 @@
 <script>
   var q = new URLSearchParams(location.search);
   var esc = Escena.construir(document.getElementById('s'), { animado: true });
-  // ?vb=x,y,ancho,alto encuadra una parte; ?lejos=1 muestra los locales cerrados (como se ven de lejos)
+  // ?vb=x,y,ancho,alto encuadra una parte; ?abierta=1 muestra la oficina por dentro (como al entrar)
   if (q.get('vb')) document.getElementById('s').setAttribute('viewBox', q.get('vb').replace(/,/g, ' '));
-  esc.lod(q.get('lejos') === '1' ? 0.1 : 1);
+  if (q.get('abierta') === '1') esc.oficina(true, false, { penumbra: false });
   esc.iniciar();
   window.esc = esc;
 </script>

@@ -1,12 +1,14 @@
-// El barrio de BiPlot HQ (barrio.js): la calle principal con los locales hechos a mano, el pasaje con el directorio,
-// la plaza y El Archivo, y las piezas con que el navegador arma las calles por rubro a partir de datos.js.
+// El barrio de BiPlot HQ (barrio.js): la oficina cerrada, la calle principal con los locales de los proyectos, el pasaje
+// con el directorio, la plaza y El Archivo, y las piezas con que el navegador arma las calles por rubro desde datos.js.
 // Coordenadas del mundo de escena.js: la oficina ocupa x 0..24, y 0..20 y la calle pasa por delante (y > 20).
 //
 // La calle principal sale en tres capas, para que escena.js la monte sobre la oficina en el orden correcto:
 //   suelo  (losas, vereda, calzada, pasto, luces en el piso), que va antes que todo lo demás del barrio;
 //   atras  (locales, plaza, pasaje), que queda detrás de la franja por donde caminan los caminantes;
 //   frente (faroles, árboles, bancas y la gente de la vereda), que queda delante de esa franja.
-// Cada local lleva dos versiones: abierta (loc-abierto, con su gente) y cerrada (loc-cerrado, para verlo de lejos).
+// Los locales se ven siempre cerrados, con el nombre y el logo de su empresa pintados en el techo: por dentro se ven
+// en la vista previa (las plantillas, en salas.js) y en la sala de cada empresa. La oficina también se ve cerrada
+// (hq) hasta que alguien entra: escena.js la dibuja encima del interior y la abre al entrar.
 import { escena, P } from './maqueta.mjs';
 import * as S from './locales.mjs';
 import * as T from './plantillas.mjs';
@@ -38,22 +40,36 @@ export const G = {
 export const PRINCIPAL = [['nuhome', 0.15], ['fundos', 4.85], ['haru', 9.55], ['eleven', 14.25], ['rumbo', 26.15], ['libre', 30.85], ['archivo', 35.55]];
 const PASAJE = [18.95, 24.05];
 
-// La gente de cada local (visitantes: el equipo vive en la oficina)
-const GENTE = {
-  nuhome: [['maestro', 2.95, 3.7, 0, 'i'], ['clienta2', 1.3, 3.75, 0, 'd']],
-  fundos: [['vendedora', 3.15, 3.65, 0, 'i'], ['senora', 1.0, 3.55, 0, 'd'], ['senor', 1.8, 3.85, 0, 'd']],
-  haru: [['chef', 3.4, 1.0, 0, 'i'], ['mesera', 2.25, 2.05, 0, 'd'], ['comensal', 0.83, 2.75, 0.48, 'd'], ['comensal2', 2.58, 3.15, 0.48, 'd']],
-  eleven: [['atleta2', 2.45, 1.5, 0.21, 'd'], ['instructor', 3.25, 3.9, 0, 'i']],
-  rumbo: [['meditadora', 0.95, 1.4, 0.14, 'd'], ['corredora', 2.3, 3.4, 0, 'd']],
-  libre: [['mama', 1.5, 3.3, 0, 'd'], ['cliente', 2.6, 3.1, 0, 'i']],
-  archivo: [['estudiante', 2.2, 1.4, 0, 'd'], ['comprador', 3.7, 3.2, 0, 'i']]
-};
+// El nombre de cada empresa, en su techo y en su letrero
 const LETRERO = { nuhome: 'NU HOME', fundos: 'FUNDOS', haru: 'HARU', eleven: 'ELEVEN', rumbo: 'RUMBO', libre: 'SE ARRIENDA', archivo: 'EL ARCHIVO' };
-const DIBUJO = { nuhome: S.nuhome, fundos: S.fundos, haru: S.haru, eleven: S.eleven, rumbo: S.rumbo };
 // Los que caminan por la vereda (escena.js los mueve)
-export const CAMINANTES = ['caminante', 'atleta', 'socio'];
-// La gente de paso en las calles por rubro (escena.js elige tres por calle)
+export const CAMINANTES = ['caminante', 'atleta'];
+// La gente de paso en las calles por rubro (escena.js pone una por calle)
 export const DE_PASO = ['clienta', 'abuelo', 'turista', 'senora', 'repartidor', 'cliente', 'mama'];
+
+/* ───────── Los logos del techo ───────── */
+// Un cuadrado de s × s. El logo real cuando lo tenemos (§M§ = carpeta de medios); Eleven y Rumbo llevan la misma
+// marca que su sala, sin inventar otra.
+const LOGO = {
+  fundos: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#10241A"/><image href="§M§logo-fundos.webp" x="${r1(s * .08)}" y="${r1(s * .19)}" width="${r1(s * .84)}" height="${r1(s * .61)}"/>`,
+  haru: (s) => `<image href="§M§logo-haru.webp" width="${s}" height="${s}"/>`,
+  nuhome: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#1C1917"/><image href="§M§logo-nuhome.webp" x="${r1(s * .1)}" y="${r1(s * .2)}" width="${r1(s * .8)}" height="${r1(s * .565)}"/>`,
+  eleven: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#17C3B2"/><text x="${r1(s / 2)}" y="${r1(s * .7)}" text-anchor="middle" ${FUENTE} font-weight="700" font-size="${r1(s * .56)}" fill="#0B1726">11</text>`,
+  rumbo: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#0E2A47" stroke="#3E9C95" stroke-width="${r1(s * .04)}"/><g transform="translate(${r1(s * .1)} ${r1(s * .22)}) scale(${r1(s / 62 * 100) / 100})"><path d="M26 18L26 -4" stroke="#F2F4F7" stroke-width="2.4"/><path d="M26 -4L48 3L26 10Z" fill="#17C3B2"/><path d="M2 38L26 18L46 34L34 40L26 32L16 42Z" fill="#DDF4F1"/></g>`,
+  archivo: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#0E2A47" stroke="#7FD8CF" stroke-width="${r1(s * .035)}"/>` +
+    ['#6FAF6B', '#E0524A', '#17C3B2', '#E0B341', '#8E6BB8'].map((c, i) => `<rect x="${r1(s * (.16 + i * .14))}" y="${r1(s * (.2 + (i % 2) * .05))}" width="${r1(s * .1)}" height="${r1(s * .58)}" rx="${r1(s * .02)}" fill="${c}"/>`).join('')
+};
+// Los casos que llegan sin logo llevan el dibujo de su rubro, en el color del caso (escena.js elige por calle)
+const PICTO = {
+  inmobiliaria: '<path d="M22 50L50 26L78 50V78H22Z" fill="none" stroke="#F2F4F7" stroke-width="7" stroke-linejoin="round"/><path d="M42 78V60H58V78" fill="#F2F4F7"/>',
+  comida: '<path d="M24 52H76Q74 76 50 78Q26 76 24 52Z" fill="#F2F4F7"/><path d="M40 22L52 46M58 20L60 46" stroke="#F2F4F7" stroke-width="6" stroke-linecap="round"/>',
+  servicios: '<circle cx="50" cy="50" r="16" fill="none" stroke="#F2F4F7" stroke-width="8"/><path d="M50 20V30M50 70V80M20 50H30M70 50H80M29 29L36 36M64 64L71 71M29 71L36 64M64 36L71 29" stroke="#F2F4F7" stroke-width="8" stroke-linecap="round"/>',
+  construccion: '<path d="M22 64Q22 34 50 32Q78 34 78 64Z" fill="#F2F4F7"/><rect x="16" y="64" width="68" height="10" rx="5" fill="#F2F4F7"/><path d="M50 32V52" stroke="§C§" stroke-width="6"/>',
+  comercio: '<path d="M22 38H78L72 78H28Z" fill="#F2F4F7"/><path d="M38 38V32Q38 22 50 22Q62 22 62 32V38" fill="none" stroke="#F2F4F7" stroke-width="6"/>',
+  salud: '<path d="M42 22H58V42H78V58H58V78H42V58H22V42H42Z" fill="#F2F4F7"/>',
+  otro: '<path d="M50 20L58 42L80 50L58 58L50 80L42 58L20 50L42 42Z" fill="#F2F4F7"/>'
+};
+export const INSIGNIAS = Object.fromEntries(Object.entries(PICTO).map(([id, p]) => [id, (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="§C§"/><g transform="scale(${r1(s / 100 * 100) / 100})">${p}</g>`]));
 
 /* ───────── Piezas de un local ───────── */
 
@@ -87,14 +103,39 @@ function sueloLocal(E, ox, oy, c) {
 // La gente de un local, en coordenadas del local
 function gente(L, lista) { for (const g of lista) L.pj(g[0], g[1], g[2], g[3] || 0, g[4] || 'd', g[5] || EA, g[6]); }
 
-// El local visto de lejos: el edificio cerrado con su techo, su toldo y su letrero (en coordenadas del mundo)
+// El techo de un local: el logo y el nombre de la empresa pintados, como el isotipo en el techo de la oficina.
+// Un cuadro de 400 × 300 (4 × 3 baldosas) en el plano del techo; el texto corre a lo largo de la calle.
+// cs.logo: el logo (s → svg) o la marca §LOGO§, que escena.js cambia por el logo o el dibujo del rubro de cada caso.
+function techo(cs, estado) {
+  const A = 400, H = 300, s = 168, n = cs.n;
+  if (estado === 'arriendo') {
+    return `<rect x="8" y="8" width="${A - 16}" height="${H - 16}" rx="22" fill="rgba(127,216,207,.06)" stroke="#7FD8CF" stroke-width="7" stroke-dasharray="22 14"/>` +
+      `<text x="${A / 2}" y="138" text-anchor="middle" ${FUENTE} font-weight="700" font-size="58" fill="#7FD8CF" letter-spacing="2">SE ARRIENDA</text>` +
+      `<text x="${A / 2}" y="206" text-anchor="middle" ${MONO} font-weight="700" font-size="32" fill="#B9C8D8">TU PROYECTO AQUÍ</text>`;
+  }
+  const logo = typeof cs.logo === 'function' ? cs.logo(s) : cs.logo || '';
+  const fs = marca(n) ? '§NF:66:54:44§' : n.length <= 9 ? 66 : n.length <= 12 ? 54 : 44;
+  const tl = marca(n) ? ' §NTL:0:380§' : n.length > 12 ? ' textLength="380" lengthAdjust="spacingAndGlyphs"' : '';
+  const pie = estado === 'diagnostico' ? `<rect x="${A / 2 - 118}" y="${H - 30}" width="236" height="28" rx="14" fill="#F4ECD8"/><text x="${A / 2}" y="${H - 9}" text-anchor="middle" ${MONO} font-weight="700" font-size="20" fill="#0B1726">PRÓXIMAMENTE</text>`
+    : estado === 'obra' ? `<rect x="${A / 2 - 90}" y="${H - 30}" width="180" height="28" rx="14" fill="#E0B341"/><text x="${A / 2}" y="${H - 9}" text-anchor="middle" ${MONO} font-weight="700" font-size="20" fill="#0B1726">EN OBRA</text>`
+    : `<rect x="${A / 2 - 90}" y="${H - 22}" width="180" height="10" rx="5" fill="${cs.c}"/>`;
+  return (logo ? `<g transform="translate(${(A - s) / 2} 8)">${logo}</g>` : '') +
+    `<text x="${A / 2}" y="${H - 44}" text-anchor="middle" ${FUENTE} font-weight="700" font-size="${fs}" letter-spacing="1" fill="#F2F4F7"${tl}>${n}</text>` + pie;
+}
+
+// El local cerrado: el edificio con su techo, su toldo y su letrero (en coordenadas del mundo)
 function cerrado(E, x, y, cs, k) {
   const h = 2.5, c = cs.c, estado = cs.estado || 'abierto';
-  const muroF = '#2B4C70', muroD = '#1F3B5A', techo = '#2E5A85';
+  const muroF = '#2B4C70', muroD = '#1F3B5A', techoC = '#2E5A85';
   const add = (dk, svg) => E.add(k + dk, svg);
-  E.caja(x, y, 0, W, D, h, { t: techo, l: muroF, r: muroD }, k);
-  add(0.001, E.poly([[x + 0.12, y + 0.12, h + 0.001], [x + W - 0.12, y + 0.12, h + 0.001], [x + W - 0.12, y + D - 0.12, h + 0.001], [x + 0.12, y + D - 0.12, h + 0.001]], `fill="none" stroke="${claro(techo, 0.22)}" stroke-width="2"`));
-  E.caja(x + 0.7, y + 0.7, h, 0.8, 0.6, 0.35, { t: '#8FA3B8', l: '#6B7A8C', r: '#5B6B7F' }, k + 0.002);
+  E.caja(x, y, 0, W, D, h, { t: techoC, l: muroF, r: muroD }, k);
+  // El pretil, del color de la marca (punteado si se arrienda, amarillo si está en obra)
+  const pretil = estado === 'arriendo' ? `stroke="${claro(techoC, 0.22)}" stroke-width="2"` : `stroke="${estado === 'obra' ? '#E0B341' : c}" stroke-width="3"`;
+  add(0.001, E.poly([[x + 0.12, y + 0.12, h + 0.001], [x + W - 0.12, y + 0.12, h + 0.001], [x + W - 0.12, y + D - 0.12, h + 0.001], [x + 0.12, y + D - 0.12, h + 0.001]], `fill="none" ${pretil}`));
+  const [tx, ty] = P(x + 0.3, y + 0.95, h + 0.003);
+  add(0.0015, `<g transform="matrix(.32,.16,-.32,.16,${r1(tx)},${r1(ty)})">${techo(cs, estado)}</g>`);
+  // El equipo de aire, atrás a la derecha (fuera del cuadro pintado)
+  if (estado !== 'obra') E.caja(x + W - 1.25, y + 0.22, h, 0.8, 0.5, 0.3, { t: '#8FA3B8', l: '#6B7A8C', r: '#5B6B7F' }, k + 0.002);
   const vidrio = estado === 'arriendo' ? '#0B1726' : estado === 'diagnostico' ? '#E8DFC8' : estado === 'obra' ? '#3A4A5C' : '#FFE7B0';
   add(0.01, E.poly([[x + 0.3, y + D + 0.002, 0.15], [x + W - 0.3, y + D + 0.002, 0.15], [x + W - 0.3, y + D + 0.002, 1.3], [x + 0.3, y + D + 0.002, 1.3]], `fill="${vidrio}" opacity="${estado === 'abierto' || estado === 'inauguracion' ? 0.62 : 0.9}"`) +
     [1.2, 2.3, 3.4].map(dx => E.poly([[x + dx, y + D + 0.003, 0.15], [x + dx, y + D + 0.003, 1.3]], `stroke="${muroF}" stroke-width="2.4"`)).join('') +
@@ -128,6 +169,9 @@ function cerrado(E, x, y, cs, k) {
 function archivoCerrado(E, x, y, pisos, k) {
   const h = 2.0 * pisos + 0.6, colores = ['#6FAF6B', '#E0524A', '#17C3B2', '#E0B341', '#8E6BB8', '#F29A6B'];
   E.caja(x, y, 0, W, D, h, { t: '#35679A', l: '#2B4C70', r: '#1F3B5A' }, k);
+  E.add(k + 0.001, E.poly([[x + 0.12, y + 0.12, h + 0.001], [x + W - 0.12, y + 0.12, h + 0.001], [x + W - 0.12, y + D - 0.12, h + 0.001], [x + 0.12, y + D - 0.12, h + 0.001]], 'fill="none" stroke="#7FD8CF" stroke-width="3"'));
+  const [tx, ty] = P(x + 0.3, y + 0.95, h + 0.003);
+  E.add(k + 0.0015, `<g transform="matrix(.32,.16,-.32,.16,${r1(tx)},${r1(ty)})">${techo({ n: 'EL ARCHIVO', c: '#7FD8CF', logo: LOGO.archivo }, 'abierto')}</g>`);
   let v = '';
   for (let p = 0; p < pisos; p++) for (let xx = x + 0.4; xx < x + W - 0.5; xx += 0.95) v += E.poly([[xx, y + D + 0.002, 0.5 + p * 2], [xx + 0.55, y + D + 0.002, 0.5 + p * 2], [xx + 0.55, y + D + 0.002, 1.8 + p * 2], [xx, y + D + 0.002, 1.8 + p * 2]], `fill="${colores[Math.round(xx * 3 + p) % colores.length]}" opacity=".75"`);
   E.add(k + 0.01, v);
@@ -180,10 +224,8 @@ function plaza(E, pj) {
     E.planoY(x + 0.12, y + 1.101, 1.15, `<rect width="116" height="70" rx="3" fill="#F4ECD8"/>` + [0, 1, 2, 3].map(i => `<rect x="${8 + i * 27}" y="10" width="22" height="30" fill="${['#E0524A', '#17C3B2', '#E0B341', '#35679A'][i]}"/><rect x="${8 + i * 27}" y="44" width="22" height="18" fill="#B9C8D8"/>`).join(''), k + 0.02, 116, 70);
     E.planoX(x + 1.401, y + 1.05, 1.22, EN.txt(8, 20, 'DIARIOS', 15, '#F4ECD8'), k + 0.03, 100, 24);
   }
-  // La gente de la plaza
-  pj('tomacafe', 27.33, 10.3, 0.45, 'd');
+  // La gente de la plaza: poca, para que el barrio se vea tranquilo (y pese menos)
   pj('abuelo', 30.9, 13.5, 0, 'd');
-  pj('comensal3', 32.25, 13.86, 0.45, 'i');
   pj('paseadora', 30.8, 14.9, 0, 'd'); pj('perro', 32.0, 15.05, 0, 'd');
   { // la correa, de la mano de quien pasea al collar del perro
     const mp = medida('paseadora', VISITANTES.paseadora()), md = medida('perro', VISITANTES.perro());
@@ -191,8 +233,31 @@ function plaza(E, pj) {
     const hx = ax + (27.8 - mp.cx) * EA, hy = ay + (33.2 - mp.pie) * EA, cx = bx + (25.4 - md.cx) * EA, cy = by + (37 - md.pie) * EA;
     E.add(47.35, `<path d="M${r1(hx)} ${r1(hy)}Q${r1((hx + cx) / 2)} ${r1(Math.max(hy, cy) + 10)} ${r1(cx)} ${r1(cy)}" stroke="#E0524A" stroke-width="1.6" fill="none"/>`);
   }
-  pj('nino', 31.9, 8.4, 0, 'i', EA * 0.72);
-  pj('ejecutivo', 25.7, 15.4, 0, 'd');
+}
+
+/* ───────── La oficina cerrada ───────── */
+// El edificio de BiPlot HQ visto desde la calle: el isotipo y el nombre pintados en el techo, ventanas encendidas en
+// las dos fachadas y la puerta al fondo del pasaje. escena.js lo dibuja encima del interior y lo desvanece al entrar.
+const ISO = '<rect x="4" y="4" width="92" height="92" rx="22" fill="#1c426d" stroke="#7fd8cf" stroke-width="2.4"/><path d="M27 23V75H80" fill="none" stroke="#35679a" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 67L45 53L59 57L72 35" fill="none" stroke="#168a86" stroke-width="3.6" stroke-linecap="round"/><circle cx="31" cy="67" r="5.6" fill="#17C3B2"/><circle cx="45" cy="53" r="5.6" fill="#17C3B2"/><circle cx="59" cy="57" r="5.6" fill="#17C3B2"/><circle cx="72" cy="35" r="7" fill="#FF6B4A"/>';
+// entrada: el pasaje hasta la puerta (tocarlo también abre la oficina)
+export const HQ = { alto: 3.4, puerta: [20.4, 22.6], entrada: [18.95, 20, 24.05, 24.45, 2.9] };
+function oficinaCerrada() {
+  const E = escena(), h = HQ.alto, k = 22, [p0, p1] = HQ.puerta;
+  E.caja(0, 0, 0, 24, 20, h, { t: '#24476B', l: '#2B4C70', r: '#1F3B5A' }, k);
+  E.add(k + 0.001, E.poly([[0.25, 0.25, h + 0.001], [23.75, 0.25, h + 0.001], [23.75, 19.75, h + 0.001], [0.25, 19.75, h + 0.001]], `fill="none" stroke="#35679A" stroke-width="3"`));
+  // Ventanas: algunas encendidas, otras no (como una oficina de verdad a esta hora)
+  let v = '';
+  for (let x = 0.6; x < 23.5; x += 1.5) for (const z of [0.6, 1.8]) if (!(z < 1.5 && x > p0 - 1 && x < p1 + 0.1)) v += E.poly([[x, 20.002, z], [x + 0.9, 20.002, z], [x + 0.9, 20.002, z + 0.8], [x, 20.002, z + 0.8]], `fill="#FFE7B0" opacity="${(x * 7 + z * 3) % 5 < 3 ? 0.55 : 0.18}"`);
+  for (let y = 0.6; y < 19.5; y += 1.5) for (const z of [0.6, 1.8]) v += E.poly([[24.002, y, z], [24.002, y + 0.9, z], [24.002, y + 0.9, z + 0.8], [24.002, y, z + 0.8]], `fill="#FFE7B0" opacity="${(y * 5 + z * 3) % 5 < 3 ? 0.45 : 0.15}"`);
+  E.add(k + 0.01, v);
+  // La puerta: vidrio encendido, el marco al medio y un alero cian
+  E.add(k + 0.02, E.poly([[p0, 20.004, 0], [p1, 20.004, 0], [p1, 20.004, 1.45], [p0, 20.004, 1.45]], `fill="#FFE7B0" opacity=".88"`) +
+    E.poly([[(p0 + p1) / 2, 20.005, 0], [(p0 + p1) / 2, 20.005, 1.45]], `stroke="#2B4C70" stroke-width="3"`));
+  E.caja(p0 - 0.3, 20.0, 1.55, p1 - p0 + 0.6, 0.55, 0.14, { t: '#17C3B2', l: '#0A8A7E', r: '#077068' }, k + 0.03);
+  // El isotipo y el nombre en el techo
+  E.planoZ(3.2, 4.2, h + 0.002, `<g transform="scale(6.2)">${ISO}</g>`, k + 0.02, 620, 620);
+  E.planoZ(10.6, 8.4, h + 0.002, `<text x="0" y="200" font-weight="700" font-size="260"><tspan ${MONO} fill="#F2F4F7" letter-spacing="-10">Bi</tspan><tspan ${FUENTE} fill="#17C3B2">Plot</tspan></text><text x="10" y="420" ${FUENTE} font-weight="700" font-size="190" fill="#B9C8D8" letter-spacing="24">HQ</text>`, k + 0.021, 1200, 450);
+  return E.piezas.sort((p, q) => p[0] - q[0] || p[1] - q[1]).map(p => p[2]).join('');
 }
 
 /* ───────── La calle principal ───────── */
@@ -220,26 +285,17 @@ export function callePrincipal(datos) {
 
   plaza(E, pj);
 
-  // Los locales: abiertos (con su gente) y cerrados (de lejos), a la misma profundidad
-  const zonas = [];
+  // Los locales, cerrados, con el nombre y el logo de su empresa en el techo
+  const zonas = [{ id: 'oficina', caja: [0, 0, 24, 20, HQ.alto], foco: [12, 10, 1.2], hq: true }];
   for (const [id, ox] of PRINCIPAL) {
     const c = id === 'archivo' ? '#7FD8CF' : acento(id), kLocal = ox + YF + W + D + 0.6;
-    E.bloque(kLocal, () => {
-      const L = S.local(E, ox, YF, 0, false, 0);
-      if (id === 'libre') S.libre(L, { sinPlotty: true });
-      else if (id === 'archivo') T.archivo(L, { total: '§CASOS§' });
-      else DIBUJO[id](L);
-      for (const g of GENTE[id]) usados.add(g[0]);
-      gente(L, GENTE[id]);
-      frente(L, c, LETRERO[id], id === 'libre' || id === 'archivo' ? 124 : 104);
-    }, 'loc-abierto', `data-local="${id}"`);
     sueloLocal(E, ox, YF, c);
     if (id === 'archivo') {
-      for (let p = 1; p <= 4; p++) E.bloque(kLocal + 0.001 * p, () => archivoCerrado(E, ox, YF, p, kLocal), 'loc-cerrado', `data-local="archivo" data-pisos="${p}"`);
+      for (let p = 1; p <= 4; p++) E.bloque(kLocal + 0.001 * p, () => archivoCerrado(E, ox, YF, p, kLocal), 'local', `data-local="archivo" data-pisos="${p}"`);
     } else {
-      E.bloque(kLocal + 0.001, () => cerrado(E, ox, YF, { n: LETRERO[id], c, estado: id === 'libre' ? 'arriendo' : 'abierto', mano: id !== 'libre' }, kLocal), 'loc-cerrado', `data-local="${id}"`);
+      E.bloque(kLocal + 0.001, () => cerrado(E, ox, YF, { n: LETRERO[id], c, logo: LOGO[id], estado: id === 'libre' ? 'arriendo' : 'abierto', mano: id !== 'libre' }, kLocal), 'local', `data-local="${id}"`);
     }
-    zonas.push({ id, caja: [ox, YF, ox + W, YF + D, 2.4], foco: [ox + W / 2, YF + D / 2, 1.0] });
+    zonas.push({ id, caja: [ox, YF, ox + W, YF + D, 2.5], foco: [ox + W / 2, YF + D / 2, 1.0] });
   }
   // Pizarras en la vereda, frente a su local (después del frente del local)
   EN.pizarra(E, 8.6, 24.72, ['VISITA LA', 'MAQUETA', 'del loteo'], { k: 4.85 + YF + W + D + 0.7 });
@@ -259,7 +315,8 @@ export function callePrincipal(datos) {
     E.caja(x, y, 0, 1.2, 0.16, 2.05, { t: '#2A5A88', l: '#17446F', r: '#0E2A47' }, kd);
     E.planoY(x + 0.06, y + 0.161, 1.98, `<rect width="108" height="188" rx="5" fill="#0B2B45" stroke="#17C3B2" stroke-width="2"/>` +
       `<text x="54" y="20" text-anchor="middle" ${MONO} font-weight="700" font-size="11" fill="#7FD8CF" letter-spacing=".5">DIRECTORIO</text><path d="M10 28H98" stroke="#35679A" stroke-width="1.5"/><g class="directorio-lista"></g>`, kd + 0.001, 108, 188);
-    zonas.push({ id: 'pasaje', caja: [PASAJE[0], YF, PASAJE[1], YP, 3.3], foco: [21.5, 22.3, 1.3] });
+    // El tótem del directorio (el resto del pasaje es la entrada a la oficina)
+    zonas.push({ id: 'pasaje', caja: [22.4, 23.55, 23.9, 24.0, 2.15], foco: [23.15, 23.8, 1.1] });
   }
   pj('clienta', 21.2, 22.5, 0, 'i');
 
@@ -276,9 +333,6 @@ export function callePrincipal(datos) {
     for (const dx of [0.05, 1.05]) E.cilindro(x + dx, y + 0.17, 0, 0.2, 0.06, '#1F2733', '#0B0F14', k - 0.01);
     E.linea([[x + 1.1, y + 0.17, 0.55], [x + 1.25, y + 0.17, 0.95]], '#3A424E', 2.4, k + 0.03);
     pj('repartidor', 11.8, 27.6, 0, 'i');
-    pj('musico', 20.3, 27.55, 0, 'd');
-    pj('lectora', 1.95, 27.74, 0.45, 'i');
-    pj('turista', 6.6, 27.95, 0, 'd');
   });
 
   // Tres capas, cada una en su orden de profundidad
@@ -287,7 +341,7 @@ export function callePrincipal(datos) {
   const suelo = orden(todas.filter(p => p[0] < -900)), atras = orden(todas.filter(p => p[0] >= -900));
   const frenteSvg = orden(frentePiezas);
   const c = E.caja0;
-  return { suelo, atras, frente: frenteSvg, zonas, usados, caja: { x0: r1(c.x0), y0: r1(c.y0), x1: r1(c.x1), y1: r1(c.y1) } };
+  return { suelo, atras, frente: frenteSvg, hq: oficinaCerrada(), zonas, usados, caja: { x0: r1(c.x0), y0: r1(c.y0), x1: r1(c.x1), y1: r1(c.y1) } };
 }
 
 // Letrero con el nombre de la calle, en un poste (mira hacia la vereda)
@@ -327,25 +381,12 @@ const INTERIORES = {
   arriendo: { fn: (L) => S.libre(L, { sinPlotty: true }), gente: [] }
 };
 export function piezas() {
+  // Lo que va en barrio.js: el local cerrado en cada estado, con marcas §…§ para el nombre, el color y el logo de
+  // cada caso, más lo de la vereda y la gente de paso
   const usados = new Set(), sumar = (p) => { p.usados.forEach(u => usados.add(u)); return p; };
-  const interior = {}, extra = {};
-  for (const [id, o] of Object.entries(INTERIORES)) {
-    interior[id] = sumar(pieza((E, pj, u) => { const L = S.local(E, 0, 0, 0, false, 0); o.fn(L); for (const g of o.gente) u.add(g[0]); gente(L, o.gente); })).obj;
-  }
-  extra.inauguracion = sumar(pieza((E, pj, u) => {
-    const L = S.local(E, 0, 0, 0, false, 0); T.inauguracion(L, { color: '§C§' });
-    const afuera = [['faro', 2.05, 5.0, 0, 'd'], ['dueno', 3.3, 5.3, 0, 'i']];
-    for (const g of afuera) u.add(g[0]);
-    gente(L, afuera.map(g => [...g.slice(0, 5), EA, 9.6 + g[1] * 0.01]));
-    tijeras(E, 2.5, 5.0, 1.0, 9.9);
-  })).obj;
-  extra.placa90 = pieza((E) => T.placa90(S.local(E, 0, 0, 0, false, 0))).obj;
-  // El frente sin letrero: el letrero colgante sobresale a la vereda y escena.js lo dibuja con lo de la vereda
-  const fr = pieza((E) => { const L = S.local(E, 0, 0, 0, false, 0); frente(L, '§C§', '§N§', 124, false); });
-  const ba = pieza((E) => { const L = S.local(E, 0, 0, 0, false, 0); bandera(L, '§C§', '§N§', 124); });
   const sl = pieza((E) => sueloLocal(E, 0, 0, '§C§'));
   const cerr = {};
-  for (const estado of ['abierto', 'arriendo', 'diagnostico', 'obra', 'inauguracion']) cerr[estado] = pieza((E) => cerrado(E, 0, 0, { n: '§N§', c: '§C§', estado }, 0)).obj;
+  for (const estado of ['abierto', 'arriendo', 'diagnostico', 'obra', 'inauguracion']) cerr[estado] = pieza((E) => cerrado(E, 0, 0, { n: '§N§', c: '§C§', logo: '§LOGO§', estado }, 0)).obj;
   const fantasma = pieza((E) => E.fantasma(0, 0, W, D, 0.01, -1350, { fill: 'rgba(127,216,207,.05)' })).suelo;
   const [tx, ty] = P(W / 2, D / 2, 0.02);
   const sitioLibre = `<text x="${r1(tx)}" y="${r1(ty)}" text-anchor="middle" ${FUENTE} font-weight="700" font-size="15" fill="rgba(127,216,207,.55)">sitio libre</text>`;
@@ -357,9 +398,28 @@ export function piezas() {
   for (const id of [...new Set([...DE_PASO, ...CAMINANTES])]) {
     personas[id] = { d: sumar(pieza((E, pj) => pj(id, 0, 0, 0, 'd'))).obj, i: pieza((E, pj) => pj(id, 0, 0, 0, 'i')).obj };
   }
+  const insignias = Object.fromEntries(Object.entries(INSIGNIAS).map(([id, f]) => [id, f(168)]));
+
+  // Lo que va en salas.js (se carga al abrir la vista previa de un caso): el local por dentro, con su plantilla, su gente
+  // y su frente abierto, en cada estado
+  const enVistas = new Set(), vista = (p) => { p.usados.forEach(u => enVistas.add(u)); return p; };
+  const interior = {}, extra = {};
+  for (const [id, o] of Object.entries(INTERIORES)) {
+    interior[id] = vista(pieza((E, pj, u) => { const L = S.local(E, 0, 0, 0, false, 0); o.fn(L); for (const g of o.gente) u.add(g[0]); gente(L, o.gente); })).obj;
+  }
+  extra.inauguracion = vista(pieza((E, pj, u) => {
+    const L = S.local(E, 0, 0, 0, false, 0); T.inauguracion(L, { color: '§C§' });
+    const afuera = [['faro', 2.05, 5.0, 0, 'd'], ['dueno', 3.3, 5.3, 0, 'i']];
+    for (const g of afuera) u.add(g[0]);
+    gente(L, afuera.map(g => [...g.slice(0, 5), EA, 9.6 + g[1] * 0.01]));
+    tijeras(E, 2.5, 5.0, 1.0, 9.9);
+  })).obj;
+  extra.placa90 = pieza((E) => T.placa90(S.local(E, 0, 0, 0, false, 0))).obj;
+  const fr = pieza((E) => { const L = S.local(E, 0, 0, 0, false, 0); frente(L, '§C§', '§N§', 124, true); });
   return {
-    local: { interior, extra, frente: fr.obj, bandera: ba.obj, suelo: sl.suelo, cerrado: cerr, fantasma, sitioLibre },
+    local: { suelo: sl.suelo, cerrado: cerr, fantasma, sitioLibre, insignias },
     fila: { farolSuelo: farol.suelo, farol: farol.obj, arbol, letrero },
-    personas, usados
+    personas, usados,
+    vistas: { interior, extra, frente: fr.obj, usados: enVistas }
   };
 }
