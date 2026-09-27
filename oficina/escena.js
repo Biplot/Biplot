@@ -739,7 +739,7 @@
 
     var capaObj = svg.querySelector('.capa-obj');
     if (BR) {
-      // El Archivo de lejos: el edificio con un piso cada diez casos
+      // El Archivo: el edificio sube un piso cada diez casos (se deja sólo el que corresponde)
       Array.prototype.slice.call(svg.querySelectorAll('.local[data-pisos]')).forEach(function (g) { if (+g.getAttribute('data-pisos') !== BR.pisos) g.parentNode.removeChild(g); });
       // El directorio del pasaje: cada calle con sus locales abiertos
       var dir = svg.querySelector('.directorio-lista');

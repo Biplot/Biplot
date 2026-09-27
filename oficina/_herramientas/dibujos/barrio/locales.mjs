@@ -1,5 +1,7 @@
-// Los locales de la calle principal, cada uno con la esencia de su negocio (4,6 × 4,3 baldosas).
-// local() da un envoltorio con origen propio: todo lo de un local se dibuja en coordenadas locales.
+// Los locales por dentro (4,6 × 4,3 baldosas). local() da un envoltorio con origen propio: todo lo de un local se dibuja
+// en coordenadas locales; lo usan las plantillas de los casos por rubro (locales.js, su vista previa) y las salas grandes.
+// Los interiores de cada proyecto (fundos(), haru()…) quedan de referencia: en la calle los locales se ven cerrados, con su
+// techo (barrio.mjs), y por dentro se ven en su sala grande (salas-grandes.mjs).
 import { P } from './maqueta.mjs';
 const TW = 32, TH = 16, ZH = 39;
 const r1 = (n) => Math.round(n * 10) / 10;

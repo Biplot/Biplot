@@ -388,7 +388,7 @@
       filtrarBarrio(); return;
     }
     if (window.innerWidth < 900) alternarMenu(false);
-    if (b.hasAttribute('data-oficina')) { if (esc3.abierta()) { if (!panel.hidden && abierto && deAdentro(abierto)) cerrarPanel(); salirOficina(); } else entrarOficina({ boton: b }); return; }
+    if (b.hasAttribute('data-oficina')) { if (esc3.abierta()) salirOficina(); else entrarOficina({ boton: b }); return; }
     if (b.hasAttribute('data-guia')) { iniciarGuia(0); return; }
     if (b.hasAttribute('data-chat')) { abrir({ tipo: 'chat', id: 'plotty' }, false, b); return; }
     abrir({ tipo: b.getAttribute('data-tipo'), id: b.getAttribute('data-id') }, false, b);
@@ -718,9 +718,15 @@
 
   /* ── La oficina: cerrada desde la calle; al entrar se abre (el techo se desvanece) y la cámara va adentro ── */
   var salirBtn = $('#salir-oficina');
+  // Al cruzar la puerta se cierra el panel de lo que quedó al otro lado (sin mover el foco ni la cámara)
+  function soltarPanel(deAca) {
+    if (panel.hidden || !abierto || deAdentro(abierto) === deAca) return;
+    detenerMedios(); panel.hidden = true; abierto = null; document.body.classList.remove('panel-abierto');
+  }
   function entrarOficina(o) {
     o = o || {};
     if (enSala) salirSala({ sinCamara: true, sinHistoria: true });
+    soltarPanel(true);
     var ya = esc3.abierta();
     esc3.oficina(true, !o.directo);
     document.body.classList.add('en-oficina'); salirBtn.hidden = false;
@@ -741,6 +747,7 @@
   function salirOficina(o) {
     o = o || {};
     if (!esc3.abierta()) return;
+    if (!o.conPanel) soltarPanel(false);
     esc3.oficina(false, !o.directo);
     document.body.classList.remove('en-oficina'); salirBtn.hidden = true;
     marcarOficina();
@@ -752,10 +759,7 @@
     var b = menu && menu.querySelector('[data-oficina]'); if (!b) return;
     b.querySelector('.txt').textContent = esc3.abierta() ? 'Salir a la calle' : 'Entrar a la oficina';
   }
-  salirBtn.addEventListener('click', function () {
-    if (!panel.hidden && abierto && deAdentro(abierto)) cerrarPanel();
-    salirOficina(); escenaEl.focus({ preventScroll: true });
-  });
+  salirBtn.addEventListener('click', function () { salirOficina(); escenaEl.focus({ preventScroll: true }); });
 
   /* ── La sala de cada empresa (salas.js): el local por dentro, un punto por módulo y el panel con todo lo real ── */
   var salaEl = $('#sala'), salaCaja = $('#sala-dibujo-caja'), enSala = null, pinActual = 0;
@@ -952,7 +956,7 @@
   // La cámara va a los casos del rubro: los de la calle principal y, si existe, la calle de ese rubro.
   // Sin casos de ese rubro, al local libre. Devuelve los casos que mostró.
   function verRubro(rubro, cerrar) {
-    if (esc3.abierta()) salirOficina({ sinCamara: true });
+    if (esc3.abierta()) salirOficina({ sinCamara: true, conPanel: true });
     var ids = casosDelRubro(rubro).map(function (p) { return p.id; }).filter(function (id) { return zonaPorId(id); });
     var calle = calleId(rubro);
     if (calle) ids = ids.concat(['libre-' + rubro]);
