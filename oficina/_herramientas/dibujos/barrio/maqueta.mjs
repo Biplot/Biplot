@@ -120,8 +120,27 @@ export function escena() {
       const vb = [caja0.x0 - pad, caja0.y0 - pad - 30, caja0.x1 - caja0.x0 + pad * 2, caja0.y1 - caja0.y0 + pad * 2 + 30].map(r1);
       const cuerpo = piezas.sort((p, q) => p[0] - q[0] || p[1] - q[1]).map(p => p[2]).join('');
       return { vb: vb.join(' '), svg: cuerpo + extra, ancho: vb[2], alto: vb[3] };
+    },
+    // Las piezas en capas por profundidad, para que el navegador meta entre ellas a la gente que camina: la capa i lleva
+    // lo que tiene k (≈ x + y) entre i·paso y (i + 1)·paso; lo de antes de 0 (piso, muros) va en la primera y lo que va
+    // sobre todo (carteles, pines) en «arriba». Cada capa conserva el orden de dibujo.
+    capas(paso = PASO) {
+      const orden = piezas.slice().sort((p, q) => p[0] - q[0] || p[1] - q[1]);
+      const resto = orden.filter(p => p[0] < 900000), arriba = orden.filter(p => p[0] >= 900000);
+      const n = Math.max(1, ...resto.map(p => Math.floor(p[0] / paso) + 1));
+      const capas = Array.from({ length: n }, () => '');
+      for (const p of resto) capas[Math.max(0, Math.floor(p[0] / paso))] += p[2];
+      return { capas, arriba: arriba.map(p => p[2]).join('') };
     }
   };
   return E;
+}
+// El grosor de cada capa, en x + y (escena.js ubica a quien camina con el mismo paso)
+export const PASO = 0.25;
+// Alguien que camina: parado en el origen, mirando a la derecha (el navegador lo mueve y lo da vuelta). La profundidad
+// es la de E.pj: x + y + 0.2.
+export function andante(id, e = 1.4) {
+  const E = escena(); E.pj(id, 0, 0, 0, 'd', e);
+  return E.piezas.map(p => p[2]).join('');
 }
 

@@ -2,9 +2,10 @@
 
 BiPlot HQ: una oficina dibujada que se puede recorrer, al modo de una banda virtual, en medio de su barrio. Desde la
 calle, la oficina y cada local se ven cerrados, con el nombre y el logo de su empresa pintados en el techo. Al tocar la
-oficina, el techo se desvanece y adentro trabaja el equipo. Al tocar un local se ve su vista previa (su video o su sala
-dibujada, lo que hicimos y quién lo hizo) y desde ahí se entra a la sala de esa empresa, con sus pantallas reales, sus
-enlaces y el equipo que la hizo. Las mismas piezas sirven para Instagram y para compartir cada sala.
+oficina, el techo se desvanece y adentro trabaja el equipo. Al tocar un local, se le va el techo y se ve por dentro, con
+su gente y alguien que camina entre los muebles; al lado se abre su vista previa (su video o su sala dibujada, lo que
+hicimos y quién lo hizo) y desde ahí se entra a la sala de esa empresa, con su gente caminando, sus pantallas reales,
+sus enlaces y el equipo que la hizo. Las mismas piezas sirven para Instagram y para compartir cada sala.
 
 - Página: `oficina/index.html` → **biplot.cl/oficina/** (GitHub Pages publica `main`).
 - Enlaces directos: `/oficina/#oficina` (adentro), `/oficina/#lupe`, `/oficina/#haru` (la sala de Haru), `/oficina/#archivo`,
@@ -52,28 +53,31 @@ reuniones**. La **Puerta 404** es una caja cerrada: nunca se abre.
 
 **La calle principal.** Por delante de la oficina: un local por proyecto con sala dibujada a mano (Nu Home 360,
 Fundos 360, Haru 360 y Eleven 360, el pasaje a BiPlot HQ, Rumbo), el local libre "Tu proyecto aquí" y **El Archivo**.
-Los locales se ven siempre cerrados: el nombre corto de la empresa y su logo pintados en el techo, el borde del techo
-del color de su marca, su toldo y su letrero. La calle es tranquila: dos personas caminando por la vereda, el
-repartidor, una clienta en el directorio y, en la plaza (con su mural, la pileta y el quiosco), un abuelo y una
-paseadora con su perro; la gente de cada local está en su sala. En el **pasaje** está el directorio con las calles del
-barrio.
+Los locales se ven cerrados: el nombre corto de la empresa y su logo pintados en el techo, el borde del techo del color
+de su marca, su toldo y su letrero. **Al tocar uno se abre**: el techo se desvanece y se ve por dentro, un adelanto de
+su sala con su gente y alguien que camina entre los muebles (el vecino de la derecha, que lo taparía, se vuelve
+transparente mientras tanto); vuelve a cerrarse al cerrar su panel, al salir de su sala o al entrar a la oficina. La
+calle es tranquila: dos personas caminando por la vereda, el repartidor, una clienta en el directorio y, en la plaza
+(con su mural, la pileta y el quiosco), un abuelo y una paseadora con su perro; la gente de cada local está adentro y
+se ve al abrirlo. En el **pasaje** está el directorio con las calles del barrio.
 
-| Local | En el techo | Al tocarlo |
-|---|---|---|
-| Nu Home 360 | Su logo y NU HOME | Su vista previa, con su video |
-| Fundos 360 | Su logo (el escudo dorado) y FUNDOS | Su vista previa, con su video |
-| Haru 360 | Su logo (el cuadrado rojo) y HARU | Su vista previa, con su video |
-| Eleven 360 | El 11 de su sala y ELEVEN | Su vista previa, con su sala dibujada |
-| Rumbo | La bandera de su sala y RUMBO | Su vista previa, con su sala dibujada |
-| Tu proyecto aquí | «Se arrienda · Tu proyecto aquí», punteado | La conversación con Plotty |
-| El Archivo | Su carpeta de colores y EL ARCHIVO | La lista de todos los casos |
+| Local | En el techo | Al tocarlo se abre y se ve | Y su panel |
+|---|---|---|---|
+| Nu Home 360 | Su logo y NU HOME | La casa armándose con la grúa; el maestro camina entre los módulos | Su vista previa, con su video |
+| Fundos 360 | Su logo (el escudo dorado) y FUNDOS | La maqueta del loteo; un cliente le da la vuelta | Su vista previa, con su video |
+| Haru 360 | Su logo (el cuadrado rojo) y HARU | La barra de sushi y las mesas; la mesera va y viene | Su vista previa, con su video |
+| Eleven 360 | El 11 de su sala y ELEVEN | La trotadora, las pesas y el torniquete; el instructor recorre | Su vista previa, con su sala dibujada |
+| Rumbo | La bandera de su sala y RUMBO | El camino del día 1 al 30; la corredora lo recorre | Su vista previa, con su sala dibujada |
+| Tu proyecto aquí | «Se arrienda · Tu proyecto aquí», punteado | El local disponible; una visita lo recorre | La conversación con Plotty |
+| El Archivo | Su carpeta de colores y EL ARCHIVO | Los estantes de carpetas; alguien busca un caso | La lista de todos los casos |
 
 Eleven 360 y Rumbo llevan la marca de su sala mientras no tengamos su logo oficial (va en `media/salas/` y en `LOGO`,
 en `barrio/barrio.mjs`).
 
 **La sala de cada empresa.** La vista previa de un local trae su video (o su sala dibujada), lo que hicimos, los enlaces,
 quién trabajó y el botón **Entrar a la sala**: la cámara entra y se abre su sala en grande (`salas.js`, se carga recién
-la primera vez), con su gente y un **punto por módulo**. Cada punto muestra la pantalla real de ese módulo
+la primera vez), con su gente (en cada sala dos personas caminan entre los muebles: en Haru la mesera y quien hace el
+aseo, en Eleven el instructor y un socio que entra por el torniquete…) y un **punto por módulo**. Cada punto muestra la pantalla real de ese módulo
 (de los videos de cada caso, con datos de ejemplo) o, si todavía no hay capturas, el rincón de la sala donde está. El
 panel trae lo que construimos, lo que resolvimos, el video, los enlaces para visitarlos, el equipo que lo hizo, los
 resultados (día 30, 60 y 90: pendientes hasta que se midan y el cliente lo autorice) y el enlace para compartirla. Cada
@@ -85,12 +89,12 @@ cuando llega el primer caso de ese rubro, por delante de la principal y unida po
 lotes y termina con un local que se arrienda. Nada de esto se dibuja a mano: escena.js lo arma desde `datos.js`.
 
 - **El techo**: el nombre del caso y su logo (`logo`, un archivo en `media/salas/`) o, si no tiene, el dibujo de su rubro
-  en su color. Por dentro se ve en su vista previa: la plantilla de su rubro con su gente (`locales.js`, se carga al
-  abrir la primera).
+  en su color. Al tocarlo se abre como los de la calle principal: la plantilla de su rubro, con su gente y alguien que
+  camina (`locales.js`, se carga al abrir el primer local), y su vista previa lo muestra por dentro.
 - **Plantilla por rubro**: `clinica`, `taller` o `basica` (cualquier rubro), con el nombre y el color de cada caso.
 - **La fase manda cómo se ve el local**: E0 se arrienda (techo punteado), E1 diagnóstico («Próximamente» en el techo y
   papel en la vitrina), E2 a E6 en obra (grúa, andamio y «En obra»), E7 inauguración (globos y cinta en la puerta),
-  E8 y E9 abierto. Por dentro, en su vista previa: E1 con Lupe y el cliente, la obra con Grilla, Bucle y Tamandúa, la
+  E8 y E9 abierto. Por dentro: E1 con Lupe midiendo y el cliente, la obra con Grilla, Bucle y Tamandúa, la
   inauguración con Faro y las tijeras, y en E9 la placa del día 90 junto a la puerta.
 - **Permiso**: con su nombre, sólo con su rubro (el techo dice, por ejemplo, «Clínica dental», con el dibujo de su
   rubro) o sólo en El Archivo.
@@ -109,13 +113,13 @@ sólo para su vitrina.
 |---|---|
 | `index.html` | La página: barra de marca, escena, «Salir a la calle», la sala de cada empresa, menú "Recorre la oficina", controles, bienvenida, recorrido guiado y panel |
 | `datos.js` | **Lo único que hay que tocar para cambiar textos y sumar casos**: equipo, mascotas, fases, lugares, proyectos (con los puntos de cada sala), calles del barrio, casos de referencia, vitrina y Plotty |
-| `escena.js` | La oficina isométrica y su barrio: arma la calle principal, las calles por rubro (con el techo de cada caso) y El Archivo desde `datos.js`; la oficina cerrada que se abre, zonas, vitrina, los recorridos del equipo y la gente que camina |
-| `oficina.js` | Interfaz: cámara (arrastrar, rueda, pellizco, teclado), entrar y salir de la oficina, menú con el barrio y su buscador, la vista previa de cada local, la sala de cada empresa, El Archivo, recorrido guiado, paneles, chat, videos y enlaces directos |
+| `escena.js` | La oficina isométrica y su barrio: arma la calle principal, las calles por rubro (con el techo de cada caso) y El Archivo desde `datos.js`; la oficina cerrada que se abre, los locales que se abren al tocarlos, zonas, vitrina, los recorridos del equipo y la gente que camina (por la vereda, dentro de un local abierto y en las salas) |
+| `oficina.js` | Interfaz: cámara (arrastrar, rueda, pellizco, teclado), entrar y salir de la oficina, menú con el barrio y su buscador, el local abierto con su vista previa, la sala de cada empresa, El Archivo, recorrido guiado, paneles, chat, videos y enlaces directos |
 | `oficina.css` | Estilos con los tokens oscuros de la marca y todas las animaciones |
 | `elenco.js` | *Generado.* Los cabezones de la oficina y la credencial (lo usan la oficina y el kit) |
 | `barrio.js` | *Generado.* La oficina cerrada y la calle principal (locales con su techo, plaza, pasaje, El Archivo), y las piezas de las calles por rubro: el local cerrado en cada estado, el dibujo de cada rubro y la gente de paso |
-| `salas.js` | *Generado.* La sala grande de cada empresa, con su gente y sus puntos; se carga con la primera vista previa sin video o al entrar a la primera sala |
-| `locales.js` | *Generado.* El local de un caso por dentro (plantillas por rubro y estados, con su gente), para su vista previa; se carga recién al abrir la primera |
+| `locales.js` | *Generado.* Cada local por dentro, como se ve al abrirlo: los de la calle principal y el de un caso según su plantilla o su estado, con su gente y quien camina; se carga al abrir el primer local (o con el mouse encima de uno) |
+| `salas.js` | *Generado.* La sala grande de cada empresa, con su gente, quienes caminan y sus puntos; se carga (después de `locales.js`) al entrar a la primera sala o con la primera vista previa sin video |
 | `ilustraciones.js` | *Generado.* Las ilustraciones de ficha; se cargan recién al abrir la primera ficha |
 | `<sala>/index.html` | *Generado.* La página para compartir cada sala (`fundos/`, `haru/`, `eleven/`, `nuhome/`, `rumbo/`): su vista previa y el paso a la oficina |
 | `kit/` | Galería y plantilla de las piezas de Instagram y de cada sala (`?pieza=sala-haru&formato=og`) |
@@ -127,7 +131,8 @@ sólo para su vitrina.
 Sin librerías ni build para la página: SVG, CSS y JavaScript planos. Lo único externo son las fuentes de Google Fonts
 (Inter, Space Grotesk y Space Mono). Al abrir la página sólo se dibujan el barrio y la oficina cerrada: el interior se
 dibuja y se anima al entrar, los videos se cargan al abrir la vista previa de su local, y las salas grandes y los
-locales por dentro, recién cuando se necesitan.
+locales por dentro, recién cuando se necesitan. Un local se dibuja por dentro sólo mientras está abierto, y su gente
+camina sólo mientras se ve.
 
 ## Cómo se edita
 
@@ -140,10 +145,14 @@ locales por dentro, recién cuando se necesitan.
   calle de su rubro (y la abre si es el primero), elige la plantilla y muestra la fase. Para cambiar de fase, se cambia
   `fase`. Mientras el CRM no esté conectado, es la forma de cargar casos.
 - **Un proyecto destacado, con sala hecha a mano**: se suben su logo y sus pantallas a `media/salas/`; en
-  `_herramientas/dibujos/barrio/barrio.mjs` se agregan su logo a `LOGO`, su nombre a `LETRERO` y su lugar a `PRINCIPAL`;
-  se dibuja su sala grande en `barrio/salas-grandes.mjs` (con un `pin()` por módulo) y se regenera todo; después,
-  `exportar-kit.mjs --solo sala-<id>` para su vista previa. Lo que se mueve en una sala lleva una clase `loc-…` con su
-  animación en `oficina.css`.
+  `_herramientas/dibujos/barrio/barrio.mjs` se agregan su logo a `LOGO`, su nombre a `LETRERO`, su lugar a `PRINCIPAL` y
+  lo que se ve al abrir su local a `ADENTRO` (su interior chico, su gente y quien camina); se dibuja su sala grande en
+  `barrio/salas-grandes.mjs` (con un `pin()` por módulo) y se regenera todo; después, `exportar-kit.mjs --solo sala-<id>`
+  para su vista previa. Lo que se mueve en una sala lleva una clase `loc-…` con su animación en `oficina.css`.
+- **Quien camina** (en un local o en una sala) va con `camina(id, ruta)` en vez de `pj(…)`: la ruta son paradas
+  `[x, y, espera en segundos]` por los pasillos libres, que se recorren en círculo (para ir y volver se anotan las de
+  vuelta); la primera es donde aparece en las imágenes fijas. Los dibujos salen en capas por profundidad y escena.js lo
+  va metiendo en la capa que le toca, así queda detrás o delante de los muebles. Quien tiene un punto encima no camina.
 - **Los dibujos** viven en `_herramientas/dibujos/`: `cabezones/` (el equipo), `ilustracion/` (las fichas) y `barrio/`
   (el motor de maquetas, los locales, las plantillas, el entorno, la gente del barrio y las salas grandes). Después de
   cambiarlos (o los nombres y colores de los proyectos) se regenera:
@@ -166,8 +175,9 @@ npx http-server . -p 5480 -c-1
 ```
 
 Abrir http://localhost:5480/oficina/. La prueba funcional (el barrio cerrado con los techos y sus logos, la oficina que
-se abre al entrar y se cierra con Escape y con el botón atrás, menú y buscador del barrio, recorrido guiado, la vista
-previa de un local y su sala con sus puntos y sus pantallas, chat de Plotty con la cámara en el rubro, vitrina,
+se abre al entrar y se cierra con Escape y con el botón atrás, menú y buscador del barrio, recorrido guiado, el local que
+se abre al tocarlo con su gente caminando y su vista previa, su sala con gente caminando, sus puntos y sus pantallas,
+chat de Plotty con la cámara en el rubro, vitrina,
 El Archivo, teclado, enlaces directos y la página para compartir, pausa, movimiento reducido, errores de consola y
 desbordes a 1440, 1366 y 375 px, y las calles por rubro con casos de prueba que sólo existen en su navegador) corre sola
 con Edge o Chrome sin interfaz y no necesita servidor:
@@ -187,7 +197,8 @@ comienzo del menú y dice «Salir a la calle» cuando la oficina está abierta. 
 y `−` para acercar, `0` para ver todo, `Escape` cierra el panel y, sin panel abierto, sale de la oficina. En la sala de
 una empresa, cada punto es un botón (Enter o espacio) y también está en la tira de módulos del panel; `Escape` vuelve a
 la calle. El chat de Plotty son botones, con los mensajes anunciados a lectores de pantalla. Con "reducir movimiento"
-todo queda quieto y la cámara salta sin animación; además hay un botón para pausar.
+todo queda quieto y la cámara salta sin animación (los locales se abren igual, con su gente quieta en su lugar);
+además hay un botón para pausar, que también detiene a la gente de los locales y de las salas.
 
 ## Kit para Instagram
 

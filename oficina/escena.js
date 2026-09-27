@@ -3,15 +3,19 @@
  * Dibuja en un <svg> (proyección 2:1) la oficina con el equipo trabajando y, por delante, el barrio: la calle principal
  * con un local por proyecto, la plaza, El Archivo y una calle por rubro para los demás casos (barrio.js + datos.js).
  * Desde la calle, la oficina y los locales se ven cerrados, con su nombre y su logo en el techo; la oficina se abre al
- * entrar (oficina(true)) y recién ahí se dibuja y se anima el equipo. Ubica a la gente y la hace caminar. Sin librerías.
- * La usan la oficina (oficina.js, con cámara e interfaz) y el kit de Instagram (kit/, en modo quieto).
+ * entrar (oficina(true)) y recién ahí se dibuja y se anima el equipo, y un local se abre al tocarlo (abrirLocal): se va
+ * el techo y se ve por dentro, con su gente. Ubica a la gente y la hace caminar, también entre los muebles de un local o
+ * de una sala (maqueta). Sin librerías. La usan la oficina (oficina.js, con cámara e interfaz) y el kit de Instagram
+ * (kit/, en modo quieto).
  *
  * Coordenadas del mundo: x hacia abajo a la derecha, y hacia abajo a la izquierda, z hacia arriba.
  * La oficina mide ANCHO × FONDO baldosas; el barrio queda a la derecha (x > 24) y por delante (y > 20), así que se
  * dibuja después. El orden de dibujo es por profundidad (x + y), en capas.
  *
  * Escena.construir(svg, { animado, medios }) → { zonas, actores, limites, P, vitrina(ids), barrio, oficina(abrir, animar),
- *   abierta(), iniciar(), detener() }
+ *   abierta(), iniciar(), detener(), abrirLocal(id, M, { pintar, mover }), cerrarLocal(animar), local(), moverLocal(si) }
+ * Escena.maqueta(g, M, { pintar }) → { mover(si), destruir() }: un dibujo en capas (locales.js, salas.js) con su gente
+ *   caminando; Escena.maquetaSvg(M, pintar) lo da quieto, en texto; Escena.juntar(partes) junta varios en uno.
  */
 (function () {
   'use strict';
@@ -324,6 +328,89 @@
       calles: calles.map(function (c) { return { id: c.id, nombre: c.nombre, casos: c.casos.map(function (p) { return p.id; }), y: c.y }; }),
       principal: B.principal.locales.map(function (l) { return l.id; }), total: n
     };
+  }
+
+  /* ─────────── Maquetas con gente que camina ─────────── */
+  // Un local abierto o la sala de una empresa (locales.js, salas.js). El dibujo viene en capas por profundidad: la capa i
+  // lleva lo que está entre x + y = i·paso y (i + 1)·paso, de atrás hacia adelante (M.arriba va sobre todo). Quienes
+  // caminan vienen aparte (M.caminan: su dibujo parado en el origen, su ruta [[x, y, espera], …] y su paso) y cada uno va
+  // en la capa de donde está parado, así queda detrás o delante de los muebles, como el equipo en la oficina.
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function capaDe(M, x, y) { return Math.max(0, Math.min(M.capas.length - 1, Math.floor((x + y + 0.2) / (M.paso || 0.25)))); }
+  // Hacia dónde mira quien camina desde la parada i: a la derecha si va hacia +x o hacia −y
+  function haciaDerecha(ruta, i) { var a = ruta[i], b = ruta[(i + 1) % ruta.length]; return (b[0] - a[0]) - (b[1] - a[1]) >= 0; }
+  // Junta varios dibujos en capas (el local de un caso: su plantilla, su frente y sus extras), capa por capa
+  function juntar(partes) {
+    var M = { paso: partes[0].paso, capas: [], arriba: '', caminan: [] };
+    partes.forEach(function (p) {
+      p.capas.forEach(function (s, i) { M.capas[i] = (M.capas[i] || '') + s; });
+      M.arriba += p.arriba || ''; M.caminan = M.caminan.concat(p.caminan || []);
+    });
+    for (var i = 0; i < M.capas.length; i++) M.capas[i] = M.capas[i] || '';
+    return M;
+  }
+  // Para imágenes fijas y vistas previas: cada quien en su primera parada
+  function maquetaSvg(M, pintura) {
+    pintura = pintura || function (s) { return s; };
+    var extra = [];
+    (M.caminan || []).forEach(function (c) {
+      var x = c.ruta[0][0], y = c.ruta[0][1], k = capaDe(M, x, y), p = P(x, y, 0);
+      extra[k] = (extra[k] || '') + '<g transform="translate(' + r1(p[0]) + ' ' + r1(p[1]) + ')' + (haciaDerecha(c.ruta, 0) ? '' : ' scale(-1 1)') + '">' + c.svg + '</g>';
+    });
+    return M.capas.map(function (s, i) { return pintura(s) + (extra[i] || ''); }).join('') + pintura(M.arriba || '');
+  }
+  // Todas las maquetas que se mueven comparten un solo cuadro por fotograma
+  var vivas = [], latiendo = false, ultimoLatido = 0;
+  function latir(t) {
+    if (!vivas.length) { latiendo = false; return; }
+    var dt = Math.min(0.05, (t - (ultimoLatido || t)) / 1000); ultimoLatido = t;
+    vivas.forEach(function (v) { v.andar(dt); });
+    requestAnimationFrame(latir);
+  }
+  // Monta M en el grupo g y devuelve { mover(si), destruir() }: mover(true) echa a andar a su gente (con la animación
+  // pausada o el movimiento reducido no se llama y quedan en su primera parada). o.pintar cambia las marcas §…§.
+  function maqueta(g, M, o) {
+    o = o || {};
+    var pintura = o.pintar || function (s) { return s; }, html = '';
+    M.capas.forEach(function (s) { html += '<g>' + pintura(s) + '</g>'; });
+    g.innerHTML = html + pintura(M.arriba || '');
+    var capas = Array.prototype.slice.call(g.children, 0, M.capas.length);
+    var gente = (M.caminan || []).map(function (c, n) {
+      var el = document.createElementNS(SVGNS, 'g'); el.setAttribute('class', 'andante');
+      el.innerHTML = '<g class="andante-dir"><g class="andante-paso">' + c.svg + '</g></g>';
+      // Cada uno parte con una espera distinta, para que no se muevan todos a la vez
+      var w = { c: c, g: el, dir: el.firstChild, x: c.ruta[0][0], y: c.ruta[0][1], i: 0, espera: (c.ruta[0][2] || 1) * (0.35 + 0.3 * n), der: null, capa: -1 };
+      poner(w); mirar(w, haciaDerecha(c.ruta, 0));
+      return w;
+    });
+    function poner(w) {
+      var p = P(w.x, w.y, 0), k = capaDe(M, w.x, w.y);
+      w.g.setAttribute('transform', 'translate(' + r1(p[0]) + ' ' + r1(p[1]) + ')');
+      if (k !== w.capa) { capas[k].appendChild(w.g); w.capa = k; }
+    }
+    function mirar(w, der) { if (w.der === der) return; w.der = der; w.dir.setAttribute('transform', der ? '' : 'scale(-1 1)'); }
+    // Camina hacia la parada que sigue; al llegar, espera lo que diga la ruta (si dice algo) y sigue
+    function andar(dt) {
+      gente.forEach(function (w) {
+        if (w.espera > 0) { w.espera -= dt; if (w.espera <= 0) w.g.classList.add('camina'); return; }
+        var r = w.c.ruta, sig = r[(w.i + 1) % r.length], dx = sig[0] - w.x, dy = sig[1] - w.y, dist = Math.sqrt(dx * dx + dy * dy), d = w.c.vel * dt;
+        if (dist <= d) {
+          w.x = sig[0]; w.y = sig[1]; w.i = (w.i + 1) % r.length;
+          if (sig[2]) { w.espera = sig[2]; w.g.classList.remove('camina'); }
+        } else {
+          w.x += dx / dist * d; w.y += dy / dist * d;
+          mirar(w, dx - dy >= 0); w.g.classList.add('camina');
+        }
+        poner(w);
+      });
+    }
+    var v = { andar: andar };
+    function mover(si) {
+      var i = vivas.indexOf(v);
+      if (si && i < 0) { vivas.push(v); if (!latiendo) { latiendo = true; ultimoLatido = 0; requestAnimationFrame(latir); } }
+      else if (!si && i > -1) { vivas.splice(i, 1); gente.forEach(function (w) { w.g.classList.remove('camina'); }); }
+    }
+    return { mover: mover, destruir: function () { mover(false); g.innerHTML = ''; }, gente: gente };
   }
 
   /* ─────────── Construcción ─────────── */
@@ -903,6 +990,53 @@
       return abierta;
     }
     if (BR) oficina(false, false);
+
+    // Un local de la calle se abre al tocarlo: el local cerrado (con su techo) se desvanece y en su lugar se ve por dentro,
+    // con su gente (M: el local por dentro, de locales.js; o.pintar cambia las marcas §…§ de cada caso). Queda en el mismo
+    // lugar del dibujo que el local cerrado, así la vereda lo sigue tapando como corresponde; el vecino de la derecha, que
+    // queda por delante y taparía la mitad de adentro, se vuelve transparente mientras tanto.
+    var abiertoL = null, medios = opciones.medios || 'media/salas/';
+    function localCerrado(id) {
+      var ls = svg.querySelectorAll('.barrio .local[data-local]');
+      for (var i = 0; i < ls.length; i++) if (ls[i].getAttribute('data-local') === id) return ls[i];
+      return null;
+    }
+    function abrirLocal(id, M, o) {
+      o = o || {};
+      if (abiertoL && abiertoL.id === id) return abiertoL.viva;
+      cerrarLocal();
+      var cerr = localCerrado(id), z = zonas.filter(function (zn) { return zn.id === id && zn.barrio; })[0];
+      if (!cerr || !z || !M) return null;
+      var p = P(z.caja[0], z.caja[1], 0), g = document.createElementNS(NS, 'g');
+      g.setAttribute('class', 'local-abierto'); g.setAttribute('data-abierto', id);
+      g.setAttribute('transform', 'translate(' + r1(p[0]) + ' ' + r1(p[1]) + ')');
+      cerr.parentNode.insertBefore(g, cerr.nextSibling);
+      var n = BR.total, pintura = function (s) {
+        return (o.pintar ? o.pintar(s) : s).replace(/§CASOS§/g, n + (n === 1 ? ' caso' : ' casos')).replace(/§M§/g, medios);
+      };
+      var viva = maqueta(g, M, { pintar: pintura }), dur = o.animar === false ? 0 : DUR;
+      var zv = zonas.filter(function (zn) { return zn.barrio && zn.caja[1] === z.caja[1] && zn.caja[0] > z.caja[0] && zn.caja[0] - z.caja[0] < 5; })[0], vecino = zv && localCerrado(zv.id);
+      if (dur) {
+        g.style.opacity = '0'; g.style.transition = cerr.style.transition = 'opacity ' + dur + 'ms ease';
+        if (vecino) vecino.style.transition = 'opacity ' + dur + 'ms ease';
+        void g.getBoundingClientRect();
+      }
+      g.style.opacity = ''; cerr.style.opacity = '0'; if (vecino) vecino.style.opacity = '.18';
+      abiertoL = { id: id, g: g, cerr: cerr, vecino: vecino, viva: viva, t: setTimeout(function () { cerr.style.visibility = 'hidden'; }, dur) };
+      if (o.mover) viva.mover(true);
+      return viva;
+    }
+    // Vuelve el techo: el local cerrado aparece y lo de adentro se desvanece y se desmonta
+    function cerrarLocal(animar) {
+      var a = abiertoL; if (!a) return;
+      abiertoL = null; clearTimeout(a.t); a.viva.mover(false);
+      var dur = animar === false ? 0 : DUR;
+      a.cerr.style.visibility = '';
+      if (dur) void a.cerr.getBoundingClientRect();
+      a.cerr.style.opacity = ''; a.g.style.opacity = '0'; if (a.vecino) a.vecino.style.opacity = '';
+      var quitar = function () { a.viva.destruir(); if (a.g.parentNode) a.g.parentNode.removeChild(a.g); };
+      if (dur) setTimeout(quitar, dur); else quitar();
+    }
     // La vitrina muestra otros tres casos (los que elige Plotty según el rubro)
     function cambiarVitrina(ids, titulo) {
       var D = window.OFICINA_DATOS || {}, lista = (D.proyectos || []).concat(D.casos || []);
@@ -917,12 +1051,14 @@
       zonas: zonas, actores: actores, limites: limites, P: P, iniciar: iniciar, detener: detener, lanzar: lanzar, vitrina: cambiarVitrina,
       barrio: BR ? { calles: BR.calles, principal: BR.principal, total: BR.total } : null, caminantes: caminantes,
       oficina: oficina, abierta: function () { return abierta; },
-      destruir: function () { detener(); clearInterval(lanzador); clearInterval(relojInt); },
+      abrirLocal: abrirLocal, cerrarLocal: cerrarLocal, local: function () { return abiertoL ? abiertoL.id : null; },
+      moverLocal: function (si) { if (abiertoL) abiertoL.viva.mover(si); },
+      destruir: function () { detener(); cerrarLocal(false); clearInterval(lanzador); clearInterval(relojInt); },
       corriendo: function () { return corriendo; }
     };
   }
 
   function hexA(hex, a) { var c = hex2rgb(hex); return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')'; }
 
-  window.Escena = { construir: construir, P: P, ESCALA_ACTOR: ESCALA_ACTOR, pintar: pintar };
+  window.Escena = { construir: construir, P: P, ESCALA_ACTOR: ESCALA_ACTOR, pintar: pintar, maqueta: maqueta, maquetaSvg: maquetaSvg, juntar: juntar };
 })();

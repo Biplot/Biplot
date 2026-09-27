@@ -19,11 +19,11 @@
   var SALAS_KIT = window.Salas ? Object.keys(window.Salas.salas) : [];
   var FORMATOS_SALA = { haru: ['og', '4x5', '9x16'] };
   if (window.Salas) {
-    // Los personajes del barrio y de las salas, definidos una vez para todo el documento
+    // Los personajes del barrio, de los locales y de las salas, definidos una vez para todo el documento
     var defs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     defs.setAttribute('width', '0'); defs.setAttribute('height', '0'); defs.setAttribute('aria-hidden', 'true');
     defs.style.position = 'absolute';
-    defs.innerHTML = '<defs>' + (window.Barrio ? window.Barrio.defs : '') + window.Salas.defs + '</defs>';
+    defs.innerHTML = '<defs>' + (window.Barrio ? window.Barrio.defs : '') + (window.Locales ? window.Locales.defs : '') + window.Salas.defs + '</defs>';
     document.body.appendChild(defs);
   }
 
@@ -125,7 +125,7 @@
   /* ── La sala de cada empresa ── */
   function dibujoSala(id, clase) {
     var S = window.Salas.salas[id], vb = S.vb.split(' ').map(Number);
-    return '<svg class="' + clase + '" viewBox="' + vb.join(' ') + '" aria-hidden="true"><g class="quieto">' + S.svg.replace(/§M§/g, '../media/salas/') + '</g></svg>';
+    return '<svg class="' + clase + '" viewBox="' + vb.join(' ') + '" aria-hidden="true"><g class="quieto">' + window.Escena.maquetaSvg(S, function (t) { return t.replace(/§M§/g, '../media/salas/'); }) + '</g></svg>';
   }
   function sala(id, f) {
     var p = PROY[id], url = 'biplot.cl/oficina/<b>' + id + '</b>';

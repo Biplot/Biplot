@@ -1,6 +1,7 @@
 // Las salas grandes: el local de cada empresa por dentro, con su gente, sus pantallas reales y un punto por módulo.
-// Cada sala se dibuja en su propia escena (la misma proyección de la oficina) y devuelve { svg, vb, pines, usados }.
-import { escena, P, registrarMedida } from './maqueta.mjs';
+// Cada sala se dibuja en su propia escena (la misma proyección de la oficina) y devuelve { vb, capas, arriba, caminan,
+// pines, usados }: el dibujo en capas por profundidad y, aparte, la gente que camina por la sala con su ruta.
+import { escena, P, registrarMedida, andante } from './maqueta.mjs';
 import * as S from './locales.mjs';
 import { VISITANTES, persona, PIEL, medida } from './visitantes.mjs';
 
@@ -130,19 +131,30 @@ function pin(E, pines, n, x, y, z, col, tinta = '#0B1726') {
 }
 const flor = (cx, cy, r) => [0, 72, 144, 216, 288].map(a => { const t = (a - 90) * Math.PI / 180; return `<circle cx="${r1(cx + Math.cos(t) * r)}" cy="${r1(cy + Math.sin(t) * r)}" r="${r1(r * 0.72)}" fill="#F2F4F7"/>`; }).join('') + `<circle cx="${cx}" cy="${cy}" r="${r1(r * 0.42)}" fill="#F5B7C5"/>`;
 
+// La sala sale en capas por profundidad (E.capas) y la gente que camina va aparte, con su ruta: escena.js la mete en la
+// capa que le toca mientras camina. camina(id, ruta, o): ruta = [[x, y, espera en segundos], …], se recorre en círculo
+// (para ir y volver se anotan los puntos de vuelta); la primera parada es donde se ve en las imágenes fijas.
 function montar(fn) {
   const E = escena(); E.txt = 1;
   const L = S.local(E, 0, 0, 0, false, 0);
-  const usados = new Set(), pines = [];
+  const usados = new Set(), pines = [], caminan = [];
   const pj = (id, x, y, z = 0, dir = 'd', e = EA, k) => { usados.add(id); L.pj(id, x, y, z, dir, e, k); };
-  const info = fn({ E, L, pj, pin: (n, x, y, z, col, tinta) => pin(E, pines, n, x, y, z, col, tinta) });
-  const r = E.svg(18);
-  return { ...r, pines, usados: [...usados], ...info };
+  const camina = (id, ruta, o = {}) => { usados.add(id); caminan.push(caminante(E, id, ruta, o)); };
+  const info = fn({ E, L, pj, camina, pin: (n, x, y, z, col, tinta) => pin(E, pines, n, x, y, z, col, tinta) });
+  const r = E.svg(18), { capas, arriba } = E.capas();
+  return { vb: r.vb, ancho: r.ancho, alto: r.alto, capas, arriba, caminan, pines, usados: [...usados], ...info };
+}
+// Quien camina: su dibujo parado en el origen, su ruta y su paso (baldosas por segundo). Marca los bordes del dibujo
+// en su primera parada, como si estuviera parado ahí.
+export function caminante(E, id, ruta, o = {}) {
+  const e = o.e || EA, [x, y] = ruta[0];
+  E.marca(x, y, 0); E.marca(x, y, 1.9);
+  return { id, svg: andante(id, e), ruta: ruta.map(p => p.map(n => Math.round(n * 100) / 100)), vel: o.vel || 0.5 };
 }
 
 // ───────── Haru 360 · restaurante de cocina japonesa, Arica ─────────
 export function haru() {
-  return montar(({ E, L, pj, pin }) => {
+  return montar(({ E, L, pj, camina, pin }) => {
     const W = 9.6, D = 7.0, ROJO = '#E0524A';
     base(E, L, W, D, { piso: '#6E4A30', muroY: '#2E2623', muroX: '#262020', zocalo: '#1B1512', tope: '#40352F', canto: '#1B1512',
       dibujo: `<g stroke="#5E3F28" stroke-width="2.4">${Array.from({ length: 26 }, (_, i) => `<path d="M${(i + 1) * 36} 0V${D * 100}"/>`).join('')}</g>` });
@@ -221,7 +233,7 @@ export function haru() {
     L.piso(8.0, 6.05, `<rect width="120" height="70" rx="8" fill="#3A2E26"/><rect x="8" y="8" width="104" height="54" rx="5" fill="none" stroke="#C8474A" stroke-width="3"/>` + txt(28, 44, 'HARU', 22, '#E8D2A8'), -54);
     // La gente: los nueve perfiles del sistema, los comensales y Faro enseñando
     pj('jefacocina', 1.35, 0.8, 0, 'd');
-    pj('mesera', 3.35, 2.2, 0, 'd');
+    camina('mesera', [[3.35, 2.25, 2.5], [3.45, 3.0], [3.95, 4.95, 2.2], [3.45, 3.0]]);
     pj('chef', 4.1, 0.45, 0, 'd');
     pj('barman', 5.55, 0.45, 0, 'i');
     pj('comensal6', 4.45, 1.9, 0.48, 'i');
@@ -234,7 +246,7 @@ export function haru() {
     pj('comensal4', 3.68, 5.85, 0.48, 'd'); pj('comensal5', 4.92, 5.85, 0.48, 'i');
     pj('repartidor', 8.7, 2.85, 0, 'd');
     pj('dueno', 7.5, 5.45, 0, 'i');
-    pj('aseo', 1.8, 6.3, 0, 'd');
+    camina('aseo', [[1.8, 6.35, 3], [3.2, 6.55], [5.4, 6.55, 2.5], [3.2, 6.55]], { vel: 0.4 });
     L.cil(1.35, 6.5, 0, 0.13, 0.22, '#17C3B2', '#0A8A7E');
     // Un alfiler por módulo, en el mismo orden del video
     pin(1, 8.72, 0.05, 1.62, ROJO, '#FFFFFF');
@@ -253,7 +265,7 @@ const araucaria = (x, y, s) => { const q = (n) => r1(n * s); return `<path d="M$
   `<path d="M${r1(x - 19 * s)} ${r1(y - 29 * s)}C${r1(x - 12 * s)} ${r1(y - 38 * s)} ${r1(x + 12 * s)} ${r1(y - 38 * s)} ${r1(x + 19 * s)} ${r1(y - 29 * s)}Z" fill="#1F3B2A"/>` +
   `<path d="M${r1(x - 11 * s)} ${r1(y - 36 * s)}C${r1(x - 7 * s)} ${r1(y - 43 * s)} ${r1(x + 7 * s)} ${r1(y - 43 * s)} ${r1(x + 11 * s)} ${r1(y - 36 * s)}Z" fill="#1F3B2A"/>`; };
 export function fundos() {
-  return montar(({ E, L, pj, pin }) => {
+  return montar(({ E, L, pj, camina, pin }) => {
     const W = 9.6, D = 7.0, VERDE = '#6FAF6B', ORO = '#C9A45C';
     base(E, L, W, D, { piso: '#2B4A3B', muroY: '#1D3A2D', muroX: '#183226', zocalo: '#10241A', tope: '#2F5A45', canto: '#10241A',
       dibujo: `<rect x="40" y="40" width="${W * 100 - 80}" height="${D * 100 - 80}" rx="18" fill="none" stroke="#335A47" stroke-width="5"/>` });
@@ -320,11 +332,11 @@ export function fundos() {
     // La gente
     pj('vendedora', 3.3, 1.65, 0, 'd');
     pj('senor', 2.35, 4.55, 0, 'd'); pj('senora', 3.15, 4.65, 0, 'i');
-    pj('jefaventas', 5.75, 1.3, 0, 'i');
+    camina('jefaventas', [[5.75, 1.3, 3], [5.0, 2.1], [4.7, 2.9, 2.5], [5.0, 2.1]]);
     pj('finanzas', 9.05, 4.65, 0, 'i');
     pj('comprador', 7.45, 4.95, 0, 'd');
     pj('maestro', 8.95, 2.1, 0, 'i');
-    pj('nino', 1.2, 4.2, 0, 'd', EA * 0.72);
+    camina('nino', [[1.2, 4.2, 2], [1.05, 2.1], [2.3, 1.85, 2.5], [1.05, 2.1]], { e: EA * 0.72, vel: 0.8 });
     // Un alfiler por módulo del video
     pin(1, 4.05, 0.05, 1.42, VERDE); pin(2, 2.95, 3.0, 1.15, VERDE); pin(3, 8.35, 4.55, 0.85, VERDE); pin(4, 0.03, 2.95, 1.35, VERDE);
     pin(5, 0.35, 5.5, 1.3, VERDE); pin(6, 5.75, 0.05, 1.42, VERDE); pin(7, 2.4, 5.8, 0.03, VERDE);
@@ -334,7 +346,7 @@ export function fundos() {
 
 // ───────── Nu Home 360 · casas modulares ─────────
 export function nuhome() {
-  return montar(({ E, L, pj, pin }) => {
+  return montar(({ E, L, pj, camina, pin }) => {
     const W = 9.8, D = 7.0, ORO = '#E0B341';
     base(E, L, W, D, { piso: '#5E6670', muroY: '#3A3733', muroX: '#33302C', zocalo: '#24211E', tope: '#4A4640', canto: '#24211E',
       dibujo: `<g stroke="#535A63" stroke-width="2.2">${Array.from({ length: 9 }, (_, i) => `<path d="M${(i + 1) * 100} 0V${D * 100}"/>`).join('')}${Array.from({ length: 6 }, (_, i) => `<path d="M0 ${(i + 1) * 100}H${W * 100}"/>`).join('')}</g>` });
@@ -390,10 +402,11 @@ export function nuhome() {
     pj('cliente', 2.35, 2.1, 0, 'i');
     pj('ingeniera', 0.95, 3.85, 0, 'd');
     pj('bucle', 3.95, 3.5, 0, 'i');
-    pj('maestro', 8.2, 3.9, 0, 'i');
+    camina('maestro', [[8.2, 3.9, 2.5], [5.3, 4.0, 2.5]]);
     pj('soldador', 8.95, 2.0, 0, 'i');
     pj('clienta2', 3.4, 5.55, 0, 'd');
-    pj('papa', 7.55, 6.5, 0, 'd'); pj('mama', 8.35, 6.6, 0, 'i'); pj('nino', 6.85, 6.6, 0, 'd', EA * 0.72);
+    pj('papa', 7.55, 6.5, 0, 'd'); pj('mama', 8.35, 6.6, 0, 'i'); 
+    camina('nino', [[6.85, 6.6, 2], [5.3, 6.25, 1.5], [6.2, 4.5, 2], [6.4, 5.9]], { e: EA * 0.72, vel: 0.8 });
     // Un alfiler por paso del video
     pin(1, 1.4, 0.05, 1.3, ORO); pin(2, 0.03, 1.45, 1.35, ORO); pin(3, 2.35, 2.1, 1.98, ORO); pin(4, 0.03, 4.0, 1.3, ORO);
     pin(5, 5.9, 0.05, 1.32, ORO); pin(6, 3.4, 5.55, 1.98, ORO); pin(7, 7.55, 6.5, 2.05, ORO);
@@ -404,7 +417,7 @@ export function nuhome() {
 // ───────── Eleven 360 · gimnasio, Arica ─────────
 const OSC = { t: '#3A424E', l: '#2A3038', r: '#1E232A' };
 export function eleven() {
-  return montar(({ E, L, pj, pin }) => {
+  return montar(({ E, L, pj, camina, pin }) => {
     const W = 9.4, D = 7.0, CIAN = '#17C3B2';
     base(E, L, W, D, { piso: '#23282E', muroY: '#1B232C', muroX: '#161D25', zocalo: '#10161C', tope: '#2A3644', canto: '#10161C',
       dibujo: `<rect x="30" y="30" width="${W * 100 - 60}" height="${D * 100 - 60}" fill="none" stroke="${CIAN}" stroke-width="3" opacity=".55"/>` +
@@ -459,7 +472,7 @@ export function eleven() {
     L.caja(8.6, 5.3, 0, 0.16, 0.16, 1.0, { t: '#B9C8D8', l: '#8FA3B8', r: '#6B7A8C' });
     L.planta(9.1, 3.4, 0, undefined, 0.85);
     // La gente
-    pj('instructor', 1.6, 1.25, 0, 'd');
+    camina('instructor', [[1.6, 1.25, 2.5], [1.9, 2.85, 2], [3.1, 2.2, 2], [1.9, 2.85]]);
     pj('atleta', 2.45, 1.9, 0, 'i');
     pj('atleta2', 1.2, 2.25, 0, 'd');
     pj('ciclista', 5.9, 1.45, 0.74, 'd', EA, 7.7); pj('ciclista2', 7.15, 1.45, 0.74, 'd', EA, 8.95);
@@ -467,7 +480,7 @@ export function eleven() {
     pj('recepcionista', 1.9, 4.95, 0, 'd');
     pj('architect', 4.0, 4.85, 0, 'd');
     pj('duenagym', 6.3, 4.7, 0, 'i');
-    pj('socio', 8.2, 6.6, 0, 'i');
+    camina('socio', [[8.2, 6.6, 2.5], [8.2, 5.85, 1.2], [8.2, 4.6], [7.0, 3.6], [6.1, 2.35, 3], [7.0, 3.6], [8.2, 4.6], [8.2, 5.85, 1]]);
     // Un alfiler por punto del sistema
     pin(1, 4.2, 0.05, 1.35, CIAN); pin(2, 6.3, 4.7, 1.95, CIAN); pin(3, 0.03, 5.5, 1.3, CIAN); pin(4, 7.78, 5.38, 1.1, CIAN);
     return { id: 'eleven', ancho: W, fondo: D };
@@ -476,7 +489,7 @@ export function eleven() {
 
 // ───────── Rumbo · app de desarrollo personal (producto de BiPlot) ─────────
 export function rumbo() {
-  return montar(({ E, L, pj, pin }) => {
+  return montar(({ E, L, pj, camina, pin }) => {
     const W = 9.0, D = 6.8, TEAL = '#7FD8CF';
     base(E, L, W, D, { piso: '#1D4F55', muroY: '#173F48', muroX: '#12353D', zocalo: '#0E2B31', tope: '#245A62', canto: '#0E2B31',
       dibujo: `<path d="M60 610C170 560 250 520 330 470S520 400 600 330S700 230 640 180" fill="none" stroke="${TEAL}" stroke-width="12" stroke-dasharray="2 22" stroke-linecap="round"/>` +
@@ -513,9 +526,9 @@ export function rumbo() {
     // La gente
     pj('meditadora', 1.45, 1.1, 0.13, 'd');
     pj('lectora', 0.85, 3.3, 0.42, 'd');
-    pj('caminante', 3.3, 4.55, 0, 'd');
+    camina('caminante', [[3.3, 4.6, 2], [2.1, 5.3], [0.95, 5.95, 2.5], [2.1, 5.3]]);
     pj('estudiante', 6.95, 1.55, 0.6, 'de');
-    pj('corredora', 5.95, 3.85, 0, 'd');
+    camina('corredora', [[5.95, 3.85, 1.5], [7.6, 3.55], [7.9, 5.4], [5.2, 5.65]], { vel: 1.0 });
     pj('tomacafe', 2.8, 5.8, 0.48, 'd');
     L.cil(2.8, 5.8, 0, 0.16, 0.46, '#3E9C95', '#2A7C78');
     // Un alfiler por punto de la app

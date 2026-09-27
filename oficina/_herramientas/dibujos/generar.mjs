@@ -4,10 +4,11 @@
 //   oficina/ilustraciones.js  las ilustraciones de las fichas y del kit (window.Ilustraciones)
 //   oficina/barrio.js         la oficina cerrada y su calle: locales con su techo, plaza, pasaje, El Archivo y las piezas
 //                             de las calles por rubro, que escena.js arma a partir de datos.js (window.Barrio)
-//   oficina/salas.js          la sala grande de cada empresa, con su gente y un punto por módulo (window.Salas);
-//                             se carga al primer clic en un local
-//   oficina/locales.js        el local de un caso por dentro (plantillas por rubro y estados, con su gente), para la
-//                             vista previa de los casos de las calles por rubro (window.Locales); se carga después de salas.js
+//   oficina/locales.js        cada local por dentro, como se ve al abrirlo en la calle: los de la calle principal y el
+//                             de un caso según su plantilla o su estado, con su gente y quien camina (window.Locales);
+//                             se carga al abrir el primer local
+//   oficina/salas.js          la sala grande de cada empresa, con su gente, quienes caminan y un punto por módulo
+//                             (window.Salas); se carga al entrar a una sala, después de locales.js
 //   oficina/<sala>/index.html la página para compartir cada sala (biplot.cl/oficina/haru): trae su vista previa
 //                             (kit/png/sala-<sala>-og.png) y lleva a la oficina, directo a esa sala (#haru)
 //
@@ -20,7 +21,8 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { VECTOR } from './cabezones/todos.mjs';
-import { callePrincipal, piezas, G, HQ, PRINCIPAL, CAMINANTES, DE_PASO } from './barrio/barrio.mjs';
+import { callePrincipal, piezas, adentro, G, HQ, PRINCIPAL, CAMINANTES, DE_PASO } from './barrio/barrio.mjs';
+import { PASO } from './barrio/maqueta.mjs';
 import { SALAS_GRANDES } from './barrio/salas-grandes.mjs';
 import { VISITANTES } from './barrio/visitantes.mjs';
 import { DEFS_ENTORNO } from './barrio/entorno.mjs';
@@ -191,6 +193,31 @@ window.Barrio = ${JSON.stringify({
 writeFileSync(path.join(oficina, 'barrio.js'), barrio);
 console.log('barrio.js', kb(barrio), '·', enBarrio.size, 'personajes');
 
+// Un dibujo en capas (una sala, un local por dentro): cada capa redondeada y quienes caminan con su dibujo redondeado
+const enCapas = (r) => ({ capas: r.capas.map(redondear), arriba: redondear(r.arriba),
+  caminan: r.caminan.map((c) => ({ id: c.id, svg: redondear(c.svg), ruta: c.ruta, vel: c.vel })) });
+
+// Los locales por dentro (locales.js va primero: define los personajes que no están en el barrio)
+const dentro = adentro(DATOS);
+const enLocales = new Set([...dentro.usados, ...pz.vistas.usados].filter((u) => !enBarrio.has(u)));
+const localesJs = CABECERA('locales por dentro') + `/*
+ * Cada local por dentro, como se ve al abrirlo en la calle (sin techo): el de cada proyecto de la calle principal y el
+ * de un caso según su plantilla (interior) o su estado, con su frente abierto y sus extras, con marcas §…§ para el color
+ * y el nombre de cada caso (como barrio.js). Todo se dibuja en su origen (0, 0), en capas por profundidad: la capa i
+ * lleva lo que está entre x + y = i·paso y (i + 1)·paso; quienes caminan van aparte, con su ruta [[x, y, espera], …], y
+ * escena.js los mete en la capa que les toca. defs: los personajes que no están en el barrio.
+ */
+window.Locales = ${JSON.stringify({
+  defs: defsDe(enLocales), paso: PASO,
+  principal: Object.fromEntries(Object.entries(dentro.locales).map(([k, v]) => [k, enCapas(v)])),
+  interior: Object.fromEntries(Object.entries(pz.vistas.interior).map(([k, v]) => [k, enCapas(v)])),
+  extra: Object.fromEntries(Object.entries(pz.vistas.extra).map(([k, v]) => [k, enCapas(v)])),
+  frente: enCapas(pz.vistas.frente)
+})};
+`;
+writeFileSync(path.join(oficina, 'locales.js'), localesJs);
+console.log('locales.js', kb(localesJs), '·', enLocales.size, 'personajes');
+
 // Las salas grandes: el alto del cuadro se recorta arriba (ahí iban los carteles de la maqueta)
 const DEFS_SALA = `<linearGradient id="luz-cocina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E0B341" stop-opacity="0"/><stop offset="1" stop-color="#E0B341" stop-opacity=".35"/></linearGradient>` +
   `<linearGradient id="brillo-pantalla" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".16"/><stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>`;
@@ -198,35 +225,19 @@ const salas = {}, enSalas = new Set();
 for (const [id, fn] of Object.entries(SALAS_GRANDES)) {
   const r = fn(), vb = r.vb.split(' ').map(Number);
   vb[1] += 36; vb[3] -= 30;
-  r.usados.forEach((u) => { if (!enBarrio.has(u)) enSalas.add(u); });
-  salas[id] = { vb: vb.map((n) => Math.round(n * 10) / 10).join(' '), svg: redondear(r.svg), pines: r.pines };
+  r.usados.forEach((u) => { if (!enBarrio.has(u) && !enLocales.has(u)) enSalas.add(u); });
+  salas[id] = { vb: vb.map((n) => Math.round(n * 10) / 10).join(' '), ...enCapas(r), pines: r.pines };
 }
 const salasJs = CABECERA('salas grandes') + `/*
  * La sala de cada empresa por dentro: su gente, sus pantallas reales (§M§ = carpeta de medios) y un punto por módulo.
+ * En capas por profundidad, como locales.js (capas, arriba: los puntos), con quienes caminan aparte (caminan).
  * pines: [{ n, x, y }] en coordenadas del dibujo; los textos e imágenes de cada punto están en datos.js.
- * defs: los personajes que no están en el barrio (barrio.js ya define los demás).
+ * defs: los personajes que no están ni en el barrio ni en los locales (barrio.js y locales.js definen los demás).
  */
-window.Salas = ${JSON.stringify({ defs: DEFS_SALA + defsDe(enSalas), salas })};
+window.Salas = ${JSON.stringify({ defs: DEFS_SALA + defsDe(enSalas), paso: PASO, salas })};
 `;
 writeFileSync(path.join(oficina, 'salas.js'), salasJs);
-console.log('salas.js', kb(salasJs), '·', Object.keys(salas).join(', '));
-
-// Los locales de los casos por dentro, para su vista previa (sólo hacen falta cuando hay casos en las calles por rubro)
-const enLocales = new Set([...pz.vistas.usados].filter((u) => !enBarrio.has(u) && !enSalas.has(u)));
-const localesJs = CABECERA('locales por dentro') + `/*
- * El local de un caso por dentro: la plantilla de su rubro (o su estado: diagnóstico, obra) con su gente y su frente
- * abierto, con marcas §…§ para el color y el nombre de cada caso (como barrio.js). Se dibuja en su origen (0, 0).
- * defs: los personajes que no están ni en el barrio ni en las salas (se carga después de salas.js).
- */
-window.Locales = ${JSON.stringify({
-  defs: defsDe(enLocales),
-  interior: Object.fromEntries(Object.entries(pz.vistas.interior).map(([k, v]) => [k, redondear(v)])),
-  extra: Object.fromEntries(Object.entries(pz.vistas.extra).map(([k, v]) => [k, redondear(v)])),
-  frente: redondear(pz.vistas.frente)
-})};
-`;
-writeFileSync(path.join(oficina, 'locales.js'), localesJs);
-console.log('locales.js', kb(localesJs), '·', enLocales.size, 'personajes');
+console.log('salas.js', kb(salasJs), '·', Object.keys(salas).join(', '), '·', enSalas.size, 'personajes');
 
 /* ───────── Páginas para compartir cada sala ───────── */
 // Quien pega biplot.cl/oficina/haru en un chat ve la imagen de la sala; quien lo abre llega a la oficina, en esa sala.
