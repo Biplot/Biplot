@@ -2,9 +2,10 @@
 // Prueba funcional de la oficina con Edge o Chrome sin interfaz (sin dependencias, Node 22+). Levanta su propio
 // servidor estático sobre la raíz del repo y recorre la página en escritorio y celular: el barrio cerrado con los techos
 // de cada empresa, la oficina que se abre al entrar (y se cierra con Escape y con el botón atrás), menú y buscador del
-// barrio, recorrido guiado, la vista previa de un local y su sala (puntos, pantallas reales, volver), el chat de Plotty
-// con la cámara en el rubro y la vitrina, El Archivo, teclado, enlaces directos (#oficina, #lupe, #nuhome, #archivo,
-// #conversar y biplot.cl/oficina/haru), Escape, pausa, movimiento reducido, errores de consola y desborde horizontal.
+// barrio, recorrido guiado, el local que se abre al tocarlo (sin techo, con su gente caminando) con su vista previa y su
+// sala (gente caminando, puntos, pantallas reales, volver), el chat de Plotty con la cámara en el rubro y la vitrina,
+// El Archivo, teclado, enlaces directos (#oficina, #lupe, #nuhome, #archivo, #conversar y biplot.cl/oficina/haru),
+// Escape, pausa, movimiento reducido, errores de consola y desborde horizontal.
 // Al final carga casos de prueba (sólo en el navegador de la prueba, no en datos.js) para revisar las calles por rubro,
 // sus techos, las plantillas y las fases. NAVEGADOR=<ruta> usa otro Chromium.
 //
@@ -83,6 +84,16 @@ const clicEn = async (x, y) => {
   return js("document.querySelector('#panel').hidden ? 'panel cerrado' : document.querySelector('#panel-titulo')?.textContent");
 };
 const enSala = () => js("!document.querySelector('#sala').hidden && document.body.classList.contains('en-sala')");
+// El local abierto en la calle: su techo (el local cerrado) desvanecido, lo de adentro montado y quienes caminan
+const localAbierto = (id) => js(`(async () => {
+  for (let i = 0; i < 40 && !document.querySelector('.local-abierto[data-abierto="${id}"] .andante'); i++) await ${W(100)};
+  await ${W(700)};
+  const g = document.querySelector('.local-abierto[data-abierto="${id}"]'), c = [...document.querySelectorAll('.barrio .local[data-local]')].find(l => l.dataset.local === '${id}');
+  return { abierto: !!g, techo: c ? getComputedStyle(c).opacity + ' ' + getComputedStyle(c).visibility : '', andan: g ? g.querySelectorAll('.andante').length : 0, marcas: g ? g.innerHTML.includes('§') : true }; })()`);
+// Quienes caminan en un contenedor: cuántos son y si se movieron en un segundo y medio
+const caminan = (sel) => js(`(async () => { const pos = () => [...document.querySelectorAll('${sel} .andante')].map(a => a.getAttribute('transform')).join();
+  const a = pos(); await ${W(1500)}; return { n: document.querySelectorAll('${sel} .andante').length, movio: a !== pos() }; })()`);
+const techosCerrados = () => js("!document.querySelector('.local-abierto') && [...document.querySelectorAll('.barrio .local[data-local]')].every(l => getComputedStyle(l).opacity === '1' && getComputedStyle(l).visibility === 'visible')");
 
 for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, true]]) {
   console.log(`\n${w}×${h}${movil ? ' (celular)' : ''}`);
@@ -114,6 +125,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   const desb = await js("document.querySelector('#panel-cuerpo').scrollWidth <= document.querySelector('#panel-cuerpo').clientWidth + 1");
   ok(desb, 'el panel no desborda a lo ancho');
   ok(await js(`(async () => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(100)}; return document.querySelector('#panel').hidden; })()`), 'Escape cierra el panel');
+  await sleep(700);
+  ok(await techosCerrados(), 'al cerrar el panel de un local, el local vuelve a cerrarse (con su techo)');
   // Buscador y filtros del barrio
   const busca = await js(`(async () => { const i = document.querySelector('#busca-barrio'); i.value = 'restaurante'; i.dispatchEvent(new Event('input', { bubbles: true })); await ${W(50)};
     const r = [...document.querySelectorAll('#recorrer .menu-calle:not([hidden]) li:not([hidden]) b')].map(b => b.textContent); i.value = ''; i.dispatchEvent(new Event('input', { bubbles: true })); return r; })()`);
@@ -148,8 +161,20 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   const tHaru = await clicEn(11.8, 22.3);
   await sleep(900);
   ok(tHaru === 'Haru 360' && !(await enSala()) && !(await js('location.hash')) && await js("!!document.querySelector('#panel [data-entrar=\"haru\"]')"), 'un clic sobre el local de Haru abre su vista previa, con «Entrar a la sala» (' + tHaru + ')');
+  const la = await localAbierto('haru');
+  ok(la.abierto && la.techo === '0 hidden' && !la.marcas, 'y el local se abre: se va el techo y se ve por dentro (' + la.techo + ')');
+  ok(await js("(() => { const e = [...document.querySelectorAll('.barrio .local[data-local]')].find(l => l.dataset.local === 'eleven'); return getComputedStyle(e).opacity < 0.5; })()"), 'el local vecino de la derecha se vuelve transparente para no tapar lo de adentro');
+  const ch = await caminan('.local-abierto');
+  ok(ch.n >= 1 && ch.movio, 'adentro del local alguien camina entre los muebles (' + ch.n + ')');
+  // La pausa también detiene a quien camina adentro
+  const pausa = await js(`(async () => { const b = document.querySelector('#controles [data-accion="pausa"]'); b.click(); await ${W(120)};
+    const pos = () => [...document.querySelectorAll('.local-abierto .andante')].map(a => a.getAttribute('transform')).join(), a = pos(); await ${W(800)};
+    const r = a === pos() && !document.querySelector('.local-abierto .andante.camina'); b.click(); return r; })()`);
+  ok(pausa, 'con la animación pausada, quien camina en el local se detiene');
   await js(`(async () => { document.querySelector('#panel [data-entrar="haru"]').click(); await ${W(1300)}; return true; })()`);
   ok(await enSala() && (await js('location.hash')) === '#haru', '«Entrar a la sala» abre la sala de Haru (' + await js('location.hash') + ')');
+  const cs = await caminan('#sala-dibujo');
+  ok(cs.n === 2 && cs.movio, 'en la sala de Haru la gente camina (' + cs.n + ')');
   const pin = await js(`(async () => { document.querySelector('#sala-dibujo-caja .pin[data-pin="3"]').dispatchEvent(new MouseEvent('click', { bubbles: true })); await ${W(150)};
     const img = document.querySelector('.visor img'); return { src: img ? img.getAttribute('src') : '', activo: document.querySelector('#sala-dibujo-caja .pin.activo')?.dataset.pin, tira: document.querySelector('.tira [aria-pressed="true"]')?.dataset.pin }; })()`);
   ok(/media\/salas\/haru-3-comandas\.webp$/.test(pin.src) && pin.activo === '3' && pin.tira === '3', 'el punto 3 de la sala muestra la pantalla real de las comandas');
@@ -160,6 +185,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   const sinImg = await js("!!document.querySelector('.visor svg.visor-sala use')");
   ok(sinImg, 'en una sala sin capturas, el punto muestra su rincón de la sala');
   ok(await js(`(async () => { document.querySelector('#sala-volver').click(); await ${W(300)}; return document.querySelector('#sala').hidden && !location.hash && document.querySelector('#panel').hidden; })()`), '«Volver a la calle» cierra la sala y limpia la dirección');
+  await sleep(700);
+  ok(await techosCerrados() && await js("!document.querySelector('#sala-dibujo .andante')"), 'y el local vuelve a cerrarse');
   // El chat de Plotty: el rubro lleva la cámara a la calle, tres respuestas, WhatsApp y la vitrina para el rubro
   const chat = await js(`(async () => { document.querySelector('#recorrer [data-chat]').click(); await ${W(200)};
     document.querySelector('.chat-opciones [data-v="inmobiliaria"]').click(); await ${W(80)};
@@ -181,6 +208,13 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(900)};
     return { dentro, texto, fuera: !s.classList.contains('oficina-abierta') && getComputedStyle(document.querySelector('.piso-0')).display === 'none' }; })()`);
   ok(entra.dentro && entra.texto === 'Salir a la calle' && entra.fuera, '«Entrar a la oficina» en el menú la abre y Escape la vuelve a cerrar');
+  const cierra = await js(`(async () => { document.querySelector('#recorrer [data-id="fundos"]').click();
+    for (let i = 0; i < 40 && !document.querySelector('.local-abierto[data-abierto="fundos"]'); i++) await ${W(100)};
+    const abierto = !!document.querySelector('.local-abierto[data-abierto="fundos"]');
+    document.querySelector('#recorrer [data-oficina]').click(); await ${W(900)};
+    const r = abierto && !document.querySelector('.local-abierto') && document.querySelector('#svg-escena').classList.contains('oficina-abierta');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(900)}; return r; })()`);
+  ok(cierra, 'al entrar a la oficina, el local que estaba abierto se cierra');
   const vista = await js(`(async () => { document.querySelector('#recorrer [data-id="eleven"]').click(); for (let i = 0; i < 40 && !document.querySelector('.vista-sala svg'); i++) await ${W(100)};
     return { titulo: document.querySelector('#panel-titulo')?.textContent, sala: !!document.querySelector('.vista-sala svg use'), entrar: !!document.querySelector('#panel [data-entrar="eleven"]') }; })()`);
   ok(vista.titulo === 'Eleven 360' && vista.sala && vista.entrar, 'la vista previa de Eleven 360 (sin video) muestra su sala dibujada y el botón para entrar');
@@ -229,15 +263,18 @@ console.log('\nCalles por rubro (casos de prueba)');
     const texto = document.querySelector('.barrio-filas').textContent, marcas = document.querySelector('.barrio-filas').innerHTML.includes('§');
     document.querySelector('#recorrer [data-id="prueba-c"]').click(); for (let i = 0; i < 40 && !document.querySelector('.vista-local svg'); i++) await ${W(100)};
     const titulo = document.querySelector('#panel-titulo').textContent, fase = document.querySelector('#panel .fases-mini')?.textContent, adentro = !!document.querySelector('.vista-local svg use');
+    await ${W(700)};
+    const g = document.querySelector('.local-abierto[data-abierto="prueba-c"]'), abierto = !!g && !g.innerHTML.includes('§') && g.querySelectorAll('.andante').length === 1;
     document.querySelector('#recorrer [data-id="archivo"]').click(); await ${W(200)};
     const archivo = [...document.querySelectorAll('.archivo-grupo li b')].map(b => b.textContent);
     const menu = [...document.querySelectorAll('#recorrer [data-id]')].map(b => b.dataset.id);
-    return { filas, locales, titulo, fase, adentro, marcas, archivo, menu, anonimo: texto.includes('Nombre reservado'), letrero: texto.includes('DISTRIBUIDORA DE ALIMENTOS'), reservado: menu.includes('prueba-e') }; })()`);
+    return { filas, locales, titulo, fase, adentro, abierto, marcas, archivo, menu, anonimo: texto.includes('Nombre reservado'), letrero: texto.includes('DISTRIBUIDORA DE ALIMENTOS'), reservado: menu.includes('prueba-e') }; })()`);
   ok(r.filas.join() === 'salud,servicios,comercio', 'cada rubro abre su calle, en el orden en que llegó su primer caso (' + r.filas.join(', ') + ')');
   ok(r.locales.join() === 'prueba-a,prueba-b,libre-salud,prueba-c,libre-servicios,prueba-d,libre-comercio', 'cada calle termina con un local que se arrienda');
   ok(!r.marcas, 'los techos de las calles por rubro no dejan marcas §…§ sin reemplazar');
   ok(r.titulo === 'Taller de Prueba' && /E7/.test(r.fase || ''), 'el local de un caso con plantilla abre su panel con su fase (' + r.titulo + ', ' + r.fase + ')');
   ok(r.adentro, 'la vista previa de un caso muestra su local por dentro (locales.js)');
+  ok(r.abierto, 'y en la calle su local se abre con su plantilla, su color y alguien que camina, sin marcas §…§');
   ok(!r.anonimo && r.letrero, 'un caso sin permiso para su nombre muestra sólo su rubro');
   ok(r.archivo.includes('Sólo archivo') && !r.reservado, 'un caso «sólo en El Archivo» no tiene local, pero está en El Archivo');
   ok(consola.length === 0, 'sin errores de consola' + (consola.length ? ': ' + [...new Set(consola)].join(' | ') : ''));
@@ -248,6 +285,11 @@ console.log('\nMovimiento reducido');
 await abrir(1440, 900, false, true);
 ok(await js("getComputedStyle(document.querySelector('.pj-cuerpo')).animationName === 'none'"), 'el personal queda quieto');
 ok(await js("document.querySelector('#controles [data-accion=\"pausa\"]').getAttribute('aria-pressed') === 'true'"), 'la animación parte pausada');
+await js("document.querySelector('#recorrer [data-id=\"rumbo\"]').click(), true");
+{
+  const lr = await localAbierto('rumbo'), cr = await caminan('.local-abierto');
+  ok(lr.abierto && cr.n >= 1 && !cr.movio, 'el local se abre igual, con su gente quieta en su lugar');
+}
 
 console.log('\nRecursos con error: ' + (recursos.length ? [...new Set(recursos)].join(', ') : 'ninguno'));
 if (recursos.length) fallas++;

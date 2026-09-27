@@ -414,6 +414,7 @@ button { font: inherit; color: inherit; }
   .ficha-pj { height: 190px; }
   .ficha-ilus { height: 200px; }
   .panel.panel-sala { max-height: 56%; }
+  .panel.panel-local { max-height: 60%; }
   .sala-dibujo-caja { inset: 60px 8px 12px; }
   .sala-ayuda { display: none; }
   .sala-vecinos { top: 16px; bottom: auto; right: 12px; }
@@ -495,6 +496,11 @@ button { font: inherit; color: inherit; }
 .caminante-anda { transform-box: fill-box; transform-origin: 50% 100%; }
 .caminante.camina .caminante-anda { animation: anda .5s ease-in-out infinite; }
 .caminante.camina .pj-cuerpo { animation-play-state: paused; }
+/* Quien camina dentro de un local abierto o de una sala (escena.js, maqueta) */
+.andante-paso { transform-box: fill-box; transform-origin: 50% 100%; }
+.andante.camina .andante-paso { animation: paso .5s ease-in-out infinite; }
+.andante.camina .pj-cuerpo { animation-play-state: paused; }
+@keyframes paso { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-4px) rotate(-2.5deg); } 75% { transform: translateY(-4px) rotate(2.5deg); } }
 .chorro { animation: chorro 1.8s ease-in-out infinite; }
 @keyframes chorro { 0%, 100% { opacity: .75; } 50% { opacity: .35; } }
 .loc-lampara { animation: brillo 3.2s ease-in-out infinite; }

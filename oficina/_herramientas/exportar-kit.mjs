@@ -7,7 +7,7 @@
 //   node oficina/_herramientas/exportar-kit.mjs                 → todas las piezas a oficina/kit/png/
 //   node oficina/_herramientas/exportar-kit.mjs --solo ficha-lupe,oficina,sala-haru
 //   node oficina/_herramientas/exportar-kit.mjs --capturas <carpeta>   → además, la oficina a 1920/1440/1366/375 px
-//     (el barrio, la vista previa de un local, su sala, la calle, la oficina por dentro y una ficha)
+//     (el barrio, un local abierto con su vista previa, su sala, la calle, la oficina por dentro y una ficha)
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -100,8 +100,8 @@ for (const [pieza, f] of trabajos) {
   console.log('✓', path.relative(raiz, archivo), Math.round(fs.statSync(archivo).size / 1024) + ' KB');
 }
 
-// Capturas de la oficina para el PR (1920, 1440, 1366 y 375 px): el barrio con la oficina cerrada, la vista previa de un
-// local, su sala, la vuelta a la calle, la oficina por dentro y una ficha del equipo.
+// Capturas de la oficina para el PR (1920, 1440, 1366 y 375 px): el barrio con la oficina cerrada, un local abierto (sin
+// techo, con su gente) y su vista previa, su sala, la vuelta a la calle, la oficina por dentro y una ficha del equipo.
 const capturas = arg('capturas');
 if (capturas) {
   fs.mkdirSync(capturas, { recursive: true });

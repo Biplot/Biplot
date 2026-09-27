@@ -143,7 +143,8 @@
     } else if (obj.tipo === 'zona') {
       var zn = zonaPorId(obj.id); if (!zn) return;
       var q = P(zn.foco[0], zn.foco[1], zn.foco[2]);
-      var ventana = zn.hq ? 1250 : zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.barrio ? 470 : 520;
+      // Un local del barrio se abre al mirarlo: la cámara se acerca un poco más, para ver lo de adentro
+      var ventana = zn.hq ? 1250 : zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.id === 'pasaje' ? 470 : zn.barrio ? 410 : 520;
       volar(q[0], q[1], zPara(obj.ventana || ventana), dur, fin);
     }
   }
@@ -168,6 +169,8 @@
     if (obj.tipo === 'zona') {
       [obj.id].concat(extras || []).forEach(function (id) {
         var zn = zonaPorId(id); if (!zn) return;
+        // Un local abierto no se marca: abierto ya se distingue, y la marca le pasaría por encima a su gente
+        if (id === localAbierto) return;
         var pg = document.createElementNS(ns, 'polygon'); pg.setAttribute('points', zn.silueta); pg.setAttribute('class', 'resalte');
         var pb = document.createElementNS(ns, 'polygon'); pb.setAttribute('points', zn.suelo); pb.setAttribute('class', 'resalte-suelo');
         capaResalte.appendChild(pb); capaResalte.appendChild(pg);
@@ -201,6 +204,8 @@
       sx = p1[0]; sy = p1[1];
     } else {
       var zn = zonaPorId(resaltado.id); if (!zn) return;
+      // Sobre un local abierto el rótulo taparía lo de adentro (y el panel ya dice qué es)
+      if (zn.id === localAbierto) { ocultarRotulo(); return; }
       var b = zn.caja, t = P((b[0] + b[2]) / 2, (b[1] + b[3]) / 2, b[4] + .35);
       sx = t[0]; sy = t[1];
     }
@@ -249,7 +254,11 @@
       if (e.pointerType === 'mouse' && e.target && svg.contains(e.target) && !enSala) {
         var o = objetoEn(e.target, e.clientX, e.clientY);
         if (!o && resaltado && resaltado.origen === 'mouse') resaltar(null);
-        else if (o && (!resaltado || resaltado.id !== o.id)) { o.origen = 'mouse'; resaltar(o); }
+        else if (o && (!resaltado || resaltado.id !== o.id)) {
+          o.origen = 'mouse'; resaltar(o);
+          // Con el mouse encima de un local, lo de adentro se va cargando (así se abre al tiro)
+          if (o.tipo === 'zona' && esLocal(zonaPorId(o.id))) conLocales();
+        }
       }
       return;
     }
@@ -311,6 +320,8 @@
     b.setAttribute('aria-label', si ? 'Reanudar la animación' : 'Pausar la animación');
     document.documentElement.classList.toggle('oficina-quieta', si);
     if (si || enSala) esc3.detener(); else esc3.iniciar();
+    esc3.moverLocal(!si && !reducido && !enSala);
+    if (vivaSala) vivaSala.mover(!si && !reducido);
     guardar('pausa', si ? '1' : '0');
   }
 
@@ -435,11 +446,15 @@
     // Los locales libres del barrio abren la conversación con Plotty
     var zn = obj.tipo === 'zona' ? zonaPorId(obj.id) : null;
     var chatLibre = zn && (zn.libre || obj.id === 'libre');
+    // Un local del barrio se abre: se va el techo y se ve por dentro, con su gente
+    if (esLocal(zn)) abrirLocal(zn.id); else cerrarLocal();
     detenerMedios();
     invocador = boton || document.activeElement;
     abierto = obj;
     panelCuerpo.innerHTML = obj.tipo === 'actor' ? htmlPersonaje(obj.id) : obj.tipo === 'chat' ? htmlChatPanel() : chatLibre ? htmlLibre(obj.id) : tieneSala(obj.id) ? htmlProyecto(PROYECTOS[obj.id]) : htmlZona(obj.id);
     panel.hidden = false; document.body.classList.add('panel-abierto'); panel.classList.remove('panel-sala');
+    // Con un local abierto, en el celular el panel deja más espacio para verlo por dentro
+    panel.classList.toggle('panel-local', esLocal(zn));
     $('#panel-nombre').textContent = tituloPanel(obj);
     $('#panel-cerrar').setAttribute('aria-label', 'Cerrar');
     panel.setAttribute('aria-label', obj.tipo === 'actor' ? PERSONAL[obj.id].nombre : obj.tipo === 'chat' ? 'Conversación con Plotty' : zn.nombre);
@@ -457,6 +472,7 @@
   function cerrarPanel() {
     if (enSala) { salirSala(); return; }
     detenerMedios();
+    cerrarLocal();
     panel.hidden = true; abierto = null; resaltar(null); document.body.classList.remove('panel-abierto');
     if (invocador && invocador.focus && document.contains(invocador)) invocador.focus({ preventScroll: true });
     aplicar();
@@ -633,22 +649,49 @@
     var vs = panelCuerpo.querySelector('[data-vista-sala]');
     if (vs) conSalas(function () {
       var S = window.Salas.salas[vs.getAttribute('data-vista-sala')]; if (!S || !document.contains(vs)) return;
-      vs.innerHTML = '<svg viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="quieto sin-pines">' + S.svg.replace(/§M§/g, MEDIOS) + '</g></svg>';
+      vs.innerHTML = '<svg viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="quieto sin-pines">' + window.Escena.maquetaSvg(S, conMedios) + '</g></svg>';
     });
     var vl = panelCuerpo.querySelector('[data-vista-local]');
     if (vl) conLocales(function () {
-      var pr = PROYECTOS[vl.getAttribute('data-vista-local')], Lc = window.Locales; if (!pr || !document.contains(vl)) return;
-      var est = estadoDe(pr), adentro = est === 'abierto' || est === 'inauguracion' ? Lc.interior[pr.plantilla] || Lc.interior.basica : Lc.interior[est] || Lc.interior.basica;
-      adentro += Lc.frente + (est === 'inauguracion' ? Lc.extra.inauguracion : '') + (est === 'abierto' && String(pr.fase || 'E9') === 'E9' ? Lc.extra.placa90 : '');
-      var o = { color: pr.acento, nombre: pr.permiso === 'rubro' ? String(pr.rubro || '').split(' · ')[0].split(',')[0].toUpperCase() : String(pr.letrero || pr.nombre || '').toUpperCase(), lema: pr.lema, lineas: pr.lineas };
+      var a = adentroDe(vl.getAttribute('data-vista-local')); if (!a || !document.contains(vl)) return;
       // El cuadro: el local entero (con su letrero colgante), en 16:9
       var q = [P(0, 0, 2.3), P(4.6, 0, 2.3), P(4.6, 5.4, 0), P(0, 5.4, 0), P(0, 4.3, 0)];
       var x0 = Math.min.apply(null, q.map(function (c) { return c[0]; })) - 16, x1 = Math.max.apply(null, q.map(function (c) { return c[0]; })) + 16;
       var y0 = Math.min.apply(null, q.map(function (c) { return c[1]; })), y1 = Math.max.apply(null, q.map(function (c) { return c[1]; }));
       var w = x1 - x0, h = w * 9 / 16, cy = (y0 + y1) / 2;
-      vl.innerHTML = '<svg viewBox="' + [x0, cy - h / 2, w, h].map(Math.round).join(' ') + '" aria-hidden="true"><g class="quieto">' + window.Escena.pintar(adentro, o) + '</g></svg>';
+      vl.innerHTML = '<svg viewBox="' + [x0, cy - h / 2, w, h].map(Math.round).join(' ') + '" aria-hidden="true"><g class="quieto">' + window.Escena.maquetaSvg(a.M, a.pintar) + '</g></svg>';
     });
   }
+  function conMedios(s) { return s.replace(/§M§/g, MEDIOS); }
+
+  /* ── Los locales del barrio se abren al tocarlos (locales.js): se va el techo y se ve lo de adentro ── */
+  var localAbierto = null;
+  function esLocal(zn) { return !!(zn && zn.barrio && !zn.hq && zn.id !== 'pasaje'); }
+  // Lo de adentro de un local: el de la calle principal, o el de un caso según su plantilla o su estado (con su frente
+  // y sus extras), con las marcas de su color y su nombre; los locales que se arriendan, vacíos
+  function adentroDe(id) {
+    var Lc = window.Locales, zn = zonaPorId(id); if (!Lc || !zn) return null;
+    var pintar = function (o) { return function (s) { return window.Escena.pintar(s, o); }; };
+    if (Lc.principal[id]) return { M: Lc.principal[id], pintar: conMedios };
+    if (zn.libre) return { M: window.Escena.juntar([Lc.interior.arriendo, Lc.frente]), pintar: pintar({ color: '#7FD8CF', nombre: 'SE ARRIENDA' }) };
+    var pr = PROYECTOS[id]; if (!pr) return null;
+    var est = estadoDe(pr), partes = [est === 'abierto' || est === 'inauguracion' ? Lc.interior[pr.plantilla] || Lc.interior.basica : Lc.interior[est] || Lc.interior.basica, Lc.frente];
+    if (est === 'inauguracion') partes.push(Lc.extra.inauguracion);
+    if (est === 'abierto' && String(pr.fase || 'E9') === 'E9') partes.push(Lc.extra.placa90);
+    var nombre = pr.permiso === 'rubro' ? String(pr.rubro || '').split(' · ')[0].split(',')[0].toUpperCase() : String(pr.letrero || pr.nombre || '').toUpperCase();
+    return { M: window.Escena.juntar(partes), pintar: pintar({ color: pr.acento, nombre: nombre, lema: pr.lema, lineas: pr.lineas }) };
+  }
+  function abrirLocal(id) {
+    if (localAbierto === id) return;
+    cerrarLocal();
+    localAbierto = id;
+    conLocales(function () {
+      if (localAbierto !== id) return;
+      var a = adentroDe(id); if (!a) return;
+      esc3.abrirLocal(id, a.M, { pintar: a.pintar, mover: !quieta() && !reducido });
+    });
+  }
+  function cerrarLocal() { if (!localAbierto) return; localAbierto = null; esc3.cerrarLocal(); }
   // Un local con plantilla: su vista por dentro, en qué fase va y quién trabaja en él
   function htmlCaso(pr) {
     var est = estadoDe(pr), f = faseDe(pr);
@@ -726,7 +769,7 @@
   function entrarOficina(o) {
     o = o || {};
     if (enSala) salirSala({ sinCamara: true, sinHistoria: true });
-    soltarPanel(true);
+    soltarPanel(true); cerrarLocal();
     var ya = esc3.abierta();
     esc3.oficina(true, !o.directo);
     document.body.classList.add('en-oficina'); salirBtn.hidden = false;
@@ -762,39 +805,28 @@
   salirBtn.addEventListener('click', function () { salirOficina(); escenaEl.focus({ preventScroll: true }); });
 
   /* ── La sala de cada empresa (salas.js): el local por dentro, un punto por módulo y el panel con todo lo real ── */
-  var salaEl = $('#sala'), salaCaja = $('#sala-dibujo-caja'), enSala = null, pinActual = 0;
-  var salasCargando = false, salasEspera = [];
-  function conSalas(fn) {
-    if (window.Salas) { fn(); return; }
-    salasEspera.push(fn); if (salasCargando) return; salasCargando = true;
-    var s = document.createElement('script'); s.src = 'salas.js';
+  var salaEl = $('#sala'), salaCaja = $('#sala-dibujo-caja'), enSala = null, pinActual = 0, vivaSala = null;
+  // locales.js (los locales por dentro) se carga al abrir el primer local; salas.js, al entrar a una sala, después de
+  // locales.js: cada uno define sólo los personajes que no definió el anterior
+  var cargas = {};
+  function cargar(archivo, global, fn) {
+    if (window[global]) { fn(); return; }
+    if (cargas[archivo]) { cargas[archivo].push(fn); return; }
+    var espera = cargas[archivo] = [fn], s = document.createElement('script');
+    s.src = archivo;
     s.onload = function () {
+      delete cargas[archivo];
       var defs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       defs.setAttribute('class', 'sprite-quieto'); defs.setAttribute('aria-hidden', 'true');
-      defs.innerHTML = '<defs>' + window.Salas.defs + '</defs>';
+      defs.innerHTML = '<defs>' + window[global].defs + '</defs>';
       document.body.appendChild(defs);
-      salasEspera.splice(0).forEach(function (f) { f(); });
+      espera.forEach(function (f) { f(); });
     };
-    s.onerror = function () { salasEspera = []; salasCargando = false; };
+    s.onerror = function () { delete cargas[archivo]; s.remove(); };
     document.head.appendChild(s);
   }
-  var localesCargando = false, localesEspera = [];
-  function conLocales(fn) {
-    if (window.Locales) { fn(); return; }
-    localesEspera.push(fn); if (localesCargando) return; localesCargando = true;
-    conSalas(function () {
-      var s = document.createElement('script'); s.src = 'locales.js';
-      s.onload = function () {
-        var defs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        defs.setAttribute('class', 'sprite-quieto'); defs.setAttribute('aria-hidden', 'true');
-        defs.innerHTML = '<defs>' + window.Locales.defs + '</defs>';
-        document.body.appendChild(defs);
-        localesEspera.splice(0).forEach(function (f) { f(); });
-      };
-      s.onerror = function () { localesEspera = []; localesCargando = false; };
-      document.head.appendChild(s);
-    });
-  }
+  function conLocales(fn) { cargar('locales.js', 'Locales', fn || function () {}); }
+  function conSalas(fn) { if (window.Salas) fn(); else conLocales(function () { cargar('salas.js', 'Salas', fn); }); }
   function urlSala(id) { return 'https://biplot.cl/oficina/' + id + '/'; }
   function htmlSala(pr) {
     var pines = pr.pines || [], conImg = pines.some(function (p) { return p[3]; });
@@ -843,12 +875,13 @@
     resaltar({ tipo: 'zona', id: id }); ocultarRotulo();
     // El panel con todo lo de la empresa
     panelCuerpo.innerHTML = htmlSala(pr);
-    panel.hidden = false; panel.classList.add('panel-sala'); document.body.classList.add('panel-abierto');
+    panel.hidden = false; panel.classList.add('panel-sala'); panel.classList.remove('panel-local'); document.body.classList.add('panel-abierto');
     $('#panel-nombre').textContent = tituloPanel({ tipo: 'sala', id: id });
     $('#panel-cerrar').setAttribute('aria-label', 'Volver a la calle');
     panel.setAttribute('aria-label', 'La sala de ' + pr.nombre);
     panel.scrollTop = 0; panelCuerpo.scrollTop = 0;
-    esc3.detener();
+    // La calle queda detrás de la sala: su gente (también la del local abierto) se detiene mientras tanto
+    esc3.detener(); esc3.moverLocal(false);
     var mostrar = function () {
       conSalas(function () {
         if (enSala !== id) return;
@@ -866,8 +899,12 @@
   }
   function pintarSala(id) {
     var S = window.Salas.salas[id], pr = PROYECTOS[id]; if (!S) return;
+    if (vivaSala) vivaSala.destruir();
     salaCaja.innerHTML = '<svg class="sala-svg" viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid meet" role="group" aria-label="La sala de ' + esc(pr.nombre) + ': ' + esc(pr.esencia) + '">' +
-      '<g id="sala-dibujo" class="sala-dibujo' + (reducido ? ' quieto' : '') + '">' + S.svg.replace(/§M§/g, MEDIOS) + '</g></svg>';
+      '<g id="sala-dibujo" class="sala-dibujo' + (reducido ? ' quieto' : '') + '"></g></svg>';
+    // La sala en capas, con quienes caminan entre los muebles (quietos con la animación pausada)
+    vivaSala = window.Escena.maqueta(salaCaja.querySelector('#sala-dibujo'), S, { pintar: conMedios });
+    vivaSala.mover(!quieta() && !reducido);
     salaCaja.querySelectorAll('.pin').forEach(function (g) {
       var p = (pr.pines || [])[g.getAttribute('data-pin') - 1];
       g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
@@ -904,6 +941,8 @@
     if (!enSala) return;
     var id = enSala;
     enSala = null;
+    if (vivaSala) { vivaSala.destruir(); vivaSala = null; }
+    cerrarLocal();
     salaEl.classList.remove('visible'); salaEl.hidden = true; salaCaja.innerHTML = '';
     document.body.classList.remove('en-sala');
     detenerMedios();
@@ -1046,7 +1085,7 @@
     ['zona', 'laboratorio', 'Laboratorio de métricas', 'A los 30, 60 y 90 días se mide contra la línea base. Si no bajó, se dice.'],
     ['zona', 'estanteria', 'Estantería del núcleo', 'Pepa guarda aquí lo que sirve para el próximo. También están los casos de referencia.'],
     ['zona', 'set', 'El set', 'Aquí graba Aby, la corresponsal. La única cara real de la oficina.'],
-    ['zona', 'pasaje', 'El pasaje', 'Por aquí se sale a la calle: un local por proyecto, con su nombre y su logo en el techo. Toca uno para ver qué hicimos y entrar a su sala.'],
+    ['zona', 'pasaje', 'El pasaje', 'Por aquí se sale a la calle: un local por proyecto, con su nombre y su logo en el techo. Toca uno para abrirlo, ver qué hicimos y entrar a su sala.'],
     ['zona', 'nuhome', 'Nu Home 360', 'Casas modulares: del primer contacto a la entrega, en una sola plataforma.'],
     ['zona', 'fundos', 'Fundos 360', 'Venta de parcelas: el terreno sobre la mesa y el ciclo de venta completo.'],
     ['zona', 'haru', 'Haru 360', 'Una barra de sushi con ventas, cocina, delivery y caja en un solo sistema.'],
@@ -1076,10 +1115,12 @@
     $('#guia-ant').disabled = pasoGuia === 0;
     $('#guia-sig').textContent = pasoGuia === GUIA.length - 1 ? 'Conversar con Plotty' : 'Siguiente';
     $('#guia-mas').textContent = g[1] === 'oficina' ? 'Entrar' : tieneSala(g[1]) ? 'Ver el local' : 'Ver más';
+    // En la parada de un local, el local se abre (y el de la parada anterior se cierra)
+    if (obj.tipo === 'zona' && esLocal(zonaPorId(obj.id))) abrirLocal(obj.id); else cerrarLocal();
     resaltar(obj);
     requestAnimationFrame(function () { irA(obj, 900); });
   }
-  function terminarGuia() { guia.hidden = true; resaltar(null); verTodo(); }
+  function terminarGuia() { guia.hidden = true; cerrarLocal(); resaltar(null); verTodo(); }
   $('#guia-ant').addEventListener('click', function () { mostrarPaso(pasoGuia - 1); });
   $('#guia-sig').addEventListener('click', function () {
     if (pasoGuia === GUIA.length - 1) { guia.hidden = true; abrir({ tipo: 'chat', id: 'plotty' }, false, $('#recorrer-toggle')); }

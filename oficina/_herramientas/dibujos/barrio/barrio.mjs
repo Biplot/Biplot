@@ -6,14 +6,15 @@
 //   suelo  (losas, vereda, calzada, pasto, luces en el piso), que va antes que todo lo demás del barrio;
 //   atras  (locales, plaza, pasaje), que queda detrás de la franja por donde caminan los caminantes;
 //   frente (faroles, árboles, bancas y la gente de la vereda), que queda delante de esa franja.
-// Los locales se ven siempre cerrados, con el nombre y el logo de su empresa pintados en el techo: por dentro se ven
-// en la vista previa (las plantillas, en salas.js) y en la sala de cada empresa. La oficina también se ve cerrada
-// (hq) hasta que alguien entra: escena.js la dibuja encima del interior y la abre al entrar.
+// Los locales se ven cerrados, con el nombre y el logo de su empresa pintados en el techo. Al tocar uno, escena.js lo
+// abre: se va el techo y se ve por dentro, con su gente, y alguien que camina (adentro(), en locales.js). En grande se
+// ve en la sala de cada empresa (salas.js). La oficina también se ve cerrada (hq) hasta que alguien entra: escena.js la
+// dibuja encima del interior y la abre al entrar.
 import { escena, P } from './maqueta.mjs';
 import * as S from './locales.mjs';
 import * as T from './plantillas.mjs';
 import * as EN from './entorno.mjs';
-import { EA } from './salas-grandes.mjs';
+import { EA, caminante } from './salas-grandes.mjs';
 import { VISITANTES, medida } from './visitantes.mjs';
 
 const r1 = (n) => Math.round(n * 10) / 10;
@@ -102,6 +103,48 @@ function sueloLocal(E, ox, oy, c) {
 }
 // La gente de un local, en coordenadas del local
 function gente(L, lista) { for (const g of lista) L.pj(g[0], g[1], g[2], g[3] || 0, g[4] || 'd', g[5] || EA, g[6]); }
+
+// Un local por dentro, en su origen (0, 0) y en capas por profundidad (E.capas): lo que dibuja fn(L), la gente quieta y,
+// aparte, quienes caminan, cada uno con su ruta [[x, y, espera], …] (escena.js los mueve entre los muebles).
+function porDentro(fn, quietos = [], caminan = []) {
+  const E = escena(); E.txt = 1;
+  const L = S.local(E, 0, 0, 0, false, 0), usados = new Set();
+  fn(L, E);
+  for (const g of quietos) usados.add(g[0]);
+  gente(L, quietos);
+  const cam = caminan.map(([id, ruta, o]) => { usados.add(id); return caminante(E, id, ruta, o); });
+  return { ...E.capas(), caminan: cam, usados };
+}
+// Lo de adentro de cada local de la calle principal, que se ve al abrirlo: su interior (el adelanto de su sala), su gente
+// y quien camina, en coordenadas del local
+const ADENTRO = {
+  nuhome: { fn: S.nuhome, quietos: [['clienta2', 1.3, 3.75, 0, 'd']],
+    caminan: [['maestro', [[2.95, 3.7, 2.5], [3.95, 3.1], [4.15, 1.3, 2.5], [3.95, 3.1]]]] },
+  fundos: { fn: S.fundos, quietos: [['vendedora', 3.15, 3.65, 0, 'i'], ['senora', 1.05, 3.7, 0, 'd']],
+    caminan: [['senor', [[1.8, 3.75, 2.5], [0.85, 3.1], [0.8, 1.4, 2.5], [0.85, 3.1]]]] },
+  haru: { fn: S.haru, quietos: [['chef', 3.4, 1.0, 0, 'i'], ['comensal', 0.83, 2.75, 0.48, 'd'], ['comensal2', 2.58, 3.15, 0.48, 'd']],
+    caminan: [['mesera', [[2.2, 1.5, 2.5], [3.0, 2.25, 2], [4.2, 2.6], [4.2, 3.9, 1.5], [4.2, 2.6], [3.0, 2.25]]]] },
+  eleven: { fn: S.eleven, quietos: [['atleta2', 2.45, 1.5, 0.21, 'd']],
+    caminan: [['instructor', [[3.2, 3.85, 2], [1.7, 3.1], [1.45, 2.0, 2.5], [1.7, 3.1]]]] },
+  rumbo: { fn: S.rumbo, quietos: [['meditadora', 0.95, 1.4, 0.14, 'd']],
+    caminan: [['corredora', [[0.6, 3.7, 1.5], [1.2, 3.25], [1.9, 2.8], [2.8, 2.95], [3.6, 3.3, 2], [2.8, 2.95], [1.9, 2.8], [1.2, 3.25]], { vel: 0.9 }]] },
+  libre: { fn: (L) => S.libre(L, { sinPlotty: true }), quietos: [['mama', 1.5, 3.3, 0, 'd']],
+    caminan: [['cliente', [[2.6, 3.15, 2], [3.3, 2.3], [3.0, 1.35, 2.5], [3.3, 2.3]]]] },
+  archivo: { fn: (L) => T.archivo(L, { total: '§CASOS§' }), quietos: [['estudiante', 2.2, 1.4, 0, 'd']],
+    caminan: [['comprador', [[3.7, 3.2, 2], [3.9, 1.0, 2.5], [3.7, 3.2], [1.0, 3.4], [0.7, 2.3, 2.5], [1.0, 3.4]]]] }
+};
+// Los locales de la calle principal por dentro, con su frente abierto y su letrero colgante (van en locales.js)
+export function adentro(datos) {
+  const acento = (id) => (datos.proyectos.find(p => p.id === id) || {}).acento || '#7FD8CF';
+  const usados = new Set(), locales = {};
+  for (const [id] of PRINCIPAL) {
+    const a = ADENTRO[id], c = id === 'archivo' ? '#7FD8CF' : acento(id);
+    const r = porDentro((L) => { a.fn(L); frente(L, c, LETRERO[id], id === 'libre' || id === 'archivo' ? 124 : 104); }, a.quietos, a.caminan);
+    r.usados.forEach(u => usados.add(u)); delete r.usados;
+    locales[id] = r;
+  }
+  return { locales, usados };
+}
 
 // El techo de un local: el logo y el nombre de la empresa pintados, como el isotipo en el techo de la oficina.
 // Un cuadro de 400 × 300 (4 × 3 baldosas) en el plano del techo; el texto corre a lo largo de la calle.
@@ -373,12 +416,17 @@ function tijeras(E, x, y, z, k) {
 // Las plantillas por rubro y los estados, con la gente que va adentro (y afuera, en la inauguración)
 const INTERIORES = {
   clinica: { fn: (L) => { T.clinica(L, { color: '§C§', nombre: '§N§' }); L.caja(1.85, 3.72, 0, 0.5, 0.45, 0.4, { t: '§C§', l: tono('§C§', 0.2), r: tono('§C§', 0.35) }, 5.9); },
-    gente: [['paciente', 1.9, 2.22, 0.57, 'd'], ['dentista', 3.05, 2.5, 0, 'i'], ['recepcionista', 0.9, 2.95, 0, 'd']] },
-  taller: { fn: (L) => T.taller(L, { color: '§C§', nombre: '§N§' }), gente: [['mecanico', 3.95, 3.35, 0, 'i'], ['papa', 1.2, 3.75, 0, 'd']] },
-  basica: { fn: (L) => T.basica(L, { color: '§C§', nombre: '§N§', lema: '§LEMA§', lineas: [['§L1§', 0.8], ['§L2§', 0.55], ['§L3§', 0.68]] }), gente: [['cajera', 2.4, 2.05, 0, 'd'], ['encargado', 3.3, 3.75, 0, 'i']] },
-  diagnostico: { fn: (L) => T.diagnostico(L), gente: [['jefaventas', 0.95, 2.75, 0, 'd'], ['lupe', 3.5, 2.35, 0, 'i']] },
-  obra: { fn: (L) => T.obra(L), gente: [['grilla', 1.2, 0.55, 1.08, 'de'], ['bucle', 1.55, 2.05, 0, 'd'], ['tamandua', 2.75, 2.5, 0, 'i']] },
-  arriendo: { fn: (L) => S.libre(L, { sinPlotty: true }), gente: [] }
+    gente: [['paciente', 1.9, 2.22, 0.57, 'd'], ['recepcionista', 0.9, 2.95, 0, 'd']],
+    caminan: [['dentista', [[3.05, 2.5, 3], [3.7, 1.9], [3.8, 0.95, 2], [3.7, 1.9]]]] },
+  taller: { fn: (L) => T.taller(L, { color: '§C§', nombre: '§N§' }), gente: [['papa', 1.2, 3.75, 0, 'd']],
+    caminan: [['mecanico', [[3.95, 3.4, 2], [2.9, 3.55], [1.8, 3.55, 2.5], [2.9, 3.55]]]] },
+  basica: { fn: (L) => T.basica(L, { color: '§C§', nombre: '§N§', lema: '§LEMA§', lineas: [['§L1§', 0.8], ['§L2§', 0.55], ['§L3§', 0.68]] }), gente: [['cajera', 2.4, 2.05, 0, 'd']],
+    caminan: [['encargado', [[3.25, 3.7, 2], [1.0, 3.55], [0.7, 2.4, 2.5], [1.0, 3.55]]]] },
+  diagnostico: { fn: (L) => T.diagnostico(L), gente: [['jefaventas', 0.95, 2.75, 0, 'd']],
+    caminan: [['lupe', [[3.5, 2.9, 2], [2.6, 3.3, 1.5], [1.2, 3.3, 2], [2.6, 3.3]]]] },
+  obra: { fn: (L) => T.obra(L), gente: [['grilla', 1.2, 0.55, 1.08, 'de'], ['bucle', 1.55, 2.05, 0, 'd']],
+    caminan: [['tamandua', [[2.75, 2.5, 2], [3.5, 2.3], [3.6, 3.4, 2], [2.5, 3.3]]]] },
+  arriendo: { fn: (L) => S.libre(L, { sinPlotty: true }), gente: [], caminan: [] }
 };
 export function piezas() {
   // Lo que va en barrio.js: el local cerrado en cada estado, con marcas §…§ para el nombre, el color y el logo de
@@ -400,26 +448,21 @@ export function piezas() {
   }
   const insignias = Object.fromEntries(Object.entries(INSIGNIAS).map(([id, f]) => [id, f(168)]));
 
-  // Lo que va en salas.js (se carga al abrir la vista previa de un caso): el local por dentro, con su plantilla, su gente
-  // y su frente abierto, en cada estado
-  const enVistas = new Set(), vista = (p) => { p.usados.forEach(u => enVistas.add(u)); return p; };
+  // Lo que va en locales.js (se carga al abrir el primer local): el local de un caso por dentro, con su plantilla, su
+  // gente, quien camina y su frente abierto, en cada estado. Todo en capas por profundidad, que escena.js junta.
+  const enVistas = new Set(), vista = (p) => { p.usados.forEach(u => enVistas.add(u)); delete p.usados; return p; };
   const interior = {}, extra = {};
-  for (const [id, o] of Object.entries(INTERIORES)) {
-    interior[id] = vista(pieza((E, pj, u) => { const L = S.local(E, 0, 0, 0, false, 0); o.fn(L); for (const g of o.gente) u.add(g[0]); gente(L, o.gente); })).obj;
-  }
-  extra.inauguracion = vista(pieza((E, pj, u) => {
-    const L = S.local(E, 0, 0, 0, false, 0); T.inauguracion(L, { color: '§C§' });
-    const afuera = [['faro', 2.05, 5.0, 0, 'd'], ['dueno', 3.3, 5.3, 0, 'i']];
-    for (const g of afuera) u.add(g[0]);
-    gente(L, afuera.map(g => [...g.slice(0, 5), EA, 9.6 + g[1] * 0.01]));
+  for (const [id, o] of Object.entries(INTERIORES)) interior[id] = vista(porDentro(o.fn, o.gente, o.caminan));
+  extra.inauguracion = vista(porDentro((L, E) => {
+    T.inauguracion(L, { color: '§C§' });
     tijeras(E, 2.5, 5.0, 1.0, 9.9);
-  })).obj;
-  extra.placa90 = pieza((E) => T.placa90(S.local(E, 0, 0, 0, false, 0))).obj;
-  const fr = pieza((E) => { const L = S.local(E, 0, 0, 0, false, 0); frente(L, '§C§', '§N§', 124, true); });
+  }, [['faro', 2.05, 5.0, 0, 'd', EA, 9.6 + 2.05 * 0.01], ['dueno', 3.3, 5.3, 0, 'i', EA, 9.6 + 3.3 * 0.01]]));
+  extra.placa90 = vista(porDentro((L) => T.placa90(L)));
+  const fr = vista(porDentro((L) => frente(L, '§C§', '§N§', 124, true)));
   return {
     local: { suelo: sl.suelo, cerrado: cerr, fantasma, sitioLibre, insignias },
     fila: { farolSuelo: farol.suelo, farol: farol.obj, arbol, letrero },
     personas, usados,
-    vistas: { interior, extra, frente: fr.obj, usados: enVistas }
+    vistas: { interior, extra, frente: fr, usados: enVistas }
   };
 }
