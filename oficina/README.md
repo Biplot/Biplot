@@ -221,6 +221,12 @@ Se regeneran con `node oficina/_herramientas/exportar-kit.mjs` (todas) o `--solo
 `--capturas <carpeta>` saca además la oficina a 1920, 1440, 1366 y 375 px (el barrio con la oficina cerrada, la vista
 previa de Haru, su sala, la calle al volver, la oficina por dentro y una ficha).
 
+**Carruseles de marca.** Las piezas de varias láminas viven en `_herramientas/instagram/`: una página por pieza, donde
+cada `.lamina` es una imagen de 1080 × 1350. Se exportan a PNG con
+`node oficina/_herramientas/exportar-instagram.mjs --pieza motor`, que las deja en `oficina/kit/instagram/<pieza>/` (o en
+`--salida <carpeta>`). `motor` es «Así trabajamos: diez fases, un solo motor», en siete láminas: es de marca, así que va
+sin personajes y con biplot.cl, y un hilo con un nodo por fase cruza de lámina en lámina al deslizar.
+
 ## Teaser del equipo
 
 Un video de 85 segundos que presenta la oficina y a once de sus personajes, uno por uno, cada uno con su frase: Plotty,
