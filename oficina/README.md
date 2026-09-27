@@ -221,6 +221,30 @@ Se regeneran con `node oficina/_herramientas/exportar-kit.mjs` (todas) o `--solo
 `--capturas <carpeta>` saca además la oficina a 1920, 1440, 1366 y 375 px (el barrio con la oficina cerrada, la vista
 previa de Haru, su sala, la calle al volver, la oficina por dentro y una ficha).
 
+## Teaser del equipo
+
+Un video de 85 segundos que presenta la oficina y a once de sus personajes, uno por uno, cada uno con su frase: Plotty,
+Lupe, The Architect, Atlas, Celda, The Engine, Grilla, Bucle, Tamandúa, Faro y Pepa. Abre con el problema (planillas,
+chats, tareas repetidas), muestra la oficina de noche que se abre, pasa por el motor de diez fases y el equipo completo,
+y cierra con la marca, biplot.cl/oficina y «Agenda tu diagnóstico». Sale en vertical (1080 × 1920, para reels e
+historias) y en horizontal (1920 × 1080), a 30 cuadros por segundo, con H.264 y AAC.
+
+Texto sugerido para la publicación: *Conoce al equipo de la oficina, del diagnóstico a la cosecha. Pasa:
+biplot.cl/oficina*
+
+Se genera con `node oficina/_herramientas/exportar-teaser.mjs` (necesita ffmpeg en el PATH, o `FFMPEG=<ruta>`), que
+deja `teaser-equipo-9x16.mp4` y `teaser-equipo-16x9.mp4` en `oficina/kit/video/` (entre 50 y 70 MB cada uno; no se
+suben al repo). Con `--formato 9x16` hace uno solo, `--cuadros 15.5,30` saca esos segundos en PNG para revisar, `--solo-audio`
+deja sólo el sonido y `--placas <carpeta>` guarda los fondos para reusarlos en la próxima pasada. Todo está en
+`_herramientas/teaser/`:
+
+- `guion.js`: los tiempos (a 100 pulsos por minuto), las frases de la intro y, por personaje, su placa, rol, frase,
+  color, su rincón de la oficina y su voz. La imagen y el sonido salen de este mismo guion, así que caen juntos.
+- `teaser.html` y `teaser.js`: el video, cuadro a cuadro (`?formato=16x9&t=30` muestra ese segundo en el navegador).
+- `placas.html`: los fondos, la oficina y su barrio dibujados por `escena.js` y fotografiados en grande.
+- `musica.mjs`: la música, los golpes y las voces (sílabas sin palabras, una por personaje), compuestos por código,
+  sin muestras ni librerías, y dejados a -14 LUFS con los picos reales bajo -1 dBTP (lo que piden las redes).
+
 ## Conexión con el CRM
 
 La oficina queda lista para conectarse al CRM de BiPlot sin cambiar su código:

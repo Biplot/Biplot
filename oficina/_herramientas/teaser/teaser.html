@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Teaser del equipo · La oficina de BiPlot</title>
+<meta name="robots" content="noindex">
+<!-- El teaser del equipo, cuadro a cuadro: teaser.js dibuja el cuadro del segundo t con window.TEASER.cuadro(t), sin
+     animaciones que dependan del reloj, y exportar-teaser.mjs lo graba a 30 cuadros por segundo con su música.
+     ?formato=9x16 (1080 × 1920, reels e historias) o ?formato=16x9 (1920 × 1080); ?t=12.3 muestra ese segundo. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=block" rel="stylesheet">
+<style>
+  :root { --navy: #0E2A47; --hondo: #040D18; --cian: #17C3B2; --cian2: #7FD8CF; --niebla: #F2F4F7; --gris: #B9C8D8; --coral: #FF6B4A; }
+  html, body { margin: 0; background: #000; }
+  body { overflow: hidden; }
+  #lienzo { position: relative; overflow: hidden; background: var(--hondo); color: var(--niebla); font-family: Inter, 'Segoe UI', system-ui, sans-serif; }
+  #lienzo * { box-sizing: border-box; }
+  .capa { position: absolute; inset: 0; overflow: hidden; }
+  .plano { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; max-width: none; }
+  .display { font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif; font-weight: 700; letter-spacing: -.02em; }
+  .mono { font-family: 'Space Mono', ui-monospace, monospace; font-weight: 700; }
+
+  /* El fondo: la grilla de siempre, casi apagada */
+  .grilla-fondo { background-image: linear-gradient(rgba(127,216,207,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(127,216,207,.05) 1px, transparent 1px); background-size: 60px 60px; }
+
+  /* Intro */
+  .tarjeta { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; padding: 0 70px; }
+  .tarjeta .linea { margin: 0; font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 600; line-height: 1.12; color: #E8EEF4; }
+  .tarjeta .fuerte { color: var(--cian); text-shadow: 0 0 40px rgba(23,195,178,.55); }
+  .celda { position: absolute; border: 1px solid rgba(127,216,207,.14); font-family: 'Space Mono', monospace; color: rgba(185,200,216,.42); display: flex; align-items: center; justify-content: flex-end; padding: 0 14px; }
+  .celda.mal { background: rgba(224,82,74,.32); border-color: rgba(224,82,74,.7); color: #FFD9D4; }
+  .chat { position: absolute; border-radius: 26px; background: #16324F; border: 1px solid rgba(127,216,207,.18); padding: 18px 22px; }
+  .chat.mio { background: #0F4E4A; }
+  .chat i { display: block; height: 11px; border-radius: 6px; background: rgba(185,200,216,.35); margin: 7px 0; }
+  .chat b { position: absolute; right: 16px; bottom: 8px; font: 700 15px 'Space Mono', monospace; color: rgba(185,200,216,.5); }
+  .tarea { position: absolute; border-radius: 16px; background: #13304D; border: 1px solid rgba(127,216,207,.2); font-family: 'Space Grotesk', sans-serif; font-weight: 600; color: #B9C8D8; display: flex; align-items: center; gap: 16px; padding: 0 24px; }
+  .tarea span { width: 26px; height: 26px; border-radius: 6px; border: 3px solid #7FD8CF; flex: none; }
+  .punto { position: absolute; border-radius: 50%; background: var(--cian); box-shadow: 0 0 14px rgba(23,195,178,.8); }
+
+  /* La marca */
+  .marca { display: flex; align-items: center; justify-content: center; }
+  .marca svg { display: block; }
+  .palabra { font-weight: 700; letter-spacing: -.02em; white-space: nowrap; line-height: 1; }
+  .palabra .bi { font-family: 'Space Mono', monospace; color: var(--niebla); letter-spacing: -.06em; }
+  .palabra .plot { font-family: 'Space Grotesk', sans-serif; color: var(--cian); }
+  .palabra .hq { font-family: 'Space Grotesk', sans-serif; color: var(--gris); letter-spacing: .08em; margin-left: .28em; }
+  .etiqueta { font-family: 'Space Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: .38em; color: var(--cian2); }
+  .onda { position: absolute; border-radius: 50%; border: 4px solid var(--cian); }
+  .rayo { position: absolute; transform-origin: 50% 50%; mix-blend-mode: screen; }
+
+  /* Cada personaje */
+  .personaje { position: absolute; inset: 0; }
+  .personaje .velo { position: absolute; inset: 0; }
+  .personaje .numero { position: absolute; font-family: 'Space Grotesk', sans-serif; font-weight: 700; line-height: .8; color: transparent; letter-spacing: -.05em; white-space: nowrap; }
+  .figura { position: absolute; }
+  .figura svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .piso { position: absolute; border-radius: 50%; }
+  .cono { position: absolute; }
+  .rotulo { position: absolute; display: flex; align-items: center; gap: 18px; white-space: nowrap; }
+  .rotulo .placa { font-family: 'Space Mono', monospace; font-weight: 700; color: #0B1726; border-radius: 10px; padding: 4px 14px 5px; }
+  .rotulo .rol { font-family: 'Space Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: .22em; }
+  .nombre { position: absolute; white-space: nowrap; line-height: .92; text-transform: uppercase; }
+  .nombre .pre { display: block; font-size: .36em; letter-spacing: .32em; margin-bottom: .1em; color: var(--gris); }
+  .burbuja { position: absolute; background: #F4F7FA; color: #0B1726; border-radius: 30px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; line-height: 1.22; box-shadow: 0 24px 60px rgba(0,0,0,.45); transform-origin: 90% 30%; }
+  .burbuja::after { content: ''; position: absolute; top: 34px; right: -22px; border: 16px solid transparent; border-left: 26px solid #F4F7FA; border-right: 0; }
+  .burbuja.cola-izq { transform-origin: 10% 30%; }
+  .burbuja.cola-izq::after { right: auto; left: -22px; border-left: 0; border-right: 26px solid #F4F7FA; }
+  .burbuja .cursor { display: inline-block; width: .5em; height: .95em; margin-left: .06em; vertical-align: -.12em; background: var(--cian); }
+
+  /* El motor */
+  .ficha-fase { position: absolute; display: flex; align-items: center; gap: 18px; border-radius: 22px; background: rgba(14,42,71,.9); border: 2px solid rgba(127,216,207,.18); padding: 0 20px; }
+  .ficha-fase .placa { font-family: 'Space Mono', monospace; font-weight: 700; color: #0B1726; background: var(--cian); border-radius: 10px; flex: none; text-align: center; }
+  .ficha-fase .fase { font-family: 'Space Grotesk', sans-serif; font-weight: 700; flex: 1; line-height: 1.05; }
+  .ficha-fase .caras { display: flex; flex: none; }
+  .ficha-fase .caras svg { display: block; border-radius: 50%; background: #16324F; border: 3px solid rgba(127,216,207,.6); }
+  .hilo { position: absolute; inset: 0; overflow: visible; }
+
+  /* El cierre */
+  .cta { display: inline-block; background: var(--coral); color: #0B1726; font-family: 'Space Grotesk', sans-serif; font-weight: 700; border-radius: 999px; }
+
+  /* Lo que va sobre todo */
+  .haz { position: absolute; transform-origin: 50% 0; mix-blend-mode: screen; }
+  #polvo, #grano { position: absolute; inset: 0; pointer-events: none; }
+  #grano { mix-blend-mode: overlay; opacity: .15; }
+  .vineta { background: radial-gradient(ellipse at 50% 45%, transparent 45%, rgba(0,0,0,.72) 100%); }
+  .destello { background: #fff; opacity: 0; }
+  .negro { background: #000; opacity: 0; }
+</style>
+</head>
+<body>
+<div id="lienzo"></div>
+<script src="../../datos.js"></script>
+<script src="../../elenco.js"></script>
+<script src="../../ilustraciones.js"></script>
+<script src="guion.js"></script>
+<script src="teaser.js"></script>
+</body>
+</html>
