@@ -176,8 +176,8 @@
   function initHero() {
     var hero = $("[data-hero]");
     if (!hero || reduced) return;
-    var svg = $(".hero-scene", hero), inner = $(".hero-inner", hero);
-    var layers = $$(".layer", svg).map(function (g) { return { g: g, d: parseFloat(g.getAttribute("data-depth")) || 0 }; });
+    var svg = $(".hero-scene", hero), inner = $(".hero-inner", hero), photo = $(".hero-photo img", hero);
+    var layers = (svg ? $$(".layer", svg) : []).map(function (g) { return { g: g, d: parseFloat(g.getAttribute("data-depth")) || 0 }; });
     var tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, visible = true, lastY = -1;
 
     if (fineHover) {
@@ -191,7 +191,7 @@
     window.addEventListener("scroll", kick, { passive: true });
     // Medidas fuera del cuadro de animación: frame() solo escribe, nunca fuerza un layout
     var svgH = 900, heroH = 1;
-    function measure() { svgH = svg.getBoundingClientRect().height || 900; heroH = hero.offsetHeight || 1; }
+    function measure() { svgH = (svg && svg.getBoundingClientRect().height) || 900; heroH = hero.offsetHeight || 1; }
     measure();
     if ("ResizeObserver" in window) new ResizeObserver(function () { measure(); kick(); }).observe(hero);
     else window.addEventListener("resize", function () { measure(); kick(); });
@@ -211,6 +211,7 @@
         var y = -cy * L.d * 10 + sy * (1 - L.d) * 0.3 * k;
         L.g.setAttribute("transform", "translate(" + x.toFixed(2) + " " + y.toFixed(2) + ")");
       });
+      if (photo) photo.style.transform = "translate3d(" + (-cx * 8).toFixed(1) + "px," + (sy * 0.16 - cy * 6).toFixed(1) + "px,0) scale(1.04)";
       if (inner) {
         inner.style.transform = "translate3d(0," + (sy * -0.12).toFixed(1) + "px,0)";
         inner.style.opacity = String(clamp(1 - sy / (heroH * 0.8), 0, 1));
@@ -2025,7 +2026,7 @@
   }
 
   function initVideo() {
-    // Portada: video de fondo sobre la ilustración (que queda como respaldo)
+    // Portada: video de fondo sobre la foto del equipo (que queda como respaldo)
     var hv = B.videoPortada || {}, hero = $("[data-hero]"), heroArt = hero && $(".hero-art", hero);
     var conn = navigator.connection || {};
     // Sin video con ahorro de datos o conexiones más lentas que 4G
@@ -2076,8 +2077,12 @@
     function open(id) {
       var p = proyecto(id);
       if (!p || !p.video) return;
-      var s = videoSource(p.video);
-      title.textContent = p.nombre + " en video";
+      openSrc(p.video, p.nombre + " en video", false);
+    }
+    function openSrc(src, titulo, vertical, webm) {
+      var s = videoSource(src);
+      dlg.classList.toggle("is-vertical", !!vertical);
+      title.textContent = titulo;
       link.href = s.link;
       blockedMsg.hidden = true;
       box.hidden = false;
@@ -2092,12 +2097,25 @@
         box.appendChild(f);
       } else {
         var v = document.createElement("video");
-        v.src = s.file; v.controls = true; v.autoplay = true; v.playsInline = true;
+        // MP4 (H.264) para todos; WebM de respaldo para navegadores sin H.264
+        [[s.file, "video/mp4"], [webm, "video/webm"]].forEach(function (x) {
+          if (!x[0]) return;
+          var so = document.createElement("source");
+          so.src = x[0]; so.type = /\.webm$/i.test(x[0]) ? "video/webm" : x[1];
+          v.appendChild(so);
+        });
+        v.controls = true; v.autoplay = true; v.playsInline = true;
         v.setAttribute("playsinline", "");
         box.appendChild(v);
       }
       dlg.showModal();
     }
+    $$("[data-video-file]").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        openSrc(a.getAttribute("href"), a.getAttribute("data-video-title") || "Video", a.hasAttribute("data-vertical"), a.getAttribute("data-video-webm"));
+      });
+    });
     Video.open = open;
     // Si el sitio no permite incrustar reproductores externos, se ofrece el enlace
     document.addEventListener("securitypolicyviolation", function (e) {
@@ -2165,6 +2183,116 @@
      Arranque
      ============================================================= */
   /* =============================================================
+     Equipo: una tarjeta y una ventana (ficha) por persona
+     ============================================================= */
+  function initSellers() {
+    var list = $("[data-sellers]"), gente = B.equipo || [];
+    if (!list || !gente.length) return;
+    var cta = $(".member-cta", list);
+    var arrow = '<svg class="i i-go" aria-hidden="true"><use href="#i-arrow"/></svg>';
+    function titulo(g) { return g.nombre || g.cargo || "Equipo comercial"; }
+    function sub(g) { return g.nombre ? (g.cargo || "Equipo comercial") : "Fundos Inmobiliaria"; }
+    gente.forEach(function (g, i) {
+      var li = document.createElement("li");
+      li.className = "seller reveal is-visible";
+      li.innerHTML = '<button type="button" class="seller-card" data-seller="' + i + '" aria-haspopup="dialog">' +
+        '<img src="' + esc(g.foto) + '" alt="" width="600" height="750" loading="lazy" decoding="async">' +
+        (g.video ? '<span class="seller-badge"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Saludo en video</span>' : "") +
+        '<span class="seller-info"><strong>' + esc(titulo(g)) + '</strong>' + (g.nombre ? '<span>' + esc(sub(g)) + '</span>' : "") +
+        '<span class="seller-more">Ver ficha' + arrow + '</span></span></button>';
+      list.insertBefore(li, cta);
+    });
+
+    var dlg = $("[data-sdialog]");
+    if (!dlg || typeof dlg.showModal !== "function") return;
+    var media = $("[data-sd-media]", dlg), faces = $("[data-sd-faces]", dlg), cur = 0;
+    var el = { title: $("[data-sd-title]", dlg), role: $("[data-sd-role]", dlg), count: $("[data-sd-count]", dlg), wa: $("[data-sd-wa]", dlg), visit: $("[data-sd-visit]", dlg) };
+    faces.innerHTML = gente.map(function (g, i) {
+      return '<button type="button" class="sd-face" data-sd-go="' + i + '" aria-label="Ver la ficha de ' + esc(g.nombre || "la persona " + (i + 1) + " del equipo") + '"><img src="' + esc(g.foto) + '" alt="" width="40" height="40" loading="lazy" decoding="async"></button>';
+    }).join("");
+
+    function waFor(g) {
+      var num = (g.whatsapp || contacto.whatsapp || "").replace(/\D/g, "");
+      var txt = g.nombre ? "Hola " + g.nombre + ", vi tu ficha en el sitio de Fundos y quiero conversar sobre las parcelas."
+        : "Hola, vi la ficha del equipo comercial en el sitio de Fundos y quiero conversar sobre las parcelas.";
+      return "https://wa.me/" + num + "?text=" + encodeURIComponent(txt);
+    }
+    function photo(g) {
+      media.innerHTML = '<img src="' + esc(g.foto) + '" alt="' + esc(g.nombre ? g.nombre + ", del equipo de Fundos" : "Integrante del equipo de Fundos Inmobiliaria") + '" width="600" height="750" decoding="async">' +
+        (g.video ? '<button type="button" class="sd-play" data-sd-play><span class="sd-play-dot" aria-hidden="true"><svg class="i"><use href="#i-play"/></svg></span>Ver su saludo<small>12 s · con sonido</small></button>' : "");
+    }
+    function playVideo(g) {
+      var v = document.createElement("video");
+      [[g.video.mp4, "video/mp4"], [g.video.webm, "video/webm"]].forEach(function (x) {
+        if (!x[0]) return;
+        var so = document.createElement("source"); so.src = x[0]; so.type = x[1]; v.appendChild(so);
+      });
+      v.controls = true; v.autoplay = true; v.playsInline = true; v.setAttribute("playsinline", "");
+      if (g.video.poster) v.poster = g.video.poster;
+      v.setAttribute("aria-label", "Saludo en video de " + (g.nombre || "una persona del equipo"));
+      media.innerHTML = "";
+      media.appendChild(v);
+      v.focus();
+    }
+    function show(i) {
+      cur = (i + gente.length) % gente.length;
+      var g = gente[cur];
+      photo(g);
+      el.title.textContent = titulo(g);
+      el.role.textContent = sub(g);
+      el.count.textContent = "· " + (cur + 1) + " de " + gente.length;
+      el.wa.href = waFor(g);
+      el.visit.textContent = "";
+      el.visit.insertAdjacentHTML("beforeend", '<svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg>' + (g.nombre ? "Agendar con " + esc(g.nombre.split(" ")[0]) : "Agendar visita"));
+      $$(".sd-face", faces).forEach(function (b, k) { b.setAttribute("aria-current", k === cur ? "true" : "false"); });
+      try { history.replaceState(null, "", "#equipo-" + (cur + 1)); } catch (e) { /* marco sin historial */ }
+    }
+    function open(i) { show(i); if (!dlg.open) dlg.showModal(); }
+    list.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-seller]");
+      if (b) open(+b.getAttribute("data-seller"));
+    });
+    dlg.addEventListener("click", function (e) {
+      if (e.target === dlg || e.target.closest("[data-sd-close]")) { dlg.close(); return; }
+      if (e.target.closest("[data-sd-prev]")) show(cur - 1);
+      else if (e.target.closest("[data-sd-next]")) show(cur + 1);
+      else if (e.target.closest("[data-sd-go]")) show(+e.target.closest("[data-sd-go]").getAttribute("data-sd-go"));
+      else if (e.target.closest("[data-sd-play]")) playVideo(gente[cur]);
+    });
+    dlg.addEventListener("keydown", function (e) {
+      if (e.target.tagName === "VIDEO") return;
+      if (e.key === "ArrowRight") { e.preventDefault(); show(cur + 1); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); show(cur - 1); }
+    });
+    // Deslizar en el celular para pasar a la siguiente persona
+    var sx = null;
+    media.addEventListener("touchstart", function (e) { sx = e.touches[0].clientX; }, { passive: true });
+    media.addEventListener("touchend", function (e) {
+      if (sx == null) return;
+      var dx = e.changedTouches[0].clientX - sx; sx = null;
+      if (Math.abs(dx) > 50 && !$("video", media)) show(cur + (dx < 0 ? 1 : -1));
+    });
+    dlg.addEventListener("close", function () {
+      media.innerHTML = "";   // detiene el video
+      if (/^#equipo-\d+$/.test(location.hash)) {
+        try { history.replaceState(null, "", "#equipo"); } catch (e) { /* marco sin historial */ }
+      }
+    });
+    el.visit.addEventListener("click", function () {
+      var g = gente[cur];
+      dlg.close();
+      Visit.prefill({ mensaje: g.nombre ? "Me gustaría que me atienda " + g.nombre + "." : "", scroll: true });
+    });
+    // Enlace directo a la ficha: #equipo-3
+    function fromHash() {
+      var m = /^#equipo-(\d+)$/.exec(location.hash);
+      if (m && gente[+m[1] - 1]) open(+m[1] - 1);
+    }
+    window.addEventListener("hashchange", fromHash);
+    fromHash();
+  }
+
+  /* =============================================================
      Animaciones continuas: en pausa mientras no se ven (ahorra CPU y batería)
      ============================================================= */
   function initOffscreen() {
@@ -2192,6 +2320,7 @@
     safe(initDialog, "initDialog");
     safe(initMobileBar, "initMobileBar");
     safe(initFaq, "initFaq");
+    safe(initSellers, "initSellers");
     safe(initOffscreen, "initOffscreen");
     $$('input[type="range"]').forEach(paintRange);
   }
