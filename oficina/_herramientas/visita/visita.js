@@ -160,7 +160,7 @@
   // Los títulos de afuera
   var TITULOS = ['calle', 'local', 'sala', 'enlace', 'seguimos', 'libre'].map(function (k) {
     var m = M[k], d = el('div', 'titulo', '<span>' + m.titulo[0] + '</span><span>' + m.titulo[1] + '</span>', capaTextos);
-    css(d, V ? { left: '70px', top: '230px', width: '950px', fontSize: (k === 'libre' ? 120 : 84) + 'px' } : { left: '110px', top: '96px', width: '1060px', fontSize: (k === 'libre' ? 130 : 92) + 'px' });
+    css(d, V ? { left: '70px', top: '230px', width: '950px', fontSize: (k === 'libre' ? 120 : 82) + 'px' } : { left: '110px', top: '96px', width: '1060px', fontSize: (k === 'libre' ? 130 : 92) + 'px' });
     return { m: m, d: d, k: k };
   });
 
@@ -256,7 +256,7 @@
     TITULOS.forEach(function (T) {
       var a = T.m.t + 0.3, o = vida(t, a, 0.45, T.m.t + 2 * G.COMPAS - 0.1, 0.3); ver(T.d, o > 0); if (o <= 0) return;
       var e = eOut(prog(t, a, a + 0.5));
-      css(T.d, { opacity: f2(o), transform: 'translateY(' + f2((1 - e) * 34) + 'px)', letterSpacing: f2((1 - e) * 0.05 - 0.035) + 'em' });
+      css(T.d, { opacity: f2(o), transform: 'translateY(' + f2((1 - e) * 34) + 'px)', letterSpacing: f2((1 - e) * 0.03 - 0.035) + 'em' });
     });
     // Las fichas de las salas
     FICHAS.forEach(function (F) {
