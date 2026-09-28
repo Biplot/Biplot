@@ -176,8 +176,8 @@
   function initHero() {
     var hero = $("[data-hero]");
     if (!hero || reduced) return;
-    var svg = $(".hero-scene", hero), inner = $(".hero-inner", hero);
-    var layers = $$(".layer", svg).map(function (g) { return { g: g, d: parseFloat(g.getAttribute("data-depth")) || 0 }; });
+    var svg = $(".hero-scene", hero), inner = $(".hero-inner", hero), photo = $(".hero-photo img", hero);
+    var layers = (svg ? $$(".layer", svg) : []).map(function (g) { return { g: g, d: parseFloat(g.getAttribute("data-depth")) || 0 }; });
     var tx = 0, ty = 0, cx = 0, cy = 0, raf = 0, visible = true, lastY = -1;
 
     if (fineHover) {
@@ -191,7 +191,7 @@
     window.addEventListener("scroll", kick, { passive: true });
     // Medidas fuera del cuadro de animación: frame() solo escribe, nunca fuerza un layout
     var svgH = 900, heroH = 1;
-    function measure() { svgH = svg.getBoundingClientRect().height || 900; heroH = hero.offsetHeight || 1; }
+    function measure() { svgH = (svg && svg.getBoundingClientRect().height) || 900; heroH = hero.offsetHeight || 1; }
     measure();
     if ("ResizeObserver" in window) new ResizeObserver(function () { measure(); kick(); }).observe(hero);
     else window.addEventListener("resize", function () { measure(); kick(); });
@@ -211,6 +211,7 @@
         var y = -cy * L.d * 10 + sy * (1 - L.d) * 0.3 * k;
         L.g.setAttribute("transform", "translate(" + x.toFixed(2) + " " + y.toFixed(2) + ")");
       });
+      if (photo) photo.style.transform = "translate3d(" + (-cx * 8).toFixed(1) + "px," + (sy * 0.16 - cy * 6).toFixed(1) + "px,0) scale(1.04)";
       if (inner) {
         inner.style.transform = "translate3d(0," + (sy * -0.12).toFixed(1) + "px,0)";
         inner.style.opacity = String(clamp(1 - sy / (heroH * 0.8), 0, 1));
@@ -2025,7 +2026,7 @@
   }
 
   function initVideo() {
-    // Portada: video de fondo sobre la ilustración (que queda como respaldo)
+    // Portada: video de fondo sobre la foto del equipo (que queda como respaldo)
     var hv = B.videoPortada || {}, hero = $("[data-hero]"), heroArt = hero && $(".hero-art", hero);
     var conn = navigator.connection || {};
     // Sin video con ahorro de datos o conexiones más lentas que 4G
@@ -2076,8 +2077,12 @@
     function open(id) {
       var p = proyecto(id);
       if (!p || !p.video) return;
-      var s = videoSource(p.video);
-      title.textContent = p.nombre + " en video";
+      openSrc(p.video, p.nombre + " en video", false);
+    }
+    function openSrc(src, titulo, vertical, webm) {
+      var s = videoSource(src);
+      dlg.classList.toggle("is-vertical", !!vertical);
+      title.textContent = titulo;
       link.href = s.link;
       blockedMsg.hidden = true;
       box.hidden = false;
@@ -2092,12 +2097,25 @@
         box.appendChild(f);
       } else {
         var v = document.createElement("video");
-        v.src = s.file; v.controls = true; v.autoplay = true; v.playsInline = true;
+        // MP4 (H.264) para todos; WebM de respaldo para navegadores sin H.264
+        [[s.file, "video/mp4"], [webm, "video/webm"]].forEach(function (x) {
+          if (!x[0]) return;
+          var so = document.createElement("source");
+          so.src = x[0]; so.type = /\.webm$/i.test(x[0]) ? "video/webm" : x[1];
+          v.appendChild(so);
+        });
+        v.controls = true; v.autoplay = true; v.playsInline = true;
         v.setAttribute("playsinline", "");
         box.appendChild(v);
       }
       dlg.showModal();
     }
+    $$("[data-video-file]").forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        openSrc(a.getAttribute("href"), a.getAttribute("data-video-title") || "Video", a.hasAttribute("data-vertical"), a.getAttribute("data-video-webm"));
+      });
+    });
     Video.open = open;
     // Si el sitio no permite incrustar reproductores externos, se ofrece el enlace
     document.addEventListener("securitypolicyviolation", function (e) {

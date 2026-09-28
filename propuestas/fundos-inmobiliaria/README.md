@@ -13,7 +13,7 @@ Sitio estático (HTML, CSS y JavaScript, sin build ni dependencias). Funciona ab
 
 | Sección | Qué gana el cliente |
 |---|---|
-| **Hero con paisaje vivo** | Ilustración por capas (volcán, cipreses y surcos dorados del isotipo) que se mueve con el cursor y el scroll. Primera impresión premium, sin fotos de stock. |
+| **Portada con el equipo** | La foto real del equipo de Fundos, con la polera de la marca, junto al titular. Transmite desde el primer segundo que detrás hay personas; enlace directo a "Conoce a nuestro equipo". |
 | **Buscador** | Destino + presupuesto con conteo en vivo y desglose por proyecto ("14 en Malalcahuello · 12 en Marchigüe"). Lleva directo al plano ya filtrado y avisa si hay más en otros proyectos. Si nada entra en el presupuesto, dice desde cuánto parten y ofrece verlas igual. |
 | **Proyectos comparables** | Misma ficha para los tres: desde, superficie, reserva y disponibilidad. Ficha ampliada con destacados, cercanías y mapa. |
 | **Recorrido virtual 360°** ★ | Los tours de cada proyecto se ven dentro de la página: una lente "Entrar" abre el recorrido como un portal, se cambia de proyecto sin salir, hay pantalla completa y, al terminar, "Ver lotes", "Agendar visita" o "Compartir" por WhatsApp. Accesos desde el hero, cada tarjeta ("Recorrido 360°"), el plano (botón 360°) y la ficha del proyecto. Enlace directo: `#recorrido-puerto-varas`. |
@@ -22,7 +22,7 @@ Sitio estático (HTML, CSS y JavaScript, sin build ni dependencias). Funciona ab
 | **Cómo comprar en 6 pasos** | El mismo embudo de Fundos 360° (reserva → validación → gastos → escritura → inscripción en el CBR), explicado sin letra chica. |
 | **Mi compra (Fundos 360°)** | Portal del comprador: avance de su compra, documentos y próximos hitos. Diferencia real frente a la competencia. |
 | **Simulador** | Contado o financiamiento, con reparto visual de la compra y envío de la simulación por WhatsApp. |
-| **Quiénes somos, valores y equipo** | Textos y valores del sitio actual, foto real del río y el equipo con foto en arco y botón de WhatsApp para cada persona. |
+| **Quiénes somos, valores y equipo** | Textos y valores del sitio actual, foto real del río y una sección de equipo con la foto grupal, un video de saludo (se abre en un visor vertical con sonido), un retrato y la invitación a agendar. Las caras del equipo acompañan también la agenda de visita, la ayuda del plano y la vista previa de "Mi compra". |
 | **Preguntas frecuentes** | Rol propio, construcción, reserva, gastos, plazos, financiamiento, visitas. |
 | **Agenda tu visita** | Formulario validado que abre WhatsApp con el mensaje listo: nombre, proyecto, fecha y horario. Desde "Reservar este lote" llega con la reserva a la vista ("Reserva: lote 18 de Malalcahuello") y el mensaje pide reservar ese lote. |
 
@@ -40,7 +40,7 @@ Todo lo editable está en `lib/manifest.js`.
 - [ ] **Destacados y cercanías:** las distancias se miden desde cada pueblo, no desde el proyecto. Reemplazar por los tiempos reales.
 - [ ] **Mi compra:** es un módulo nuevo que se propone sobre Fundos 360°. Hoy la sección lo muestra como vista previa.
 - [ ] **Fotos:** las ilustraciones son intencionales, pero se pueden sumar fotos de dron reales en la ficha de cada proyecto.
-- [ ] **Equipo:** hoy se muestra como "Equipo comercial". Si se quiere, sumar nombre y cargo de cada persona y su propio WhatsApp. Las fotos se tomaron de capturas del sitio actual: conviene reemplazarlas por los archivos originales.
+- [ ] **Equipo:** las fotos y el video son del equipo real. Falta confirmar que todas las personas autorizan su uso en el sitio y, si se quiere, sumar nombre y cargo de cada una. El video no tiene subtítulos: conviene agregarlos (o enviarnos el texto) para quienes lo vean sin sonido.
 - [ ] **Videos:** la propuesta no incluye videos. El sitio ya está preparado: basta con subir el archivo o pegar el enlace (ver "Videos" más abajo).
 - [ ] **Concurso:** el sitio actual tiene una página de concurso; se puede sumar como banner o sección cuando esté definido.
 - [ ] **Al publicarlo en el dominio de Fundos:** quitar la etiqueta "Propuesta" del menú, quitar `noindex` y cambiar la URL de `og:image`.
@@ -54,7 +54,7 @@ main.js           Interacciones: plano, filtros, favoritos, simulador, formulari
 lib/manifest.js   Datos: contacto, proyectos, lotes, financiamiento
 assets/img/       Isotipo (del manual, también en 174 px para el menú), logos de proyectos, fotos (nosotros y equipo), favicon y og-fundos.jpg
 assets/fonts/     Cormorant Garamond y Mulish (woff2, latín)
-assets/video/     Videos propios (portada y proyectos), si se usan archivos en vez de YouTube
+assets/video/     Videos propios: el saludo del equipo (MP4 + WebM de respaldo y su imagen) y, si se usan, portada y proyectos
 .htaccess         Caché para hosting Apache/Hostinger
 ```
 
@@ -62,7 +62,7 @@ assets/video/     Videos propios (portada y proyectos), si se usan archivos en v
 
 Todo se configura en `lib/manifest.js`; si un campo queda vacío, no aparece nada.
 
-- **Video de portada (hero):** `videoPortada: { mp4: "assets/video/portada.mp4", webm: "", poster: "" }`. Debe ser un archivo propio (no YouTube): sin sonido, 10 a 20 segundos, H.264 a 1920 px y menos de 8 MB. Se reproduce en silencio y en bucle, con botón de pausa; no se carga con ahorro de datos, en conexiones más lentas que 4G ni con movimiento reducido; se pausa cuando sale de pantalla, y mientras carga se ve la ilustración.
+- **Video de portada (hero):** `videoPortada: { mp4: "assets/video/portada.mp4", webm: "", poster: "" }`. Debe ser un archivo propio (no YouTube): sin sonido, 10 a 20 segundos, H.264 a 1920 px y menos de 8 MB. Se reproduce en silencio y en bucle, con botón de pausa; no se carga con ahorro de datos, en conexiones más lentas que 4G ni con movimiento reducido; se pausa cuando sale de pantalla, y mientras carga se ve la foto del equipo.
 - **Video de cada proyecto:** `video: "https://youtu.be/XXXXXXXXXXX"` (también `youtube.com/watch?v=…`, `shorts/…`, Vimeo o `assets/video/archivo.mp4`). Aparece el botón "Ver video" en la tarjeta y en la ficha, y se abre en un visor dentro de la página.
 - Para un video largo o con sonido, conviene YouTube o Vimeo: no consume el ancho de banda del hosting y se adapta a la conexión de cada persona.
 
