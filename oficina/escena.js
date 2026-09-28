@@ -734,6 +734,15 @@
     sobre(19.3, 15.95, 1.05, '<path d="M-6 0 a6 4 0 0 0 12 0 Z" fill="' + C.a300 + '"/><circle cx="0" cy="-4.5" r="5.5" fill="' + C.a200 + '"/><circle cx="0" cy="-10" r="1.8" fill="' + C.a300 + '"/>');
     sobre(21.9, 16.0, 1.05, '<path d="M-14 0 l14 7 l14 -7 l-14 -7 Z" fill="' + C.grafito + '"/><path d="M-10 0 l10 5 l10 -5 l-10 -5 Z" fill="' + C.c700 + '"/>');
     obj(22.35, 15.96, planta(22.35, 15.95, .55, 1.05));
+    // La libreta del primer capítulo de «Seis décadas» (plotline.html), dejada en el mesón: la hoja con renglones, la
+    // corrección en rojo, la línea trazada a mano, el timbre de diagnóstico pendiente y el clip. Aquí empieza la línea.
+    obj(20.6, 16.07, enPlano(planoZ(20.12, 15.7, 1.05), '<g transform="rotate(-8 38 28)">' +
+      '<rect x="0" y="0" width="76" height="56" rx="2" fill="#F4ECD8" stroke="#C9B994" stroke-width="1.4"/>' +
+      '<rect x="8" y="11" width="44" height="3.2" rx="1.6" fill="#8C7D5E" opacity=".55"/><rect x="8" y="19" width="52" height="3.2" rx="1.6" fill="#8C7D5E" opacity=".55"/>' +
+      '<rect x="8" y="27" width="34" height="3.2" rx="1.6" fill="#A4241A" opacity=".7"/><rect x="8" y="35" width="46" height="3.2" rx="1.6" fill="#8C7D5E" opacity=".55"/>' +
+      '<path d="M8 47 C 20 47, 27 41, 39 43 S 57 47, 67 39" fill="none" stroke="#5A4A2E" stroke-width="1.8" stroke-linecap="round"/>' +
+      '<circle cx="62" cy="15" r="8.5" fill="none" stroke="#4C8C6E" stroke-width="2" opacity=".85"/><circle cx="62" cy="15" r="5" fill="none" stroke="#4C8C6E" stroke-width="1" opacity=".6"/>' +
+      '<path d="M14 -5 v13 a3.2 3.2 0 0 0 6.4 0 v-11" fill="none" stroke="#A9B7C6" stroke-width="2" stroke-linecap="round"/></g>'));
     // tótem con el isotipo (sin deformar: mira de frente)
     (function () {
       var cx = 23.1, cy = 14.2;

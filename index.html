@@ -349,8 +349,8 @@ body.motion-settled .reveal-group.in .part:nth-child(4){transition-delay:0ms}
 .pi-stats b{color:var(--text-primary);font-family:var(--display);font-size:.98rem}
 .pi-status{margin-top:16px;display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.78rem;color:var(--text-secondary)}
 .pi-status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-muted);flex:none}
-.panel-play{margin-top:18px;display:inline-flex;align-items:center;gap:9px;background:var(--warm);color:#2b0f08;border:none;border-radius:999px;padding:11px 20px;font-family:var(--body);font-weight:600;font-size:.9rem;cursor:pointer;transition:transform .25s var(--ease),background .25s var(--ease)}
-.panel-play:hover{background:var(--warm-hover);transform:translateY(-2px)}
+.panel-play{margin-top:18px;display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#04211d;border:none;border-radius:999px;padding:11px 20px;font-family:var(--body);font-weight:600;font-size:.9rem;cursor:pointer;transition:transform .25s var(--ease),background .25s var(--ease)}
+.panel-play:hover{background:var(--accent-hover);transform:translateY(-2px)}
 .panel-play svg{width:15px;height:15px}
 .vlightbox{position:fixed;inset:0;z-index:200;background:rgba(4,10,20,.9);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
 .vlightbox.open{opacity:1;pointer-events:auto}
@@ -422,10 +422,9 @@ body.motion-settled .reveal-group.in .part:nth-child(4){transition-delay:0ms}
 .pl-era-saas .c b{display:block;color:#2b57d6;font-size:.8rem;margin-bottom:4px}
 .pl-era-biplot{background:#081a2e}
 .pl-era-biplot img{width:100%;height:100%;object-fit:cover;border-radius:10px}
-.pl-era-final{background:#081a2e}
-.pl-era-final svg{width:82%;max-width:280px}
-.pl-era-final .curve{fill:none;stroke:var(--accent);stroke-width:3;stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.4s var(--ease)}
-.pl-slide.pl-active .pl-era-final .curve{stroke-dashoffset:0}
+/* hoy y tu turno: la oficina y el local libre, con la misma línea */
+.pl-era-hq,.pl-era-local{background:transparent;display:block;min-height:0;height:auto}
+.pl-era-hq .lm,.pl-era-local .tu-local{box-shadow:none}
 
 .pl-controls{display:flex;align-items:center;justify-content:space-between;margin-top:22px;gap:20px;flex-wrap:wrap}
 .pl-dots{display:flex;gap:9px}
@@ -436,7 +435,7 @@ body.motion-settled .reveal-group.in .part:nth-child(4){transition-delay:0ms}
 .pl-arrows button:hover{border-color:var(--accent);background:rgba(23,195,178,.08)}
 .pl-arrows svg{width:18px;height:18px}
 .pl-cta{margin-top:0}
-@media (prefers-reduced-motion:reduce){.pl-track{transition:none}.pl-era-final .curve{transition:none}.pl-era-terminal .cur{animation:none}}
+@media (prefers-reduced-motion:reduce){.pl-track{transition:none}.pl-era-terminal .cur{animation:none}}
 
 /* interactive: trace tu punto */
 .trace{background:var(--panel);border-radius:24px;padding:clamp(36px,6vw,72px);margin-top:56px;text-align:center;position:relative;overflow:hidden}
@@ -544,6 +543,76 @@ footer{padding:48px clamp(20px,6vw,64px) 40px;border-top:1px solid var(--line)}
 @media (max-width:900px){.hq{grid-template-columns:1fr}}
 @media (max-width:700px){.hq-frame{aspect-ratio:9/16;max-width:340px;margin-inline:auto}.hq-caption{text-align:center}}
 
+/* La línea del motor: las diez fases, cada una con quien la lleva, sobre la foto de la oficina */
+.lm{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(23,195,178,.25);background:#081a2e;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.lm-foto{position:relative;height:var(--lm-foto,24vh);min-height:130px}
+.lm-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block}
+.lm-foto::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,26,46,0) 35%,rgba(8,26,46,.92) 88%,#081a2e)}
+.lm-pista{position:relative;margin:-58px 34px 0;padding:52px 0 46px}
+.lm-via{position:relative;aspect-ratio:1000/60}
+.lm-via svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 6px rgba(23,195,178,.55))}
+.lm-trazo{fill:none;stroke:#17C3B2;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s cubic-bezier(.22,.9,.3,1) .2s}
+.lm.in .lm-trazo,.in .lm .lm-trazo,.pl-active .lm .lm-trazo{stroke-dashoffset:0}
+.lm-fases{list-style:none;margin:0;padding:0;position:absolute;inset:0}
+.lm-fases li{position:absolute;transform:translate(-50%,-47px);display:flex;flex-direction:column;align-items:center;text-align:center;width:88px}
+.lm-caras{display:flex;height:34px}
+.lm-caras img{width:34px;height:34px;display:block}
+.lm-caras img + img{margin-left:-12px}
+.lm-fases i{width:12px;height:12px;margin-top:7px;border-radius:50%;background:#17C3B2;box-shadow:0 0 0 3px #081a2e,0 0 12px rgba(23,195,178,.8)}
+.lm-fases b{margin-top:7px;font:700 .7rem/1 'JetBrains Mono',monospace;color:#17C3B2;letter-spacing:.04em}
+.lm-nom{margin-top:3px;font:500 .72rem/1.2 'Inter',sans-serif;color:#A9B7C6}
+.lm-fin{position:absolute;width:16px;height:16px;border-radius:50%;background:#FF6B4A;transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(255,107,74,.25),0 0 18px rgba(255,107,74,.7)}
+.lm-compacto .lm-foto{height:auto;aspect-ratio:2/1;min-height:0}
+.lm-compacto .lm-pista{margin:-44px 22px 0;padding:44px 0 26px}
+.lm-compacto .lm-nom{display:none}
+.lm-compacto .lm-fases li{transform:translate(-50%,-39px)}
+.lm-compacto .lm-caras,.lm-compacto .lm-caras img{height:26px;width:26px}
+.lm-compacto .lm-caras img + img{display:none}
+@media (max-width:700px){
+  .lm-pista{margin:-40px 16px 0;padding:42px 0 26px}
+  .lm-nom{display:none}
+  .lm-fases li{transform:translate(-50%,-37px)}
+  .lm-caras,.lm-caras img{height:24px;width:24px}
+  .lm-caras img + img{display:none}
+  .lm-fases i{width:9px;height:9px;margin-top:6px}
+  .lm-fases b{font-size:.58rem;margin-top:5px}
+}
+/* El local libre: la línea termina en su puerta, en el punto coral */
+.tu-local{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:1px solid rgba(23,195,178,.25);box-shadow:0 24px 60px rgba(0,0,0,.4);background:#081a2e}
+.tu-local img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.tu-local svg{position:absolute;inset:0;width:100%;height:100%}
+.tu-local .curve-draw{fill:none;stroke:#17C3B2;stroke-width:9;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;filter:drop-shadow(0 0 8px rgba(23,195,178,.7));transition:stroke-dashoffset 1.6s cubic-bezier(.22,.9,.3,1)}
+.tu-local.in .curve-draw,.in .tu-local .curve-draw,.pl-active .tu-local .curve-draw,.tu-local .curve-draw.in{stroke-dashoffset:0}
+.tl-halo{fill:rgba(255,107,74,.25);transform-box:fill-box;transform-origin:center;animation:tlHalo 2.2s ease-out infinite}
+@keyframes tlHalo{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){.lm-trazo,.tu-local .curve-draw{transition:none;stroke-dashoffset:0}.tl-halo{animation:none}}
+
+/* el riel de las diez fases: la curva del isotipo, que sube de paso en paso y termina en el punto coral */
+.method-step:last-child .dot{border-color:var(--warm)}
+.method-step:last-child.in .dot{background:var(--warm);border-color:var(--warm);box-shadow:0 0 0 6px rgba(255,107,74,.22)}
+.method-curva{display:none}
+@media (min-width:861px){
+  .method{padding-top:44px}
+  .method-rail{display:none}
+  .method-step .dot{top:var(--alto,0px)}
+  .method-step{padding-top:74px}
+  .method-step:nth-of-type(2){--alto:50px}
+  .method-step:nth-of-type(3){--alto:24px}
+  .method-step:nth-of-type(4){--alto:34px}
+  .method-step:nth-of-type(5){--alto:0px}
+  .method-curva{display:block;position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .method-curva path{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease);filter:drop-shadow(0 0 5px rgba(23,195,178,.5))}
+  .method.in .method-curva path{stroke-dashoffset:0}
+}
+
+/* contacto: la línea que termina en el punto coral */
+.contacto-linea{display:block;width:min(600px,100%);height:auto;margin-bottom:22px;overflow:visible}
+.contacto-linea path{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease);filter:drop-shadow(0 0 6px rgba(23,195,178,.55))}
+.contacto-linea.in path{stroke-dashoffset:0}
+.contacto-linea circle{fill:var(--warm)}
+.contacto-linea .cl-halo{fill:rgba(255,107,74,.25);transform-box:fill-box;transform-origin:center;animation:tlHalo 2.2s ease-out infinite}
+@media (prefers-reduced-motion:reduce){.method-curva path,.contacto-linea path{transition:none;stroke-dashoffset:0}.contacto-linea .cl-halo{animation:none}}
+
 /* contacto: partir con Plotty */
 .plotty-alt{margin-top:30px;display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:14px;background:var(--panel-2);border:1px solid var(--line)}
 .plotty-alt img{width:46px;height:46px;flex:none}
@@ -613,6 +682,138 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
 
 <main id="main" tabindex="-1">
 
+  <section id="historia" aria-labelledby="historia-h">
+    <div class="wrap">
+      <span class="eyebrow">Cómo pensamos la automatización</span>
+      <h2 class="h-lg reveal" id="historia-h">Seis décadas, la misma línea</h2>
+      <p class="lede reveal">Antes de BiPlot, un proceso de negocio pasó por el papel, el terminal, el software genérico y el ruido de mil herramientas. La línea es la misma en todas las épocas: hoy pasa por nuestra oficina, y lo que sigue es tu proceso.</p>
+
+      <div class="pl-carousel-wrap reveal">
+        <div class="pl-viewport">
+          <div class="pl-track" id="plTrack">
+
+            <div class="pl-slide pl-active" data-slide="0">
+              <div class="pl-visual">
+                <div class="pl-era-box pl-era-paper">
+                  <div class="card">Planillas a mano.<br>Un clip para no perder la hoja.<br><span class="redl">un cuaderno</span> WhatsApp y un Excel.</div>
+                </div>
+              </div>
+              <div class="pl-copy">
+                <span class="pl-era">1985 · El papel</span>
+                <h3>Antes de todo esto, había una libreta</h3>
+                <p>Planillas a mano, un clip para no perder la hoja y la memoria de una sola persona sosteniendo el proceso completo.</p>
+              </div>
+            </div>
+
+            <div class="pl-slide" data-slide="1">
+              <div class="pl-visual">
+                <div class="pl-era-box pl-era-terminal">
+                  <div class="term"><span class="p">&gt;</span> LEYENDO PROCESO...<br><span class="p">&gt;</span> 14 PASOS MANUALES<br><span class="p">&gt;</span> DIAGNÓSTICO<span class="cur">&nbsp;</span></div>
+                </div>
+              </div>
+              <div class="pl-copy">
+                <span class="pl-era">1990 · El diagnóstico</span>
+                <h3>Todo cambio serio empieza por leer el proceso real</h3>
+                <p>Antes de tocar nada, entendemos paso a paso cómo trabaja tu equipo hoy. Sin apurarnos a la solución.</p>
+              </div>
+            </div>
+
+            <div class="pl-slide" data-slide="2">
+              <div class="pl-visual">
+                <div class="pl-era-box pl-era-crt">
+                  <div class="msg">Ahora tienes dos problemas.</div>
+                </div>
+              </div>
+              <div class="pl-copy">
+                <span class="pl-era">1998 · El enredo</span>
+                <h3>Compraste una herramienta. Ahora tienes dos problemas</h3>
+                <p>Una herramienta potente que tu equipo nunca aprende a usar es dinero tirado. Así se ve el software genérico por dentro.</p>
+              </div>
+            </div>
+
+            <div class="pl-slide" data-slide="3">
+              <div class="pl-visual">
+                <div class="pl-era-box pl-era-saas">
+                  <div class="cards">
+                    <div class="c"><b>Escalable</b>Para cualquier negocio.</div>
+                    <div class="c"><b>Innovador</b>Con IA de punta.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="pl-copy">
+                <span class="pl-era">2015 · El genérico</span>
+                <h3>Todas prometen lo mismo, con las mismas tres palabras</h3>
+                <p>Así trabajan la mayoría de las consultoras de automatización: plantillas genéricas vestidas de innovación.</p>
+              </div>
+            </div>
+
+            <div class="pl-slide" data-slide="4">
+              <div class="pl-visual">
+                <div class="pl-era-box pl-era-hq">
+                  <div class="lm lm-compacto">
+                    <div class="lm-foto"><img src="assets/oficina/oficina-adentro.webp" alt="BiPlot HQ por dentro: el equipo trabajando, cada uno en su estación" loading="lazy"></div>
+                    <div class="lm-pista">
+                      <div class="lm-via">
+                        <svg viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true"><polyline class="lm-trazo" pathLength="1" points="0,52 50,50 150,43 250,46 350,37 450,40 550,31 650,34 750,25 850,28 950,19 1000,7"/></svg>
+                        <ol class="lm-fases" aria-label="Las diez fases del motor y quién lleva cada una">
+                        <li style="left:5%;top:83.3%" title="E0 · Calificación: Plotty"><span class="lm-caras"><img src="assets/oficina/caras/plotty.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E0</b><span class="lm-nom">Calificación</span></li>
+                        <li style="left:15%;top:71.7%" title="E1 · Diagnóstico: Lupe"><span class="lm-caras"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E1</b><span class="lm-nom">Diagnóstico</span></li>
+                        <li style="left:25%;top:76.7%" title="E2 · Camino: The Architect"><span class="lm-caras"><img src="assets/oficina/caras/architect.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E2</b><span class="lm-nom">Camino</span></li>
+                        <li style="left:35%;top:61.7%" title="E3 · Datos: Celda"><span class="lm-caras"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E3</b><span class="lm-nom">Datos</span></li>
+                        <li style="left:45%;top:66.7%" title="E4 · Modelo y permisos: The Engine"><span class="lm-caras"><img src="assets/oficina/caras/engine.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E4</b><span class="lm-nom">Modelo y permisos</span></li>
+                        <li style="left:55%;top:51.7%" title="E5 · Construcción: Grilla y Bucle"><span class="lm-caras"><img src="assets/oficina/caras/grilla.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/bucle.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E5</b><span class="lm-nom">Construcción</span></li>
+                        <li style="left:65%;top:56.7%" title="E6 · Validación: Tamandúa"><span class="lm-caras"><img src="assets/oficina/caras/tamandua.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E6</b><span class="lm-nom">Validación</span></li>
+                        <li style="left:75%;top:41.7%" title="E7 · Puesta en marcha: Faro"><span class="lm-caras"><img src="assets/oficina/caras/faro.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E7</b><span class="lm-nom">Puesta en marcha</span></li>
+                        <li style="left:85%;top:46.7%" title="E8 · Medición: Lupe y Celda"><span class="lm-caras"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E8</b><span class="lm-nom">Medición</span></li>
+                        <li style="left:95%;top:31.7%" title="E9 · Cosecha: Pepa"><span class="lm-caras"><img src="assets/oficina/caras/pepa.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E9</b><span class="lm-nom">Cosecha</span></li>
+                        </ol>
+                        <span class="lm-fin" style="left:100%;top:11.7%" aria-hidden="true"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="pl-copy">
+                <span class="pl-era">Hoy · BiPlot HQ</span>
+                <h3>La misma línea, ahora con alguien a cargo de cada tramo</h3>
+                <p>Al software genérico le faltaban personas. En BiPlot HQ, tu proceso pasa por diez fases y cada una la lleva alguien del equipo.</p>
+              </div>
+            </div>
+
+            <div class="pl-slide" data-slide="5">
+              <div class="pl-visual">
+                <div class="pl-era-box pl-era-local">
+                  <div class="tu-local">
+                    <img src="assets/oficina/local-libre.webp" alt="El local libre del barrio de BiPlot HQ, con el letrero «Tu proyecto aquí»" loading="lazy">
+                    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                      <path class="curve-draw" pathLength="900" d="M-20 884 C 150 884, 250 770, 380 806 S 528 808, 618 772"/>
+                      <circle class="tl-halo" cx="618" cy="772" r="34"/>
+                      <circle cx="618" cy="772" r="16" fill="#FF6B4A" stroke="#0B1726" stroke-width="5"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="pl-copy">
+                <span class="pl-era">Tu turno</span>
+                <h3>Tu proceso es el próximo punto de esta línea</h3>
+                <p>Del papel al pixel, la línea nunca dejó de trazarse. Ahora te toca a ti: en el barrio de BiPlot HQ hay un local esperando tu proyecto.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="pl-controls">
+          <div class="pl-dots" id="plDots"></div>
+          <a href="plotline.html" class="btn ghost pl-cta">Ver el recorrido completo</a>
+          <div class="pl-arrows">
+            <button id="plPrev" aria-label="Época anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button id="plNext" aria-label="Época siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="servicios" aria-labelledby="servicios-h">
     <div class="wrap">
       <span class="eyebrow">Servicios</span>
@@ -650,6 +851,7 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
       <p class="lede reveal">Sin plantillas: el proceso real, primero. Todo proyecto pasa por el mismo motor, con alguien del equipo a cargo de cada fase. Tú hablas con una persona; el motor hace el resto.</p>
       <div class="method">
         <div class="method-rail"></div>
+        <svg class="method-curva" aria-hidden="true"><path pathLength="1"/></svg>
         <div class="method-step" data-step>
           <div class="dot"></div>
           <div class="mstep-head">
@@ -823,36 +1025,6 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
     </div>
   </section>
 
-  <section id="diferenciadores" aria-labelledby="dif-h">
-    <div class="wrap">
-      <span class="eyebrow">Por qué BiPlot</span>
-      <h2 class="h-lg reveal" id="dif-h">Trazado a tu medida, no forzado a una plantilla</h2>
-      <div class="diff">
-        <div class="diff-list reveal-group">
-          <div class="diff-item part">
-            <span class="n">01</span>
-            <div><h3>Sin curva de aprendizaje forzada</h3><p>Nos adaptamos a cómo tu equipo ya trabaja, en vez de exigirles aprender un sistema nuevo de cero.</p></div>
-          </div>
-          <div class="diff-item part">
-            <span class="n">02</span>
-            <div><h3>Metodología propia, no plantilla</h3><p>Diez fases con alguien a cargo de cada una. Cada biplot es distinto porque parte de datos reales, no de un molde, y cada automatización nuestra funciona igual.</p></div>
-          </div>
-          <div class="diff-item part">
-            <span class="n">03</span>
-            <div><h3>Soporte real después de la entrega</h3><p>Seguimos disponibles cuando el proceso cambia, no solo el día del lanzamiento, y medimos a los 30, 60 y 90 días contra la línea base.</p></div>
-          </div>
-          <div class="diff-item part">
-            <span class="n">04</span>
-            <div><h3>Casos concretos, no promesas genéricas</h3><p>Mostramos proyectos reales, como Fundos 360, cada uno con su sala en BiPlot HQ, en vez de afirmaciones sobre "ser los mejores en IA".</p></div>
-          </div>
-        </div>
-        <div class="diff-visual reveal" id="diffVisual">
-          <img src="assets/support-still.jpg" alt="Curva de datos trazada con precisión sobre fondo azul profundo" loading="lazy">
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section id="precios" aria-labelledby="precios-h">
     <div class="wrap">
       <span class="eyebrow">Modelo de ingresos</span>
@@ -867,7 +1039,7 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
             <li>Mapa de dónde se pierde tiempo, con la línea base</li>
             <li>Propuesta de alcance, sin compromiso</li>
           </ul>
-          <a href="#contacto" class="btn ghost">Agendar</a>
+          <a href="#contacto" class="btn primary">Agendar</a>
         </div>
         <div class="price-card featured part">
           <h3>Proyecto a medida</h3>
@@ -879,7 +1051,7 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
             <li>Medición a los 30, 60 y 90 días</li>
             <li>Tu local y tu sala en BiPlot HQ</li>
           </ul>
-          <a href="https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20cotizar%20un%20proyecto." target="_blank" rel="noopener" class="btn primary">Cotizar proyecto</a>
+          <a href="https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20cotizar%20un%20proyecto." target="_blank" rel="noopener" class="btn accent">Cotizar proyecto</a>
         </div>
         <div class="price-card part">
           <h3>Soporte continuo</h3>
@@ -890,114 +1062,6 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
             <li>Canal directo de soporte</li>
           </ul>
           <a href="#contacto" class="btn ghost">Conversar plan</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="historia" aria-labelledby="historia-h">
-    <div class="wrap">
-      <span class="eyebrow">Cómo pensamos la automatización</span>
-      <h2 class="h-lg reveal" id="historia-h">Seis décadas, la misma línea</h2>
-      <p class="lede reveal">Antes de BiPlot, un proceso de negocio pasó por el papel, el terminal, el software genérico y el ruido de mil herramientas. Recorre las épocas.</p>
-
-      <div class="pl-carousel-wrap reveal">
-        <div class="pl-viewport">
-          <div class="pl-track" id="plTrack">
-
-            <div class="pl-slide pl-active" data-slide="0">
-              <div class="pl-visual">
-                <div class="pl-era-box pl-era-paper">
-                  <div class="card">Planillas a mano.<br>Un clip para no perder la hoja.<br><span class="redl">un cuaderno</span> WhatsApp y un Excel.</div>
-                </div>
-              </div>
-              <div class="pl-copy">
-                <span class="pl-era">1985 · El papel</span>
-                <h3>Antes de todo esto, había una libreta</h3>
-                <p>Planillas a mano, un clip para no perder la hoja y la memoria de una sola persona sosteniendo el proceso completo.</p>
-              </div>
-            </div>
-
-            <div class="pl-slide" data-slide="1">
-              <div class="pl-visual">
-                <div class="pl-era-box pl-era-terminal">
-                  <div class="term"><span class="p">&gt;</span> LEYENDO PROCESO...<br><span class="p">&gt;</span> 14 PASOS MANUALES<br><span class="p">&gt;</span> DIAGNÓSTICO<span class="cur">&nbsp;</span></div>
-                </div>
-              </div>
-              <div class="pl-copy">
-                <span class="pl-era">1990 · El diagnóstico</span>
-                <h3>Todo cambio serio empieza por leer el proceso real</h3>
-                <p>Antes de tocar nada, entendemos paso a paso cómo trabaja tu equipo hoy. Sin apurarnos a la solución.</p>
-              </div>
-            </div>
-
-            <div class="pl-slide" data-slide="2">
-              <div class="pl-visual">
-                <div class="pl-era-box pl-era-crt">
-                  <div class="msg">Ahora tienes dos problemas.</div>
-                </div>
-              </div>
-              <div class="pl-copy">
-                <span class="pl-era">1998 · El enredo</span>
-                <h3>Compraste una herramienta. Ahora tienes dos problemas</h3>
-                <p>Una herramienta potente que tu equipo nunca aprende a usar es dinero tirado. Así se ve el software genérico por dentro.</p>
-              </div>
-            </div>
-
-            <div class="pl-slide" data-slide="3">
-              <div class="pl-visual">
-                <div class="pl-era-box pl-era-saas">
-                  <div class="cards">
-                    <div class="c"><b>Escalable</b>Para cualquier negocio.</div>
-                    <div class="c"><b>Innovador</b>Con IA de punta.</div>
-                  </div>
-                </div>
-              </div>
-              <div class="pl-copy">
-                <span class="pl-era">2015 · El genérico</span>
-                <h3>Todas prometen lo mismo, con las mismas tres palabras</h3>
-                <p>Así trabajan la mayoría de las consultoras de automatización: plantillas genéricas vestidas de innovación.</p>
-              </div>
-            </div>
-
-            <div class="pl-slide" data-slide="4">
-              <div class="pl-visual">
-                <div class="pl-era-box pl-era-biplot">
-                  <img src="assets/hero-ending.jpg" alt="La curva de datos de BiPlot" loading="lazy">
-                </div>
-              </div>
-              <div class="pl-copy">
-                <span class="pl-era">Hoy · BiPlot</span>
-                <h3>La misma línea, por fin trazada con precisión</h3>
-                <p>Procesos diagnosticados de verdad, automatizados a la medida de cada cliente, con soporte real después de la entrega.</p>
-              </div>
-            </div>
-
-            <div class="pl-slide" data-slide="5">
-              <div class="pl-visual">
-                <div class="pl-era-box pl-era-final">
-                  <svg viewBox="0 0 300 120" aria-hidden="true">
-                    <path class="curve" d="M10 90 C 70 90, 90 30, 150 30 S 240 90, 290 20"/>
-                    <circle cx="290" cy="20" r="5" fill="#FF6B4A"/>
-                  </svg>
-                </div>
-              </div>
-              <div class="pl-copy">
-                <span class="pl-era">Tu turno</span>
-                <h3>Tu proceso es el próximo punto de esta curva</h3>
-                <p>Del papel al pixel, la línea nunca dejó de trazarse. Ahora te toca a ti agregar el siguiente punto.</p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-        <div class="pl-controls">
-          <div class="pl-dots" id="plDots"></div>
-          <a href="plotline.html" class="btn ghost pl-cta">Ver el recorrido completo</a>
-          <div class="pl-arrows">
-            <button id="plPrev" aria-label="Época anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
-            <button id="plNext" aria-label="Época siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
-          </div>
         </div>
       </div>
     </div>
@@ -1038,9 +1102,10 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
 
   <section id="contacto" aria-labelledby="contacto-h">
     <div class="wrap">
+      <svg class="contacto-linea reveal" viewBox="0 0 600 90" aria-hidden="true"><path pathLength="1" d="M4 80 C 90 80, 140 44, 230 50 S 380 84, 460 58 S 560 20, 586 14"/><circle class="cl-halo" cx="586" cy="14" r="13"/><circle cx="586" cy="14" r="7"/></svg>
       <span class="eyebrow">Hablemos</span>
       <h2 class="h-lg reveal" id="contacto-h">Agenda tu diagnóstico</h2>
-      <p class="lede reveal">Cuéntanos cómo trabaja tu equipo hoy. Nosotros te decimos qué se puede automatizar y cuánto tomaría.</p>
+      <p class="lede reveal">Tu proceso es el próximo punto de esta línea. Cuéntanos cómo trabaja tu equipo hoy; nosotros te decimos qué se puede automatizar y cuánto tomaría.</p>
       <div class="contact reveal">
         <div>
           <p style="color:var(--text-secondary);line-height:1.6">Una sesión corta, sin costo, para entender tu proceso. Si no hay algo real que automatizar, te lo decimos de frente.</p>

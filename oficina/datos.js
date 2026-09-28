@@ -153,7 +153,7 @@
     salas: {
       recepcion: { nombre: 'Recepción', sub: 'Plotty y la vitrina', etiqueta: 'Recepción',
         titulo: 'Pasa, esta es la oficina',
-        texto: 'Aquí te recibe Plotty. Tres preguntas y te dice por dónde partir. En la vitrina de al lado están los casos más cercanos a tu rubro.' },
+        texto: 'Aquí te recibe Plotty. Llega con tu libreta, la de las planillas a mano y el clip: tres preguntas y te dice por dónde partir. En la vitrina de al lado están los casos más cercanos a tu rubro.' },
       diagnostico: { nombre: 'Sala de diagnóstico', sub: 'Lupe · E1', etiqueta: 'Sala de diagnóstico · E1',
         titulo: 'Diez fases, un solo motor',
         texto: 'Todo proyecto pasa por el mismo motor. Primero entendemos tu negocio. Después elegimos lo justo. A veces la respuesta no es más software.' },
