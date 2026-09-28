@@ -8,6 +8,8 @@
 //   node oficina/_herramientas/exportar-kit.mjs --solo ficha-lupe,oficina,sala-haru
 //   node oficina/_herramientas/exportar-kit.mjs --capturas <carpeta>   → además, la oficina a 1920/1440/1366/375 px
 //     (el barrio, un local abierto con su vista previa, su sala, la calle, la oficina por dentro y una ficha)
+//   node oficina/_herramientas/exportar-kit.mjs --caras                 → sólo las caras del motor (E0 a E9) para el sitio,
+//     en WebP de 160 × 160 con fondo transparente, a assets/oficina/caras/
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -23,7 +25,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const IDS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'aby'];
 const PIEZAS = IDS.map((id) => 'ficha-' + id).concat(['oficina', 'elenco', 'motor', 'quien']);
-const FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630] };
+const FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630], cara: [160, 160] };
 // La sala de cada empresa: vista previa del enlace biplot.cl/oficina/<sala>; Haru 360, además, publicación e historia
 const SALAS = ['fundos', 'haru', 'eleven', 'nuhome', 'rumbo'], FORMATOS_SALA = { haru: ['og', '4x5', '9x16'] };
 let trabajos = [];
@@ -31,6 +33,9 @@ for (const p of PIEZAS) for (const f of ['4x5', '9x16']) trabajos.push([p, f]);
 trabajos.push(['oficina', 'og']);
 for (const id of SALAS) for (const f of FORMATOS_SALA[id] || ['og']) trabajos.push(['sala-' + id, f]);
 if (arg('solo')) { const s = arg('solo').split(','); trabajos = trabajos.filter(([p]) => s.includes(p)); }
+// Las caras del sitio: quienes llevan alguna fase del motor (Plotty y el equipo; Aby, la corresponsal, no lleva ninguna)
+const CARAS = process.argv.includes('--caras');
+if (CARAS) trabajos = ['plotty'].concat(IDS.filter((id) => id !== 'aby')).map((id) => ['cara-' + id, 'cara']);
 
 // Servidor estático mínimo
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml',
@@ -88,14 +93,17 @@ async function ir(url, w, h, movil, reducir) {
   await listo; cargada = null;
 }
 
-fs.mkdirSync(salida, { recursive: true });
+const carpetaCaras = path.join(raiz, 'assets', 'oficina', 'caras');
+fs.mkdirSync(CARAS ? carpetaCaras : salida, { recursive: true });
+// Fondo transparente para las caras (lo de afuera del círculo)
+if (CARAS) await cdp('Emulation.setDefaultBackgroundColorOverride', { color: { r: 0, g: 0, b: 0, a: 0 } });
 for (const [pieza, f] of trabajos) {
   const [w, h] = FORMATOS[f];
   await ir(`${base}/oficina/kit/?pieza=${pieza}&formato=${f}`, w, h, false, true);
   for (let i = 0; i < 60; i++) { if (await js('window.KIT_LISTO === true')) break; await sleep(250); }
   await sleep(300);
-  const c = await cdp('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width: w, height: h, scale: 1 } });
-  const archivo = path.join(salida, `${pieza}-${f}.png`);
+  const c = await cdp('Page.captureScreenshot', { format: CARAS ? 'webp' : 'png', ...(CARAS ? { quality: 90 } : {}), clip: { x: 0, y: 0, width: w, height: h, scale: 1 } });
+  const archivo = CARAS ? path.join(carpetaCaras, pieza.slice(5) + '.webp') : path.join(salida, `${pieza}-${f}.png`);
   fs.writeFileSync(archivo, Buffer.from(c.data, 'base64'));
   console.log('✓', path.relative(raiz, archivo), Math.round(fs.statSync(archivo).size / 1024) + ' KB');
 }

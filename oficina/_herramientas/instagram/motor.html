@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel «Así trabajamos» · BiPlot</title>
+<meta name="robots" content="noindex">
+<!-- Carrusel de Instagram (1080 × 1350, siete láminas): las diez fases del motor, de marca y sin personajes.
+     exportar-instagram.mjs --pieza motor fotografía cada .lamina en PNG. Un hilo cruza de lámina en lámina
+     (los nodos quedan a 540 px uno de otro también entre láminas), así que al deslizar se lee como una sola línea.
+     Los textos de las fases salen de datos.js (fases), en su versión de marca. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=block" rel="stylesheet">
+<style>
+  :root { --navy: #0E2A47; --cian: #17C3B2; --cian2: #7FD8CF; --niebla: #F2F4F7; --gris: #C4D2E0; --gris2: #8FA3B8; --coral: #FF6B4A;
+    --display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif; --mono: 'Space Mono', ui-monospace, monospace; --texto: Inter, 'Segoe UI', system-ui, sans-serif; }
+  html, body { margin: 0; background: #050F1C; }
+  .laminas { display: grid; gap: 40px; padding: 40px; justify-content: center; }
+  .lamina { position: relative; width: 1080px; height: 1350px; overflow: hidden; color: var(--niebla); font-family: var(--texto);
+    background: radial-gradient(120% 90% at 50% -5%, #17446F 0%, #0E2A47 52%, #091D33 100%); }
+  .lamina::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image: linear-gradient(rgba(23, 195, 178, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(23, 195, 178, .06) 1px, transparent 1px); background-size: 72px 72px; }
+  .lamina > * { position: absolute; margin: 0; }
+  .halo { width: 1100px; height: 1100px; right: -380px; top: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(23, 195, 178, .2) 0%, rgba(23, 195, 178, 0) 62%); }
+  .eyebrow { left: 80px; top: 84px; font: 600 24px/1 var(--display); letter-spacing: .34em; text-transform: uppercase; color: var(--cian); }
+  .contador { right: 80px; top: 84px; font: 700 22px/1 var(--mono); letter-spacing: .08em; color: var(--gris2); }
+  .titulo { left: 74px; top: 124px; width: 940px; font: 700 124px/1 var(--display); letter-spacing: -.04em; }
+  .titulo span { display: block; color: var(--cian); }
+
+  /* Portada: las diez fases de un vistazo */
+  .diez { left: 80px; right: 80px; top: 430px; list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: repeat(5, 86px); gap: 14px 24px; }
+  .diez li { display: flex; align-items: center; gap: 18px; padding: 0 20px; border-radius: 18px; background: rgba(20, 52, 90, .78); border: 1.5px solid rgba(53, 103, 154, .6); font: 600 32px/1.1 var(--display); }
+  .cod { font: 700 26px/1 var(--mono); color: var(--navy); background: var(--cian); border-radius: 10px; padding: 10px 12px; flex: none; }
+  .desliza { right: 300px; top: 1103px; font: 600 32px/1 var(--display); color: var(--gris); }
+
+  /* El hilo del motor, de lámina en lámina */
+  .hilo { top: 1116px; height: 6px; border-radius: 3px; background: var(--cian); box-shadow: 0 0 22px rgba(23, 195, 178, .55); }
+  .nodo { top: 1100px; width: 38px; height: 38px; margin-left: -19px; border-radius: 50%; background: var(--cian); box-shadow: 0 0 0 9px rgba(23, 195, 178, .18), 0 0 34px rgba(23, 195, 178, .75); }
+  .nodo.inicio { background: #0E2A47; border: 6px solid var(--cian); box-sizing: border-box; }
+  .nodo.fin { top: 1090px; width: 58px; height: 58px; margin-left: -29px; box-shadow: 0 0 0 12px rgba(23, 195, 178, .2), 0 0 50px rgba(23, 195, 178, .85); }
+  .nodo-cod { top: 1160px; font: 700 26px/1 var(--mono); color: var(--cian2); transform: translateX(-50%); }
+
+  /* Las fases, de a dos por lámina */
+  .fase { left: 80px; width: 920px; display: grid; gap: 16px; justify-items: start; }
+  .fase .cod { font-size: 44px; border-radius: 14px; padding: 12px 16px; }
+  .fase h2 { margin: 0; font: 700 88px/1 var(--display); letter-spacing: -.035em; }
+  .fase p { margin: 0; font: 500 40px/1.25 var(--display); color: var(--gris); max-width: 880px; }
+
+  /* Cierre */
+  .cierre { left: 74px; top: 124px; width: 930px; font: 700 96px/1.02 var(--display); letter-spacing: -.035em; text-wrap: balance; }
+  .cierre span { display: block; color: var(--cian); margin-top: 22px; }
+  .cta { left: 80px; top: 720px; background: var(--coral); color: var(--navy); font: 700 44px/1 var(--display); border-radius: 999px; padding: 28px 52px; box-shadow: 0 14px 34px rgba(255, 107, 74, .3); }
+  .cta-nota { left: 84px; top: 850px; font: 500 36px/1.3 var(--display); color: var(--gris); }
+
+  /* Pie con la marca */
+  .pie { left: 80px; right: 80px; bottom: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .marca { display: flex; align-items: center; gap: 14px; }
+  .marca svg { width: 56px; height: 56px; display: block; }
+  .wm { font: 700 40px/1 var(--display); letter-spacing: -.02em; }
+  .wm .bi { font-family: var(--mono); letter-spacing: -.06em; }
+  .wm .plot { color: var(--cian); }
+  .url { font: 600 30px/1 var(--display); color: #D5E2EE; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="bp-sq" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c426d"/><stop offset="1" stop-color="#0d2642"/></linearGradient>
+  <symbol id="iso" viewBox="0 0 100 100"></symbol>
+</defs></svg>
+<div class="laminas" id="laminas"></div>
+<script src="../../elenco.js"></script>
+<script>
+(function () {
+  'use strict';
+  // Las diez fases, en su versión de marca (datos.js dice «con Plotty» en E0; aquí el personaje todavía no llega)
+  var FASES = [
+    ['E0', 'Calificación', 'Tres preguntas y, si tiene sentido, la primera sesión sin costo.'],
+    ['E1', 'Diagnóstico', 'El proceso real, los dolores en horas y pesos, y la línea base.'],
+    ['E2', 'Camino', 'El mapa: qué ordenar, qué automatizar y qué construir, en ese orden.'],
+    ['E3', 'Datos', 'Los datos reales, cargados y revisados.'],
+    ['E4', 'Modelo y permisos', 'Quién ve qué y cómo se conectan los sistemas, validado contigo.'],
+    ['E5', 'Construcción', 'Rebanadas cortas que funcionan solas.'],
+    ['E6', 'Validación', 'Se prueba con uso real antes de aceptar.'],
+    ['E7', 'Puesta en marcha', 'Publicar, enseñar y acompañar.'],
+    ['E8', 'Medición', 'Día 30, 60 y 90, contra la línea base.'],
+    ['E9', 'Cosecha', 'Lo que sirve, guardado para el próximo proyecto.']
+  ];
+  var TOTAL = 7;
+  document.querySelector('#iso').innerHTML = window.Elenco.isotipo;
+  var PIE = '<div class="pie"><span class="marca"><svg viewBox="0 0 100 100"><use href="#iso"/></svg><span class="wm"><span class="bi">Bi</span><span class="plot">Plot</span></span></span><span class="url">biplot.cl</span></div>';
+  function lamina(n, cuerpo) {
+    return '<section class="lamina" data-n="' + n + '"><div class="halo"></div><p class="eyebrow">Así trabajamos</p><p class="contador">' + n + ' / ' + TOTAL + '</p>' + cuerpo + PIE + '</section>';
+  }
+  function hilo(x0, x1) { return '<div class="hilo" style="left:' + x0 + 'px;width:' + (x1 - x0) + 'px"></div>'; }
+  function nodo(x, cod, clase) { return '<div class="nodo' + (clase ? ' ' + clase : '') + '" style="left:' + x + 'px"></div>' + (cod ? '<p class="nodo-cod" style="left:' + x + 'px">' + cod + '</p>' : ''); }
+  var h = [];
+  // 1. Portada: el título, las diez de un vistazo y el hilo que parte hacia la derecha
+  h.push(lamina(1, '<h1 class="titulo">Diez fases.<span>Un solo motor.</span></h1>' +
+    '<ol class="diez">' + FASES.map(function (f) { return '<li><span class="cod">' + f[0] + '</span>' + f[1] + '</li>'; }).join('') + '</ol>' +
+    '<p class="desliza">Desliza →</p>' + hilo(810, 1080) + nodo(810, '', 'inicio')));
+  // 2 a 6: dos fases por lámina; el hilo cruza de borde a borde con un nodo por fase (a 270 y 810 px)
+  for (var i = 0; i < 5; i++) {
+    var a = FASES[i * 2], b = FASES[i * 2 + 1];
+    var bloque = function (f, top) { return '<div class="fase" style="top:' + top + 'px"><span class="cod">' + f[0] + '</span><h2>' + f[1] + '</h2><p>' + f[2] + '</p></div>'; };
+    h.push(lamina(i + 2, bloque(a, 250) + bloque(b, 700) + hilo(0, 1080) + nodo(270, a[0]) + nodo(810, b[0])));
+  }
+  // 7. Cierre: el hilo llega desde la izquierda y termina en el nodo grande
+  h.push(lamina(7, '<p class="cierre">Tú hablas con una persona del equipo.<span>El motor hace el resto.</span></p>' +
+    '<p class="cta">Agenda tu diagnóstico</p><p class="cta-nota">La primera sesión es sin costo.</p>' + hilo(0, 270) + nodo(270, '', 'fin')));
+  document.getElementById('laminas').innerHTML = h.join('');
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(function () {
+    return Promise.all(['700 100px "Space Grotesk"', '600 30px "Space Grotesk"', '500 30px "Space Grotesk"', '700 30px "Space Mono"'].map(function (f) { return document.fonts.load(f); }));
+  }).then(function () { document.documentElement.setAttribute('data-listo', '1'); });
+})();
+</script>
+</body>
+</html>

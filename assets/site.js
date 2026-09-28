@@ -61,6 +61,39 @@
     });
   }
 
+  /* ============ BiPlot HQ: la visita guiada con Plotty ============ */
+  // Vertical en pantallas angostas y horizontal en las demás; se descarga recién cuando la sección está a la vista,
+  // se reproduce muda mientras se ve (salvo con "reducir movimiento") y se pausa al salir.
+  (function initHQ() {
+    const frame = document.getElementById('hqFrame');
+    const vid = document.getElementById('hqVideo');
+    if (!frame || !vid) return;
+    const vertical = window.matchMedia('(max-width:700px)').matches;
+    const src = vertical ? frame.dataset.srcV : frame.dataset.srcH;
+    vid.poster = vertical ? frame.dataset.posterV : frame.dataset.posterH;
+    const expand = frame.querySelector('.js-openvid');
+    if (expand) expand.dataset.src = src;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let loaded = false;
+    const load = () => { if (!loaded) { vid.src = src; loaded = true; } };
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) { load(); if (!reduce || !vid.muted) vid.play().catch(() => {}); }
+        else { try { vid.pause(); } catch (e) {} }
+      });
+    }, { threshold: 0.35 }).observe(frame);
+    const sound = document.getElementById('hqSound');
+    if (sound) sound.addEventListener('click', () => {
+      load();
+      vid.muted = !vid.muted;
+      const on = !vid.muted;
+      sound.classList.toggle('on', on);
+      sound.setAttribute('aria-pressed', String(on));
+      sound.setAttribute('aria-label', on ? 'Silenciar la visita' : 'Activar sonido de la visita');
+      if (on) vid.play().catch(() => {});
+    });
+  })();
+
   /* ============ CONTACT FORM (WhatsApp) ============ */
   const WA_NUMBER = '56966275675';
   const form = document.getElementById('contactForm');

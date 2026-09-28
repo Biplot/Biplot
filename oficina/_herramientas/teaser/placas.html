@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Placas del teaser · La oficina de BiPlot</title>
+<meta name="robots" content="noindex">
+<!-- Los fondos del teaser: la oficina y su barrio dibujados por escena.js, quietos. exportar-teaser.mjs los fotografía
+     en grande (window.placa(nombre)) y el teaser los usa como imágenes, con su cámara. -->
+<link rel="stylesheet" href="../../oficina.css">
+<style>
+  html, body { margin: 0; background: #061525; overflow: hidden; }
+  #svg-escena { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; opacity: 1 !important; transition: none !important; }
+</style>
+</head>
+<body>
+<svg id="svg-escena" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+<script src="../../datos.js"></script>
+<script src="../../elenco.js"></script>
+<script src="../../barrio.js"></script>
+<script src="../../escena.js"></script>
+<script>
+  (function () {
+    'use strict';
+    var svg = document.getElementById('svg-escena');
+    var e = window.Escena.construir(svg, { animado: false, medios: '../../media/salas/' });
+    var L = e.limites, barrio = svg.querySelector('.barrio');
+    var paquete = svg.querySelector('#paquete'); if (paquete) paquete.classList.add('quieto');
+    // Cada placa: su encuadre (viewBox, en unidades del dibujo) y cómo está la oficina
+    var PLACAS = {
+      // El barrio de noche, con la oficina cerrada (y la misma toma con el techo abierto)
+      barrio: { vb: [L.x0, L.y0, L.x1 - L.x0, L.y1 - L.y0], abierta: false },
+      'barrio-abierto': { vb: [L.x0, L.y0, L.x1 - L.x0, L.y1 - L.y0], abierta: true, penumbra: 0.3 },
+      // La oficina por dentro: el fondo de cada personaje y del cierre
+      oficina: { vb: [-700, -200, 1530, 960], abierta: true, penumbra: 0.3 }
+    };
+    window.PLACAS = PLACAS;
+    window.placa = function (nombre) {
+      var p = PLACAS[nombre];
+      e.oficina(p.abierta, false, { penumbra: false });
+      if (barrio) barrio.style.opacity = p.penumbra ? String(p.penumbra) : '';
+      svg.setAttribute('viewBox', p.vb.join(' '));
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      return p.vb;
+    };
+    window.PLACAS_LISTAS = true;
+  })();
+</script>
+</body>
+</html>

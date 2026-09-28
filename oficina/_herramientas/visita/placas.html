@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Placas de la visita · La oficina de BiPlot</title>
+<meta name="robots" content="noindex">
+<!-- Los fondos de la visita guiada con Plotty: el barrio, la oficina por dentro, la calle de cerca (con un local abierto)
+     y la sala grande de algunas empresas, dibujados por escena.js y fotografiados en grande por exportar-teaser.mjs
+     (--video visita). Cada placa trae su resolución (px por unidad del dibujo): que ninguna pase de unos 18 megapíxeles,
+     porque en fotos más grandes Chrome deja partes sin pintar. Aby no sale en la visita. -->
+<link rel="stylesheet" href="../../oficina.css">
+<style>
+  html, body { margin: 0; background: #061525; overflow: hidden; }
+  #svg-escena, #svg-sala { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; opacity: 1 !important; transition: none !important; }
+  #svg-sala { display: none; background: #061525; }
+  .actor.aby, .pj-aby { display: none !important; }
+</style>
+</head>
+<body>
+<svg id="svg-escena" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+<svg id="svg-sala" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+<script src="../../datos.js"></script>
+<script src="../../elenco.js"></script>
+<script src="../../barrio.js"></script>
+<script src="../../locales.js"></script>
+<script src="../../salas.js"></script>
+<script src="../../escena.js"></script>
+<script>
+  (function () {
+    'use strict';
+    var MEDIOS = '../../media/salas/';
+    var svg = document.getElementById('svg-escena'), svgSala = document.getElementById('svg-sala');
+    var e = window.Escena.construir(svg, { animado: false, medios: MEDIOS });
+    var L = e.limites, barrio = svg.querySelector('.barrio');
+    var paquete = svg.querySelector('#paquete'); if (paquete) paquete.classList.add('quieto');
+    var P = window.Escena.P;
+    // Un recuadro (en unidades del dibujo) alrededor de un punto del mundo
+    function alrededor(x, y, z, ancho, alto, dx, dy) { var p = P(x, y, z); return [Math.round(p[0] - ancho / 2 + (dx || 0)), Math.round(p[1] - alto / 2 + (dy || 0)), ancho, alto]; }
+    var Z = {}; e.zonas.forEach(function (z) { Z[z.id] = z; });
+    var h = Z.haru.foco, li = Z.libre.foco;
+    var PLACAS = {
+      // El barrio de noche, cerrado y con el techo abierto
+      barrio: { vb: [L.x0, L.y0, L.x1 - L.x0, L.y1 - L.y0], abierta: false, px: 2.2 },
+      'barrio-abierto': { vb: [L.x0, L.y0, L.x1 - L.x0, L.y1 - L.y0], abierta: true, penumbra: 0.3, px: 2.2 },
+      // La oficina por dentro, para las paradas
+      oficina: { vb: [-760, -200, 1590, 1100], abierta: true, penumbra: 0.3, px: 3.2 },
+      // La calle principal de cerca: los locales con su nombre y su logo en el techo
+      calle: { vb: [-840, 250, 1560, 900], abierta: false, px: 3.2 },
+      // Haru 360 y el local libre, abiertos (sin techo, con su gente)
+      'calle-haru': { vb: alrededor(h[0], h[1], h[2], 560, 460, 0, -20), abierta: false, local: 'haru', px: 6 },
+      'calle-libre': { vb: alrededor(li[0], li[1], li[2], 560, 460, 0, -20), abierta: false, local: 'libre', px: 6 }
+    };
+    // Las salas grandes de las empresas (su dibujo, sin los puntos numerados)
+    ['haru', 'fundos', 'nuhome'].forEach(function (id) {
+      var S = window.Salas.salas[id]; if (!S) return;
+      var vb = S.vb.split(/[ ,]+/).map(Number);
+      PLACAS['sala-' + id] = { vb: vb, sala: id, px: Math.min(8, 3600 / vb[2]) };
+    });
+    window.PLACAS = PLACAS;
+    window.placa = function (nombre) {
+      var p = PLACAS[nombre];
+      if (p.sala) {
+        var S = window.Salas.salas[p.sala];
+        svg.style.display = 'none'; svgSala.style.display = 'block';
+        svgSala.setAttribute('viewBox', p.vb.join(' ')); svgSala.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svgSala.innerHTML = '<g class="quieto sin-pines">' + window.Escena.maquetaSvg(S, function (s) { return s.replace(/§M§/g, MEDIOS); }) + '</g>';
+        return p.vb;
+      }
+      svgSala.style.display = 'none'; svg.style.display = 'block';
+      e.cerrarLocal(false);
+      e.oficina(p.abierta, false, { penumbra: false });
+      // El local abierto: su interior de locales.js (el de la calle principal), quieto
+      if (p.local) { e.abrirLocal(p.local, window.Locales.principal[p.local], { pintar: function (s) { return s.replace(/§M§/g, MEDIOS); }, animar: false }); e.moverLocal(false); }
+      if (barrio) barrio.style.opacity = p.penumbra ? String(p.penumbra) : '';
+      svg.setAttribute('viewBox', p.vb.join(' '));
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      return p.vb;
+    };
+    window.ZONAS = e.zonas.map(function (z) { return { id: z.id, foco: z.foco }; });
+    window.PLACAS_LISTAS = true;
+  })();
+</script>
+</body>
+</html>

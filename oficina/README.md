@@ -221,6 +221,82 @@ Se regeneran con `node oficina/_herramientas/exportar-kit.mjs` (todas) o `--solo
 `--capturas <carpeta>` saca además la oficina a 1920, 1440, 1366 y 375 px (el barrio con la oficina cerrada, la vista
 previa de Haru, su sala, la calle al volver, la oficina por dentro y una ficha).
 
+**Las caras del sitio.** `node oficina/_herramientas/exportar-kit.mjs --caras` deja en `assets/oficina/caras/` la cara
+de cada integrante que lleva una fase del motor (Plotty y el equipo, sin Aby), en WebP de 160 × 160 con el círculo y el
+fondo transparente (la pieza `cara-<id>` del kit). El sitio principal las usa en «Cómo trabajamos» y en BiPlot HQ.
+
+**Carruseles de marca.** Las piezas de varias láminas viven en `_herramientas/instagram/`: una página por pieza, donde
+cada `.lamina` es una imagen de 1080 × 1350. Se exportan a PNG con
+`node oficina/_herramientas/exportar-instagram.mjs --pieza motor`, que las deja en `oficina/kit/instagram/<pieza>/` (o en
+`--salida <carpeta>`). `motor` es «Así trabajamos: diez fases, un solo motor», en siete láminas: es de marca, así que va
+sin personajes y con biplot.cl, y un hilo con un nodo por fase cruza de lámina en lámina al deslizar.
+
+## Teaser del equipo
+
+Un video de 85 segundos que presenta la oficina y a once de sus personajes, uno por uno, cada uno con su frase: Plotty,
+Lupe, The Architect, Atlas, Celda, The Engine, Grilla, Bucle, Tamandúa, Faro y Pepa. Abre con el problema (planillas,
+chats, tareas repetidas), muestra la oficina de noche que se abre, pasa por el motor de diez fases y el equipo completo,
+y cierra con la marca, biplot.cl/oficina y «Agenda tu diagnóstico». Sale en vertical (1080 × 1920, para reels e
+historias) y en horizontal (1920 × 1080), a 30 cuadros por segundo, con H.264 y AAC.
+
+Texto sugerido para la publicación: *Conoce al equipo de la oficina, del diagnóstico a la cosecha. Pasa:
+biplot.cl/oficina*
+
+Se genera con `node oficina/_herramientas/exportar-teaser.mjs` (necesita ffmpeg en el PATH, o `FFMPEG=<ruta>`), que
+deja `teaser-equipo-9x16.mp4` y `teaser-equipo-16x9.mp4` en `oficina/kit/video/` (entre 50 y 70 MB cada uno; no se
+suben al repo). Con `--formato 9x16` hace uno solo, `--cuadros 15.5,30` saca esos segundos en PNG para revisar, `--solo-audio`
+deja sólo el sonido y `--placas <carpeta>` guarda los fondos para reusarlos en la próxima pasada. Todo está en
+`_herramientas/teaser/`:
+
+- `guion.js`: los tiempos (a 100 pulsos por minuto), las frases de la intro y, por personaje, su placa, rol, frase,
+  color, su rincón de la oficina y su voz. La imagen y el sonido salen de este mismo guion, así que caen juntos.
+- `teaser.html` y `teaser.js`: el video, cuadro a cuadro (`?formato=16x9&t=30` muestra ese segundo en el navegador).
+- `placas.html`: los fondos, la oficina y su barrio dibujados por `escena.js` y fotografiados en grande.
+- `musica.mjs`: la música, los golpes y las voces (sílabas sin palabras, una por personaje), compuestos por código,
+  sin muestras ni librerías, y dejados a -14 LUFS con los picos reales bajo -1 dBTP (lo que piden las redes). Sus
+  instrumentos y su mezcla también los usa la visita guiada.
+
+## Visita guiada con Plotty
+
+Un video de 79 segundos en que Plotty recorre la oficina y sale a la calle. Adentro hace una parada por parte del
+trabajo: la recepción (E0), la sala de diagnóstico (E1), las estaciones de datos, diseño, desarrollo y pruebas (E3, E5 y
+E6), la puesta en marcha (E7), la mesa de dos (E2 y E4, sin decir quién está detrás) y el núcleo (E9). Afuera cuenta qué
+gana quien trabaja con BiPlot: su proyecto se muda al barrio con un local (su marca en el techo, sus productos a la
+vista), una sala por dentro (se ven las de Haru 360, Fundos 360 y Nu Home 360) y un enlace para mostrarla a sus propios
+clientes; y después de la entrega seguimos con ellos (soporte continuo, sistemas sanos y al día, medición a los 30, 60 y
+90 días). Cierra en el local libre («Tu proyecto aquí»), con BiPlot HQ, biplot.cl/oficina y «Agenda tu diagnóstico».
+Sale en los mismos dos formatos que el teaser.
+
+Texto sugerido para la publicación: *Plotty te muestra BiPlot HQ: cómo trabajamos por dentro y el barrio donde cada
+proyecto tiene su local. Y no nos vamos después de la entrega. Pasa: biplot.cl/oficina*
+
+Se genera con `node oficina/_herramientas/exportar-teaser.mjs --video visita` (con las mismas opciones del teaser), que
+deja `visita-plotty-9x16.mp4` y `visita-plotty-16x9.mp4` en `oficina/kit/video/`. Todo está en `_herramientas/visita/`:
+
+- `guion.js`: los tiempos (a 100 pulsos por minuto), cada parada con su punto de la oficina y lo que dice Plotty, los
+  momentos de la calle con sus títulos y las salas que se muestran.
+- `visita.html` y `visita.js`: el video, cuadro a cuadro, con una cámara que viaja por las fotos del barrio. Cada foto
+  lleva debajo el barrio entero, así en sus bordes sigue el dibujo.
+- `placas.html`: los fondos (el barrio cerrado y abierto, la oficina por dentro, la calle, los locales de Haru y el
+  libre abiertos, y tres salas), cada uno con su resolución y ninguno de más de unos 18 megapíxeles (en fotos más
+  grandes Chrome deja partes sin pintar).
+- `musica.mjs`: la música (en fa mayor, más cálida que la del teaser) y la voz de Plotty, con los instrumentos y la
+  mezcla de `teaser/musica.mjs`.
+
+El sitio principal la muestra en su sección BiPlot HQ, en una versión web más liviana (unos 11 MB cada una):
+`assets/oficina/visita-plotty-h.mp4` (1280 × 720) y `-v.mp4` (720 × 1280, para celulares), con sus pósters (el segundo
+4,3). Se sacan de los videos grabados, con un poco de filtro de ruido (el grano no se comprime bien):
+
+```bash
+ffmpeg -i visita-plotty-16x9.mp4 -vf "scale=1280:720:flags=lanczos,hqdn3d=3:2:5:4" -c:v libx264 -preset slow \
+  -b:v 1000k -maxrate 1800k -bufsize 3600k -pass 1 -an -f null /dev/null
+ffmpeg -i visita-plotty-16x9.mp4 -vf "scale=1280:720:flags=lanczos,hqdn3d=3:2:5:4" -c:v libx264 -preset slow \
+  -b:v 1000k -maxrate 1800k -bufsize 3600k -pass 2 -c:a aac -b:a 128k -movflags +faststart assets/oficina/visita-plotty-h.mp4
+ffmpeg -ss 4.3 -i visita-plotty-16x9.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 assets/oficina/visita-plotty-h.jpg
+```
+
+(y lo mismo con `visita-plotty-9x16.mp4` y `scale=720:1280` para `-v`).
+
 ## Conexión con el CRM
 
 La oficina queda lista para conectarse al CRM de BiPlot sin cambiar su código:
