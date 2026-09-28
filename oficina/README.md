@@ -44,7 +44,8 @@ se habla de integrantes, todos con placa y con el mismo trato.
 **La oficina.** Desde la calle se ve cerrada: el edificio con el isotipo y «BiPlot HQ» en el techo, ventanas encendidas y
 la puerta al fondo del pasaje. Se entra tocándola (o el pasaje), con «Entrar a la oficina» en la bienvenida y el menú, o
 con `#oficina`; se sale con «Salir a la calle», `Escape` o el botón atrás del navegador. Mientras está cerrada, su
-interior no se dibuja ni se anima. Adentro: la recepción con Plotty y la vitrina; el muro del equipo; las estaciones de Celda, Grilla, Bucle y
+interior no se dibuja ni se anima. Adentro: la recepción con Plotty, la vitrina y, sobre el mesón, la libreta del primer capítulo de «Seis décadas» (la hoja
+con renglones, la corrección en rojo, la línea a mano, el timbre y el clip: ahí empieza la línea); el muro del equipo; las estaciones de Celda, Grilla, Bucle y
 Tamandúa; el tubo "A producción" de Faro; la sala de diagnóstico con el motor en la pizarra; la estantería del núcleo
 (Pepa, los cuatro casos de referencia, el Recetario y "Seis décadas"); el café con el reloj en hora de Chile; y al fondo
 la **Sala de planos y máquinas** (The Architect y The Engine frente a frente en la mesa de dos, Atlas proyectando el

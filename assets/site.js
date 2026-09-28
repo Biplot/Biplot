@@ -19,6 +19,30 @@
     methodSteps.forEach(s => stepIO.observe(s));
   }
 
+  /* ============ METHOD: la curva del isotipo une los pasos (en escritorio) ============ */
+  (function initMethodCurve() {
+    const method = document.querySelector('.method');
+    const svg = method && method.querySelector('.method-curva');
+    if (!svg) return;
+    const path = svg.querySelector('path');
+    function draw() {
+      const r = method.getBoundingClientRect();
+      const pts = [...method.querySelectorAll('.method-step .dot')].map((d) => {
+        const b = d.getBoundingClientRect();
+        return [b.left + b.width / 2 - r.left, b.top + b.height / 2 - r.top];
+      });
+      svg.setAttribute('viewBox', `0 0 ${r.width.toFixed(1)} ${r.height.toFixed(1)}`);
+      path.setAttribute('d', pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' '));
+    }
+    draw();
+    window.addEventListener('resize', draw);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) { method.classList.add('in'); io.disconnect(); } });
+    }, { threshold: 0.3 });
+    io.observe(method);
+  })();
+
   /* ============ FAQ ACCORDION ============ */
   document.querySelectorAll('[data-faq]').forEach(item => {
     const btn = item.querySelector('.faq-q');

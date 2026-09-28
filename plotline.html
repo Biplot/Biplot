@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Plotline: cómo pensamos la automatización</title>
-<meta name="description" content="Un recorrido por seis décadas de cómo se ha visto un proceso de negocio, desde el papel hasta BiPlot. La misma línea, contada con herramientas distintas.">
+<meta name="description" content="Un recorrido por seis décadas de cómo se ha visto un proceso de negocio, desde el papel hasta la oficina de BiPlot. La misma línea, contada con herramientas distintas.">
 <meta name="theme-color" content="#0E2A47">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="BiPlot">
@@ -39,7 +39,7 @@
 html,body{overflow-x:hidden;overflow-x:clip}
 body{margin:0;background:#0b0c0a;color:#e8e6df;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
 img{max-width:100%;display:block}
-h1,h2,h3{margin:0;line-height:1.1}
+h1,h2,h3{margin:0;line-height:1.1;text-wrap:balance}
 p{margin:0}
 a{color:inherit}
 .skip-link{position:absolute;left:8px;top:-60px;background:var(--bp-cyan);color:#04211d;padding:10px 16px;border-radius:8px;z-index:999;transition:top .25s var(--ease);text-decoration:none;font-weight:600}
@@ -435,20 +435,16 @@ body{overflow:hidden}
 #ch4 .chapter-tag{color:var(--bp-cyan)}
 #ch4 h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(2rem,5vw,3.4rem);color:#fff}
 #ch4 .lede{margin-top:14px;color:#A9B7C6;font-size:1.02rem;line-height:1.6;max-width:60ch}
-/* cap the visual height so the whole chapter fits one screen (no vertical scroll) */
+/* el capítulo entero cabe en una pantalla (sin desplazarse) */
 #ch4.chapter{padding-top:82px;padding-bottom:100px}
-.biplot-visual{margin-top:clamp(12px,2vh,22px);border-radius:18px;overflow:hidden;border:1px solid rgba(23,195,178,.25);box-shadow:0 24px 60px rgba(0,0,0,.4);max-height:28vh}
-.biplot-visual img{width:100%;height:28vh;object-fit:cover;display:block}
-.ch4-grid{margin-top:clamp(16px,2.4vh,26px);display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.ch4-card{background:rgba(19,47,78,.6);border:1px solid rgba(23,195,178,.18);border-radius:14px;padding:16px 18px}
-.ch4-card b{font-family:'Space Grotesk',sans-serif;color:var(--bp-cyan);display:block;font-size:1.05rem}
-.ch4-card p{margin-top:6px;color:#A9B7C6;font-size:.88rem;line-height:1.45}
+@media (max-width:560px){#ch4.chapter{padding-top:112px}}
+#ch4 .lm{margin-top:clamp(14px,2.4vh,26px);--lm-foto:26vh}
 .ch4-cta{margin-top:clamp(16px,2.4vh,26px);display:flex;gap:14px;flex-wrap:wrap}
 .btn{font-family:'Inter',sans-serif;font-weight:600;font-size:.92rem;text-decoration:none;padding:14px 26px;border-radius:999px;display:inline-flex;transition:transform .3s var(--ease)}
 .btn:hover{transform:translateY(-3px)}
 .btn.primary{background:var(--bp-coral);color:#2b0f08}
 .btn.ghost{background:rgba(242,244,247,.08);color:#fff;border:1px solid rgba(242,244,247,.28)}
-@media (max-width:760px){.ch4-grid{grid-template-columns:1fr}}
+.btn.accent{background:var(--bp-cyan);color:#04211d}
 
 /* ============================================================
    CHAPTER 5 — TU PROCESO
@@ -457,10 +453,52 @@ body{overflow:hidden}
 #ch5 .chapter-tag{color:var(--bp-cyan);left:50%;transform:translateX(-50%);text-align:center}
 #ch5 h2{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4.4vw,2.8rem)}
 #ch5 .lede{margin:18px auto 0;color:#A9B7C6;max-width:52ch}
-#ch5 svg.final-curve{width:100%;max-width:640px;height:auto;margin:40px auto 0;display:block}
-.curve-draw{fill:none;stroke:var(--bp-cyan);stroke-width:3;stroke-dasharray:900;stroke-dashoffset:900;transition:stroke-dashoffset 1.6s var(--ease)}
-.curve-draw.in{stroke-dashoffset:0}
-#ch5 .final-cta{margin-top:36px}
+#ch5 .tu-local{margin:32px auto 0;max-width:760px}
+#ch5 .final-cta{margin-top:30px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* La línea del motor: las diez fases, cada una con quien la lleva, sobre la foto de la oficina */
+.lm{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(23,195,178,.25);background:#081a2e;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.lm-foto{position:relative;height:var(--lm-foto,24vh);min-height:130px}
+.lm-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block}
+.lm-foto::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,26,46,0) 35%,rgba(8,26,46,.92) 88%,#081a2e)}
+.lm-pista{position:relative;margin:-58px 34px 0;padding:52px 0 46px}
+.lm-via{position:relative;aspect-ratio:1000/60}
+.lm-via svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 6px rgba(23,195,178,.55))}
+.lm-trazo{fill:none;stroke:#17C3B2;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s cubic-bezier(.22,.9,.3,1) .2s}
+.lm.in .lm-trazo,.in .lm .lm-trazo,.pl-active .lm .lm-trazo{stroke-dashoffset:0}
+.lm-fases{list-style:none;margin:0;padding:0;position:absolute;inset:0}
+.lm-fases li{position:absolute;transform:translate(-50%,-47px);display:flex;flex-direction:column;align-items:center;text-align:center;width:88px}
+.lm-caras{display:flex;height:34px}
+.lm-caras img{width:34px;height:34px;display:block}
+.lm-caras img + img{margin-left:-12px}
+.lm-fases i{width:12px;height:12px;margin-top:7px;border-radius:50%;background:#17C3B2;box-shadow:0 0 0 3px #081a2e,0 0 12px rgba(23,195,178,.8)}
+.lm-fases b{margin-top:7px;font:700 .7rem/1 'JetBrains Mono',monospace;color:#17C3B2;letter-spacing:.04em}
+.lm-nom{margin-top:3px;font:500 .72rem/1.2 'Inter',sans-serif;color:#A9B7C6}
+.lm-fin{position:absolute;width:16px;height:16px;border-radius:50%;background:#FF6B4A;transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(255,107,74,.25),0 0 18px rgba(255,107,74,.7)}
+.lm-compacto .lm-foto{height:auto;aspect-ratio:2/1;min-height:0}
+.lm-compacto .lm-pista{margin:-44px 22px 0;padding:44px 0 26px}
+.lm-compacto .lm-nom{display:none}
+.lm-compacto .lm-fases li{transform:translate(-50%,-39px)}
+.lm-compacto .lm-caras,.lm-compacto .lm-caras img{height:26px;width:26px}
+.lm-compacto .lm-caras img + img{display:none}
+@media (max-width:700px){
+  .lm-pista{margin:-40px 16px 0;padding:42px 0 26px}
+  .lm-nom{display:none}
+  .lm-fases li{transform:translate(-50%,-37px)}
+  .lm-caras,.lm-caras img{height:24px;width:24px}
+  .lm-caras img + img{display:none}
+  .lm-fases i{width:9px;height:9px;margin-top:6px}
+  .lm-fases b{font-size:.58rem;margin-top:5px}
+}
+/* El local libre: la línea termina en su puerta, en el punto coral */
+.tu-local{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:1px solid rgba(23,195,178,.25);box-shadow:0 24px 60px rgba(0,0,0,.4);background:#081a2e}
+.tu-local img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.tu-local svg{position:absolute;inset:0;width:100%;height:100%}
+.tu-local .curve-draw{fill:none;stroke:#17C3B2;stroke-width:9;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;filter:drop-shadow(0 0 8px rgba(23,195,178,.7));transition:stroke-dashoffset 1.6s cubic-bezier(.22,.9,.3,1)}
+.tu-local.in .curve-draw,.in .tu-local .curve-draw,.pl-active .tu-local .curve-draw,.tu-local .curve-draw.in{stroke-dashoffset:0}
+.tl-halo{fill:rgba(255,107,74,.25);transform-box:fill-box;transform-origin:center;animation:tlHalo 2.2s ease-out infinite}
+@keyframes tlHalo{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){.lm-trazo,.tu-local .curve-draw{transition:none;stroke-dashoffset:0}.tl-halo{animation:none}}
 
 /* section reveal (used across chapters, simple + reversible) */
 .rv{opacity:0;transform:translateY(24px);transition:opacity .8s var(--ease), transform .8s var(--ease)}
@@ -516,7 +554,7 @@ body{overflow:hidden}
   <button data-goto="ch1" aria-label="Ir al capítulo 1, Terminal"><span class="lbl">1. Terminal</span></button>
   <button data-goto="ch2" aria-label="Ir al capítulo 2, El Enredo"><span class="lbl">2. El Enredo</span></button>
   <button data-goto="ch3" aria-label="Ir al capítulo 3, SaaS genérico"><span class="lbl">3. SaaS genérico</span></button>
-  <button data-goto="ch4" aria-label="Ir al capítulo 4, BiPlot hoy"><span class="lbl">4. BiPlot, hoy</span></button>
+  <button data-goto="ch4" aria-label="Ir al capítulo 4, BiPlot HQ hoy"><span class="lbl">4. BiPlot HQ, hoy</span></button>
   <button data-goto="ch5" aria-label="Ir al capítulo 5, Tu proceso"><span class="lbl">5. Tu proceso</span></button>
 </nav>
 
@@ -603,40 +641,57 @@ body{overflow:hidden}
     </div>
   </section>
 
-  <!-- CAPÍTULO 4 — BIPLOT, HOY -->
+  <!-- CAPÍTULO 4 — HOY, BIPLOT HQ: la misma línea entra a la oficina y pasa por las diez fases -->
   <section class="chapter" id="ch4" data-chapter="4">
-    <span class="chapter-tag">hoy · BiPlot</span>
+    <span class="chapter-tag">hoy · BiPlot HQ</span>
     <div class="chapter-inner">
-      <h2 class="rv">La misma línea, por fin trazada con precisión</h2>
-      <p class="lede rv">Después de cuatro décadas de ruido, esto es lo que construimos: procesos diagnosticados de verdad, automatizados a la medida de cada cliente, con alguien real respondiendo después de la entrega.</p>
-      <div class="biplot-visual rv">
-        <img src="assets/biplot-line.jpg" alt="La curva de datos de BiPlot, trazada con precisión" loading="lazy">
-      </div>
-      <div class="ch4-grid rv">
-        <div class="ch4-card"><b>Diagnóstico real</b><p>Leemos tu proceso actual antes de proponer nada, como en el capítulo 1, pero sin las cuatro décadas de espera.</p></div>
-        <div class="ch4-card"><b>Hecho a tu medida</b><p>Sin plantillas genéricas ni curva de aprendizaje forzada, como en el capítulo 3.</p></div>
-        <div class="ch4-card"><b>Soporte después</b><p>Seguimos ahí cuando tu proceso cambia, no solo el día del lanzamiento.</p></div>
+      <h2 class="rv">La misma línea, ahora con alguien a cargo de cada tramo</h2>
+      <p class="lede rv">Al software genérico le faltaban personas. En BiPlot HQ, tu proceso entra por la recepción y pasa por diez fases, y cada una la lleva alguien del equipo: del diagnóstico a la medición del día 90.</p>
+      <div class="lm rv">
+        <div class="lm-foto"><img src="assets/oficina/oficina-adentro.webp" alt="BiPlot HQ por dentro: el equipo trabajando, cada uno en su estación" loading="lazy"></div>
+        <div class="lm-pista">
+          <div class="lm-via">
+            <svg viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true"><polyline class="lm-trazo" pathLength="1" points="0,52 50,50 150,43 250,46 350,37 450,40 550,31 650,34 750,25 850,28 950,19 1000,7"/></svg>
+            <ol class="lm-fases" aria-label="Las diez fases del motor y quién lleva cada una">
+            <li style="left:5%;top:83.3%" title="E0 · Calificación: Plotty"><span class="lm-caras"><img src="assets/oficina/caras/plotty.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E0</b><span class="lm-nom">Calificación</span></li>
+            <li style="left:15%;top:71.7%" title="E1 · Diagnóstico: Lupe"><span class="lm-caras"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E1</b><span class="lm-nom">Diagnóstico</span></li>
+            <li style="left:25%;top:76.7%" title="E2 · Camino: The Architect"><span class="lm-caras"><img src="assets/oficina/caras/architect.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E2</b><span class="lm-nom">Camino</span></li>
+            <li style="left:35%;top:61.7%" title="E3 · Datos: Celda"><span class="lm-caras"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E3</b><span class="lm-nom">Datos</span></li>
+            <li style="left:45%;top:66.7%" title="E4 · Modelo y permisos: The Engine"><span class="lm-caras"><img src="assets/oficina/caras/engine.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E4</b><span class="lm-nom">Modelo y permisos</span></li>
+            <li style="left:55%;top:51.7%" title="E5 · Construcción: Grilla y Bucle"><span class="lm-caras"><img src="assets/oficina/caras/grilla.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/bucle.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E5</b><span class="lm-nom">Construcción</span></li>
+            <li style="left:65%;top:56.7%" title="E6 · Validación: Tamandúa"><span class="lm-caras"><img src="assets/oficina/caras/tamandua.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E6</b><span class="lm-nom">Validación</span></li>
+            <li style="left:75%;top:41.7%" title="E7 · Puesta en marcha: Faro"><span class="lm-caras"><img src="assets/oficina/caras/faro.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E7</b><span class="lm-nom">Puesta en marcha</span></li>
+            <li style="left:85%;top:46.7%" title="E8 · Medición: Lupe y Celda"><span class="lm-caras"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E8</b><span class="lm-nom">Medición</span></li>
+            <li style="left:95%;top:31.7%" title="E9 · Cosecha: Pepa"><span class="lm-caras"><img src="assets/oficina/caras/pepa.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E9</b><span class="lm-nom">Cosecha</span></li>
+            </ol>
+            <span class="lm-fin" style="left:100%;top:11.7%" aria-hidden="true"></span>
+          </div>
+        </div>
       </div>
       <div class="ch4-cta rv">
-        <a href="index.html" class="btn primary">Ver el sitio completo</a>
-        <a href="index.html#casos" class="btn ghost">Caso Fundos 360</a>
-        <a href="oficina/" class="btn ghost">Pasa a BiPlot HQ</a>
+        <a href="oficina/" class="btn accent">Pasa a BiPlot HQ</a>
+        <a href="index.html" class="btn ghost">Ver el sitio completo</a>
       </div>
     </div>
   </section>
 
-  <!-- CAPÍTULO 5 — TU PROCESO -->
+  <!-- CAPÍTULO 5 — TU TURNO: la línea termina en el local libre del barrio, en el punto coral -->
   <section class="chapter" id="ch5" data-chapter="5">
     <span class="chapter-tag">tu turno</span>
     <div class="chapter-inner">
       <h2 class="rv">Tu proceso es el próximo punto de esta línea</h2>
-      <p class="lede rv">Del papel al pixel, la línea nunca dejó de trazarse. Le tocó a la máquina de escribir, le tocó al cursor parpadeante, le tocó al neón, le tocó a las tarjetas azules. Ahora te toca a ti.</p>
-      <svg class="final-curve rv" viewBox="0 0 600 200" aria-hidden="true">
-        <path class="curve-draw" id="finalCurve" d="M20 160 C 150 160, 180 60, 300 60 S 480 160, 580 40"/>
-        <circle cx="580" cy="40" r="6" fill="#FF6B4A"/>
-      </svg>
+      <p class="lede rv">Del papel al pixel, la línea nunca dejó de trazarse. Le tocó a la máquina de escribir, al cursor parpadeante, al neón y a las tarjetas azules. Ahora te toca a ti: en el barrio de BiPlot HQ hay un local esperando tu proyecto.</p>
+      <div class="tu-local rv">
+        <img src="assets/oficina/local-libre.webp" alt="El local libre del barrio de BiPlot HQ, con el letrero «Tu proyecto aquí»" loading="lazy">
+        <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <path class="curve-draw" id="finalCurve" pathLength="900" d="M-20 884 C 150 884, 250 770, 380 806 S 528 808, 618 772"/>
+          <circle class="tl-halo" cx="618" cy="772" r="34"/>
+          <circle cx="618" cy="772" r="16" fill="#FF6B4A" stroke="#0B1726" stroke-width="5"/>
+        </svg>
+      </div>
       <div class="final-cta rv">
         <a href="index.html#contacto" class="btn primary">Agenda tu diagnóstico</a>
+        <a href="oficina/#conversar" class="btn ghost">Conversar con Plotty</a>
       </div>
     </div>
   </section>
