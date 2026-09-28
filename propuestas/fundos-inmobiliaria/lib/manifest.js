@@ -32,6 +32,20 @@
     // assets/video/portada.mp4 (H.264, 1920 px, menos de 8 MB) y, si se puede, una versión .webm.
     // Mientras esté vacío se muestra la ilustración animada. Con "ahorro de datos" o movimiento
     // reducido activos, tampoco se carga.
+    // Equipo comercial: una tarjeta y una ventana por persona (en el orden de la foto grupal).
+    // Completar "nombre" y "cargo"; "whatsapp" es opcional (si queda vacío se usa el número de contacto).
+    // "video" muestra un saludo en su ventana (MP4 + WebM de respaldo).
+    equipo: [
+      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-1.webp", whatsapp: "" },
+      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-2.webp", whatsapp: "" },
+      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-3.webp", whatsapp: "" },
+      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-4.webp", whatsapp: "",
+        video: { mp4: "assets/video/equipo-mensaje.mp4", webm: "assets/video/equipo-mensaje.webm", poster: "assets/video/equipo-mensaje.webp" } },
+      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-5.webp", whatsapp: "" },
+      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-6.webp", whatsapp: "" },
+      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-7.webp", whatsapp: "" }
+    ],
+
     videoPortada: { mp4: "", webm: "", poster: "" },
 
     // Monto de reserva por lote (dato de Fundos 360°)

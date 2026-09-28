@@ -26,10 +26,10 @@
 <link rel="preload" href="assets/fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/cormorant-garamond-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/mulish.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="styles.css?v=20260928a">
-<script defer src="lib/manifest.js?v=20260928a"></script>
-<script defer src="lib/planos.js?v=20260928a"></script>
-<script defer src="main.js?v=20260928a"></script>
+<link rel="stylesheet" href="styles.css?v=20260928c">
+<script defer src="lib/manifest.js?v=20260928c"></script>
+<script defer src="lib/planos.js?v=20260928c"></script>
+<script defer src="main.js?v=20260928c"></script>
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -903,26 +903,12 @@
           <figcaption>El equipo de Fundos Inmobiliaria</figcaption>
         </figure>
       </div>
-      <ul class="team-list">
-        <li class="member reveal">
-          <a class="member-media member-video" href="assets/video/equipo-mensaje.mp4" target="_blank" rel="noopener" data-video-file data-video-webm="assets/video/equipo-mensaje.webm" data-video-title="Un saludo del equipo Fundos" data-vertical>
-            <img class="member-photo" src="assets/video/equipo-mensaje.webp" alt="" width="720" height="1280" loading="lazy" decoding="async">
-            <span class="member-play" aria-hidden="true"><svg class="i"><use href="#i-play"/></svg></span>
-            <span class="sr-only">Ver el saludo del equipo en video (12 segundos, con sonido)</span>
-          </a>
-          <div class="member-body">
-            <h4>Un saludo del equipo</h4>
-            <p>Video · 12 segundos</p>
-          </div>
-        </li>
-        <li class="member reveal">
-          <img class="member-photo" src="assets/img/equipo-retrato.webp" alt="Integrante del equipo de Fundos Inmobiliaria junto a un árbol" width="720" height="758" loading="lazy" decoding="async">
-          <div class="member-body">
-            <h4>Equipo comercial</h4>
-            <p>Fundos Inmobiliaria</p>
-            <a class="member-wa" href="https://wa.me/56900000000" target="_blank" rel="noopener" data-wa data-wa-msg="Hola, quiero hablar con el equipo comercial de Fundos."><svg class="i" aria-hidden="true"><use href="#i-whatsapp"/></svg>Escribir</a>
-          </div>
-        </li>
+      <div class="sellers-head reveal">
+        <h4 class="sellers-title">Elige con quién <em>quieres hablar.</em></h4>
+        <p>Abre la ficha de cada persona para escribirle directo o agendar tu visita con ella.</p>
+      </div>
+      <!-- Una tarjeta por persona: se arman desde lib/manifest.js (equipo) -->
+      <ul class="sellers" data-sellers>
         <li class="member member-cta reveal">
           <span class="faces faces-cta" aria-hidden="true"><img src="assets/img/cara-1.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-2.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-3.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-4.webp" alt="" width="44" height="44" loading="lazy" decoding="async"></span>
           <h4>Conversemos <em>cuando te acomode.</em></h4>
@@ -1122,6 +1108,32 @@
   </div>
   <div class="vd-frame" data-vd-frame></div>
   <p class="vd-blocked" data-vd-blocked hidden>Esta vista previa no permite reproducir videos de otros sitios. <a href="#" target="_blank" rel="noopener" data-vd-link>Ver el video en una pestaña nueva</a></p>
+</dialog>
+
+<!-- Ficha de cada persona del equipo -->
+<dialog class="sdialog" id="asesor" aria-labelledby="sd-title" data-sdialog>
+  <button class="icon-btn sd-close" type="button" aria-label="Cerrar ficha" data-sd-close><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
+  <div class="sd-media" data-sd-media></div>
+  <div class="sd-body">
+    <p class="kicker">Equipo Fundos <span class="sd-count" data-sd-count></span></p>
+    <h2 id="sd-title" data-sd-title>Equipo comercial</h2>
+    <p class="sd-role" data-sd-role>Fundos Inmobiliaria</p>
+    <p class="sd-text">Te acompaña desde la primera visita hasta la inscripción en el Conservador: resuelve tus dudas, te muestra los lotes disponibles y te ayuda con la reserva.</p>
+    <ul class="ticks sd-list">
+      <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Visitas en terreno o por videollamada</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Elegir tu lote y simular el pago</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Reserva, documentos y escritura</li>
+    </ul>
+    <div class="sd-actions">
+      <a class="btn btn-gold" href="https://wa.me/56900000000" target="_blank" rel="noopener" data-sd-wa><svg class="i" aria-hidden="true"><use href="#i-whatsapp"/></svg>Escribir por WhatsApp</a>
+      <a class="btn btn-line" href="#visita" data-sd-visit><svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg>Agendar visita</a>
+    </div>
+    <nav class="sd-nav" aria-label="Otras personas del equipo">
+      <button class="icon-btn sd-arrow" type="button" data-sd-prev aria-label="Persona anterior"><svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <div class="sd-faces" data-sd-faces></div>
+      <button class="icon-btn sd-arrow" type="button" data-sd-next aria-label="Persona siguiente"><svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+    </nav>
+  </div>
 </dialog>
 
 <!-- Ficha de proyecto -->

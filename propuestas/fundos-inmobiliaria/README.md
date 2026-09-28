@@ -22,7 +22,7 @@ Sitio estático (HTML, CSS y JavaScript, sin build ni dependencias). Funciona ab
 | **Cómo comprar en 6 pasos** | El mismo embudo de Fundos 360° (reserva → validación → gastos → escritura → inscripción en el CBR), explicado sin letra chica. |
 | **Mi compra (Fundos 360°)** | Portal del comprador: avance de su compra, documentos y próximos hitos. Diferencia real frente a la competencia. |
 | **Simulador** | Contado o financiamiento, con reparto visual de la compra y envío de la simulación por WhatsApp. |
-| **Quiénes somos, valores y equipo** | Textos y valores del sitio actual, foto real del río y una sección de equipo con la foto grupal, un video de saludo (se abre en un visor vertical con sonido), un retrato y la invitación a agendar. Las caras del equipo acompañan también la agenda de visita, la ayuda del plano y la vista previa de "Mi compra". |
+| **Quiénes somos, valores y equipo** | Textos y valores del sitio actual, foto real del río y una sección de equipo con la foto grupal y **una tarjeta por persona**: cada una abre su ficha (ventana) con foto grande, qué hace por ti, WhatsApp y "Agendar visita", y flechas o caras para pasar a la siguiente. La ficha que tiene video muestra su saludo con sonido. Enlace directo a cada ficha: `#equipo-3`. Las caras del equipo acompañan también la agenda de visita, la ayuda del plano y la vista previa de "Mi compra". |
 | **Preguntas frecuentes** | Rol propio, construcción, reserva, gastos, plazos, financiamiento, visitas. |
 | **Agenda tu visita** | Formulario validado que abre WhatsApp con el mensaje listo: nombre, proyecto, fecha y horario. Desde "Reservar este lote" llega con la reserva a la vista ("Reserva: lote 18 de Malalcahuello") y el mensaje pide reservar ese lote. |
 
@@ -40,7 +40,7 @@ Todo lo editable está en `lib/manifest.js`.
 - [ ] **Destacados y cercanías:** las distancias se miden desde cada pueblo, no desde el proyecto. Reemplazar por los tiempos reales.
 - [ ] **Mi compra:** es un módulo nuevo que se propone sobre Fundos 360°. Hoy la sección lo muestra como vista previa.
 - [ ] **Fotos:** las ilustraciones son intencionales, pero se pueden sumar fotos de dron reales en la ficha de cada proyecto.
-- [ ] **Equipo:** las fotos y el video son del equipo real. Falta confirmar que todas las personas autorizan su uso en el sitio y, si se quiere, sumar nombre y cargo de cada una. El video no tiene subtítulos: conviene agregarlos (o enviarnos el texto) para quienes lo vean sin sonido.
+- [ ] **Equipo:** las fotos y el video son del equipo real y su uso está autorizado. Falta completar en `lib/manifest.js` (`equipo`) el **nombre y cargo** de cada persona (hoy dicen "Equipo comercial") y, si tienen, su WhatsApp propio; con nombre, el mensaje de WhatsApp y el botón "Agendar con…" se personalizan solos. El video no tiene subtítulos: conviene agregarlos (o enviarnos el texto) para quienes lo vean sin sonido.
 - [ ] **Videos:** la propuesta no incluye videos. El sitio ya está preparado: basta con subir el archivo o pegar el enlace (ver "Videos" más abajo).
 - [ ] **Concurso:** el sitio actual tiene una página de concurso; se puede sumar como banner o sección cuando esté definido.
 - [ ] **Al publicarlo en el dominio de Fundos:** quitar la etiqueta "Propuesta" del menú, quitar `noindex` y cambiar la URL de `og:image`.
