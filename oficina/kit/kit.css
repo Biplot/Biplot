@@ -92,6 +92,10 @@
 .k-caras li { width: 174px; display: grid; justify-items: center; gap: 12px; font: 600 24px/1.1 var(--bp-f-display); color: #D5E2EE; text-align: center; }
 .k-cara { display: block; width: 168px; height: 168px; border-radius: 50%; overflow: hidden; background: #17446F; border: 4px solid rgba(127, 216, 207, .45); }
 .k-cara svg { display: block; width: 100%; height: 100%; }
+/* La cara sola, para el sitio: el círculo llena la pieza y lo de afuera queda transparente */
+.f-cara { background: transparent; }
+.f-cara::before { display: none; }
+.f-cara .k-cara { left: 0; top: 0; width: 160px; height: 160px; }
 .k-caras .aby .k-cara { border-color: #17C3B2; box-shadow: 0 0 0 8px rgba(23, 195, 178, .18); }
 .k-caras .aby b { color: #17C3B2; }
 .p-quien .k-titulo { font-size: 128px; }

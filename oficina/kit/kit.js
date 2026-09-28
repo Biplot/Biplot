@@ -6,13 +6,15 @@
  * En redes el equipo va en ilustración (ilustraciones.js); el cabezón queda para la oficina y la credencial.
  * Las piezas «sala-<id>» muestran la sala de cada empresa (salas.js): la vista previa del enlace biplot.cl/oficina/<id>
  * (1200 × 630) y, para Haru 360, también la publicación y la historia.
+ * Las piezas «cara-<id>» (formato «cara», 160 × 160, fondo transparente) son la cara de cada integrante en su círculo:
+ * las usa el sitio principal (assets/oficina/caras/), y las exporta exportar-kit.mjs --caras.
  */
 (function () {
   'use strict';
 
   var D = window.OFICINA_DATOS, E = window.Elenco, I = window.Ilustraciones;
   var PERSONAL = {}; D.personal.concat(D.mascotas).forEach(function (p) { PERSONAL[p.id] = p; });
-  var FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630] };
+  var FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630], cara: [160, 160] };
   var PIEZAS = E.ids.map(function (id) { return 'ficha-' + id; }).concat(['oficina', 'elenco', 'motor', 'quien']);
   var PROY = {}; D.proyectos.forEach(function (p) { PROY[p.id] = p; });
   // Las salas con dibujo grande; cada una tiene su vista previa y Haru 360, además, publicación e historia
@@ -137,6 +139,7 @@
   }
 
   function contenido(pieza, f) {
+    if (pieza.indexOf('cara-') === 0) return '<span class="k-cara">' + ilustracion(pieza.slice(5), '', true) + '</span>';
     if (pieza.indexOf('sala-') === 0) return sala(pieza.slice(5), f);
     if (pieza.indexOf('ficha-') === 0) return ficha(pieza.slice(6), f);
     if (pieza === 'oficina') return oficina(f);
@@ -147,7 +150,7 @@
   }
   function montar(destino, pieza, f) {
     var tam = FORMATOS[f], div = document.createElement('div');
-    div.className = 'pieza f-' + f + ' p-' + pieza.replace(/^ficha-.*/, 'ficha').replace(/^sala-.*/, 'sala') + (pieza.indexOf('ficha-') === 0 ? ' pj-fondo-' + pieza.slice(6) : '');
+    div.className = 'pieza f-' + f + ' p-' + pieza.replace(/^ficha-.*/, 'ficha').replace(/^sala-.*/, 'sala').replace(/^cara-.*/, 'cara') + (pieza.indexOf('ficha-') === 0 ? ' pj-fondo-' + pieza.slice(6) : '');
     if (pieza.indexOf('sala-') === 0) div.style.setProperty('--acento', PROY[pieza.slice(5)].acento);
     div.style.width = tam[0] + 'px'; div.style.height = tam[1] + 'px';
     div.innerHTML = contenido(pieza, f);
@@ -167,6 +170,8 @@
   if (pieza && FORMATOS[formato]) {
     var lienzo = document.getElementById('lienzo');
     lienzo.hidden = false; document.body.classList.add('solo');
+    // La cara va sin fondo: sólo el círculo
+    if (formato === 'cara') { document.documentElement.style.background = 'transparent'; document.body.style.background = 'transparent'; }
     montar(lienzo, pieza, formato);
     var listo = function () { window.KIT_LISTO = true; document.documentElement.setAttribute('data-listo', '1'); };
     (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function () { setTimeout(listo, 350); });

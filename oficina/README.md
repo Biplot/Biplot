@@ -221,6 +221,10 @@ Se regeneran con `node oficina/_herramientas/exportar-kit.mjs` (todas) o `--solo
 `--capturas <carpeta>` saca además la oficina a 1920, 1440, 1366 y 375 px (el barrio con la oficina cerrada, la vista
 previa de Haru, su sala, la calle al volver, la oficina por dentro y una ficha).
 
+**Las caras del sitio.** `node oficina/_herramientas/exportar-kit.mjs --caras` deja en `assets/oficina/caras/` la cara
+de cada integrante que lleva una fase del motor (Plotty y el equipo, sin Aby), en WebP de 160 × 160 con el círculo y el
+fondo transparente (la pieza `cara-<id>` del kit). El sitio principal las usa en «Cómo trabajamos» y en BiPlot HQ.
+
 **Carruseles de marca.** Las piezas de varias láminas viven en `_herramientas/instagram/`: una página por pieza, donde
 cada `.lamina` es una imagen de 1080 × 1350. Se exportan a PNG con
 `node oficina/_herramientas/exportar-instagram.mjs --pieza motor`, que las deja en `oficina/kit/instagram/<pieza>/` (o en
@@ -278,6 +282,20 @@ deja `visita-plotty-9x16.mp4` y `visita-plotty-16x9.mp4` en `oficina/kit/video/`
   grandes Chrome deja partes sin pintar).
 - `musica.mjs`: la música (en fa mayor, más cálida que la del teaser) y la voz de Plotty, con los instrumentos y la
   mezcla de `teaser/musica.mjs`.
+
+El sitio principal la muestra en su sección BiPlot HQ, en una versión web más liviana (unos 11 MB cada una):
+`assets/oficina/visita-plotty-h.mp4` (1280 × 720) y `-v.mp4` (720 × 1280, para celulares), con sus pósters (el segundo
+4,3). Se sacan de los videos grabados, con un poco de filtro de ruido (el grano no se comprime bien):
+
+```bash
+ffmpeg -i visita-plotty-16x9.mp4 -vf "scale=1280:720:flags=lanczos,hqdn3d=3:2:5:4" -c:v libx264 -preset slow \
+  -b:v 1000k -maxrate 1800k -bufsize 3600k -pass 1 -an -f null /dev/null
+ffmpeg -i visita-plotty-16x9.mp4 -vf "scale=1280:720:flags=lanczos,hqdn3d=3:2:5:4" -c:v libx264 -preset slow \
+  -b:v 1000k -maxrate 1800k -bufsize 3600k -pass 2 -c:a aac -b:a 128k -movflags +faststart assets/oficina/visita-plotty-h.mp4
+ffmpeg -ss 4.3 -i visita-plotty-16x9.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 assets/oficina/visita-plotty-h.jpg
+```
+
+(y lo mismo con `visita-plotty-9x16.mp4` y `scale=720:1280` para `-v`).
 
 ## Conexión con el CRM
 
