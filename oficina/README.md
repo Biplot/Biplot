@@ -249,7 +249,35 @@ deja sólo el sonido y `--placas <carpeta>` guarda los fondos para reusarlos en 
 - `teaser.html` y `teaser.js`: el video, cuadro a cuadro (`?formato=16x9&t=30` muestra ese segundo en el navegador).
 - `placas.html`: los fondos, la oficina y su barrio dibujados por `escena.js` y fotografiados en grande.
 - `musica.mjs`: la música, los golpes y las voces (sílabas sin palabras, una por personaje), compuestos por código,
-  sin muestras ni librerías, y dejados a -14 LUFS con los picos reales bajo -1 dBTP (lo que piden las redes).
+  sin muestras ni librerías, y dejados a -14 LUFS con los picos reales bajo -1 dBTP (lo que piden las redes). Sus
+  instrumentos y su mezcla también los usa la visita guiada.
+
+## Visita guiada con Plotty
+
+Un video de 79 segundos en que Plotty recorre la oficina y sale a la calle. Adentro hace una parada por parte del
+trabajo: la recepción (E0), la sala de diagnóstico (E1), las estaciones de datos, diseño, desarrollo y pruebas (E3, E5 y
+E6), la puesta en marcha (E7), la mesa de dos (E2 y E4, sin decir quién está detrás) y el núcleo (E9). Afuera cuenta qué
+gana quien trabaja con BiPlot: su proyecto se muda al barrio con un local (su marca en el techo, sus productos a la
+vista), una sala por dentro (se ven las de Haru 360, Fundos 360 y Nu Home 360) y un enlace para mostrarla a sus propios
+clientes; y después de la entrega seguimos con ellos (soporte continuo, sistemas sanos y al día, medición a los 30, 60 y
+90 días). Cierra en el local libre («Tu proyecto aquí»), con BiPlot HQ, biplot.cl/oficina y «Agenda tu diagnóstico».
+Sale en los mismos dos formatos que el teaser.
+
+Texto sugerido para la publicación: *Plotty te muestra BiPlot HQ: cómo trabajamos por dentro y el barrio donde cada
+proyecto tiene su local. Y no nos vamos después de la entrega. Pasa: biplot.cl/oficina*
+
+Se genera con `node oficina/_herramientas/exportar-teaser.mjs --video visita` (con las mismas opciones del teaser), que
+deja `visita-plotty-9x16.mp4` y `visita-plotty-16x9.mp4` en `oficina/kit/video/`. Todo está en `_herramientas/visita/`:
+
+- `guion.js`: los tiempos (a 100 pulsos por minuto), cada parada con su punto de la oficina y lo que dice Plotty, los
+  momentos de la calle con sus títulos y las salas que se muestran.
+- `visita.html` y `visita.js`: el video, cuadro a cuadro, con una cámara que viaja por las fotos del barrio. Cada foto
+  lleva debajo el barrio entero, así en sus bordes sigue el dibujo.
+- `placas.html`: los fondos (el barrio cerrado y abierto, la oficina por dentro, la calle, los locales de Haru y el
+  libre abiertos, y tres salas), cada uno con su resolución y ninguno de más de unos 18 megapíxeles (en fotos más
+  grandes Chrome deja partes sin pintar).
+- `musica.mjs`: la música (en fa mayor, más cálida que la del teaser) y la voz de Plotty, con los instrumentos y la
+  mezcla de `teaser/musica.mjs`.
 
 ## Conexión con el CRM
 

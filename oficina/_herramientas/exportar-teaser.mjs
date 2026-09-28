@@ -1,14 +1,16 @@
 #!/usr/bin/env node
-// Graba el teaser del equipo (teaser/teaser.html) a MP4 con Edge o Chrome sin interfaz y ffmpeg. Sin dependencias de npm.
-//   1. Fotografía en grande los fondos: el barrio y la oficina dibujados por escena.js (teaser/placas.html).
-//   2. Compone la música y la voz de cada personaje (teaser/musica.mjs) desde el mismo guion (teaser/guion.js).
-//   3. Dibuja cada cuadro con TEASER.cuadro(t) a 30 cuadros por segundo y ffmpeg lo junta con el sonido.
+// Graba los videos de la oficina a MP4 con Edge o Chrome sin interfaz y ffmpeg. Sin dependencias de npm.
+// Cada video tiene su carpeta en _herramientas/: teaser/ (el teaser del equipo) y visita/ (la visita guiada con Plotty).
+//   1. Fotografía en grande los fondos dibujados por escena.js (<video>/placas.html; cada placa trae su resolución).
+//   2. Compone la música y las voces (<video>/musica.mjs) desde el mismo guion (<video>/guion.js).
+//   3. Dibuja cada cuadro con cuadro(t) de <video>/<video>.html a 30 cuadros por segundo y ffmpeg lo junta con el sonido.
 //
 // Uso (desde la raíz del repo biplot; ffmpeg en el PATH o FFMPEG=<ruta>, NAVEGADOR=<ruta> para otro Chromium):
 //   node oficina/_herramientas/exportar-teaser.mjs                       → oficina/kit/video/teaser-equipo-9x16.mp4 y -16x9.mp4
+//   node oficina/_herramientas/exportar-teaser.mjs --video visita        → oficina/kit/video/visita-plotty-9x16.mp4 y -16x9.mp4
 //   node oficina/_herramientas/exportar-teaser.mjs --formato 9x16 --salida <carpeta>
 //   node oficina/_herramientas/exportar-teaser.mjs --cuadros 1.2,15.5,30 --salida <carpeta>   → sólo esos cuadros, en PNG
-//   node oficina/_herramientas/exportar-teaser.mjs --solo-audio --salida <carpeta>            → sólo teaser-equipo.wav
+//   node oficina/_herramientas/exportar-teaser.mjs --solo-audio --salida <carpeta>            → sólo el sonido, en WAV
 //   --placas <carpeta> guarda ahí los fondos y los reusa en la próxima pasada (si no cambió la oficina)
 import fs from 'node:fs';
 import os from 'node:os';
@@ -26,16 +28,19 @@ const salida = path.resolve(arg('salida', path.join(raiz, 'oficina', 'kit', 'vid
 const FORMATOS = arg('formato', 'ambos') === 'ambos' ? ['9x16', '16x9'] : [arg('formato')];
 const FPS = Number(arg('fps', 30));
 const FFMPEG = process.env.FFMPEG || 'ffmpeg';
+const VIDEO = arg('video', 'teaser'), carpeta = path.join(aqui, VIDEO);
+const NOMBRE = { teaser: 'teaser-equipo', visita: 'visita-plotty' }[VIDEO] || VIDEO;
+if (!/^[a-z0-9-]+$/.test(VIDEO) || !fs.existsSync(path.join(carpeta, 'guion.js'))) { console.error('No existe el video', VIDEO); process.exit(2); }
 fs.mkdirSync(salida, { recursive: true });
 
-// El guion, el mismo que usa la página
-const ventana = {}; new Function('window', fs.readFileSync(path.join(aqui, 'teaser', 'guion.js'), 'utf8'))(ventana);
-const G = ventana.TEASER_GUION;
+// El guion, el mismo que usa la página (el objeto que trae la duración total)
+const ventana = {}; new Function('window', fs.readFileSync(path.join(carpeta, 'guion.js'), 'utf8'))(ventana);
+const G = Object.values(ventana).find((v) => v && typeof v === 'object' && v.total);
 
 // 2. El sonido primero (no necesita navegador)
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'teaser_'));
-const wav = path.join(bandera('solo-audio') ? salida : tmp, 'teaser-equipo.wav');
-const { componer, escribirWav } = await import(path.join(aqui, 'teaser', 'musica.mjs'));
+const wav = path.join(bandera('solo-audio') ? salida : tmp, NOMBRE + '.wav');
+const { componer, escribirWav } = await import(path.join(carpeta, 'musica.mjs'));
 if (!arg('cuadros')) {
   const t0 = Date.now();
   escribirWav(wav, componer(G));
@@ -98,12 +103,14 @@ async function foto(formato = 'jpeg') {
 
 try {
   // 1. Los fondos: el barrio (cerrado y abierto) y la oficina por dentro, en grande
-  if (!reusar) await ir(`${url}/oficina/_herramientas/teaser/placas.html`, 1600, 1000);
-  for (let i = 0; i < 80 && !(await js('!!window.PLACAS_LISTAS')); i++) await sleep(250);
+  if (!reusar) await ir(`${url}/oficina/_herramientas/${VIDEO}/placas.html`, 1600, 1000);
+  for (let i = 0; i < 80 && !reusar && !(await js('!!window.PLACAS_LISTAS')); i++) await sleep(250);
+  // Resolución de cada placa (px por unidad del dibujo): la que trae la placa, o la de siempre del teaser
   const PX = { barrio: 2.2, 'barrio-abierto': 2.2, oficina: 3.0 }, meta = {};
-  for (const nombre of reusar ? [] : Object.keys(PX)) {
+  for (const nombre of reusar ? [] : await js('Object.keys(window.PLACAS)')) {
     const vb = await js(`window.PLACAS[${JSON.stringify(nombre)}].vb`);
-    const w = Math.round(vb[2] * PX[nombre]), h = Math.round(vb[3] * PX[nombre]);
+    const px = (await js(`window.PLACAS[${JSON.stringify(nombre)}].px`)) || PX[nombre] || 2;
+    const w = Math.round(vb[2] * px), h = Math.round(vb[3] * px);
     await cdp('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });
     await js(`window.placa(${JSON.stringify(nombre)}), new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))`);
     await sleep(400);
@@ -116,17 +123,17 @@ try {
   // 3. Cada formato, cuadro a cuadro
   for (const formato of FORMATOS) {
     const [W, H] = formato === '16x9' ? [1920, 1080] : [1080, 1920];
-    await ir(`${url}/oficina/_herramientas/teaser/teaser.html?formato=${formato}`, W, H);
+    await ir(`${url}/oficina/_herramientas/${VIDEO}/${VIDEO}.html?formato=${formato}`, W, H);
     for (let i = 0; i < 120 && !(await js("document.documentElement.getAttribute('data-listo') === '1'")); i++) await sleep(250);
     if (arg('cuadros')) {
       for (const s of arg('cuadros').split(',').map(Number)) {
-        await js(`TEASER.cuadro(${s})`);
+        await js(`(window.VIDEO || window.TEASER).cuadro(${s})`);
         fs.writeFileSync(path.join(salida, `cuadro-${formato}-${s.toFixed(2)}.png`), await foto('png'));
       }
       console.log('✓ cuadros', formato);
       continue;
     }
-    const total = Math.ceil(G.total * FPS), mp4 = path.join(salida, `teaser-equipo-${formato}.mp4`);
+    const total = Math.ceil(G.total * FPS), mp4 = path.join(salida, `${NOMBRE}-${formato}.mp4`);
     const ff = spawn(FFMPEG, ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-i', '-', '-i', wav,
       // crf 22 con aq-mode 3 (cuida los degradados oscuros): ~6 Mbps, liviano para subir a redes, que igual lo recomprimen.
       // El AAC a 256 kbps deja los picos reales bajo -1 dBTP (a 192 kbps el códec los subía casi hasta 0)
@@ -135,7 +142,7 @@ try {
     const termino = new Promise((ok, mal) => { ff.on('close', (c) => (c === 0 ? ok() : mal(new Error('ffmpeg terminó con ' + c)))); ff.on('error', mal); });
     const t0 = Date.now();
     for (let n = 0; n < total; n++) {
-      await js(`TEASER.cuadro(${(n / FPS).toFixed(4)})`);
+      await js(`(window.VIDEO || window.TEASER).cuadro(${(n / FPS).toFixed(4)})`);
       const img = await foto('jpeg');
       if (!ff.stdin.write(img)) await new Promise((r) => ff.stdin.once('drain', r));
       if (n % 150 === 0) process.stdout.write(`  ${formato}: ${n}/${total} cuadros (${Math.round((Date.now() - t0) / 1000)} s)\r`);

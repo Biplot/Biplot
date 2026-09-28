@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Visita guiada con Plotty · La oficina de BiPlot</title>
+<meta name="robots" content="noindex">
+<!-- La visita guiada, cuadro a cuadro: visita.js dibuja el cuadro del segundo t con window.VIDEO.cuadro(t), sin
+     animaciones que dependan del reloj, y exportar-teaser.mjs --video visita lo graba a 30 cuadros por segundo con su
+     música. ?formato=9x16 (1080 × 1920) o ?formato=16x9 (1920 × 1080); ?t=12.3 muestra ese segundo. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=block" rel="stylesheet">
+<style>
+  :root { --navy: #0E2A47; --hondo: #040D18; --cian: #17C3B2; --cian2: #7FD8CF; --niebla: #F2F4F7; --gris: #C4D2E0; --coral: #FF6B4A; }
+  html, body { margin: 0; background: #000; }
+  body { overflow: hidden; }
+  #lienzo { position: relative; overflow: hidden; background: #061525; color: var(--niebla); font-family: Inter, 'Segoe UI', system-ui, sans-serif; }
+  #lienzo * { box-sizing: border-box; }
+  .capa { position: absolute; inset: 0; overflow: hidden; }
+  .plano { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform, opacity; max-width: none; }
+  .display { font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif; font-weight: 700; letter-spacing: -.02em; }
+
+  /* Lo que se lee sobre la imagen: velos arriba y abajo */
+  .velo-arriba { background: linear-gradient(to bottom, rgba(4, 13, 24, .88), rgba(4, 13, 24, .5) 55%, rgba(4, 13, 24, 0)); }
+  .velo-abajo { background: linear-gradient(to top, rgba(4, 13, 24, .9), rgba(4, 13, 24, .45) 55%, rgba(4, 13, 24, 0)); }
+  .velo-lado { background: linear-gradient(to right, rgba(4, 13, 24, .82), rgba(4, 13, 24, .35) 60%, rgba(4, 13, 24, 0)); }
+
+  /* El lugar de cada parada */
+  .lugar { position: absolute; display: grid; gap: 14px; justify-items: start; }
+  .lugar .placa { font-family: 'Space Mono', monospace; font-weight: 700; color: #0B1726; background: var(--cian); border-radius: 10px; padding: 5px 14px 6px; }
+  .lugar .nombre { font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: -.03em; line-height: 1; text-shadow: 0 6px 30px rgba(0, 0, 0, .5); }
+  .ceja { font-family: 'Space Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: .34em; color: var(--cian2); }
+
+  /* Los títulos de afuera: dos líneas, la segunda en cian */
+  .titulo { position: absolute; font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: -.035em; line-height: 1.02; text-shadow: 0 8px 40px rgba(0, 0, 0, .55); }
+  .titulo span { display: block; }
+  .titulo span + span { color: var(--cian); }
+
+  /* Plotty y su burbuja */
+  .plotty { position: absolute; transform-origin: 50% 60%; filter: drop-shadow(0 0 22px rgba(23, 195, 178, .55)) drop-shadow(0 18px 30px rgba(0, 0, 0, .45)); }
+  .plotty svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .burbuja { position: absolute; background: #F4F7FA; color: #0B1726; border-radius: 30px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; line-height: 1.22; box-shadow: 0 24px 60px rgba(0, 0, 0, .45); transform-origin: 6% 50%; }
+  .burbuja::after { content: ''; position: absolute; top: 50%; margin-top: -16px; left: -22px; border: 16px solid transparent; border-right: 26px solid #F4F7FA; border-left: 0; }
+  .burbuja .cursor { display: inline-block; width: .5em; height: .95em; margin-left: .06em; vertical-align: -.12em; background: var(--cian); }
+
+  /* Las salas, el teléfono y los puntos del acompañamiento */
+  .ficha-sala { position: absolute; display: flex; align-items: center; gap: 14px; background: rgba(14, 42, 71, .92); border: 2px solid rgba(127, 216, 207, .35); border-radius: 999px; padding: 12px 26px 12px 14px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; white-space: nowrap; box-shadow: 0 16px 40px rgba(0, 0, 0, .4); }
+  .ficha-sala i { width: 14px; height: 14px; border-radius: 50%; background: var(--cian); box-shadow: 0 0 14px rgba(23, 195, 178, .8); }
+  .ficha-sala em { font-style: normal; font-weight: 500; color: var(--gris); }
+  .telefono { position: absolute; border-radius: 54px; background: #0B1726; border: 3px solid #35679A; padding: 18px; box-shadow: 0 40px 90px rgba(0, 0, 0, .6), 0 0 0 10px rgba(23, 195, 178, .12); }
+  .telefono .pantalla { position: relative; width: 100%; height: 100%; border-radius: 38px; overflow: hidden; background: #061525; }
+  .telefono .barra { position: absolute; left: 0; right: 0; top: 0; display: flex; align-items: center; gap: 12px; padding: 18px 20px 14px; background: rgba(4, 13, 24, .92); font-family: 'Space Mono', monospace; font-weight: 700; color: var(--niebla); }
+  .telefono .barra b { color: var(--cian); font-weight: 700; }
+  .telefono .candado { width: 18px; height: 18px; border-radius: 4px; border: 3px solid var(--cian2); flex: none; }
+  .telefono .foto { position: absolute; left: 0; top: 0; transform-origin: 0 0; max-width: none; }
+  .telefono .pie-tel { position: absolute; left: 20px; right: 20px; bottom: 20px; display: flex; gap: 12px; white-space: nowrap; justify-content: space-between; align-items: center; background: rgba(4, 13, 24, .9); border-radius: 22px; padding: 16px 20px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+  .telefono .compartir { background: var(--cian); color: #0B1726; border-radius: 999px; padding: 10px 20px; }
+  .enlace { position: absolute; display: flex; align-items: center; gap: 16px; background: #F4F7FA; color: #0B1726; border-radius: 999px; padding: 12px 30px 12px 12px; font-family: 'Space Mono', monospace; font-weight: 700; white-space: nowrap; box-shadow: 0 20px 50px rgba(0, 0, 0, .5), 0 0 0 6px rgba(23, 195, 178, .25); }
+  .enlace b { color: #0E8F83; }
+  .enlace i { position: relative; flex: none; width: 1.3em; height: 1.3em; border-radius: 50%; background: var(--cian); }
+  .enlace i::before, .enlace i::after { content: ''; position: absolute; top: 50%; left: 50%; width: .42em; height: .24em; border: .075em solid #0B1726; border-radius: .14em; }
+  .enlace i::before { transform: translate(-82%, -38%) rotate(-45deg); }
+  .enlace i::after { transform: translate(-18%, -62%) rotate(-45deg); }
+  .punto { position: absolute; display: flex; align-items: center; gap: 18px; background: rgba(14, 42, 71, .94); border: 2px solid rgba(127, 216, 207, .3); border-radius: 22px; padding: 18px 26px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; white-space: nowrap; box-shadow: 0 16px 40px rgba(0, 0, 0, .4); }
+  .punto i { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--cian); position: relative; }
+  .punto i::after { content: ''; position: absolute; left: 11px; top: 7px; width: 9px; height: 15px; border-right: 4px solid #0B1726; border-bottom: 4px solid #0B1726; transform: rotate(40deg); }
+
+  /* El cierre */
+  .marca { display: flex; align-items: center; justify-content: center; }
+  .marca svg { display: block; }
+  .palabra { font-weight: 700; letter-spacing: -.02em; white-space: nowrap; line-height: 1; }
+  .palabra .bi { font-family: 'Space Mono', monospace; color: var(--niebla); letter-spacing: -.06em; }
+  .palabra .plot { font-family: 'Space Grotesk', sans-serif; color: var(--cian); }
+  .palabra .hq { font-family: 'Space Grotesk', sans-serif; color: #B9C8D8; letter-spacing: .08em; margin-left: .28em; }
+  .cta { display: inline-block; background: var(--coral); color: #0B1726; font-family: 'Space Grotesk', sans-serif; font-weight: 700; border-radius: 999px; }
+  .onda { position: absolute; border-radius: 50%; border: 4px solid var(--cian); }
+
+  /* Lo que va sobre todo */
+  #polvo, #grano { position: absolute; inset: 0; pointer-events: none; }
+  #grano { mix-blend-mode: overlay; opacity: .1; }
+  .vineta { background: radial-gradient(ellipse at 50% 45%, transparent 50%, rgba(0, 0, 0, .6) 100%); }
+  .destello { background: #fff; opacity: 0; }
+  .negro { background: #000; opacity: 0; }
+</style>
+</head>
+<body>
+<div id="lienzo"></div>
+<script src="../../datos.js"></script>
+<script src="../../elenco.js"></script>
+<script src="../../ilustraciones.js"></script>
+<script src="guion.js"></script>
+<script src="visita.js"></script>
+</body>
+</html>

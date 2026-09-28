@@ -10,14 +10,14 @@
 // componer(G) → { sr, L, R } (Float32Array); escribirWav(ruta, audio) lo guarda en WAV de 16 bits.
 import fs from 'node:fs';
 
-const SR = 48000, TAU = Math.PI * 2;
-const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
-function nota(n) { const m = n.match(/^([A-G])(b|#)?(-?\d)$/); return 12 * (Number(m[3]) + 1) + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] === 'b' ? -1 : m[2] === '#' ? 1 : 0); }
-function azar(semilla) { let a = semilla >>> 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-const muestras = (s) => Math.max(1, Math.ceil(s * SR));
+export const SR = 48000, TAU = Math.PI * 2;
+export const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+export function nota(n) { const m = n.match(/^([A-G])(b|#)?(-?\d)$/); return 12 * (Number(m[3]) + 1) + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] === 'b' ? -1 : m[2] === '#' ? 1 : 0); }
+export function azar(semilla) { let a = semilla >>> 0; return () => { a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+export const muestras = (s) => Math.max(1, Math.ceil(s * SR));
 
 // Filtro biquad (recetas de Robert Bristow-Johnson): lp, hp, bp y pico
-class Filtro {
+export class Filtro {
   constructor(tipo) { this.tipo = tipo; this.x1 = this.x2 = this.y1 = this.y2 = 0; }
   poner(f, q = 0.707, db = 0) {
     f = Math.min(Math.max(f, 16), SR * 0.45);
@@ -38,7 +38,7 @@ class Filtro {
 /* ───────── Los instrumentos: cada uno devuelve su sonido (mono, o { L, R }) ───────── */
 
 // Golpe grave: un seno que cae de tono, con un golpe de ruido
-function golpe(o = {}) {
+export function golpe(o = {}) {
   const d = o.dur || 2.2, n = muestras(d), b = new Float32Array(n), r = azar(o.semilla || 3), lp = new Filtro('lp').poner(o.corte || 160, 0.8);
   let fase = 0;
   for (let i = 0; i < n; i++) {
@@ -50,7 +50,7 @@ function golpe(o = {}) {
   return b;
 }
 // Braam: sierras desafinadas en quintas y octavas, con un filtro que se abre de golpe y se va cerrando, saturadas
-function braam(notas, o = {}) {
+export function braam(notas, o = {}) {
   const d = o.dur || 3.4, n = muestras(d), r = azar(o.semilla || 7), L = new Float32Array(n), R = new Float32Array(n);
   const voces = []; notas.forEach((m) => [-0.13, -0.04, 0.05, 0.14].forEach((det, j) => voces.push({ f: hz(m + det), fase: r(), lado: j % 2 })));
   const fl = [new Filtro('lp'), new Filtro('lp')], fr = [new Filtro('lp'), new Filtro('lp')], sub = hz(notas[0] - 12);
@@ -69,7 +69,7 @@ function braam(notas, o = {}) {
   return { L, R };
 }
 // Colchón: acorde de sierras suaves, con entrada y salida lentas (o «aah» de coro, con formantes)
-function colchon(notas, o = {}) {
+export function colchon(notas, o = {}) {
   const d = o.dur || 4.8, n = muestras(d), r = azar(o.semilla || 11), L = new Float32Array(n), R = new Float32Array(n);
   const voces = []; notas.forEach((m) => [-0.09, 0.09, -0.03, 0.03].forEach((det, j) => voces.push({ f: hz(m + det), fase: r(), lado: j % 2, vib: r() * 6 })));
   const lpL = new Filtro('lp').poner(o.corte || 900, 0.6), lpR = new Filtro('lp').poner((o.corte || 900) * 1.05, 0.6);
@@ -88,7 +88,7 @@ function colchon(notas, o = {}) {
   return { L, R };
 }
 // Subida: ruido con un filtro que sube, un tono que sube y el volumen que crece
-function subida(d, o = {}) {
+export function subida(d, o = {}) {
   const n = muestras(d), L = new Float32Array(n), R = new Float32Array(n), r = azar(o.semilla || 5), a = new Filtro('bp'), b = new Filtro('bp');
   let fase = 0;
   for (let i = 0; i < n; i++) {
@@ -101,7 +101,7 @@ function subida(d, o = {}) {
   return { L, R };
 }
 // Soplido: ruido que pasa de un lado al otro (antes de cada corte)
-function soplido(d = 0.55, o = {}) {
+export function soplido(d = 0.55, o = {}) {
   const n = muestras(d), L = new Float32Array(n), R = new Float32Array(n), r = azar(o.semilla || 9), f = new Filtro('bp');
   for (let i = 0; i < n; i++) {
     const u = i / n; if ((i & 31) === 0) f.poner(400 + 3200 * Math.sin(Math.PI * u) * u + 300 * u, 1.3);
@@ -111,44 +111,44 @@ function soplido(d = 0.55, o = {}) {
   return { L, R };
 }
 // Platillo (el golpe de arriba): ruido agudo con cola larga
-function platillo(d = 2.5, o = {}) {
+export function platillo(d = 2.5, o = {}) {
   const n = muestras(d), L = new Float32Array(n), R = new Float32Array(n), r = azar(o.semilla || 13), hl = new Filtro('hp').poner(3800, 0.7), hr = new Filtro('hp').poner(4100, 0.7);
   for (let i = 0; i < n; i++) { const t = i / SR, e = Math.exp(-t * (o.decae || 2.2)) * Math.min(1, t / 0.002); L[i] = hl.paso(r() * 2 - 1) * e * 0.7; R[i] = hr.paso(r() * 2 - 1) * e * 0.7; }
   return { L, R };
 }
 // Campana: parciales inarmónicos que se apagan
-function campana(f, o = {}) {
+export function campana(f, o = {}) {
   const d = o.dur || 2.2, n = muestras(d), b = new Float32Array(n), P = [[1, 1, 1.6], [2.76, 0.45, 2.6], [5.4, 0.22, 3.8], [8.93, 0.1, 5.5]];
   for (let i = 0; i < n; i++) { const t = i / SR; let s = 0; for (const p of P) s += Math.sin(TAU * f * p[0] * t) * p[1] * Math.exp(-t * p[2] * (o.corta ? 3 : 1)); b[i] = s * Math.min(1, t / 0.002) * 0.5; }
   return b;
 }
-function bombo() {
+export function bombo() {
   const n = muestras(0.5), b = new Float32Array(n), r = azar(17); let fase = 0;
   for (let i = 0; i < n; i++) { const t = i / SR, f = 44 + 120 * Math.exp(-t * 36); fase += TAU * f / SR; const click = t < 0.004 ? (r() * 2 - 1) * (1 - t / 0.004) * 0.6 : 0; b[i] = Math.tanh((Math.sin(fase) * Math.exp(-t * 7) + click) * 1.7); }
   return b;
 }
-function caja() {
+export function caja() {
   const n = muestras(0.35), b = new Float32Array(n), r = azar(19), bp = new Filtro('bp').poner(1900, 0.8), hp = new Filtro('hp').poner(700); let fase = 0;
   for (let i = 0; i < n; i++) { const t = i / SR; fase += TAU * (190 - 30 * t) / SR; b[i] = Math.tanh((Math.sin(fase) * Math.exp(-t * 18) * 0.7 + hp.paso(bp.paso(r() * 2 - 1)) * Math.exp(-t * 15) * 2.4) * 1.3); }
   return b;
 }
-function palmas() {
+export function palmas() {
   const n = muestras(0.4), b = new Float32Array(n), r = azar(23), bp = new Filtro('bp').poner(1250, 1.1);
   for (let i = 0; i < n; i++) { const t = i / SR, e = [0, 0.011, 0.023].reduce((a, o) => a + (t >= o ? Math.exp(-(t - o) * 90) : 0), 0) + (t > 0.023 ? Math.exp(-(t - 0.023) * 12) * 0.5 : 0); b[i] = bp.paso(r() * 2 - 1) * e * 2.2; }
   return b;
 }
-function hihat(abierto) {
+export function hihat(abierto) {
   const n = muestras(abierto ? 0.5 : 0.08), b = new Float32Array(n), r = azar(29), hp = new Filtro('hp').poner(7200, 0.8);
   for (let i = 0; i < n; i++) { const t = i / SR; b[i] = hp.paso(r() * 2 - 1) * Math.exp(-t * (abierto ? 7 : 55)) * 0.8; }
   return b;
 }
-function tambor(f0 = 110) {
+export function tambor(f0 = 110) {
   const n = muestras(0.9), b = new Float32Array(n), r = azar(31), lp = new Filtro('lp').poner(900); let fase = 0;
   for (let i = 0; i < n; i++) { const t = i / SR, f = f0 * (0.62 + 0.38 * Math.exp(-t * 16)); fase += TAU * f / SR; b[i] = Math.tanh((Math.sin(fase) * Math.exp(-t * 4.5) + lp.paso(r() * 2 - 1) * Math.exp(-t * 22) * 0.9) * 1.6); }
   return b;
 }
 // Bajo: dos sierras con el filtro que se cierra en cada nota
-function bajo(m, d) {
+export function bajo(m, d) {
   const n = muestras(d), b = new Float32Array(n), f = hz(m), lp = new Filtro('lp'); let a = 0, c = 0.37, s = 0;
   for (let i = 0; i < n; i++) {
     const t = i / SR; if ((i & 15) === 0) lp.poner(180 + 1100 * Math.exp(-t * 18), 1.4);
@@ -158,7 +158,7 @@ function bajo(m, d) {
   return b;
 }
 // Punteo del ostinato
-function punteo(m, d, brillo = 1) {
+export function punteo(m, d, brillo = 1) {
   const n = muestras(d), b = new Float32Array(n), f = hz(m), lp = new Filtro('lp'); let a = 0, q = 0;
   for (let i = 0; i < n; i++) {
     const t = i / SR; if ((i & 15) === 0) lp.poner(350 + 2600 * brillo * Math.exp(-t * 22), 2);
@@ -168,17 +168,17 @@ function punteo(m, d, brillo = 1) {
   return b;
 }
 // Destello: arpegio agudo de campanitas (el techo que se abre)
-function brillos(notas, paso) {
+export function brillos(notas, paso) {
   const d = notas.length * paso + 1.8, n = muestras(d), L = new Float32Array(n), R = new Float32Array(n);
   notas.forEach((m, k) => { const c = campana(hz(m), { dur: 1.6 }), i0 = Math.round(k * paso * SR), p = k % 2 ? 0.75 : 0.25; for (let i = 0; i < c.length && i0 + i < n; i++) { L[i0 + i] += c[i] * (1 - p) * 0.5; R[i0 + i] += c[i] * p * 0.5; } });
   return { L, R };
 }
 // Burbuja de chat: un «tin» corto
-function tin(f) { const n = muestras(0.12), b = new Float32Array(n); for (let i = 0; i < n; i++) { const t = i / SR; b[i] = (Math.sin(TAU * f * t) + Math.sin(TAU * f * 1.5 * t) * 0.3) * Math.exp(-t * 38) * Math.min(1, t / 0.002); } return b; }
+export function tin(f) { const n = muestras(0.12), b = new Float32Array(n); for (let i = 0; i < n; i++) { const t = i / SR; b[i] = (Math.sin(TAU * f * t) + Math.sin(TAU * f * 1.5 * t) * 0.3) * Math.exp(-t * 38) * Math.min(1, t / 0.002); } return b; }
 // Tic mecánico
-function tic() { const n = muestras(0.05), b = new Float32Array(n), r = azar(41), bp = new Filtro('bp').poner(3200, 3); for (let i = 0; i < n; i++) { const t = i / SR; b[i] = bp.paso(r() * 2 - 1) * Math.exp(-t * 120) * 3; } return b; }
+export function tic() { const n = muestras(0.05), b = new Float32Array(n), r = azar(41), bp = new Filtro('bp').poner(3200, 3); for (let i = 0; i < n; i++) { const t = i / SR; b[i] = bp.paso(r() * 2 - 1) * Math.exp(-t * 120) * 3; } return b; }
 // Zumbido que recorre el hilo del motor
-function zumbido(d) {
+export function zumbido(d) {
   const n = muestras(d), L = new Float32Array(n), R = new Float32Array(n), r = azar(43), bp = new Filtro('bp'); let fase = 0;
   for (let i = 0; i < n; i++) {
     const u = i / n; fase += TAU * (300 * Math.pow(8, u)) / SR; if ((i & 31) === 0) bp.poner(500 * Math.pow(10, u), 4);
@@ -188,12 +188,12 @@ function zumbido(d) {
   return { L, R };
 }
 // «Blup»: Plotty que aparece
-function blup() { const n = muestras(0.22), b = new Float32Array(n); let fase = 0; for (let i = 0; i < n; i++) { const t = i / SR; fase += TAU * (260 + 900 * Math.pow(t / 0.22, 0.6)) / SR; b[i] = Math.sin(fase) * Math.sin(Math.PI * t / 0.22) * 0.8; } return b; }
+export function blup() { const n = muestras(0.22), b = new Float32Array(n); let fase = 0; for (let i = 0; i < n; i++) { const t = i / SR; fase += TAU * (260 + 900 * Math.pow(t / 0.22, 0.6)) / SR; b[i] = Math.sin(fase) * Math.sin(Math.PI * t / 0.22) * 0.8; } return b; }
 
 /* ───────── La voz de cada personaje: sílabas balbuceadas con sus vocales ───────── */
-const FORMANTES = { a: [800, 1250, 2600], e: [430, 1950, 2600], i: [310, 2300, 3000], o: [480, 860, 2500], u: [340, 720, 2400] };
-const VOCAL = { a: 'a', á: 'a', e: 'e', é: 'e', i: 'i', í: 'i', o: 'o', ó: 'o', u: 'u', ú: 'u', ü: 'u' };
-function silaba(f0, vocal, d, timbre, r, subeFin) {
+export const FORMANTES = { a: [800, 1250, 2600], e: [430, 1950, 2600], i: [310, 2300, 3000], o: [480, 860, 2500], u: [340, 720, 2400] };
+export const VOCAL = { a: 'a', á: 'a', e: 'e', é: 'e', i: 'i', í: 'i', o: 'o', ó: 'o', u: 'u', ú: 'u', ü: 'u' };
+export function silaba(f0, vocal, d, timbre, r, subeFin) {
   const n = muestras(d), b = new Float32Array(n), F = FORMANTES[vocal], mueve = timbre === 'voz' || timbre === 'nasal' ? 1 : timbre === 'filtro' ? 0.92 : 1;
   const k = timbre === 'nasal' ? 1.12 : timbre === 'motor' ? 0.9 : 1;
   const f1 = new Filtro('bp').poner(F[0] * k * mueve, 3), f2 = new Filtro('bp').poner(F[1] * k * mueve, 4.5), f3 = new Filtro('bp').poner(F[2] * k, 6), nas = new Filtro('pk').poner(2400, 3, 9);
@@ -218,7 +218,7 @@ function silaba(f0, vocal, d, timbre, r, subeFin) {
   return b;
 }
 // Una línea hablada: una sílaba por grupo de vocales, al tiempo en que se escribe cada letra
-function hablar(linea, t0, letras, voz, semilla) {
+export function hablar(linea, t0, letras, voz, semilla) {
   const r = azar(semilla), eventos = [], txt = linea.toLowerCase();
   for (let c = 0; c < txt.length; c++) {
     const v = VOCAL[txt[c]];
@@ -239,7 +239,7 @@ function hablar(linea, t0, letras, voz, semilla) {
 }
 
 /* ───────── La sala (reverberación tipo Freeverb) ───────── */
-function sala(L, R, o = {}) {
+export function sala(L, R, o = {}) {
   const e = SR / 44100, CT = [1116, 1188, 1277, 1356, 1422, 1491, 1557, 1617], AT = [556, 441, 341, 225], abre = Math.round(23 * e);
   const tam = o.tam ?? 0.87, amort = o.amort ?? 0.32;
   function canal(x, extra) {
@@ -397,7 +397,15 @@ export function componer(G, opciones = {}) {
   hablar(G.remateLinea, G.remateHabla, G.remateLetras, G.EQUIPO[0].voz, 999).forEach((e) => poner(e.b, e.t, 1, 0, 0.15, V));
   poner(campana(hz(nota('C7')), { dur: 1.4 }), G.remateHabla + G.remateLinea.length / G.remateLetras + 0.45, 0.12, 0.2, 0.5);
 
-  /* Mezcla: la música se agacha cuando alguien habla; sala, un poco de saturación y el volumen final */
+  const salida = mezclar(M, V, S, n, G.total);
+  // Para revisar la mezcla: la música y las voces por separado
+  if (opciones.pistas) salida.pistas = { musica: M, voces: V };
+  return salida;
+}
+
+// La mezcla final (M: música, V: voces, S: envío a la sala, todos de n muestras): la música se agacha cuando alguien
+// habla; sala, un poco de saturación, -14 LUFS con los picos reales bajo -2,5 dBTP y un fundido al final
+export function mezclar(M, V, S, n, total) {
   const env = new Float32Array(n); let e = 0;
   for (let i = 0; i < n; i++) { const x = Math.abs(V.L[i]) + Math.abs(V.R[i]); e = x > e ? e + (x - e) * 0.02 : e * 0.99985; env[i] = e; }
   const rev = sala(S.L, S.R, { tam: 0.88, amort: 0.3 });
@@ -414,7 +422,7 @@ export function componer(G, opciones = {}) {
   }
   // El volumen: -14 LUFS, como piden las redes, y los picos reales bajo -2,5 dBTP para que el AAC tampoco pase de 0.
   // El limitador baja un poco la sonoridad, así que se mide de nuevo y se corrige (dos o tres vueltas)
-  const fin = muestras(G.total), fu = muestras(0.4), L0 = Float32Array.from(L), R0 = Float32Array.from(R);
+  const fin = muestras(total), fu = muestras(0.4), L0 = Float32Array.from(L), R0 = Float32Array.from(R);
   let ganancia = 1;
   for (let vuelta = 0; vuelta < 4; vuelta++) {
     const falta = SONORIDAD - sonoridad(L.subarray(0, fin), R.subarray(0, fin));
@@ -425,10 +433,7 @@ export function componer(G, opciones = {}) {
   }
   // Al final, un fundido corto para que no corte en seco
   for (let i = 0; i < n; i++) { const k = i < fin - fu ? 1 : Math.max(0, (fin - i) / fu); L[i] *= k; R[i] *= k; }
-  const salida = { sr: SR, L: L.subarray(0, fin), R: R.subarray(0, fin) };
-  // Para revisar la mezcla: la música y las voces por separado
-  if (opciones.pistas) salida.pistas = { musica: M, voces: V };
-  return salida;
+  return { sr: SR, L: L.subarray(0, fin), R: R.subarray(0, fin) };
 }
 
 /* ───────── El volumen final ───────── */
@@ -437,7 +442,7 @@ const SONORIDAD = -14, TECHO = Math.pow(10, -2.5 / 20);
 
 // Sonoridad integrada en LUFS (ITU-R BS.1770): ponderación K (sus coeficientes a 48 kHz), bloques de 400 ms cada
 // 100 ms y las compuertas de -70 LUFS y de 10 LU bajo el promedio
-function sonoridad(L, R) {
+export function sonoridad(L, R) {
   const paso = SR / 10, tramos = Math.floor(L.length / paso), cuad = new Float64Array(tramos + 1);
   for (const x of [L, R]) {
     const f1 = new Filtro().coef(1.53512485958697, -2.69169618940638, 1.19839281085285, -1.69065929318241, 0.73248077421585);
@@ -453,7 +458,7 @@ function sonoridad(L, R) {
 
 // Limitador de picos reales: busca los picos también entre muestras (interpola a ×4, como un medidor de picos reales),
 // baja el volumen desde 1,5 ms antes de cada uno para que llegue justo al techo y lo devuelve en unos 80 ms
-function limitar(L, R, techo) {
+export function limitar(L, R, techo) {
   const n = L.length, ANT = Math.round(SR * 0.0015), VUELTA = 1 - Math.exp(-1 / (SR * 0.08));
   // El interpolador: seno cardinal con ventana de Hann, 16 muestras, en 1/4, 2/4 y 3/4 del camino a la siguiente
   const fases = [0.25, 0.5, 0.75].map((f) => {
