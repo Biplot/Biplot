@@ -1397,7 +1397,7 @@
     var pr = (d.caso && salaDe(d.caso)) || propia.pr, pin = d.imagen && (pr.pines || []).filter(function (p) { return p[3] === d.imagen; })[0];
     return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre) + '</p><h3 id="sala-tarjeta-t" tabindex="-1">' + esc(d.titulo) + '</h3>' +
       (d.imagen ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : ''), 'data-ver-foto') +
-        '<figcaption>' + esc(pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo') + '</figcaption></figure>' : '') +
+        '<figcaption>' + esc(piePantalla(pr, d.imagen)) + '</figcaption></figure>' : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
       (d.fases ? htmlFases() : '') + (d.hitos ? htmlHitos(d.hitos) : '') + (d.fichero ? '<div class="tarjeta-fichero">' + htmlFichero('h4', true) + '</div>' : '') +
@@ -1517,6 +1517,11 @@
     var pin = img && (pr.pines || []).filter(function (p) { return p[3] === img; })[0];
     return pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : '');
   }
+  // (su pie: de qué sala y de qué módulo es, con datos de ejemplo)
+  function piePantalla(pr, img) {
+    var pin = img && (pr.pines || []).filter(function (p) { return p[3] === img; })[0];
+    return pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo';
+  }
   // (la imagen va siempre completa: un cartel chico no se agranda más de 3,2 veces y lo muy apaisado, como la línea de tiempo,
   // en celular trae además sus fechas en texto, debajo. Una pantalla real lleva su pie; los botones van antes de la lista de fases)
   // Los botones de la vitrina en 3D: girarla a un lado o al otro y pausar su giro (también se arrastra)
@@ -1533,7 +1538,7 @@
       : f.img ? '<img src="' + MEDIOS + esc(f.img) + '.webp" alt="' + esc(f.alt || altPantalla(pr, f.img)) + '" width="' + an + '" height="' + al + '">'
       : '<svg viewBox="0 0 ' + an + ' ' + al + '" role="img" aria-label="' + esc(d.nombre || nombre) + '">' + conMedios(f.svg) + '</svg>';
     var img = d.imagen && d.imagen !== f.img ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', altPantalla(pr, d.imagen), 'data-ver-foto') +
-      '<figcaption>' + esc(pr.nombre + ' · datos de ejemplo') + '</figcaption></figure>' : '';
+      '<figcaption>' + esc(piePantalla(pr, d.imagen)) + '</figcaption></figure>' : '';
     return '<div class="frente-velo" data-frente-cerrar></div>' + CERRAR_F +
       '<div class="frente-caja' + (prop > 3 ? ' ancha' : prop < 2 ? ' lado' : '') + (f.modelo ? ' con-mandos' : '') + '" style="--frente-prop:' + prop.toFixed(3) + ';--frente-max:' + Math.round(an * 3.2) + 'px' +
       (f.fondo ? ';--frente-fondo:' + esc(f.fondo) : '') + '">' +
