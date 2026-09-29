@@ -45,6 +45,14 @@ Todo lo editable está en `lib/manifest.js`.
 - [ ] **Concurso:** el sitio actual tiene una página de concurso; se puede sumar como banner o sección cuando esté definido.
 - [ ] **Al publicarlo en el dominio de Fundos:** quitar la etiqueta "Propuesta" del menú, quitar `noindex` y cambiar la URL de `og:image`.
 
+## Estado y próximos pasos
+
+Publicada en https://biplot.cl/propuestas/fundos-inmobiliaria/ (cada cambio entra por un pull request a `main`).
+
+- [ ] **Planos en SVG:** el cliente enviará los planos vectoriales de Malalcahuello y Puerto Varas (y después Marchigüe) para calcarlos exactos. Hoy la geometría sale de las imágenes de los masterplan, enderezada con `tools/enderezar_planos.py`. Al llegar: revisar que cada lote sea su propia forma (no una imagen incrustada), asociar cada forma a su número de lote y reemplazar la geometría de ese proyecto en `lib/planos.js`, manteniendo el formato `{d, l, r}`.
+- [ ] **Video de portada:** falta el archivo. Ver "Videos" más abajo (8 a 15 s, sin sonido, en bucle; versión vertical opcional).
+- [ ] **Cargos del equipo:** hoy todos dicen "Equipo comercial" en `lib/manifest.js` (`equipo`); falta el cargo y WhatsApp propio de cada persona, si los hay.
+
 ## Estructura
 
 ```
@@ -56,6 +64,7 @@ assets/img/       Isotipo (del manual, también en 174 px para el menú), logos 
 assets/fonts/     Cormorant Garamond y Mulish (woff2, latín)
 assets/video/     Videos propios: el saludo del equipo (MP4 + WebM de respaldo y su imagen) y, si se usan, portada y proyectos
 .htaccess         Caché para hosting Apache/Hostinger
+tools/            enderezar_planos.py: endereza la geometría de los planos (uso interno)
 ```
 
 ### Videos
