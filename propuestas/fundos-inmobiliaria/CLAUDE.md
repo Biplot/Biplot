@@ -63,7 +63,7 @@ Mínimo antes de publicar: `interacciones.js`, `plano.js`, `qa.js`, `anchos.js` 
   No suponer género ni cargos: hoy todos dicen "Equipo comercial" hasta tener los cargos reales.
 - Santo Domingo fuera de la propuesta. No bajar videos de internet: solo material propio del cliente.
 - Planos con líneas rectas como el masterplan. En computador la herramienta completa (proyectos, filtros, chips,
-  plano y leyenda en franja baja) cabe en la pantalla: el plano mide entre 380 y 560 px de alto (`layoutPlan`), el
+  plano y leyenda en franja baja) cabe en la pantalla: el plano mide entre 380 y 480 px de alto (`layoutPlan`), el
   detalle del lote toma el mismo alto (`--stage-h`) y los enlaces a `#plano` llevan directo a la herramienta.
   En celular el plano parte acercado (lotes tocables) con botón para ver completo.
 - Cotizador compacto: la cotización completa visible en computador; en celular, franja con la cuota bajo los controles.
