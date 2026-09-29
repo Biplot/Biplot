@@ -304,9 +304,21 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     return { t, img: img ? img.getAttribute('src') : '', cerrada: document.querySelector('#sala-tarjeta').hidden, sigue: document.body.classList.contains('en-sala-propia') && location.hash === '#nuhome' }; })()`);
   ok(esc2.t === 'Así se arma tu casa' && /media\/salas\/nuhome-5-fabricacion\.webp$/.test(esc2.img) && esc2.cerrada && esc2.sigue, 'con teclado, el taller abre su tarjeta con la carta Gantt real, y Escape la cierra sin salir de la sala');
   // La pantalla del diseñador se abre de frente con un clic, con la sala oscurecida detrás; un clic en lo oscuro la cierra
-  // (antes, la cámara termina de volver de la tarjeta del taller)
-  await js(`(async () => { const s = document.querySelector('.sala-svg'); let a = ''; for (let i = 0; i < 30; i++) { const b = s.getAttribute('viewBox'); if (b === a) break; a = b; await ${W(120)}; } return true; })()`);
-  await tocar(await js(`(() => { const r = document.querySelector('.zona-sala[data-zona="disenador"] polygon').getBoundingClientRect(); return [r.x + r.width / 2, r.y + r.height / 2]; })()`));
+  // (la cámara quedó donde la dejó el taller: con las flechas, la pantalla va hacia el centro hasta que un punto suyo se
+  // vea y se pueda tocar, no bajo el menú ni fuera de la pantalla)
+  const pd = await js(`(async () => { const p = document.querySelector('.zona-sala[data-zona="disenador"] polygon'), caja = document.querySelector('#sala-dibujo-caja');
+    const libre = () => { const m = p.getScreenCTM(), v = Array.from({ length: p.points.numberOfItems }, (_, i) => { const q = new DOMPoint(p.points.getItem(i).x, p.points.getItem(i).y).matrixTransform(m); return [q.x, q.y]; });
+      const c = [v.reduce((t, q) => t + q[0], 0) / v.length, v.reduce((t, q) => t + q[1], 0) / v.length];
+      for (const q of [c, ...v.map((w) => [c[0] + (w[0] - c[0]) * 0.4, c[1] + (w[1] - c[1]) * 0.4])]) { const el = document.elementFromPoint(q[0], q[1]); if (el && caja.contains(el)) return { q, c }; }
+      return { q: null, c }; };
+    caja.focus();
+    for (let k = 0; k < 24; k++) {
+      const l = libre(); if (l.q) return l.q;
+      const dx = l.c[0] - innerWidth / 2, dy = l.c[1] - innerHeight / 2;
+      caja.dispatchEvent(new KeyboardEvent('keydown', { key: Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'ArrowRight' : 'ArrowLeft') : (dy > 0 ? 'ArrowDown' : 'ArrowUp'), bubbles: true })); await ${W(40)};
+    }
+    return null; })()`);
+  if (pd) await tocar(pd);
   await sleep(400);
   const fd = await js(`(async () => { const f = document.querySelector('#sala-frente'), img = f.querySelector('.frente-marco img');
     if (img && !(img.complete && img.naturalWidth)) await new Promise((listo) => { img.onload = img.onerror = listo; setTimeout(listo, 4000); });
