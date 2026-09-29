@@ -2027,7 +2027,9 @@
 
   function initVideo() {
     // Portada: video de fondo sobre la foto del equipo (que queda como respaldo)
-    var hv = B.videoPortada || {}, hero = $("[data-hero]"), heroArt = hero && $(".hero-art", hero);
+    var hv = B.videoPortada || {}, hero = $("[data-hero]"), heroArt = hero && ($(".hero-photo", hero) || $(".hero-art", hero));
+    // En pantallas bajo 960 px se usa la versión para celular, si existe
+    if (!desktop.matches && (hv.mp4Movil || hv.webmMovil)) hv = { mp4: hv.mp4Movil, webm: hv.webmMovil, poster: hv.posterMovil || hv.poster };
     var conn = navigator.connection || {};
     // Sin video con ahorro de datos o conexiones más lentas que 4G
     var light = conn.saveData || (!!conn.effectiveType && conn.effectiveType !== "4g");
@@ -2048,7 +2050,7 @@
         hero.classList.add("has-video");
         if (toggle) toggle.hidden = false;
       });
-      heroArt.insertBefore(v, $(".hero-grain", heroArt));
+      heroArt.appendChild(v);
       var pr = v.play();
       if (pr && pr.catch) pr.catch(function () {});
       // Fuera de pantalla no se decodifica; al volver sigue, salvo que la persona lo haya pausado
@@ -2190,6 +2192,7 @@
     if (!list || !gente.length) return;
     var cta = $(".member-cta", list);
     var arrow = '<svg class="i i-go" aria-hidden="true"><use href="#i-arrow"/></svg>';
+    function corto(g) { return g.apodo || (g.nombre || "").split(" ")[0]; }
     function titulo(g) { return g.nombre || g.cargo || "Equipo comercial"; }
     function sub(g) { return g.nombre ? (g.cargo || "Equipo comercial") : "Fundos Inmobiliaria"; }
     gente.forEach(function (g, i) {
@@ -2206,6 +2209,7 @@
     var dlg = $("[data-sdialog]");
     if (!dlg || typeof dlg.showModal !== "function") return;
     var media = $("[data-sd-media]", dlg), faces = $("[data-sd-faces]", dlg), cur = 0;
+    var bio = $("[data-sd-bio]", dlg), bioBase = bio.innerHTML, ticks = $("[data-sd-list]", dlg);
     var el = { title: $("[data-sd-title]", dlg), role: $("[data-sd-role]", dlg), count: $("[data-sd-count]", dlg), wa: $("[data-sd-wa]", dlg), visit: $("[data-sd-visit]", dlg) };
     faces.innerHTML = gente.map(function (g, i) {
       return '<button type="button" class="sd-face" data-sd-go="' + i + '" aria-label="Ver la ficha de ' + esc(g.nombre || "la persona " + (i + 1) + " del equipo") + '"><img src="' + esc(g.foto) + '" alt="" width="40" height="40" loading="lazy" decoding="async"></button>';
@@ -2213,7 +2217,7 @@
 
     function waFor(g) {
       var num = (g.whatsapp || contacto.whatsapp || "").replace(/\D/g, "");
-      var txt = g.nombre ? "Hola " + g.nombre + ", vi tu ficha en el sitio de Fundos y quiero conversar sobre las parcelas."
+      var txt = g.nombre ? "Hola " + corto(g) + ", vi tu ficha en el sitio de Fundos y quiero conversar sobre las parcelas."
         : "Hola, vi la ficha del equipo comercial en el sitio de Fundos y quiero conversar sobre las parcelas.";
       return "https://wa.me/" + num + "?text=" + encodeURIComponent(txt);
     }
@@ -2240,10 +2244,15 @@
       photo(g);
       el.title.textContent = titulo(g);
       el.role.textContent = sub(g);
+      // Su presentación, con sus palabras; sin ella, el texto general del equipo
+      bio.innerHTML = g.bio && g.bio.length ? g.bio.map(function (t) { return "<p>" + esc(t) + "</p>"; }).join("") : bioBase;
+      bio.classList.toggle("is-own", !!(g.bio && g.bio.length));
+      ticks.hidden = !!(g.bio && g.bio.length);
+      bio.scrollTop = 0;
       el.count.textContent = "· " + (cur + 1) + " de " + gente.length;
       el.wa.href = waFor(g);
       el.visit.textContent = "";
-      el.visit.insertAdjacentHTML("beforeend", '<svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg>' + (g.nombre ? "Agendar con " + esc(g.nombre.split(" ")[0]) : "Agendar visita"));
+      el.visit.insertAdjacentHTML("beforeend", '<svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg>' + (g.nombre ? "Agendar con " + esc(corto(g)) : "Agendar visita"));
       $$(".sd-face", faces).forEach(function (b, k) { b.setAttribute("aria-current", k === cur ? "true" : "false"); });
       try { history.replaceState(null, "", "#equipo-" + (cur + 1)); } catch (e) { /* marco sin historial */ }
     }

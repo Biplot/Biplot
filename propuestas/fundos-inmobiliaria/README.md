@@ -40,7 +40,7 @@ Todo lo editable está en `lib/manifest.js`.
 - [ ] **Destacados y cercanías:** las distancias se miden desde cada pueblo, no desde el proyecto. Reemplazar por los tiempos reales.
 - [ ] **Mi compra:** es un módulo nuevo que se propone sobre Fundos 360°. Hoy la sección lo muestra como vista previa.
 - [ ] **Fotos:** las ilustraciones son intencionales, pero se pueden sumar fotos de dron reales en la ficha de cada proyecto.
-- [ ] **Equipo:** las fotos y el video son del equipo real y su uso está autorizado. Falta completar en `lib/manifest.js` (`equipo`) el **nombre y cargo** de cada persona (hoy dicen "Equipo comercial") y, si tienen, su WhatsApp propio; con nombre, el mensaje de WhatsApp y el botón "Agendar con…" se personalizan solos. El video no tiene subtítulos: conviene agregarlos (o enviarnos el texto) para quienes lo vean sin sonido.
+- [ ] **Equipo:** fotos, nombres y presentaciones del equipo real (uso autorizado), en `lib/manifest.js` (`equipo`). Falta, si se quiere: el cargo de cada persona (hoy "Equipo comercial"), su WhatsApp propio y un retrato individual de Diego (hoy es un recorte de la foto grupal). El video no tiene subtítulos: conviene agregarlos (o enviarnos el texto) para quienes lo vean sin sonido.
 - [ ] **Videos:** la propuesta no incluye videos. El sitio ya está preparado: basta con subir el archivo o pegar el enlace (ver "Videos" más abajo).
 - [ ] **Concurso:** el sitio actual tiene una página de concurso; se puede sumar como banner o sección cuando esté definido.
 - [ ] **Al publicarlo en el dominio de Fundos:** quitar la etiqueta "Propuesta" del menú, quitar `noindex` y cambiar la URL de `og:image`.
@@ -62,7 +62,7 @@ assets/video/     Videos propios: el saludo del equipo (MP4 + WebM de respaldo y
 
 Todo se configura en `lib/manifest.js`; si un campo queda vacío, no aparece nada.
 
-- **Video de portada (hero):** `videoPortada: { mp4: "assets/video/portada.mp4", webm: "", poster: "" }`. Debe ser un archivo propio (no YouTube): sin sonido, 10 a 20 segundos, H.264 a 1920 px y menos de 8 MB. Se reproduce en silencio y en bucle, con botón de pausa; no se carga con ahorro de datos, en conexiones más lentas que 4G ni con movimiento reducido; se pausa cuando sale de pantalla, y mientras carga se ve la foto del equipo.
+- **Video de portada (hero):** poner el archivo en `assets/video/` y escribir su ruta en `lib/manifest.js`: `videoPortada: { mp4: "assets/video/portada.mp4", webm: "assets/video/portada.webm", poster: "", mp4Movil: "assets/video/portada-movil.mp4", webmMovil: "" }`. El video ocupa el marco de la foto del equipo (a la derecha en computador, arriba en el celular) y la foto queda de respaldo mientras carga. Recomendado: 8 a 15 segundos que funcionen en bucle y sin sonido (se reproduce silenciado), sin texto encima, con lo importante al centro; H.264 de 1920 px y menos de 6 MB. La versión `Movil` (vertical, 1080 px de ancho) es opcional. No se carga con ahorro de datos, en conexiones más lentas que 4G ni con movimiento reducido, se pausa fuera de pantalla y tiene botón de pausa.
 - **Video de cada proyecto:** `video: "https://youtu.be/XXXXXXXXXXX"` (también `youtube.com/watch?v=…`, `shorts/…`, Vimeo o `assets/video/archivo.mp4`). Aparece el botón "Ver video" en la tarjeta y en la ficha, y se abre en un visor dentro de la página.
 - Para un video largo o con sonido, conviene YouTube o Vimeo: no consume el ancho de banda del hosting y se adapta a la conexión de cada persona.
 

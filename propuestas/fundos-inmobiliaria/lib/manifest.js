@@ -33,20 +33,29 @@
     // Mientras esté vacío se muestra la ilustración animada. Con "ahorro de datos" o movimiento
     // reducido activos, tampoco se carga.
     // Equipo comercial: una tarjeta y una ventana por persona (en el orden de la foto grupal).
-    // Completar "nombre" y "cargo"; "whatsapp" es opcional (si queda vacío se usa el número de contacto).
-    // "video" muestra un saludo en su ventana (MP4 + WebM de respaldo).
+    // "bio": párrafos de su presentación; "apodo": cómo saludarla en WhatsApp (si no, el primer nombre). "whatsapp" es opcional (si queda vacío se usa el número de contacto).
+    // "video" muestra un saludo en su ficha (MP4 + WebM de respaldo).
     equipo: [
-      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-1.webp", whatsapp: "" },
-      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-2.webp", whatsapp: "" },
-      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-3.webp", whatsapp: "" },
-      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-4.webp", whatsapp: "",
+      { nombre: "Maria del Mar Silva", apodo: "Mari", cargo: "Equipo comercial", foto: "assets/img/vendedor-1.webp", whatsapp: "",
+        bio: ["Hola, soy Mari 🌿", "Para mí, encontrar una parcela es mucho más que comprar un terreno. Es encontrar ese lugar donde construir un proyecto, compartir en familia o simplemente desconectarse y disfrutar. 🏡✨", "Me gusta escucharte, entender qué buscas y ayudarte a encontrar un lugar que realmente haga sentido para ti.", "Si estás pensando en tener tu lugar, conversemos. 🏔️💚"] },
+      { nombre: "Marjorie Castellón", cargo: "Equipo comercial", foto: "assets/img/vendedor-2.webp", whatsapp: "",
+        bio: ["¿Estás buscando la parcela de tus sueños? 🌿", "¡Llegaste al lugar indicado!", "Estoy aquí para ayudarte a encontrar el lugar que estás buscando, ya sea para invertir, construir o simplemente disfrutar de la naturaleza.", "¿Comenzamos? ✨"] },
+      { nombre: "Valentina Medina", cargo: "Equipo comercial", foto: "assets/img/vendedor-3.webp", whatsapp: "",
+        bio: ["Soy Valentina, asesora especializada en convertir sueños en oportunidades reales. Mi compromiso es brindarte una asesoría cercana, transparente y personalizada, acompañándote en cada etapa para que tomes decisiones con confianza y tranquilidad. Porque detrás de cada proyecto hay una meta importante, estaré encantada de apoyarte.", "¿Hablamos y damos juntos el siguiente paso?"] },
+      { nombre: "Jeanette Astudillo", cargo: "Equipo comercial", foto: "assets/img/vendedor-4.webp", whatsapp: "",
+        bio: ["Soy Jeanette, y me apasiona ayudar a las personas a encontrar su lugar ideal en la naturaleza.", "Te acompaño de forma cercana y transparente en cada etapa, para que tomes una decisión segura al elegir tu parcela.", "¡Conversemos y hagamos realidad tu próximo proyecto!"],
         video: { mp4: "assets/video/equipo-mensaje.mp4", webm: "assets/video/equipo-mensaje.webm", poster: "assets/video/equipo-mensaje.webp" } },
-      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-5.webp", whatsapp: "" },
-      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-6.webp", whatsapp: "" },
-      { nombre: "", cargo: "Equipo comercial", foto: "assets/img/vendedor-7.webp", whatsapp: "" }
+      { nombre: "Stefy Villalobos", cargo: "Equipo comercial", foto: "assets/img/vendedor-5.webp", whatsapp: "",
+        bio: ["Comprar una parcela es una decisión importante, y mi objetivo no es simplemente venderte un terreno, sino ayudarte a tomar una buena decisión para ti y tu familia.", "Me gusta conocer qué estás buscando, responder tus dudas con claridad y acompañarte durante todo el proceso, sin presiones y con información transparente. 🏡", "Si estás pensando en dar el paso hacia tu parcela, conversemos.", "📲 Escríbeme y cuéntame qué tienes en mente. Yo me encargo de orientarte."] },
+      { nombre: "Diego Navarrete", cargo: "Equipo comercial", foto: "assets/img/vendedor-6.webp", whatsapp: "",
+        bio: ["¿Cansado de cotizar parcelas y que ninguna sea la indicada?", "Buscar el terreno ideal puede ser frustrante: promesas que no se cumplen, precios ocultos o lugares que no se adaptan a lo que realmente sueñas. ¡No tienes que pasar por eso solo!", "Te puedo ayudar a encontrar lo que deseas.", "Mi objetivo no es solo venderte, sino escucharte, entender lo que buscas y brindarte el asesoramiento transparente que necesitas.", "Escríbeme hoy mismo y encontremos juntos tu próximo refugio o inversión."] },
+      { nombre: "Geonela Roeder", cargo: "Equipo comercial", foto: "assets/img/vendedor-7.webp", whatsapp: "",
+        bio: ["Hola, soy Geonela Roeder, asesora de Fundos Inmobiliaria. Quiero acompañarte en cada paso para que encuentres la parcela que realmente se ajuste a ti, con la información y orientación necesarias para tomar una decisión segura, informada e inteligente. Porque no se trata solo de comprar un terreno, sino de elegir bien dónde construir tus próximos sueños."] }
     ],
 
-    videoPortada: { mp4: "", webm: "", poster: "" },
+    // Video de portada (sin sonido, en bucle). Ocupa el marco de la foto del equipo, que queda de respaldo.
+    // mp4/webm: versión horizontal o cuadrada; mp4Movil/webmMovil: versión vertical para celular (opcional).
+    videoPortada: { mp4: "", webm: "", poster: "", mp4Movil: "", webmMovil: "", posterMovil: "" },
 
     // Monto de reserva por lote (dato de Fundos 360°)
     reserva: 1000000,
