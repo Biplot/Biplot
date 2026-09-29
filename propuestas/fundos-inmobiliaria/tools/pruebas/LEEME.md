@@ -24,5 +24,7 @@ Se corren desde una carpeta temporal porque guardan capturas (`ux/*.png`). Cada 
 | `equipo.js` | Tarjetas y ficha de cada persona, video del saludo, "Agendar con…", enlace `#equipo-6` |
 | `plano-en-pantalla.js` | Alto del plano + chips en distintas pantallas (debe terminar dentro del alto visible) |
 | `cotizador.js` | Alto del cotizador en contado y financiamiento |
+| `pestanas.js` | "Todo sobre tu compra": pestañas, teclado, enlaces `#simulador`/`#portal`/`#preguntas`, indicador de sección, carruseles |
+| `largo.js` | Largo de la página en pantallas, total y por sección (computador y celular) |
 
 Nota: el Chromium de pruebas no reproduce H.264, por eso los videos del sitio llevan también WebM.

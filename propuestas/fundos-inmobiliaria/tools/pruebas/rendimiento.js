@@ -44,7 +44,7 @@ const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate
   await d.evaluate(() => document.querySelector('.tour-pick[aria-current="true"]').click()); await d.waitForTimeout(1500);
   out.tourSame = await d.evaluate(() => { const f = document.querySelector(".tour-stage iframe"); return f ? f.dataset.mark === "1" : "no-iframe"; }) + " (had " + f1 + ")";
   out.liveAnims = await d.evaluate(() => document.getAnimations().filter(a => a.playState === "running" && a.effect && a.effect.target && a.effect.target.closest && a.effect.target.closest(".tour-stage")).map(a => a.animationName));
-  out.idleAnims = await d.evaluate(() => { window.scrollTo(0, document.getElementById("preguntas").offsetTop); return new Promise(r => setTimeout(() => r(document.getAnimations().filter(a => a.playState === "running").map(a => a.animationName)), 600)); });
+  out.idleAnims = await d.evaluate(() => { window.scrollTo(0, document.getElementById("tu-compra").offsetTop); return new Promise(r => setTimeout(() => r(document.getAnimations().filter(a => a.playState === "running").map(a => a.animationName)), 600)); });
   await ctx.close();
   // sin JavaScript
   const nj = await (await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false })).newPage();

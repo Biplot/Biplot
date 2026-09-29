@@ -22,7 +22,7 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
 
 ## Estructura y datos
 - `index.html` todo el contenido (se lee sin JS) · `styles.css` tokens del manual + estilos · `main.js` módulos IIFE
-  (`initPlan`, `initTour`, `initSim`, `initVisit`, `initSellers`, `initVideo`, …) aislados con `safe()`.
+  (`initPlan`, `initTour`, `initSim`, `initVisit`, `initSellers`, `initVideo`, `initCompra`, …) aislados con `safe()`.
 - `lib/manifest.js` **único lugar de datos**: contacto, proyectos, lotes (`[n, categoría, estado]`), categorías de
   precio (color, precio, precio lista), financiamiento, `equipo` (nombre, apodo, cargo, foto, bio, whatsapp, video)
   y `videoPortada` (mp4/webm y versión `Movil`). Precios y contacto son de ejemplo (placeholder `+56 9 0000 0000`).
@@ -65,3 +65,7 @@ Mínimo antes de publicar: `interacciones.js`, `plano.js`, `qa.js`, `anchos.js` 
 - Planos con líneas rectas como el masterplan; en computador, chips de precio + plano completo caben en pantalla;
   en celular el plano parte acercado (lotes tocables) con botón para ver completo.
 - Cotizador compacto: la cotización completa visible en computador; en celular, franja con la cuota bajo los controles.
+- Página corta por secciones (el cliente sintió que tanto scroll cansa): Cómo comprar, Simulador, Preguntas y Mi compra
+  van como pestañas en `#tu-compra` (`initCompra`; los enlaces a esos `#id` abren su pestaña); Nosotros compacto con
+  valores cortos y el equipo en carrusel; proyectos en carrusel en celular; indicador de sección (`[data-nav-where]`)
+  y barra de avance (`--avance` en `.nav`). Medir el largo con `tools/pruebas/largo.js` si se agregan secciones.
