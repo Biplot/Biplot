@@ -11,6 +11,8 @@
   var TELEFONO = '56966275675';
   var WHATSAPP = 'https://wa.me/' + TELEFONO + '?text=' +
     encodeURIComponent('Hola BiPlot, vengo de la oficina virtual y quiero agendar un diagnóstico.');
+  // El cotizador de Nu Home 360: el enlace de su local y el «Diseñar la mía» de su sala
+  var COTIZADOR_NUHOME = 'https://nuhome-crm-nu.vercel.app/cotizador';
 
   window.OFICINA_DATOS = {
     version: '2026-09-26',
@@ -194,6 +196,7 @@
        calle de su rubro, con una plantilla. `media` usa los teasers del sitio. `pines`: un punto por módulo en la sala,
        [módulo, título, detalle, pantalla en media/salas/ o null]. `medicion` dice en qué va la medición (sin cifras
        hasta que se midan y el cliente lo autorice). El local `libre` es el que espera al próximo proyecto.
+       `salaPropia` (hoy, sólo Nu Home) cambia su sala: sin números ni panel, como su propia sala de ventas (ver su bloque).
        Un caso nuevo con plantilla, mientras el CRM no esté conectado, se suma aquí con este formato:
          { id, nombre, cliente, rubro: 'Clínica dental · Arica', calle: 'salud', plantilla: 'clinica' | 'taller' | 'basica',
            fase: 'E0'…'E9' (cómo se ve el local), permiso: 'nombre' | 'rubro' (sólo el rubro) | 'archivo' (sólo en El Archivo),
@@ -295,10 +298,68 @@
           ['Fábrica a la vista', 'producción con carta Gantt y alertas tempranas'],
           ['Portal del cliente', 'cada cliente sigue su casa sin llamar']
         ],
-        enlaces: [{ texto: 'Probar el cotizador', url: 'https://nuhome-crm-nu.vercel.app/cotizador' }],
+        enlaces: [{ texto: 'Probar el cotizador', url: COTIZADOR_NUHOME }],
         equipo: ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa'],
         media: { h: 'media/nuhome-360-h.mp4', v: 'media/nuhome-360-v.mp4', poster: 'media/nuhome-360-h.jpg' },
-        nota: 'Pantallas recreadas con datos de ejemplo.'
+        nota: 'Pantallas recreadas con datos de ejemplo.',
+        /* Sala propia: al entrar se está en la sala de Nu Home, como en su propia sala de ventas. Sin números ni panel: se
+           toca lo que se ve (las zonas de su dibujo, en salas.js), la gente habla sola y abajo va la barra de Nu Home. BiPlot
+           aparece en su rincón, con todo lo del proyecto. Es el modelo para las demás salas.
+           TEXTOS DE EJEMPLO: las frases de las burbujas, las del recorrido y las tarjetas son borradores («los diálogos los
+           vemos después»), hasta que Nu Home los revise y los apruebe. Las medidas son las del diseñador de Nu Home 360.
+           Las asesoras y asesores son ilustraciones sin nombre. */
+        salaPropia: {
+          textosDeEjemplo: true,
+          marca: { nombre: 'NÜHOME', sub: 'Vida & Hogar', texto: 'Casas modulares. Pasa, recorre la casa piloto y conversa con nuestras asesoras.' },
+          // Los colores de su barra y sus tarjetas: crema, tinta y dorado
+          colores: { fondo: '#F6EFDF', tinta: '#1C1917', oro: '#E0B341' },
+          textos: { recorrer: 'Recorrer con una asesora', hablar: 'Hablar con una asesora', recorrido: 'Recorrido con una asesora', guia: 'Asesora · Nu Home' },
+          disenar: { texto: 'Diseñar la mía', url: COTIZADOR_NUHOME },
+          // Quien acompaña el recorrido (la asesora que camina por la sala, por su id en el dibujo)
+          guia: 'nhGuia',
+          // Pendiente: el número de WhatsApp de Nu Home. Mientras sea null no aparece «Hablar con una asesora».
+          // Nunca el de BiPlot: los contactos de Nu Home van a Nu Home.
+          whatsapp: null,
+          mensaje: 'Hola Nu Home, vi su sala en la oficina de BiPlot y quiero conversar con una asesora.',
+          // La gente que habla (por su id en el dibujo): quién es (para lectores de pantalla), su rótulo y su frase de ejemplo
+          burbujas: [
+            { quien: 'nhRecepcion', nombre: 'La asesora de la recepción', rol: 'Asesora · Nu Home', texto: '¡Hola! Pasa, la casa piloto está abierta.' },
+            { quien: 'nhMaqueta', nombre: 'La asesora de la mesa de maqueta', rol: 'Asesora · Nu Home', texto: 'Dibujamos tu terreno a escala y vemos qué casa te cabe.' },
+            { quien: 'nino', nombre: 'Un niño en la terraza', rol: '', texto: '¡Tiene terraza!' },
+            { quien: 'maestro', nombre: 'El maestro del taller', rol: 'Taller', texto: 'Este módulo sale el jueves.' },
+            { quien: 'ejecutivo', nombre: 'El asesor de la terraza', rol: 'Asesor · Nu Home', texto: '¿Tienes terreno? Te muestro cómo quedaría en el tuyo.' },
+            { quien: 'clienta2', nombre: 'Una clienta con su celular', rol: 'Clienta', texto: 'Veo el avance de mi casa desde el celular.' },
+            { quien: 'bucle', nombre: 'Bucle, de BiPlot', rol: 'Bucle · BiPlot', texto: 'Con Nu Home estamos construyendo Nu Home 360, la plataforma detrás de esta sala. ¿Te cuento cómo?', biplot: true }
+          ],
+          // Lo que cuenta cada zona al tocarla (la del rincón de BiPlot abre la tarjeta de BiPlot). botones: disenar
+          // (el cotizador), recorrer (el recorrido con una asesora) y hablar (sólo con el WhatsApp de Nu Home).
+          // imagen: una pantalla real de Nu Home 360 (media/salas/).
+          zonas: {
+            recepcion: { nombre: 'Recepción', ceja: 'Recepción', titulo: 'Pasa, estás en Nu Home', texto: 'Aquí te recibe una asesora. Si quieres, te acompaña a recorrer la sala: la casa piloto, la asesoría y el taller.', botones: ['recorrer', 'disenar', 'hablar'] },
+            'modelo-1': { nombre: 'Un módulo', ceja: 'Modelo', titulo: 'Un módulo', texto: 'Toda la casa en un solo módulo de 12 m.', chips: ['12 m', '27,2 m²'], botones: ['disenar'] },
+            'modelo-2': { nombre: 'Dos pisos', ceja: 'Modelo', titulo: 'Dos pisos', texto: 'Un módulo de 12 m abajo y uno de 6 m arriba.', chips: ['40,8 m²', '12 m abajo y 6 m arriba'], botones: ['disenar'] },
+            'modelo-3': { nombre: 'Con terraza', ceja: 'Modelo', titulo: 'Con terraza', texto: 'Un módulo con su terraza. La casa piloto tiene una: pasa a verla.', botones: ['disenar'] },
+            piloto: { nombre: 'Casa piloto', ceja: 'Casa piloto', titulo: 'Un módulo de 6 m, con terraza y pérgola', texto: 'Así se ve un módulo terminado: forro negro, madera y ventanales que se abren a la terraza. Se combina con otros módulos para armar tu casa.', chips: ['6 × 2,5 m · 13,6 m²', 'Terraza 4 × 3 m', 'Pérgola 4 × 4 m'], botones: ['disenar', 'hablar'] },
+            asesoria: { nombre: 'Asesoría', ceja: 'Asesoría', titulo: 'Diseña tu casa con una asesora', texto: 'En los escritorios te sientas con una asesora y arman juntos tu casa en el diseñador 3D, sobre tu terreno.', botones: ['disenar', 'hablar'] },
+            maqueta: { nombre: 'Mesa de maqueta', ceja: 'Mesa de maqueta', titulo: 'Tu terreno, a escala', texto: 'Sobre la mesa se dibuja tu terreno a escala y se prueba qué casa te cabe, igual que en el diseñador.', botones: ['disenar'] },
+            disenador: { nombre: 'Pantalla del diseñador 3D', ceja: 'El diseñador 3D', titulo: 'Diseña tu casa, pieza por pieza', texto: 'Terreno a escala, segundo piso y precio referencial al instante.', imagen: 'nuhome-1-disenador', botones: ['disenar'] },
+            terminaciones: { nombre: 'Terminaciones', ceja: 'Terminaciones', titulo: 'Las muestras, en la mano', texto: 'Colores y materiales de muestra, para elegir cómo se ve tu casa.', botones: ['disenar'] },
+            taller: { nombre: 'Taller', ceja: 'Taller', titulo: 'Así se arma tu casa', texto: 'Detrás del vidrio se arma cada módulo. En la pantalla, la carta Gantt del taller: cada partida a tiempo, con alerta antes del atraso.', imagen: 'nuhome-5-fabricacion' },
+            salon: { nombre: 'Salón y ventanal', ceja: 'Salón', titulo: 'Tu casa, paso a paso', texto: 'Mientras esperas, sigues tu casa desde el celular: avance y fotos en el portal del cliente, en un link privado.', imagen: 'nuhome-6-portal' },
+            entrega: { nombre: 'La entrega', ceja: 'Entrega', titulo: 'El día de las llaves', texto: 'La familia recibe su casa y el acta de entrega se firma en el celular, sin papel.', imagen: 'nuhome-7-entrega' },
+            biplot: { nombre: 'Rincón de BiPlot', ceja: 'Hecho con BiPlot', titulo: 'Nu Home 360', biplot: true }
+          },
+          // «Recorrer con una asesora»: una parada por zona (ver: otras zonas que entran en el cuadro), con lo que dice la asesora
+          recorrido: [
+            { zona: 'recepcion', titulo: 'La entrada', ver: ['modelo-1', 'modelo-3'], texto: '¡Hola! Te acompaño a recorrer la sala. Partimos por la casa piloto.' },
+            { zona: 'piloto', titulo: 'La casa piloto', texto: 'Es un módulo de 6 m, con su terraza y su pérgola. Pasa, está abierta.' },
+            { zona: 'asesoria', titulo: 'La asesoría', ver: ['maqueta', 'disenador'], texto: 'Aquí diseñamos contigo tu casa en el diseñador 3D, sobre tu terreno y a escala.' },
+            { zona: 'terminaciones', titulo: 'Las terminaciones', texto: 'Aquí eliges las terminaciones, con las muestras en la mano.' },
+            { zona: 'taller', titulo: 'El taller', texto: 'Detrás del vidrio se arma cada módulo. En la pantalla, la carta Gantt dice qué sale y cuándo.' },
+            { zona: 'salon', titulo: 'El salón', ver: ['entrega'], texto: 'Aquí se conversa, se espera y se entregan las llaves. El avance de tu casa lo sigues desde el celular.' },
+            { zona: 'biplot', titulo: 'El rincón de BiPlot', texto: 'Este rincón es de BiPlot, que construye con nosotros Nu Home 360: la plataforma detrás de esta sala.' }
+          ]
+        }
       },
       {
         id: 'rumbo', nombre: 'Rumbo', cliente: 'Producto propio de BiPlot', rubro: 'App de desarrollo personal', estado: 'Producto propio · publicado',

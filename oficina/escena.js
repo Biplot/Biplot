@@ -14,8 +14,9 @@
  *
  * Escena.construir(svg, { animado, medios }) → { zonas, actores, limites, P, vitrina(ids), barrio, oficina(abrir, animar),
  *   abierta(), iniciar(), detener(), abrirLocal(id, M, { pintar, mover }), cerrarLocal(animar), local(), moverLocal(si) }
- * Escena.maqueta(g, M, { pintar }) → { mover(si), destruir() }: un dibujo en capas (locales.js, salas.js) con su gente
- *   caminando; Escena.maquetaSvg(M, pintar) lo da quieto, en texto; Escena.juntar(partes) junta varios en uno.
+ * Escena.maqueta(g, M, { pintar }) → { mover(si), destruir(), gente, llevar(id, x, y, der) }: un dibujo en capas
+ *   (locales.js, salas.js) con su gente caminando (llevar deja a alguien parado en un punto, o lo devuelve a su ruta);
+ *   Escena.maquetaSvg(M, pintar) lo da quieto, en texto; Escena.juntar(partes) junta varios en uno.
  */
 (function () {
   'use strict';
@@ -392,6 +393,7 @@
     // Camina hacia la parada que sigue; al llegar, espera lo que diga la ruta (si dice algo) y sigue
     function andar(dt) {
       gente.forEach(function (w) {
+        if (w.fijo) return;
         if (w.espera > 0) { w.espera -= dt; if (w.espera <= 0) w.g.classList.add('camina'); return; }
         var r = w.c.ruta, sig = r[(w.i + 1) % r.length], dx = sig[0] - w.x, dy = sig[1] - w.y, dist = Math.sqrt(dx * dx + dy * dy), d = w.c.vel * dt;
         if (dist <= d) {
@@ -410,7 +412,17 @@
       if (si && i < 0) { vivas.push(v); if (!latiendo) { latiendo = true; ultimoLatido = 0; requestAnimationFrame(latir); } }
       else if (!si && i > -1) { vivas.splice(i, 1); gente.forEach(function (w) { w.g.classList.remove('camina'); }); }
     }
-    return { mover: mover, destruir: function () { mover(false); g.innerHTML = ''; }, gente: gente };
+    // Lleva a quien camina (por su id) al punto (x, y) del piso y lo deja ahí, mirando a la derecha si der; sin punto,
+    // lo devuelve a la parada de su ruta a la que iba, y sigue caminando. Lo usa el recorrido de una sala propia.
+    function llevar(id, x, y, der) {
+      var w = gente.filter(function (q) { return q.c.id === id; })[0]; if (!w) return null;
+      if (x === undefined || x === null) { var p = w.c.ruta[(w.i + 1) % w.c.ruta.length]; w.fijo = false; w.x = p[0]; w.y = p[1]; w.i = (w.i + 1) % w.c.ruta.length; w.espera = p[2] || 1; }
+      else { w.fijo = true; w.x = x; w.y = y; }
+      w.g.classList.remove('camina'); poner(w);
+      if (der !== undefined) mirar(w, der);
+      return w;
+    }
+    return { mover: mover, destruir: function () { mover(false); g.innerHTML = ''; }, gente: gente, llevar: llevar };
   }
 
   /* ─────────── Construcción ─────────── */

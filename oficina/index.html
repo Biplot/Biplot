@@ -23,7 +23,7 @@
 <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="oficina.css">
 </head>
 <body class="pagina-oficina">
@@ -61,12 +61,17 @@
     <div class="sala-marco" id="sala-marco">
       <h2 class="sr" id="sala-nombre"></h2>
       <div class="sala-dibujo-caja" id="sala-dibujo-caja"></div>
+      <!-- Sala propia (salaPropia en datos.js): burbujas y etiquetas sobre el dibujo, la barra de la empresa y sus tarjetas -->
+      <div class="sala-capa" id="sala-capa" aria-hidden="true"></div>
       <button type="button" class="sala-volver" id="sala-volver"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Volver a la calle</button>
       <p class="sala-ayuda">Toca un número para ver la pantalla real</p>
       <nav class="sala-vecinos" aria-label="Salas vecinas">
         <button type="button" id="sala-ant" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span></span></button>
         <button type="button" id="sala-sig" hidden><span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
       </nav>
+      <section class="sala-barra" id="sala-barra" hidden></section>
+      <section class="sala-tarjeta" id="sala-tarjeta" role="dialog" aria-modal="false" aria-labelledby="sala-tarjeta-t" hidden></section>
+      <p class="sr" id="sala-aviso" aria-live="polite"></p>
     </div>
   </section>
 
