@@ -597,14 +597,14 @@ html:not(.js) .plan-zoom { display: none; }
 
 /* Plano SVG: lotes */
 .lot {
-  cursor: pointer; fill: var(--c); fill-opacity: .8; stroke: rgba(255, 255, 255, .85); stroke-width: 1.2; stroke-linejoin: round;
+  cursor: pointer; fill: var(--c); fill-opacity: .8; stroke: rgba(255, 255, 255, .85); stroke-width: 1.2; stroke-linejoin: miter; stroke-miterlimit: 8;
   vector-effect: non-scaling-stroke; transition: fill-opacity .3s var(--ease-soft), opacity .35s var(--ease-soft);
 }
 .lot.st-vendida { fill-opacity: .7; }
 .lot:hover { fill-opacity: 1; stroke: #FFFFFF; stroke-width: 2.4; }
 .lot:focus { outline: none; }
 .lot:focus-visible { fill-opacity: 1; }
-.lot-focus { fill: none; pointer-events: none; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.lot-focus { fill: none; pointer-events: none; vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
 .lot-focus-o { stroke: #0A140E; stroke-width: 6; }
 .lot-focus-i { stroke: #FFFFFF; stroke-width: 2.5; }
 .pin .pin-p { font-size: 9.5px; font-weight: 800; fill: #0A140E; paint-order: stroke; stroke: rgba(255, 255, 255, .92); stroke-width: 3px; display: none; }
@@ -634,7 +634,7 @@ html:not(.js) .plan-zoom { display: none; }
 /* Formato estándar de planos: mismas piezas en todos los proyectos */
 .pl-predio { fill: #A2A3A1; }
 .pl-limite { fill: none; stroke: rgba(255, 255, 255, .75); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
-.pl-servidumbre { fill: #F3D3AE; stroke: #5E4E3C; stroke-width: 1; stroke-dasharray: 3 2; vector-effect: non-scaling-stroke; }
+.pl-servidumbre { fill: #F3D3AE; stroke: #5E4E3C; stroke-width: 1; stroke-dasharray: 3 2; vector-effect: non-scaling-stroke; stroke-linejoin: miter; }
 .pl-via-borde { fill: none; stroke: #5E4E3C; stroke-width: 9; stroke-dasharray: calc(var(--u, 1) * 4) calc(var(--u, 1) * 3); stroke-linejoin: round; }
 .pl-via { fill: none; stroke: #F3D3AE; stroke-width: 7; stroke-linejoin: round; stroke-linecap: square; }
 .pl-principal-borde { fill: none; stroke: #5E4E3C; stroke-width: 15; stroke-dasharray: calc(var(--u, 1) * 5) calc(var(--u, 1) * 3); }
