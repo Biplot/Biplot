@@ -491,6 +491,30 @@ button { font: inherit; color: inherit; }
 .tira-bp button:hover { border-color: var(--bp-acento); }
 .tira-bp button[aria-pressed="true"] { border-color: var(--bp-acento); box-shadow: 0 0 0 2px var(--bp-acento); color: var(--bp-texto); }
 .tira-bp button[aria-pressed="true"] img { opacity: 1; }
+/* En el museo (El Archivo): las diez fases o la línea de tiempo en una tarjeta, y el fichero con su buscador, en los colores de la sala */
+.tarjeta-fases { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 5px; }
+.tarjeta-fases li { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 4px 8px 4px 10px; border-radius: 10px; background: var(--p-fondo-2); }
+.tarjeta-fases .cod { flex: none; min-width: 34px; font: 700 11.5px/1.2 var(--bp-f-mono); color: var(--p-fondo); background: var(--p-tinta); text-align: center; }
+.tarjeta-fases b { flex: 1; min-width: 0; font: 600 14px/1.3 var(--bp-f-texto); color: var(--p-tinta); }
+.tarjeta-fases b span { display: block; font-weight: 400; font-size: 12.5px; color: var(--p-pie); }
+.tarjeta-fases .quien { flex: none; display: flex; }
+.tarjeta-fases .avatar { width: 30px; height: 32px; display: block; }
+.tarjeta-hitos .cod { min-width: 50px; }
+.tarjeta-fichero { margin: 0 0 8px; }
+.tarjeta-fichero .archivo-busca { margin: 4px 0 6px; }
+.tarjeta-fichero .menu-busca svg { stroke: var(--p-pie); }
+.tarjeta-fichero .menu-busca input { background: #FFFFFF; color: var(--p-tinta); border-color: var(--p-borde); }
+.tarjeta-fichero .menu-busca input::placeholder { color: var(--p-pie); }
+.tarjeta-fichero .menu-busca input:focus-visible { border-color: var(--p-tinta); }
+.tarjeta-fichero h4 { margin: 12px 0 6px; font: 700 11px/1.3 var(--bp-f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--p-pie); }
+.tarjeta-fichero .lugares li { background: #FFFFFF; border: 1px solid var(--p-borde); }
+.tarjeta-fichero .lugares .mt b { color: var(--p-tinta); }
+.tarjeta-fichero .lugares .mt > span { color: var(--p-pie); }
+.tarjeta-fichero .lugares .mt a { color: var(--p-ceja); }
+.tarjeta-fichero .nota { margin: 8px 0 0; color: var(--p-pie); }
+.ir-sala { justify-self: start; min-height: 36px; padding: 0; border: 0; background: none; font: 600 14px/1.2 var(--bp-f-texto); color: var(--p-ceja); text-align: left;
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.ir-sala:hover { color: var(--p-tinta); }
 /* En celular la tarjeta es una hoja que sube desde abajo (sin los controles de la cámara encima) */
 .sala-tarjeta.hoja { top: auto; bottom: 0; left: 0; right: 0; width: auto; max-width: none; max-height: 62%; border-radius: 18px 18px 0 0; transform: none !important; }
 .sala-tarjeta.hoja .tarjeta-cuerpo { padding-bottom: max(18px, env(safe-area-inset-bottom)); }

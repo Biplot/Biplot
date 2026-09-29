@@ -44,17 +44,20 @@ De dónde sale cada cosa:
 Las personas son ilustraciones sin nombre. Las frases de las burbujas y las tarjetas son de ejemplo hasta que cada
 cliente las apruebe.
 
-## El Archivo, el museo de BiPlot (propuesta)
+## El Archivo, el museo de BiPlot
 
-`sala-archivo/` propone que El Archivo sea el museo de BiPlot: una pieza única de cada desarrollo en su vitrina (la
-terminal del primer día, la escritura inscrita de Fundos 360, el QR de la mesa de Haru 360, el módulo de Nu Home 360,
-la huella de Eleven 360 y el elefante de Rumbo en sus cuatro etapas), unidas por una línea en el piso en el orden en que
-llegaron a biplot.cl, y al final un pedestal libre para el próximo. En el muro va la línea de tiempo y el primer plano
-de BiPlot HQ; a la izquierda, el fichero con todos los casos por rubro. Lo cuida Pepa (Cosecha).
+`sala-archivo/` es la propuesta con que El Archivo pasó a ser el museo de BiPlot (ya está en la oficina: su dibujo vive
+en `../dibujos/barrio/salas-propias/archivo.mjs` y `sala-archivo/sala.mjs` sólo lo reexporta, con sus acercamientos).
+La línea de «Seis décadas, la misma línea» cruza el piso: parte a lápiz en la entrada y cambia de herramienta en cada
+época, con una pieza por época (1985 la libreta, 1990 la terminal, 1998 el software de caja, 2015 el portátil con sus
+tres palabras) hasta volverse cian en el tablero de las diez fases (hoy). Después pasa por una pieza única de cada
+desarrollo (la escritura de Fundos 360, el QR de la mesa de Haru 360, el módulo de Nu Home 360, la huella de Eleven 360
+y el elefante de Rumbo), en el orden en que llegaron a biplot.cl, y termina en el punto coral de un pedestal libre. En
+los muros van la línea de tiempo de 2026, el primer plano de BiPlot HQ y el fichero con todos los casos por rubro. Lo
+cuida Pepa (Cosecha).
 
-Todavía no está en la oficina: su dibujo vive entero en `sala-archivo/sala.mjs` hasta que se apruebe, y sólo ahí pasa a
-`../dibujos/`. Las fechas son las del historial del sitio (cuándo llegó cada caso a biplot.cl), no las del inicio de
-cada proyecto. Usa Space Grotesk y Space Mono.
+Las fechas son las del historial del sitio (cuándo llegó cada caso a biplot.cl), no las del inicio de cada proyecto.
+Usa Space Grotesk y Space Mono. Las maquetas (`mock.mjs`) quedan para probar ideas antes de pasarlas a `datos.js`.
 
 ```bash
 SALIDA=/tmp/sala-archivo node oficina/_herramientas/propuestas/dibujar-sala.mjs archivo

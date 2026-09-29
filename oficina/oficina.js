@@ -44,6 +44,13 @@
   if (ORDEN_PRINCIPAL.indexOf('eleven') > -1) ORDEN_PRINCIPAL.splice(ORDEN_PRINCIPAL.indexOf('eleven') + 1, 0, 'pasaje');
   var CON_SALA = ORDEN_PRINCIPAL.filter(function (id) { return PROYECTOS[id] && !PROYECTOS[id].libre; });
   function tieneSala(id) { return CON_SALA.indexOf(id) > -1; }
+  // El Archivo también tiene su sala propia: el museo de BiPlot (salas.archivo.salaPropia en datos.js). Se entra como a la
+  // sala de un proyecto, pero no es un caso (no está en las listas de casos); entre las salas vecinas va al final.
+  var MUSEO = SALAS.archivo && SALAS.archivo.salaPropia && ORDEN_PRINCIPAL.indexOf('archivo') > -1 ? { id: 'archivo', nombre: SALAS.archivo.nombre, cliente: SALAS.archivo.nombre,
+    rubro: SALAS.archivo.sub, esencia: SALAS.archivo.esencia, salaPropia: SALAS.archivo.salaPropia, pines: [], puntos: [], enlaces: [], equipo: ['pepa'] } : null;
+  function esMuseo(id) { return id === 'archivo' && !!MUSEO; }
+  function salaDe(id) { return esMuseo(id) ? MUSEO : PROYECTOS[id]; }
+  var VECINAS = CON_SALA.concat(MUSEO ? ['archivo'] : []);
   var FASE_LOCAL = ['arriendo', 'diagnostico', 'obra', 'obra', 'obra', 'obra', 'obra', 'inauguracion', 'abierto', 'abierto'];
   function estadoDe(pr) {
     if (!pr || pr.libre) return 'libre';
@@ -190,7 +197,7 @@
     else if (obj.id === 'libre' || zn.libre) accion = 'Conversar con Plotty';
     else if (tieneSala(obj.id)) accion = 'Ver el local y su sala';
     else if (pr) accion = ESTADO_TXT[estadoDe(pr)] + ' · Ver el local';
-    else if (obj.id === 'archivo') accion = 'Ver todos los casos';
+    else if (obj.id === 'archivo') accion = MUSEO ? 'El museo y todos los casos' : 'Ver todos los casos';
     else if (obj.id === 'pasaje') accion = 'Ver el directorio';
     else if (obj.id === 'puerta-404') accion = 'No se abre';
     return '<b>' + esc(zn.nombre) + '</b><span>' + esc(accion) + '</span>';
@@ -337,7 +344,7 @@
   function lugar(id) {
     var pr = PROYECTOS[id];
     if (id === 'pasaje') return { id: id, nombre: SALAS.pasaje.nombre, sub: SALAS.pasaje.sub, estado: 'lugar' };
-    if (id === 'archivo') return { id: id, nombre: SALAS.archivo.nombre, sub: (BARRIO ? BARRIO.total : 0) + ' casos, por rubro', estado: 'lugar', color: '#7FD8CF' };
+    if (id === 'archivo') return { id: id, nombre: SALAS.archivo.nombre, sub: (MUSEO ? 'Museo de BiPlot · ' : '') + (BARRIO ? BARRIO.total : 0) + ' casos, por rubro', estado: 'lugar', color: '#7FD8CF' };
     if (id === 'libre' || /^libre-/.test(id)) return { id: id, nombre: PROYECTOS.libre.nombre, sub: 'Local disponible', estado: 'libre', color: '#7FD8CF', libre: true };
     if (!pr) return null;
     return { id: id, nombre: nombreCaso(pr), sub: pr.permiso === 'rubro' ? 'Caso sin nombre' : pr.rubro, estado: estadoDe(pr), chip: chipCaso(pr), color: pr.acento };
@@ -609,30 +616,40 @@
       }).join('') + '</ul></section>';
     }).join('') + '</div>';
   }
-  // El Archivo: todos los casos, por rubro, con buscador
-  function htmlArchivo() {
-    var S = SALAS.archivo, grupos = D.plotty.preguntas[0].opciones.map(function (o) {
+  // El Archivo: el museo de BiPlot (su sala propia) y el fichero, con todos los casos por rubro y su buscador. El fichero
+  // va en el panel de la calle y en la tarjeta del fichero, dentro del museo (ahí, cada caso con sala lleva a su sala).
+  function htmlFichero(h, enMuseo) {
+    var grupos = D.plotty.preguntas[0].opciones.map(function (o) {
       var lista = D.proyectos.filter(function (p) { return !p.libre && p.calle === o[0]; });
-      return lista.length ? '<section class="archivo-grupo"><h3>' + esc(o[1]) + '</h3><ul class="lugares">' + lista.map(function (p) {
+      return lista.length ? '<section class="archivo-grupo"><' + h + '>' + esc(o[1]) + '</' + h + '><ul class="lugares">' + lista.map(function (p) {
         var st = p.permiso === 'archivo' ? 'Sólo en El Archivo' : chipCaso(p);
-        var accion = p.permiso === 'archivo' ? '' : '<a href="#" data-abrir="zona:' + esc(p.id) + '">Ver el local</a>';
+        var accion = p.permiso === 'archivo' ? '' : enMuseo && tieneSala(p.id) ? '<button type="button" class="ir-sala" data-sala-ir="' + esc(p.id) + '">Entrar a su sala</button>' :
+          '<a href="#" data-abrir="zona:' + esc(p.id) + '">Ver el local</a>';
         return '<li data-busca="' + esc(normal(nombreCaso(p) + ' ' + p.rubro + ' ' + o[1])) + '"><span class="punto" style="background:' + esc(p.acento || '#35679A') + '" aria-hidden="true"></span><span class="mt"><b>' + esc(nombreCaso(p)) + '</b><span>' + esc(p.permiso === 'rubro' ? 'Caso sin nombre' : p.rubro) + ' · ' + esc(st) + '</span>' + accion + '</span></li>';
       }).join('') + '</ul></section>' : '';
     }).join('');
-    return vistaSala('archivo') + '<p class="bp-etiqueta">' + esc(S.etiqueta) + '</p><h2 id="panel-titulo" tabindex="-1">' + esc(S.titulo) + '</h2><p>' + esc(S.texto) + '</p>' +
-      '<div class="menu-busca archivo-busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" placeholder="Busca por nombre o rubro" aria-label="Buscar en El Archivo" autocomplete="off"></div>' +
-      '<div class="archivo-lista">' + grupos + '</div><p class="archivo-vacio nota" hidden>No hay casos con ese nombre o rubro.</p>' +
+    return '<div class="menu-busca archivo-busca"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg><input type="search" placeholder="Busca por nombre o rubro" aria-label="Buscar en El Archivo" autocomplete="off"></div>' +
+      '<div class="archivo-lista">' + grupos + '</div><p class="archivo-vacio nota" hidden>No hay casos con ese nombre o rubro.</p>';
+  }
+  function htmlArchivo() {
+    var S = SALAS.archivo;
+    return (MUSEO ? '<div class="media media-sala vista-sala" data-vista-sala="archivo" role="img" aria-label="El Archivo por dentro: el museo de BiPlot"></div>' : vistaSala('archivo')) +
+      '<p class="bp-etiqueta">' + esc(S.etiqueta) + '</p><h2 id="panel-titulo" tabindex="-1">' + esc(S.titulo) + '</h2><p>' + esc(S.texto) + '</p>' +
+      (MUSEO ? '<div class="acciones entrar-sala"><button type="button" class="bp-btn primario" data-entrar="archivo"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Entrar al museo</button></div><h3>El fichero</h3>' : '') +
+      htmlFichero(MUSEO ? 'h4' : 'h3', false) +
       '<p class="nota">Los casos de referencia del núcleo (negocios ilustrativos, no clientes) están en la estantería.</p>' + chipsEquipo(['pepa']);
   }
-  function iniciarArchivo() {
-    var inp = panelCuerpo.querySelector('.archivo-busca input');
+  // El buscador del fichero (en el panel o en la tarjeta del museo)
+  function iniciarArchivo(caja) {
+    caja = caja || panelCuerpo;
+    var inp = caja.querySelector('.archivo-busca input');
     inp.addEventListener('input', function () {
       var q = normal(inp.value).trim(), hay = 0;
-      panelCuerpo.querySelectorAll('.archivo-grupo').forEach(function (g) {
+      caja.querySelectorAll('.archivo-grupo').forEach(function (g) {
         var n = 0; g.querySelectorAll('li').forEach(function (li) { var si = !q || li.getAttribute('data-busca').indexOf(q) > -1; li.hidden = !si; if (si) n++; });
         g.hidden = !n; hay += n;
       });
-      panelCuerpo.querySelector('.archivo-vacio').hidden = hay > 0;
+      caja.querySelector('.archivo-vacio').hidden = hay > 0;
     });
   }
   // La vista previa de un local con sala: el video (o la sala dibujada), qué hicimos y el botón para entrar a la sala
@@ -864,7 +881,7 @@
   }
   function entrarSala(id, o) {
     o = o || {};
-    var pr = PROYECTOS[id]; if (!pr) return;
+    var pr = salaDe(id); if (!pr) return;
     if (!guia.hidden) { guia.hidden = true; }
     cerrarIntro();
     if (esc3.abierta()) salirOficina({ sinCamara: true, sinHistoria: true });
@@ -916,10 +933,10 @@
     requestAnimationFrame(function () { irA({ tipo: 'zona', id: id, ventana: 300 }, 650, mostrar); });
   }
   function pintarSala(id) {
-    var S = window.Salas.salas[id], pr = PROYECTOS[id]; if (!S) return;
+    var S = window.Salas.salas[id], pr = salaDe(id); if (!S) return;
     if (vivaSala) vivaSala.destruir();
     var conPropia = esPropia(id) && !!S.zonas;
-    salaCaja.innerHTML = '<svg class="sala-svg" viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid meet" role="group" aria-label="La sala de ' + esc(pr.nombre) + ': ' + esc(pr.esencia) + '">' +
+    salaCaja.innerHTML = '<svg class="sala-svg" viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid meet" role="group" aria-label="' + esc((esMuseo(id) ? pr.nombre + ', el museo de BiPlot: ' : 'La sala de ' + pr.nombre + ': ') + pr.esencia) + '">' +
       // En una sala propia, lo que se toca brilla (un halo dorado difuso bajo el contorno punteado)
       (conPropia ? '<defs><filter id="sala-brillo" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="6"/></filter></defs>' : '') +
       '<g id="sala-dibujo" class="sala-dibujo' + (reducido ? ' quieto' : '') + '"></g></svg>';
@@ -939,12 +956,12 @@
       g.setAttribute('aria-label', p ? g.getAttribute('data-pin') + '. ' + p[0] + ': ' + p[1] : 'Punto ' + g.getAttribute('data-pin'));
     });
     $('#sala-nombre').textContent = pr.nombre;
-    // Las salas vecinas, en el orden de la calle
-    var i = CON_SALA.indexOf(id), ant = CON_SALA[i - 1], sig = CON_SALA[i + 1];
+    // Las salas vecinas, en el orden de la calle (el museo, al final)
+    var i = VECINAS.indexOf(id), ant = VECINAS[i - 1], sig = VECINAS[i + 1];
     var bA = $('#sala-ant'), bS = $('#sala-sig');
     bA.hidden = !ant; bS.hidden = !sig;
-    if (ant) { bA.setAttribute('data-sala', ant); bA.querySelector('span').textContent = PROYECTOS[ant].nombre; }
-    if (sig) { bS.setAttribute('data-sala', sig); bS.querySelector('span').textContent = PROYECTOS[sig].nombre; }
+    if (ant) { bA.setAttribute('data-sala', ant); bA.querySelector('span').textContent = salaDe(ant).nombre; }
+    if (sig) { bS.setAttribute('data-sala', sig); bS.querySelector('span').textContent = salaDe(sig).nombre; }
     if (!conPropia) elegirPin(1, false, true);
   }
   // Un punto de la sala: la pantalla real de ese módulo (o, si no hay, el rincón de la sala donde está)
@@ -1001,7 +1018,7 @@
     e.preventDefault(); elegirPin(+g.getAttribute('data-pin'), true);
   });
 
-  /* ── La sala propia (salaPropia en datos.js; hoy, la de Nu Home) ──
+  /* ── La sala propia (salaPropia en datos.js: la de cada empresa de la calle principal y la del museo, El Archivo) ──
      La sala de la empresa como su propia sala de ventas, sin números ni panel: llena el espacio libre y se mueve y se
      acerca como la oficina (arrastrar, rueda, pellizco, flechas, + y −). Lo que se toca (sus zonas, en salas.js) se ilumina
      con su nombre y abre su tarjeta; la gente habla sola, de a una o de a dos; abajo va la barra de la empresa y BiPlot
@@ -1009,7 +1026,7 @@
      demás salas: todo lo que es de la empresa (textos, colores, quién habla) sale de datos.js y de su dibujo. */
   var propia = null, capaSala = $('#sala-capa'), barraSala = $('#sala-barra'), tarjeta = $('#sala-tarjeta'), avisoSala = $('#sala-aviso');
   var toqueS = null, dedosS = {}, dichas = {};
-  function esPropia(id) { return !!(PROYECTOS[id] && PROYECTOS[id].salaPropia); }
+  function esPropia(id) { var pr = salaDe(id); return !!(pr && pr.salaPropia); }
   // En celular la tarjeta es una hoja que sube desde abajo
   function hojaSala() { return window.innerWidth < 700; }
   function textoPropia(k, d) { return (propia.P.textos || {})[k] || d; }
@@ -1020,20 +1037,26 @@
     if (d.titulo && n.indexOf(normal(d.titulo)) < 0) return d.nombre + ': ' + d.titulo;
     return d.ceja && n.indexOf(normal(d.ceja)) < 0 ? d.ceja + ': ' + d.nombre : d.nombre;
   }
+  // Los colores de una empresa en variables de CSS (lo que no trae, queda como en oficina.css o como lo que la envuelve)
+  function pintarColores(el, c) {
+    c = c || {};
+    [['--p-fondo', c.fondo], ['--p-fondo-2', c.fondo2], ['--p-tinta', c.tinta], ['--p-tinta-2', c.tinta2], ['--p-oro', c.oro], ['--p-ceja', c.ceja],
+      ['--p-ceja-burbuja', c.cejaBurbuja], ['--p-borde', c.borde], ['--p-brillo', c.brillo], ['--p-sub', c.sub], ['--p-pie', c.pie], ['--p-velo', c.velo],
+      ['--p-hover', c.hover], ['--p-btn-fondo', c.boton], ['--p-btn-tinta', c.botonTinta], ['--p-btn-punto', c.botonPunto]
+    ].forEach(function (t) { if (t[1]) el.style.setProperty(t[0], t[1]); else el.style.removeProperty(t[0]); });
+  }
   // Arma lo que va encima del dibujo: lo que se ilumina, las zonas y la gente que habla (botones de verdad, en el orden
   // de datos.js), la barra de la empresa y sus colores
   function montarPropia(id, S) {
-    var pr = PROYECTOS[id], PP = pr.salaPropia, svgS = salaCaja.querySelector('.sala-svg');
+    var pr = salaDe(id), PP = pr.salaPropia, svgS = salaCaja.querySelector('.sala-svg');
     var vb = S.vb.split(' ').map(Number);
     propia = { id: id, pr: pr, P: PP, S: S, svg: svgS, vb: vb, cam: { x: vb[0] + vb[2] / 2, y: vb[1] + vb[3] / 2, z: 1 }, zonas: {}, hablan: [],
       burbujas: [], tarjeta: null, origen: null, volver: null, aMano: false, recorrido: null, resalte: null, anillo: null, sobre: '', vuelo: null, latido: 0, turno: 0, reloj: null };
     dichas = {};
-    // Los colores y la letra de la empresa (lo que no trae, queda como en oficina.css)
-    var c = PP.colores || {}, f = PP.fuente || {};
-    [['--p-fondo', c.fondo], ['--p-fondo-2', c.fondo2], ['--p-tinta', c.tinta], ['--p-tinta-2', c.tinta2], ['--p-oro', c.oro], ['--p-ceja', c.ceja],
-      ['--p-ceja-burbuja', c.cejaBurbuja], ['--p-borde', c.borde], ['--p-brillo', c.brillo], ['--p-sub', c.sub], ['--p-pie', c.pie], ['--p-velo', c.velo],
-      ['--p-hover', c.hover], ['--p-btn-fondo', c.boton], ['--p-btn-tinta', c.botonTinta], ['--p-btn-punto', c.botonPunto],
-      ['--p-serif', f.familia], ['--p-peso', f.peso], ['--p-espacio', f.espacio], ['--p-caja', f.caja], ['--p-titulo-tam', f.titulo], ['--p-sub-letra', f.sub]
+    // Los colores y la letra de la empresa (lo que no trae, queda como en oficina.css); la barra puede llevar los suyos
+    var f = PP.fuente || {};
+    pintarColores(salaEl, PP.colores); pintarColores(barraSala, PP.coloresBarra);
+    [['--p-serif', f.familia], ['--p-peso', f.peso], ['--p-espacio', f.espacio], ['--p-caja', f.caja], ['--p-titulo-tam', f.titulo], ['--p-sub-letra', f.sub]
     ].forEach(function (t) { salaEl.style.setProperty(t[0], t[1] || ''); });
     (S.zonas || []).forEach(function (z) { propia.zonas[z.id] = { z: z, pts: puntosDe(z.silueta), d: (PP.zonas || {})[z.id] }; });
     var h = '<g class="sala-resalte" aria-hidden="true"></g><g class="sala-anillo" aria-hidden="true"></g><g class="sala-toques">';
@@ -1052,7 +1075,7 @@
     svgS.insertAdjacentHTML('beforeend', h + '</g>');
     // La sala es una región que se recorre con teclado
     salaCaja.setAttribute('tabindex', '0'); salaCaja.setAttribute('role', 'region'); salaCaja.setAttribute('aria-roledescription', 'sala interactiva');
-    salaCaja.setAttribute('aria-label', 'La sala de ' + pr.nombre + '. Arrastra o usa las flechas para moverte, + y − para acercarte y 0 para ver toda la sala. Toca o elige lo que quieras conocer.');
+    salaCaja.setAttribute('aria-label', (esMuseo(id) ? pr.nombre + ', el museo de BiPlot' : 'La sala de ' + pr.nombre) + '. Arrastra o usa las flechas para moverte, + y − para acercarte y 0 para ver toda la sala. Toca o elige lo que quieras conocer.');
     capaSala.innerHTML = '<div class="sala-etiqueta" hidden></div>';
     barraSala.innerHTML = htmlBarraPropia(); barraSala.hidden = false; barraSala.classList.remove('recorriendo');
     barraSala.setAttribute('aria-label', pr.cliente || pr.nombre);
@@ -1074,7 +1097,7 @@
     clearTimeout(yo.reloj); if (yo.vuelo) cancelAnimationFrame(yo.vuelo); if (yo.latido) cancelAnimationFrame(yo.latido);
     propia = null; toqueS = null; dedosS = {};
     capaSala.innerHTML = ''; avisoSala.textContent = '';
-    barraSala.hidden = true; barraSala.innerHTML = ''; barraSala.classList.remove('recorriendo');
+    barraSala.hidden = true; barraSala.innerHTML = ''; barraSala.classList.remove('recorriendo'); pintarColores(barraSala, null);
     ['tabindex', 'role', 'aria-roledescription', 'aria-label'].forEach(function (a) { salaCaja.removeAttribute(a); });
     salaCaja.classList.remove('sobre', 'arrastrando');
     document.body.classList.remove('sala-hoja'); document.body.style.removeProperty('--alto-barra');
@@ -1326,13 +1349,23 @@
   function nombreModulo(t) { return String(t).replace(/^\s*\d+\s*·\s*/, ''); }
   function whatsappPropia() { var PP = propia.P; return 'https://wa.me/' + String(PP.whatsapp).replace(/\D/g, '') + '?text=' + encodeURIComponent(PP.mensaje || ''); }
   // Los botones de la empresa (negro y dorado): diseñar (el cotizador), recorrer con una asesora y, si hay WhatsApp de la
-  // empresa, hablar con una asesora. Nunca el WhatsApp de BiPlot.
+  // empresa, hablar con una asesora. Nunca el WhatsApp de BiPlot en la sala de una empresa: sólo en la de BiPlot (el museo),
+  // con { cta: true }. Los que son objetos llevan a otra parte: { sala } a la sala de ese caso, { zona } a otra tarjeta de la
+  // sala, { hq } a BiPlot HQ, { url } a otra página (en otra pestaña) y { chat } a la conversación con Plotty.
   function botonesPropia(lista) {
     var PP = propia.P, h = '';
     lista.forEach(function (b) {
       if (b === 'disenar' && PP.disenar) h += '<a class="sp-btn negro" href="' + esc(PP.disenar.url) + '" target="_blank" rel="noopener">' + esc(PP.disenar.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>';
-      if (b === 'recorrer' && (PP.recorrido || []).length) h += '<button type="button" class="sp-btn borde" data-recorrer="1">' + esc(textoPropia('recorrer', 'Recorrer con una asesora')) + '</button>';
+      // (sin cotizador, como en el museo, el recorrido es el botón principal)
+      if (b === 'recorrer' && (PP.recorrido || []).length) h += '<button type="button" class="sp-btn ' + (PP.disenar ? 'borde' : 'negro') + '" data-recorrer="1">' + esc(textoPropia('recorrer', 'Recorrer con una asesora')) + '</button>';
       if (b === 'hablar' && PP.whatsapp) h += '<a class="sp-btn borde" href="' + esc(whatsappPropia()) + '" target="_blank" rel="noopener">' + esc(textoPropia('hablar', 'Hablar con una asesora')) + '<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>';
+      if (!b || typeof b !== 'object') return;
+      if (b.sala && salaDe(b.sala)) h += '<button type="button" class="sp-btn negro" data-sala-ir="' + esc(b.sala) + '">' + esc(b.texto || 'Entrar a su sala') + '</button>';
+      if (b.zona) h += '<button type="button" class="sp-btn borde" data-zona-ir="' + esc(b.zona) + '">' + esc(b.texto) + '</button>';
+      if (b.hq) h += '<button type="button" class="sp-btn negro" data-hq="1">' + esc(b.texto || 'Pasar a BiPlot HQ') + '</button>';
+      if (b.url) h += '<a class="sp-btn borde" href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(b.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>';
+      if (b.cta) h += '<a class="bp-cta" href="' + esc(whatsapp('Hola BiPlot, vi ' + propia.pr.nombre + ' en la oficina y quiero agendar un diagnóstico.')) + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>';
+      if (b.chat) h += '<button type="button" class="sp-btn borde" data-abrir="chat:plotty">' + esc(b.texto || 'Conversar con Plotty') + '</button>';
     });
     return h;
   }
@@ -1340,15 +1373,27 @@
     var PP = propia.P, m = PP.marca || {};
     return '<p class="sp-marca"><span class="sp-logo" aria-hidden="true">' + esc(m.nombre || propia.pr.cliente) + '</span>' + (m.sub ? '<span class="sp-sub" aria-hidden="true">' + esc(m.sub) + '</span>' : '') +
       '<span class="sr">' + esc(propia.pr.cliente + (m.sub ? ', ' + m.sub : '')) + '</span></p><span class="sp-sep" aria-hidden="true"></span>' +
-      (m.texto ? '<p class="sp-txt">' + esc(m.texto) + '</p>' : '') + '<div class="sp-acciones">' + botonesPropia(['disenar', 'recorrer', 'hablar']) + '</div>';
+      (m.texto ? '<p class="sp-txt">' + esc(m.texto) + '</p>' : '') + '<div class="sp-acciones">' + botonesPropia(PP.barra || ['disenar', 'recorrer', 'hablar']) + '</div>';
+  }
+  // Lo que puede traer además una tarjeta del museo: las diez fases con quién lleva cada una, una línea de tiempo y el fichero
+  function htmlFases() {
+    return '<ol class="tarjeta-fases">' + D.fases.map(function (f) {
+      var nombres = f.quien.map(function (q) { return PERSONAL[q].nombre; }).join(' y ');
+      return '<li><span class="cod">' + esc(f.id) + '</span><b>' + esc(f.nombre) + '</b><span class="quien" aria-label="' + esc(nombres) + '" role="img">' + f.quien.map(function (q) { return avatar(q); }).join('') + '</span></li>';
+    }).join('') + '</ol>';
+  }
+  function htmlHitos(h) {
+    return '<ol class="tarjeta-fases tarjeta-hitos">' + h.map(function (x) { return '<li><span class="cod">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '<span>' + esc(x[2] || '') + '</span></b></li>'; }).join('') + '</ol>';
   }
   function htmlTarjetaZona(d) {
-    var pr = propia.pr, pin = d.imagen && (pr.pines || []).filter(function (p) { return p[3] === d.imagen; })[0];
+    // La imagen es de la sala o, en el museo, del caso de esa pieza (con su nombre y su módulo)
+    var pr = (d.caso && salaDe(d.caso)) || propia.pr, pin = d.imagen && (pr.pines || []).filter(function (p) { return p[3] === d.imagen; })[0];
     return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre) + '</p><h3 id="sala-tarjeta-t" tabindex="-1">' + esc(d.titulo) + '</h3>' +
       (d.imagen ? '<figure class="tarjeta-img"><img src="' + MEDIOS + esc(d.imagen) + '.webp" alt="' + esc(pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : '')) + '" width="1280" height="720">' +
         '<figcaption>' + esc(pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo') + '</figcaption></figure>' : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
+      (d.fases ? htmlFases() : '') + (d.hitos ? htmlHitos(d.hitos) : '') + (d.fichero ? '<div class="tarjeta-fichero">' + htmlFichero('h4', true) + '</div>' : '') +
       (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
         esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') + '</div>';
   }
@@ -1395,6 +1440,7 @@
     var hoja = hojaSala(), d = z.d;
     tarjeta.className = 'sala-tarjeta ' + (d.biplot ? 'bp' : 'empresa') + (hoja ? ' hoja' : '');
     tarjeta.innerHTML = d.biplot ? htmlTarjetaBiplot(propia.pr) : htmlTarjetaZona(d);
+    if (d.fichero) iniciarArchivo(tarjeta);
     tarjeta.hidden = false;
     document.body.classList.toggle('sala-hoja', hoja);
     marcarZona(id, true);
@@ -1439,6 +1485,8 @@
     if (b.hasAttribute('data-recorrer')) { e.preventDefault(); iniciarRecorrido(0); return; }
     if (b.hasAttribute('data-pantalla')) { elegirPantalla(+b.getAttribute('data-pantalla')); return; }
     if (b.hasAttribute('data-hq')) { e.preventDefault(); entrarOficina({ boton: $('#recorrer-toggle') }); return; }
+    if (b.hasAttribute('data-sala-ir')) { e.preventDefault(); entrarSala(b.getAttribute('data-sala-ir'), { directo: true }); return; }
+    if (b.hasAttribute('data-zona-ir')) { e.preventDefault(); abrirTarjeta(b.getAttribute('data-zona-ir'), { desde: b }); return; }
     if (b.hasAttribute('data-abrir')) { e.preventDefault(); var v = b.getAttribute('data-abrir').split(':'); abrir({ tipo: v[0], id: v[1] }, false, $('#recorrer-toggle')); return; }
     if (b.hasAttribute('data-grande')) { e.preventDefault(); abrirLightbox(b.getAttribute('data-grande'), b.getAttribute('data-grande-v'), b); return; }
     if (b.classList.contains('copiar')) { copiar(b); return; }
@@ -1500,6 +1548,7 @@
   barraSala.addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b || !propia) return;
     if (b.hasAttribute('data-recorrer')) { iniciarRecorrido(0); return; }
+    if (b.hasAttribute('data-zona-ir')) { abrirTarjeta(b.getAttribute('data-zona-ir'), { desde: b }); return; }
     var a = b.getAttribute('data-rec'); if (!a || !propia.recorrido) return;
     var i = propia.recorrido.i, R = propia.P.recorrido;
     if (a === 'ant') pasoRecorrido(i - 1);
@@ -1598,8 +1647,12 @@
     if (q) { anillo(null); callarDe(q.getAttribute('data-quien'), true); }
     if (z && !propia.tarjeta && !propia.recorrido) resaltarZona(null);
   });
-  // La burbuja de BiPlot lleva a su tarjeta
-  capaSala.addEventListener('click', function (e) { if (propia && e.target.closest('.burbuja.bp')) abrirTarjeta(Object.keys(propia.zonas).filter(function (id) { return propia.zonas[id].d && propia.zonas[id].d.biplot; })[0]); });
+  // La burbuja de BiPlot lleva a su tarjeta; en el museo (que es todo de BiPlot, sin rincón aparte), al recorrido con Pepa
+  capaSala.addEventListener('click', function (e) {
+    if (!propia || !e.target.closest('.burbuja.bp')) return;
+    var bp = Object.keys(propia.zonas).filter(function (id) { return propia.zonas[id].d && propia.zonas[id].d.biplot; })[0];
+    if (bp) abrirTarjeta(bp); else if (!propia.recorrido) iniciarRecorrido(0);
+  });
 
   function copiar(btn) {
     var url = btn.getAttribute('data-url'), code = btn.parentNode.querySelector('code');
@@ -1608,7 +1661,7 @@
     try { navigator.clipboard.writeText(url).then(listo, seleccionar); } catch (e) { seleccionar(); }
   }
   function compartir(btn) {
-    var pr = PROYECTOS[enSala];
+    var pr = salaDe(enSala);
     try { navigator.share({ title: pr.nombre + ' · La oficina de BiPlot', text: pr.esencia, url: btn.getAttribute('data-url') }).catch(function () {}); } catch (e) { /* sin compartir */ }
   }
 
@@ -1726,7 +1779,7 @@
     ['zona', 'haru', 'Haru 360', 'Una barra de sushi con ventas, cocina, delivery y caja en un solo sistema.'],
     ['zona', 'eleven', 'Eleven 360', 'Un gimnasio que suma socios y no los suelta.'],
     ['zona', 'rumbo', 'Rumbo', 'Nuestra app para ordenar lo personal, un día a la vez.'],
-    ['zona', 'archivo', 'El Archivo', 'Todos los casos tienen su carpeta, por rubro. Cuando llega un rubro nuevo, se abre su calle.'],
+    ['zona', 'archivo', 'El Archivo', 'El museo de BiPlot: del papel a hoy, con una pieza de cada desarrollo. Y el fichero, con todos los casos por rubro.'],
     ['zona', 'libre', 'Tu proyecto aquí', 'Este local está esperando el próximo proyecto. ¿Conversamos?']
   ].filter(function (g) { return g[0] === 'actor' || zonaPorId(g[1]); });
   var guia = $('#guia'), pasoGuia = 0;
@@ -1796,7 +1849,7 @@
   function irAlHash(h, primera) {
     if (!h) { if (enSala) salirSala({ sinHistoria: true }); if (esc3.abierta()) salirOficina({ sinHistoria: true }); return; }
     if (h === enSala) return;
-    if (tieneSala(h)) { entrarSala(h, { sinHistoria: true, directo: primera }); return; }
+    if (tieneSala(h) || esMuseo(h)) { entrarSala(h, { sinHistoria: true, directo: primera }); return; }
     if (enSala) salirSala({ sinHistoria: true, sinCamara: true });
     if (h === 'oficina' || h === 'planta-baja') { entrarOficina({ sinHistoria: true, directo: primera }); return; }
     if (h === 'conversar') { abrir({ tipo: 'chat', id: 'plotty' }); return; }

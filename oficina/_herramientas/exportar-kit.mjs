@@ -26,8 +26,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const IDS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'aby'];
 const PIEZAS = IDS.map((id) => 'ficha-' + id).concat(['oficina', 'elenco', 'motor', 'quien']);
 const FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630], cara: [160, 160] };
-// La sala de cada empresa: vista previa del enlace biplot.cl/oficina/<sala>; Haru 360, además, publicación e historia
-const SALAS = ['fundos', 'haru', 'eleven', 'nuhome', 'rumbo'], FORMATOS_SALA = { haru: ['og', '4x5', '9x16'] };
+// La sala de cada empresa y el museo de El Archivo: vista previa del enlace biplot.cl/oficina/<sala>; Haru 360, además,
+// publicación e historia
+const SALAS = ['fundos', 'haru', 'eleven', 'nuhome', 'rumbo', 'archivo'], FORMATOS_SALA = { haru: ['og', '4x5', '9x16'] };
 let trabajos = [];
 for (const p of PIEZAS) for (const f of ['4x5', '9x16']) trabajos.push([p, f]);
 trabajos.push(['oficina', 'og']);

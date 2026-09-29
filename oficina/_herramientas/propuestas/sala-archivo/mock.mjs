@@ -1,4 +1,5 @@
-// Maquetas de El Archivo como museo de BiPlot, dentro de la oficina y sin números.
+// Maquetas de El Archivo como museo de BiPlot, dentro de la oficina y sin números (ya está armado en la oficina: estas
+// maquetas quedan para probar ideas antes de pasarlas a datos.js).
 // ?e=a al entrar · ?e=b al tocar la vitrina de Fundos 360 · ?e=c el fichero · ?e=d el pedestal libre · ?e=e el recorrido con Pepa
 import { salaArchivo, componer, P } from './sala.mjs';
 import { maqueta } from '../mock-comun.mjs';
@@ -44,23 +45,23 @@ const Q = (x, y, z) => P(x, y, z).map((n) => Math.round(n));
 
 const estados = {
   a: { centro: [96, 250], zoom: 1.1 },
-  b: { centro: [70, 262], zoom: 2.0 },
+  b: { centro: [-80, 130], zoom: 2.0 },
   c: { centro: [60, 40], zoom: 1.9 },
-  d: { centro: [200, 352], zoom: 2.0 }
+  d: { centro: [260, 380], zoom: 2.0 }
 };
 const guion = `
 const barra = ${JSON.stringify(BARRA)};
 if (est === 'a') {
   poner('<small>Pepa · Cosecha</small>¡Bienvenido al Archivo! Aquí guardamos una pieza de cada desarrollo.', 1.9, 4.35, 2.1, 'burbuja bp');
-  poner('<small>Visita</small>Yo trabajé con una de esas.', 14.4, 10.3, 2.0, 'burbuja ar');
-  poner('¡El elefante crece!', 11.1, 5.2, 1.45, 'burbuja ar');
+  poner('<small>Visita</small>Yo trabajé con una de esas.', 13.65, 10.45, 2.0, 'burbuja ar');
+  poner('¡El elefante crece!', 13.25, 5.85, 1.45, 'burbuja ar');
   capa.insertAdjacentHTML('beforeend', barra);
 }
 if (est === 'b') {
-  brillo([[8.72, 9.72], [9.68, 9.72], [9.68, 10.68], [8.72, 10.68]], 0.02, '#17C3B2');
-  poner('La escritura inscrita', 9.2, 10.2, 1.95, 'etiqueta ar');
-  poner('<small>Visita</small>¡La banderita del lote 25!', 10.25, 9.75, 2.05, 'burbuja ar');
-  poner('<span class="cerrar">×</span><div class="meta">Fundos 360 · Fundos Inmobiliaria · A la medida</div><h3>La escritura inscrita</h3><p>El ciclo de una parcela es largo: contacto, reserva, escritura, facturación al inversionista, posventa y comisiones. Fundos 360 lo sigue completo, hasta que la escritura queda inscrita a nombre de quien compró. A su lado, la banderita del lote 25 de su plano.</p><div class="regla"></div><div class="fecha"><i></i><div>10 de septiembre de 2026<br><span>El primer caso de biplot.cl</span></div></div><div class="botones"><span class="btn-cian">Entrar a su sala</span><span class="btn-oscuro">Ver su caso</span></div>', 9.2, 10.2, 1.6, 'tarjeta cedula', 250, -330);
+  brillo([[2.72, 6.12], [3.68, 6.12], [3.68, 7.08], [2.72, 7.08]], 0.02, '#17C3B2');
+  poner('La escritura inscrita', 3.2, 6.6, 1.95, 'etiqueta ar');
+  poner('<small>Visita</small>¡La banderita del lote 25!', 4.6, 6.35, 2.05, 'burbuja ar');
+  poner('<span class="cerrar">×</span><div class="meta">Fundos 360 · Fundos Inmobiliaria · A la medida</div><h3>La escritura inscrita</h3><p>El ciclo de una parcela es largo: contacto, reserva, escritura, facturación al inversionista, posventa y comisiones. Fundos 360 lo sigue completo, hasta que la escritura queda inscrita a nombre de quien compró. A su lado, la banderita del lote 25 de su plano.</p><div class="regla"></div><div class="fecha"><i></i><div>10 de septiembre de 2026<br><span>El primer caso de biplot.cl</span></div></div><div class="botones"><span class="btn-cian">Entrar a su sala</span><span class="btn-oscuro">Ver su caso</span></div>', 3.2, 6.6, 1.6, 'tarjeta cedula', 250, -330);
 }
 if (est === 'c') {
   brillo([[0.06, 1.1], [0.72, 1.1], [0.72, 3.9], [0.06, 3.9]], 0.02, '#17C3B2');
@@ -71,17 +72,17 @@ if (est === 'c') {
       .map(([g, l]) => '<div class="grupo"><h4>' + g + '</h4>' + l.map(([n, e]) => '<div class="ficha">' + n + '<em>' + e + '</em></div>').join('') + '</div>').join(''), 0.4, 2.5, 1.3, 'tarjeta fichero', 170, -300);
 }
 if (est === 'd') {
-  brillo([[17.12, 7.72], [18.08, 7.72], [18.08, 8.68], [17.12, 8.68]], 0.02, '#17C3B2');
-  poner('Tu proyecto', 17.6, 8.2, 1.95, 'etiqueta ar');
-  poner('<span class="cerrar">×</span><div class="ceja">Próximamente</div><h3>Este pedestal está libre</h3><p>La próxima pieza puede ser de tu proyecto. Todo empieza con un diagnóstico: tres preguntas con Plotty y, si tiene sentido, la primera sesión sin costo.</p><div class="botones"><span class="coral">Agenda tu diagnóstico</span><span class="btn-ghost">Conversar con Plotty</span></div>', 17.6, 8.2, 1.6, 'tarjeta bp', -520, -250);
+  brillo([[17.32, 7.82], [18.28, 7.82], [18.28, 8.78], [17.32, 8.78]], 0.02, '#17C3B2');
+  poner('Tu proyecto', 17.8, 8.3, 1.95, 'etiqueta ar');
+  poner('<span class="cerrar">×</span><div class="ceja">Próximamente</div><h3>Este pedestal está libre</h3><p>La próxima pieza puede ser de tu proyecto. Todo empieza con un diagnóstico: tres preguntas con Plotty y, si tiene sentido, la primera sesión sin costo.</p><div class="botones"><span class="coral">Agenda tu diagnóstico</span><span class="btn-ghost">Conversar con Plotty</span></div>', 17.8, 8.3, 1.6, 'tarjeta bp', -520, -250);
 }
 `;
 await maqueta({ id: 'archivo', titulo: 'El Archivo', r: salaArchivo(), componer, css, estados, guion });
 
-// El recorrido con Pepa, en su segunda parada: la terminal (Pepa se para junto a ella)
+// El recorrido con Pepa, en su segunda parada: la libreta de 1985 (Pepa se para junto a ella)
 const guionRec = `
-brillo([[12.92, 10.12], [13.88, 10.12], [13.88, 11.08], [12.92, 11.08]], 0.02, '#17C3B2');
-poner('<small>Pepa · Cosecha</small>Todo empezó aquí: biplot.cl nació el 8 de septiembre contando seis décadas de automatización, desde la terminal.', 12.95, 11.35, 2.1, 'burbuja bp');
-capa.insertAdjacentHTML('beforeend', '<div class="marca-barra ar-barra"><div class="ar-rec"><small>Recorrido con Pepa · 2 de 8</small><b>La terminal</b></div><span class="mb-btn ar-borde">Anterior</span><span class="mb-btn ar-borde">Ver más</span><span class="mb-btn ar-cian">Siguiente</span><span class="ar-x">×</span></div>');
+brillo([[14.92, 10.32], [15.88, 10.32], [15.88, 11.28], [14.92, 11.28]], 0.02, '#17C3B2');
+poner('<small>Pepa · Cosecha</small>Antes de todo esto, había una libreta: planillas a mano y la memoria de una sola persona.', 14.45, 11.15, 2.1, 'burbuja bp');
+capa.insertAdjacentHTML('beforeend', '<div class="marca-barra ar-barra"><div class="ar-rec"><small>Recorrido con Pepa · 2 de 12</small><b>1985 · La libreta</b></div><span class="mb-btn ar-borde">Anterior</span><span class="mb-btn ar-borde">Ver más</span><span class="mb-btn ar-cian">Siguiente</span><span class="ar-x">×</span></div>');
 `;
-await maqueta({ id: 'archivo', titulo: 'El Archivo', r: salaArchivo({ pepa: [12.95, 11.35] }), componer, css, estados: { e: { centro: [80, 360], zoom: 2.0 } }, guion: guionRec });
+await maqueta({ id: 'archivo', titulo: 'El Archivo', r: salaArchivo({ pepa: [14.45, 11.15] }), componer, css, estados: { e: { centro: [150, 380], zoom: 2.0 } }, guion: guionRec });

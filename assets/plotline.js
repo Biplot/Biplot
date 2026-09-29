@@ -83,6 +83,13 @@
   const stage = document.getElementById('plStage');
   let currentIndex = chapterEls.findIndex(ch => ch.classList.contains('pl-active'));
   if (currentIndex < 0) currentIndex = 0;
+  // Direct link to a chapter (plotline.html#ch2), e.g. from its piece in El Archivo, the museum in BiPlot HQ
+  const fromHash = chapterEls.findIndex(ch => '#' + ch.id === location.hash);
+  if (fromHash > 0) {
+    chapterEls[currentIndex].classList.remove('pl-active');
+    chapterEls[fromHash].classList.add('pl-active');
+    currentIndex = fromHash;
+  }
 
   /* one figure per era boundary, acting out its idea in that era's technology. The
      veil is the only full cover; it eases IN, and then eases OUT while the incoming
