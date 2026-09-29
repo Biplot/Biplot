@@ -375,7 +375,7 @@ button { font: inherit; color: inherit; }
    abre su tarjeta; la gente habla en burbujas; abajo, la barra de la empresa. Los colores y la letra de cada empresa
    vienen de datos.js (colores y fuente de su salaPropia); estos, los de Nu Home, son los de partida. BiPlot conserva los
    suyos en su tarjeta. */
-.sala { --p-fondo: #F6EFDF; --p-fondo-2: #EADFC6; --p-tinta: #1C1917; --p-tinta-2: #3A3530; --p-oro: #E0B341; --p-ceja: #7A5F12; --p-borde: #CFC1A3;
+.sala, .sala-frente { --p-fondo: #F6EFDF; --p-fondo-2: #EADFC6; --p-tinta: #1C1917; --p-tinta-2: #3A3530; --p-oro: #E0B341; --p-ceja: #7A5F12; --p-borde: #CFC1A3;
   --p-brillo: 224, 179, 65; --p-sub: #5E5446; --p-pie: #6B6152; --p-velo: rgba(28, 25, 23, .07); --p-hover: #2B2724; --p-ceja-burbuja: var(--p-ceja);
   --p-btn-fondo: var(--p-tinta); --p-btn-tinta: var(--p-fondo); --p-btn-punto: var(--p-oro);
   --p-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif; --p-peso: 600; --p-espacio: .14em; --p-caja: none; --p-titulo-tam: 29px;
@@ -538,6 +538,67 @@ button { font: inherit; color: inherit; }
   .burbuja { max-width: 200px; font-size: 13px; }
   .burbuja.de-guia { max-width: 240px; font-size: 13.5px; }
   .sala-etiqueta { font-size: 15.5px; padding: 6px 12px 7px; }
+}
+
+/* La vista de frente: lo que es una imagen (un mural, una pizarra, un cartel, una pantalla) se abre derecho y en grande,
+   con la sala oscurecida detrás. Debajo, lo que cuenta su tarjeta (al lado, si la imagen es angosta), en los colores de la sala.
+   Lo muy apaisado (la línea de tiempo), en celular, se desliza de lado. */
+.sala-frente { position: fixed; inset: 0; z-index: 58; display: grid; place-items: center;
+  padding: max(72px, calc(env(safe-area-inset-top) + 64px)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+  opacity: 0; transition: opacity .22s ease; }
+.sala-frente.visible { opacity: 1; }
+.sala-frente[hidden] { display: none; }
+.frente-velo { position: absolute; inset: 0; background: rgba(4, 12, 22, .64); }
+.frente-cerrar { position: absolute; z-index: 2; top: max(14px, env(safe-area-inset-top)); right: max(14px, env(safe-area-inset-right)); width: 48px; height: 48px;
+  display: grid; place-items: center; border: 1.5px solid rgba(242, 244, 247, .3); border-radius: 50%; background: rgba(10, 27, 46, .88); color: #F2F4F7; cursor: pointer;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .4); }
+.frente-cerrar:hover { border-color: var(--bp-acento); }
+.frente-cerrar svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.frente-caja { position: relative; z-index: 1; width: min(1280px, 100%); max-height: 100%; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; transform: translateY(10px) scale(.985); transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+.sala-frente.visible .frente-caja { transform: none; }
+.frente-lamina { flex: none; margin: 0; width: min(100%, calc(50vh * var(--frente-prop)), var(--frente-max, 100%)); }
+.frente-marco { border-radius: 14px; overflow: hidden; background: var(--frente-fondo, transparent); box-shadow: 0 28px 70px rgba(0, 0, 0, .5); }
+.frente-marco > svg, .frente-marco > img { display: block; width: 100%; height: auto; aspect-ratio: var(--frente-prop); }
+.frente-marco:focus-visible { outline: none; box-shadow: var(--bp-foco); }
+.frente-desliza { display: none; }
+/* (el texto, del mismo ancho que la imagen; si trae una pantalla real, va a su lado) */
+.frente-texto { flex: none; width: min(100%, max(640px, min(calc(50vh * var(--frente-prop)), var(--frente-max, 100%)))); display: flex; align-items: flex-start; gap: 26px;
+  padding: 18px 22px 20px; border-radius: 16px; background: var(--p-fondo); color: var(--p-tinta); box-shadow: 0 22px 50px rgba(4, 12, 22, .45); }
+.frente-cuerpo { flex: 1 1 auto; min-width: 0; align-self: stretch; container-type: inline-size; }
+.frente-cuerpo > :last-child { margin-bottom: 0; }
+.frente-texto .ceja { margin: 0; font: 700 11px/1.3 var(--bp-f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--p-ceja); }
+.frente-texto h3 { margin: 8px 0 10px; font: var(--p-peso) var(--p-titulo-tam)/1.08 var(--p-serif); letter-spacing: -.005em; text-transform: var(--p-caja); text-wrap: balance; outline: none; }
+.frente-texto h3:focus, .frente-texto h3:focus-visible { outline: none; box-shadow: none; }
+.frente-texto p { max-width: 68ch; margin: 0 0 12px; font: 400 15px/1.5 var(--bp-f-texto); color: var(--p-tinta-2); }
+.frente-texto .tarjeta-img { flex: 0 1 400px; min-width: 0; margin: 0; }
+/* Las diez fases: en fila, con quién lleva cada una (sus nombres están en la lámina de arriba); si no cabe, en dos columnas o en una */
+.frente-texto .tarjeta-botones + .tarjeta-fases { margin: 16px 0 0; }
+.frente-texto .tarjeta-fases { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@container (max-width: 459px) { .frente-texto .tarjeta-fases { grid-template-columns: minmax(0, 1fr); } }
+@container (min-width: 860px) {
+  .frente-texto .tarjeta-fases { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; }
+  .frente-texto .tarjeta-fases li { justify-content: center; gap: 6px; padding: 4px 6px; }
+  .frente-texto .tarjeta-fases b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .frente-texto .tarjeta-fases .avatar + .avatar { margin-left: -9px; }
+}
+/* La imagen angosta y el texto, lado a lado */
+@media (min-width: 900px) {
+  .frente-caja.lado { flex-direction: row; align-items: center; justify-content: center; gap: 22px; }
+  .frente-caja.lado .frente-lamina { width: min(calc(100% - 382px), calc((100vh - 120px) * var(--frente-prop)), var(--frente-max, 100%)); }
+  .frente-caja.lado .frente-texto { width: 360px; flex-direction: column; }
+}
+@media (max-width: 899px) {
+  .frente-caja { justify-content: flex-start; }
+  .frente-lamina { width: min(100%, calc(62vh * var(--frente-prop)), var(--frente-max, 100%)); }
+  .frente-texto { width: 100%; flex-direction: column; gap: 12px; padding: 16px 16px 18px; }
+  .frente-texto .tarjeta-img { flex: none; width: 100%; }
+  .frente-texto p { font-size: 14.5px; }
+  .frente-caja.largo .frente-lamina { width: 100%; }
+  .frente-caja.largo .frente-marco { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+  .frente-caja.largo .frente-marco > svg { width: calc(min(var(--frente-alto-movil, 190px), 42vh) * var(--frente-prop)); height: min(var(--frente-alto-movil, 190px), 42vh);
+    max-width: none; aspect-ratio: auto; }
+  .frente-desliza { display: block; margin-top: 6px; font: 600 12px/1.3 var(--bp-f-texto); color: #B9C8D8; text-align: center; }
 }
 
 /* Video grande */
@@ -725,5 +786,5 @@ button { font: inherit; color: inherit; }
   .dato-luz:nth-of-type(odd), .qa-ok { opacity: 1; }
   .traza { stroke-dashoffset: 0; }
   .paquete { opacity: 0; }
-  .burbuja, .sala-tarjeta, .sala-etiqueta, .sala-dibujo .andante { transition: none; }
+  .burbuja, .sala-tarjeta, .sala-etiqueta, .sala-dibujo .andante, .sala-frente, .frente-caja { transition: none; }
 }

@@ -124,6 +124,24 @@ const TABLERO = (() => {
     `<circle cx="${x(100)}" cy="${y(11.7)}" r="3" fill="none" stroke="${CIAN2}" stroke-width="1.2"/>`;
 })();
 
+// Hoy, de frente: el proceso completo, la misma línea con el nombre de cada fase (los de datos.js, fases)
+const NOMBRES_FASES = ['Calificación', 'Diagnóstico', 'Camino', 'Datos', 'Modelo y permisos', 'Construcción', 'Validación', 'Puesta en marcha', 'Medición', 'Cosecha'];
+const partir = (n) => { const i = n.lastIndexOf(' ', Math.ceil(n.length / 2) + 1); return n.length > 12 && i > 0 ? [n.slice(0, i), n.slice(i + 1)] : [n, '']; };
+const PROCESO = (() => {
+  const a = 1000, h = 440, base = 350, x = (p) => r1(60 + p * (a - 120) / 100), y = (p) => r1(96 + (p - 11.7) * 3.3);
+  const lin = [[0, 86.7], ...FASES, [100, 11.7]].map(([px, py]) => [x(px), y(py)]), pts = lin.map((q) => q.join(',')).join(' ');
+  return `<rect width="${a}" height="${h}" rx="14" fill="${AZUL}"/><rect x="10" y="10" width="${a - 20}" height="${h - 20}" rx="9" fill="none" stroke="rgba(127,216,207,.3)" stroke-width="1.5"/>` +
+    mono(40, 52, 'LA MISMA LÍNEA · DIEZ FASES', 16, CIAN2, ' letter-spacing="2"') + mono(a - 40, 52, 'BIPLOT HQ', 16, '#FFFFFF', ' letter-spacing="2" text-anchor="end"') +
+    `<polygon points="${pts} ${lin.at(-1)[0]},${base} ${lin[0][0]},${base}" fill="${CIAN}" fill-opacity=".14"/><path d="M${lin[0][0]} ${base}H${lin.at(-1)[0]}" stroke="rgba(127,216,207,.35)" stroke-width="2"/>` +
+    FASES.map(([px, py]) => `<path d="M${x(px)} ${r1(y(py) + 12)}V${base}" stroke="rgba(127,216,207,.22)" stroke-width="1.5" stroke-dasharray="3 5"/>`).join('') +
+    `<polyline points="${pts}" fill="none" stroke="${CIAN}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>` +
+    FASES.map(([px, py], i) => {
+      const cx = x(px), [l1, l2] = partir(NOMBRES_FASES[i]);
+      return `<circle cx="${cx}" cy="${y(py)}" r="10" fill="${CIAN}" stroke="#FFFFFF" stroke-width="3.5"/>` + mono(cx, base + 30, 'E' + i, 15, CIAN2, ' text-anchor="middle"') +
+        txt(cx, base + 52, l1, 12.5, '#FFFFFF', ' text-anchor="middle"') + (l2 ? txt(cx, base + 68, l2, 12.5, '#FFFFFF', ' text-anchor="middle"') : '');
+    }).join('') + `<circle cx="${x(100)}" cy="${y(11.7)}" r="8" fill="none" stroke="${CIAN2}" stroke-width="3"/>`;
+})();
+
 // La línea de tiempo del muro: fechas reales del historial de biplot.cl
 const HITOS = [
   ['8 SEP', 'Nace biplot.cl', 'Seis décadas, la misma línea'],
@@ -135,6 +153,20 @@ const HITOS = [
   ['28 SEP', 'La visita de Plotty', 'en video'],
   ['29 SEP', 'Una sala por empresa', 'cada una en su estilo']
 ];
+// La línea de tiempo, de frente: las mismas fechas, con aire y cada una centrada en su punto (la del muro se sale por los bordes)
+const TIEMPO_FRENTE = (() => {
+  const a = 1280, h = 290, y0 = 172, x = (i) => r1(130 + i * (a - 260) / (HITOS.length - 1));
+  return `<rect width="${a}" height="${h}" rx="14" fill="${MURO}"/><rect x="10" y="10" width="${a - 20}" height="${h - 20}" rx="9" fill="none" stroke="${MURO2}" stroke-width="2"/>` +
+    txt(48, 56, 'ASÍ CRECIÓ BIPLOT', 26, AZUL, ' letter-spacing="2"') + mono(a - 48, 56, '2026', 18, '#0B6F66', ' letter-spacing="2" text-anchor="end"') +
+    `<path d="M48 ${y0}H${a - 48}" stroke="${AZUL}" stroke-width="5" stroke-linecap="round"/>` +
+    HITOS.map(([f, t, sub], i) => {
+      const cx = x(i), arriba = i % 2 === 0, yT = arriba ? 96 : 218;
+      return `<path d="M${cx} ${arriba ? 146 : 185}V${arriba ? 159 : 198}" stroke="${AZUL}" stroke-width="1.8"/>` +
+        `<circle cx="${cx}" cy="${y0}" r="11" fill="${i === 1 || i === 2 || i === 4 ? CIAN : AZUL}" stroke="#FFFFFF" stroke-width="3.5"/>` +
+        mono(cx, yT, f, 13, GRIS, ' letter-spacing="1" text-anchor="middle"') + txt(cx, yT + 22, t, 16.5, AZUL, ' text-anchor="middle"') +
+        txt(cx, yT + 41, sub, 13, GRIS, ' font-weight="500" text-anchor="middle"');
+    }).join('');
+})();
 
 // ───────── La línea del piso: una sola, del mismo grosor ─────────
 // Parte color papel en el atril de la entrada y va tomando el color de cada época (el fósforo de la terminal, el neón del
@@ -167,19 +199,23 @@ export function salaArchivo(o = {}) {
     base(E, L, { W, D, HM, piso: '#233447', dibujo: LUZ + panos, muroY: MURO, muroX: MURO2, zocalo: AZUL, tope: '#D5D0C6', canto: '#C9C3B8', filete: CIAN });
     L.piso(0, 0, lineaDelPiso(o.tono), -29.5, 0.01);
 
-    // Cada vitrina se toca entera; la guía se para adelante, a su izquierda
-    const pieza = (id, x, y, alto = 1.75) => zona(id, { formas: [{ piso: [[x - 0.5, y - 0.5], [x + 0.5, y - 0.5], [x + 0.5, y + 0.5], [x - 0.5, y + 0.5]], alto }], lugar: [x, y, alto + 0.25], guia: [r1(x - 0.95), r1(y + 0.7)] });
+    // Cada vitrina se toca entera; la guía se para adelante, a su izquierda. Lo que es una imagen (la pantalla de hoy, la
+    // línea de tiempo, el primer plano) se abre de frente
+    const pieza = (id, x, y, alto = 1.75, frente) => zona(id, { formas: [{ piso: [[x - 0.5, y - 0.5], [x + 0.5, y - 0.5], [x + 0.5, y + 0.5], [x - 0.5, y + 0.5]], alto }], lugar: [x, y, alto + 0.25],
+      guia: [r1(x - 0.95), r1(y + 0.7)], ...(frente ? { frente } : {}) });
 
     // ── El muro de atrás: la línea de tiempo, sobre los desarrollos, y el nombre del museo ──
     const LT = 1280, XT = 3.4;
-    L.planoY(XT, 0.02, 2.35, LT, 170, `<rect width="${LT}" height="170" fill="${MURO}"/>` + txt(0, 26, 'ASÍ CRECIÓ BIPLOT', 24, AZUL, ' letter-spacing="2"') + mono(292, 26, '2026', 16, CIAN, ' letter-spacing="2"') +
+    const TIEMPO = `<rect width="${LT}" height="170" fill="${MURO}"/>` + txt(0, 26, 'ASÍ CRECIÓ BIPLOT', 24, AZUL, ' letter-spacing="2"') + mono(292, 26, '2026', 16, CIAN, ' letter-spacing="2"') +
       `<path d="M10 96H${LT - 10}" stroke="${AZUL}" stroke-width="4" stroke-linecap="round"/>` +
       HITOS.map(([f, t, s], i) => {
         const x = 40 + i * ((LT - 80) / (HITOS.length - 1)), arriba = i % 2 === 0, yT = arriba ? 58 : 128;
         return `<path d="M${x} ${arriba ? 70 : 104}V${arriba ? 88 : 122}" stroke="${AZUL}" stroke-width="1.6"/><circle cx="${x}" cy="96" r="9" fill="${i === 1 || i === 2 || i === 4 ? CIAN : AZUL}" stroke="#FFFFFF" stroke-width="3"/>` +
           mono(x - 60, yT - 14, f, 10, GRIS, ' letter-spacing=".8"') + txt(x - 60, yT, t, 12.5, AZUL) + txt(x - 60, yT + 14, s, 10, GRIS, ' font-weight="500"');
-      }).join(''), -39);
-    zona('linea', { formas: [{ plano: [[XT, 0.03, 0.65], [XT + LT / 100, 0.03, 0.65], [XT + LT / 100, 0.03, 2.35], [XT, 0.03, 2.35]] }], lugar: [XT + LT / 200, 0.05, 2.62], guia: [9.8, 2.4] });
+      }).join('');
+    L.planoY(XT, 0.02, 2.35, LT, 170, TIEMPO, -39);
+    zona('linea', { formas: [{ plano: [[XT, 0.03, 0.65], [XT + LT / 100, 0.03, 0.65], [XT + LT / 100, 0.03, 2.35], [XT, 0.03, 2.35]] }], lugar: [XT + LT / 200, 0.05, 2.62], guia: [9.8, 2.4],
+      frente: { svg: TIEMPO_FRENTE, ancho: 1280, alto: 290 } });
 
     L.planoY(16.7, 0.02, 2.4, 310, 175, `<rect width="310" height="175" fill="${MURO}"/>` + txt(0, 52, 'EL ARCHIVO', 44, AZUL, ' letter-spacing="3"') +
       mono(2, 78, 'MUSEO DE BIPLOT', 15, CIAN, ' letter-spacing="3"') + `<rect x="2" y="94" width="64" height="4" fill="${CIAN}"/>` +
@@ -198,13 +234,15 @@ export function salaArchivo(o = {}) {
     zona('fichero', { formas: [{ piso: [[0.06, 1.1], [0.72, 1.1], [0.72, 3.9], [0.06, 3.9]], alto: 1.25 }, { plano: [[0.03, 3.95, 1.55], [0.03, 1.05, 1.55], [0.03, 1.05, 2.05], [0.03, 3.95, 2.05]] }], lugar: [0.4, 2.5, 1.7], guia: [1.7, 3.2] });
 
     const yp = (LF + LC) / 2 + 1.5;
-    L.planoX(yp, 2.3, 300, 160, `<rect width="300" height="160" fill="#F8F6F1"/><rect x="10" y="10" width="280" height="140" fill="${AZUL2}"/>` +
+    const PLANO_HQ = `<rect width="300" height="160" fill="#F8F6F1"/><rect x="10" y="10" width="280" height="140" fill="${AZUL2}"/>` +
       Array.from({ length: 13 }, (_, i) => `<path d="M${10 + i * 22} 10V150" stroke="#2B5580" stroke-width=".8"/>`).join('') + Array.from({ length: 7 }, (_, i) => `<path d="M10 ${10 + i * 22}H290" stroke="#2B5580" stroke-width=".8"/>`).join('') +
       `<path d="M150 42L230 82L150 122L70 82Z" fill="none" stroke="#FFFFFF" stroke-width="2.4"/><path d="M150 42V62M230 82V96M70 82V96M150 122V136M70 96L150 136L230 96" fill="none" stroke="#FFFFFF" stroke-width="1.6"/>` +
       `<path d="M110 62L150 82L190 62M150 82V122" stroke="#7FD8CF" stroke-width="1.4" fill="none" stroke-dasharray="4 3"/>` +
-      mono(18, 30, 'BIPLOT HQ · PLANO', 11, '#FFFFFF', ' letter-spacing="1.5"') + mono(208, 142, '25·09·2026', 9, CIAN2), -38.8);
+      mono(18, 30, 'BIPLOT HQ · PLANO', 11, '#FFFFFF', ' letter-spacing="1.5"') + mono(208, 142, '25·09·2026', 9, CIAN2);
+    L.planoX(yp, 2.3, 300, 160, PLANO_HQ, -38.8);
     L.planoX(yp, 0.62, 300, 20, mono(0, 14, 'EL PRIMER PLANO DE LA OFICINA', 11, GRIS, ' letter-spacing="1.2"'), -38.5);
-    zona('plano', { formas: [{ plano: [[0.03, yp, 0.7], [0.03, yp - 3, 0.7], [0.03, yp - 3, 2.3], [0.03, yp, 2.3]] }], lugar: [0.05, yp - 1.5, 2.5], guia: [2.1, yp - 1.5] });
+    zona('plano', { formas: [{ plano: [[0.03, yp, 0.7], [0.03, yp - 3, 0.7], [0.03, yp - 3, 2.3], [0.03, yp, 2.3]] }], lugar: [0.05, yp - 1.5, 2.5], guia: [2.1, yp - 1.5],
+      frente: { svg: PLANO_HQ, ancho: 300, alto: 160 } });
 
     // ── Adelante, las épocas: la misma línea, contada con herramientas distintas ──
     // 1985 · El papel: la libreta abierta sobre su atril, con el lápiz al lado
@@ -254,7 +292,7 @@ export function salaArchivo(o = {}) {
       L.caja(x - 0.42, y - 0.07, h + 0.12, 0.84, 0.06, 0.42, MARINO, k + 0.1);
       L.planoY(x - 0.4, y - 0.009, h + 0.52, 80, 32, `<g transform="scale(${(80 / 212).toFixed(4)})">${TABLERO}</g>`, k + 0.12);
     }, { vidrio: false });
-    pieza('hoy', COL[0], FRENTE, 1.55);
+    pieza('hoy', COL[0], FRENTE, 1.55, { svg: PROCESO, ancho: 1000, alto: 440 });
     pj('arFoto', COL[0] + 0.95, FRENTE - 0.25, 0, 'i');
 
     // ── Atrás, lo que construimos: una pieza de cada desarrollo, en el orden en que llegaron ──

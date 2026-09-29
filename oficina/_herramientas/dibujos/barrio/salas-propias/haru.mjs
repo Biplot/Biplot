@@ -79,8 +79,9 @@ export function salaHaru() {
     L.planoY(5.6, 0.02, HM, 720, HM * 100, `<rect width="720" height="${HM * 100}" fill="#3A2A20"/>` + Array.from({ length: 72 }, (_, i) => `<rect x="${i * 10 + 2}" width="6" height="${HM * 100}" fill="#5A4030"/>`).join(''), -45);
     L.planoY(8.45, 0.03, 2.42, 120, 120, `<rect width="120" height="120" rx="8" fill="${ROJO}"/><image href="§M§logo-haru.webp" x="6" y="6" width="108" height="108"/>`, -39);
     const carta = [['Teo Roll', '9.000'], ['Acevichado Roll', '7.500'], ['Chinchorrero', '8.000'], ['Azapa Roll', '7.500'], ['Payachata', '7.000'], ['Mangojito Roll', '7.000']];
-    L.planoY(10.1, 0.03, 2.4, 240, 150, `<rect width="240" height="150" rx="5" fill="#15120F" stroke="#8B6A4E" stroke-width="5"/>` + MONT8(14, 26, 'ROLLS DE LA CASA', 14, ORO, ' letter-spacing="1"') +
-      carta.map(([n, p], i) => MONT(14, 50 + i * 17, n, 11, CREMA) + `<path d="M${22 + n.length * 6.6} ${46 + i * 17}H176" stroke="#5E554A" stroke-width="1.2" stroke-dasharray="2 4"/>` + MONT(184, 50 + i * 17, '$' + p, 11, CREMA)).join(''), -39);
+    const PIZARRA = `<rect width="240" height="150" rx="5" fill="#15120F" stroke="#8B6A4E" stroke-width="5"/>` + MONT8(14, 26, 'ROLLS DE LA CASA', 14, ORO, ' letter-spacing="1"') +
+      carta.map(([n, p], i) => MONT(14, 50 + i * 17, n, 11, CREMA) + `<path d="M${22 + n.length * 6.6} ${46 + i * 17}H176" stroke="#5E554A" stroke-width="1.2" stroke-dasharray="2 4"/>` + MONT(184, 50 + i * 17, '$' + p, 11, CREMA)).join('');
+    L.planoY(10.1, 0.03, 2.4, 240, 150, PIZARRA, -39);
     L.caja(5.9, 0.08, 1.35, 2.3, 0.22, 0.04, MADERA, -37);
     for (let i = 0; i < 10; i++) { const x = 6.05 + i * 0.22, alto = 0.22 + (i % 3) * 0.04; L.cil(x, 0.18, 1.39, 0.045, alto, ['#E8DFC8', '#3E7A4E', '#C9A24E', '#F3EDE1'][i % 4], ['#CFC2A3', '#2F6440', '#A8843A', '#D9CCB0'][i % 4], -36 + i * 0.001); }
     L.caja(5.9, 0.55, 0, 6.6, 0.5, 0.92, ACERO, 4.5);
@@ -97,7 +98,8 @@ export function salaHaru() {
     for (const [x, id] of [[7.0, 'comensal6'], [8.3, 'hrClienta'], [9.6, 'hrCliente'], [11.6, 'comensal3']]) { banqueta(L, x, 3.05); pj(id, x, 3.05, 0.72, 'd', EA, x + 3.05 + 0.3); }
     banqueta(L, 10.6, 3.05);
     zona('barra', { formas: [{ piso: [[5.8, 0.5], [12.6, 0.5], [12.6, 3.4], [5.8, 3.4]], alto: 2.1 }], lugar: [8.6, 2.0, 2.5], guia: [9.2, 4.1] });
-    zona('carta', { formas: [{ plano: [[10.1, 0.03, 0.9], [12.5, 0.03, 0.9], [12.5, 0.03, 2.4], [10.1, 0.03, 2.4]] }], lugar: [11.3, 0.05, 2.62] });
+    zona('carta', { formas: [{ plano: [[10.1, 0.03, 0.9], [12.5, 0.03, 0.9], [12.5, 0.03, 2.4], [10.1, 0.03, 2.4]] }], lugar: [11.3, 0.05, 2.62],
+      frente: { svg: PIZARRA, ancho: 240, alto: 150 } });
 
     // ── El bar de cócteles, con sus botellas y el 春 en neón ──
     L.planoY(13.3, 0.03, 2.35, 600, 150, `<rect width="600" height="150" rx="4" fill="#15120F"/>` + [48, 96, 144].map(y => `<rect x="6" y="${y - 4}" width="588" height="4" fill="#8B6A4E"/>`).join('') +

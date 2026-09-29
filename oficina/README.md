@@ -101,6 +101,7 @@ los tres modelos en maqueta, la recepción con su felpudo y, chico, el rincón d
   el estilo de Nu Home (crema, títulos en Cormorant Garamond, botones negros con su punto dorado), junto a la zona o, en
   celular, como hoja desde abajo. Se cierra con la × o con `Escape`. Las zonas: recepción, cada modelo, casa piloto,
   asesoría, mesa de maqueta, pantalla del diseñador, terminaciones, taller, salón y ventanal, entrega y el rincón de BiPlot.
+  La pantalla del diseñador y las terminaciones, que son imágenes, se abren de frente (más abajo, «La vista de frente»).
 - La gente habla sola: cada tanto aparece una frase sobre alguien, de a una o de a dos (nunca con la animación pausada ni
   con «reducir movimiento»). Al tocar o elegir con teclado a quien habla, se ve su frase.
 - Abajo va la barra de Nu Home: su marca, «Casas modulares. Pasa, recorre la casa piloto y conversa con nuestras
@@ -160,6 +161,17 @@ punto coral del pedestal libre: tu turno, el único lugar con «Agenda tu diagn�
 2026 (con las fechas del historial del sitio) y el fichero con todos los casos por rubro y su buscador (también en la
 barra: «Todos los casos»). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
 doce paradas, con cuatro visitas. Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
+
+**La vista de frente.** En todas las salas propias, lo que es una imagen (un mural, una pizarra, un letrero, un paisaje,
+una pantalla) no abre una tarjeta al costado: se abre de frente, derecho y en grande, con la sala oscurecida detrás (se
+sigue viendo), y debajo (o al lado, si la imagen es angosta) va lo que cuenta su tarjeta, con sus botones. En el museo:
+el mural de las diez fases (el proceso completo, con quién lleva cada fase), la línea de tiempo de 2026 y el primer
+plano de BiPlot HQ; en Nu Home, las terminaciones y la pantalla real del diseñador; en Fundos, los tres paisajes del
+ventanal y el letrero del equipo; en Haru, la pizarra de los rolls; en Eleven, el horario y el team; en Rumbo, la rueda
+de la vida, los hábitos, las recompensas y la noche. Lo que tiene su propia explicación (un mueble, un rincón con su
+gente, una vitrina) sigue abriendo su tarjeta. Se cierra con la ×, con `Escape` o tocando lo oscuro, y el foco vuelve a
+lo que se tocó; abierta desde el recorrido («Ver más»), al cerrarla el recorrido sigue en la misma parada. Un letrero
+chico no se agranda más de 3,2 veces, y en celular la línea de tiempo se desliza de lado.
 
 **Cómo se arma una sala propia.** Todo lo de la empresa sale de su dibujo y de `datos.js`: una sala pasa a ser propia con
 `salaPropia` en su proyecto (sus colores, su letra, su marca, sus textos, quién habla, qué dice cada zona y el recorrido)
@@ -240,7 +252,9 @@ camina sólo mientras se ve.
   toca va con `zona(id, { formas, lugar, guia })`: sus formas son pedazos de piso levantados hasta un alto
   (`{ piso: [[x, y], …], alto }`, un mueble o un rincón con su gente) o planos (`{ plano: [[x, y, z], …] }`, una pantalla
   o un cuadro en el muro); `lugar` es donde va su nombre y `guia`, el punto del piso donde se para la asesora cuando el
-  recorrido pasa por ahí. `lugar('entrada', …)` marca dónde parte la cámara en celular. La gente que habla se nombra por
+  recorrido pasa por ahí. Si la zona es una imagen, lleva además `frente: { svg, ancho, alto }` (el dibujo derecho en su
+  tamaño, casi siempre el mismo que se pinta en el muro; o `img`, una pantalla real de `media/salas/`; y `fondo`, un color
+  detrás si el dibujo no trae el suyo): al tocarla se abre de frente en vez de su tarjeta, con los textos de su zona. `lugar('entrada', …)` marca dónde parte la cámara en celular. La gente que habla se nombra por
   su id en el dibujo (`nhRecepcion`, `bucle`…). En `datos.js`, su proyecto lleva `salaPropia`: sus colores y su letra
   (`colores`, `fuente`), su marca y la frase de su barra, el botón de su barra con su enlace (`disenar`: «Diseñar la
   mía», «Ver la carta»…), su WhatsApp (o `null`), quién habla y qué dice, qué cuenta cada zona (con sus medidas, una
@@ -285,7 +299,8 @@ la sala propia de Nu Home (sin números ni panel, su barra, sus zonas y sus tarj
 recorrido con una asesora, la tarjeta de BiPlot, las salas vecinas y el botón atrás), las de Fundos, Haru, Eleven y
 Rumbo (su barra con su letra, todas sus zonas y su gente, una tarjeta con lo real, su recorrido y el rincón de BiPlot),
 el museo de El Archivo (sus épocas con su capítulo, las diez fases, sus casos con su sala, el fichero, el pedestal libre
-y el recorrido con Pepa),
+y el recorrido con Pepa), la vista de frente (las diez fases y la línea de tiempo del museo, una pieza de cada sala y la
+pantalla del diseñador de Nu Home con un clic de verdad, con la sala oscurecida detrás, y el recorrido que sigue detrás),
 chat de Plotty con la cámara en
 el rubro, vitrina,
 El Archivo, teclado, enlaces directos y las páginas para compartir, pausa, movimiento reducido, errores de consola y
@@ -309,7 +324,9 @@ una empresa con puntos, cada punto es un botón (Enter o espacio) y también est
 vuelve a la calle. En las salas propias, la sala es una región que se recorre con las flechas, `+`, `−` y `0`; cada zona
 y cada persona que habla es un botón con su nombre (con Tab, la zona se ilumina y la cámara la busca si quedó fuera; la
 persona muestra su frase), las frases se anuncian a lectores de pantalla (sin repetir las que ya dijeron), la tarjeta
-recibe el foco al abrirse y lo devuelve al cerrarse, y los botones miden al menos 44 px. El chat de Plotty son botones, con los mensajes anunciados a lectores de pantalla. Con "reducir movimiento"
+recibe el foco al abrirse y lo devuelve al cerrarse, y los botones miden al menos 44 px. La vista de frente es un
+diálogo: recibe el foco, lo mantiene adentro mientras está abierta y lo devuelve al cerrarse; su dibujo lleva su nombre y,
+la línea de tiempo, sus fechas para lectores de pantalla. El chat de Plotty son botones, con los mensajes anunciados a lectores de pantalla. Con "reducir movimiento"
 todo queda quieto y la cámara salta sin animación (los locales se abren igual, con su gente quieta en su lugar);
 además hay un botón para pausar, que también detiene a la gente de los locales y de las salas.
 
