@@ -1028,8 +1028,13 @@
     propia = { id: id, pr: pr, P: PP, S: S, svg: svgS, vb: vb, cam: { x: vb[0] + vb[2] / 2, y: vb[1] + vb[3] / 2, z: 1 }, zonas: {}, hablan: [],
       burbujas: [], tarjeta: null, origen: null, volver: null, aMano: false, recorrido: null, resalte: null, anillo: null, sobre: '', vuelo: null, latido: 0, turno: 0, reloj: null };
     dichas = {};
-    var c = PP.colores || {};
-    salaEl.style.setProperty('--p-fondo', c.fondo || ''); salaEl.style.setProperty('--p-tinta', c.tinta || ''); salaEl.style.setProperty('--p-oro', c.oro || '');
+    // Los colores y la letra de la empresa (lo que no trae, queda como en oficina.css)
+    var c = PP.colores || {}, f = PP.fuente || {};
+    [['--p-fondo', c.fondo], ['--p-fondo-2', c.fondo2], ['--p-tinta', c.tinta], ['--p-tinta-2', c.tinta2], ['--p-oro', c.oro], ['--p-ceja', c.ceja],
+      ['--p-ceja-burbuja', c.cejaBurbuja], ['--p-borde', c.borde], ['--p-brillo', c.brillo], ['--p-sub', c.sub], ['--p-pie', c.pie], ['--p-velo', c.velo],
+      ['--p-hover', c.hover], ['--p-btn-fondo', c.boton], ['--p-btn-tinta', c.botonTinta], ['--p-btn-punto', c.botonPunto],
+      ['--p-serif', f.familia], ['--p-peso', f.peso], ['--p-espacio', f.espacio], ['--p-caja', f.caja], ['--p-titulo-tam', f.titulo], ['--p-sub-letra', f.sub]
+    ].forEach(function (t) { salaEl.style.setProperty(t[0], t[1] || ''); });
     (S.zonas || []).forEach(function (z) { propia.zonas[z.id] = { z: z, pts: puntosDe(z.silueta), d: (PP.zonas || {})[z.id] }; });
     var h = '<g class="sala-resalte" aria-hidden="true"></g><g class="sala-anillo" aria-hidden="true"></g><g class="sala-toques">';
     Object.keys(PP.zonas || {}).forEach(function (zid) {
@@ -1344,12 +1349,13 @@
         '<figcaption>' + esc(pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo') + '</figcaption></figure>' : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
-      (d.botones && d.botones.length ? '<div class="tarjeta-botones">' + botonesPropia(d.botones) + '</div>' : '') + '</div>';
+      (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
+        esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') + '</div>';
   }
   // La tarjeta de BiPlot, en su rincón: todo lo que hicimos (lo mismo que el panel de las demás salas)
   function htmlTarjetaBiplot(pr) {
     var pines = pr.pines || [];
-    return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">Hecho con BiPlot</p>' +
+    return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc((pr.salaPropia && pr.salaPropia.cejaBiplot) || 'Hecho con BiPlot') + '</p>' +
       '<h3 id="sala-tarjeta-t" tabindex="-1">' + esc(pr.nombre) + ' <span class="chip">' + esc(pr.corto || pr.estado) + '</span></h3>' +
       '<p class="tarjeta-sub">' + esc(pr.cliente) + ' · ' + esc(pr.rubro) + '</p><p>' + esc(pr.resumen) + '</p>' +
       '<div class="tarjeta-botones"><button type="button" class="bp-btn primario" data-hq="1"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Pasar a BiPlot HQ</button></div>' +
@@ -1448,7 +1454,8 @@
   }
   function iniciarRecorrido(i) {
     if (!propia || !(propia.P.recorrido || []).length) return;
-    cerrarTarjeta(true); callarSolas(); anillo(null);
+    // (se callan todos, también quien se acaba de tocar, para que nadie tape lo que dice quien guía)
+    cerrarTarjeta(true); propia.burbujas.slice().forEach(function (x) { callarSala(x); }); anillo(null);
     propia.recorrido = { i: -1 };
     barraSala.classList.add('recorriendo'); barraSala.innerHTML = htmlBarraRecorrido();
     acomodarPropia();

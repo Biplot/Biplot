@@ -97,6 +97,24 @@ const caminan = (sel) => js(`(async () => { const pos = () => [...document.query
   const a = pos(); await ${W(1500)}; return { n: document.querySelectorAll('${sel} .andante').length, movio: a !== pos() }; })()`);
 const techosCerrados = () => js("!document.querySelector('.local-abierto') && [...document.querySelectorAll('.barrio .local[data-local]')].every(l => getComputedStyle(l).opacity === '1' && getComputedStyle(l).visibility === 'visible')");
 
+// Lo que se espera de cada sala propia además de la de Nu Home (que se prueba en detalle más abajo)
+const SALAS_PROPIAS = [
+  { id: 'fundos', nombre: 'Fundos 360', barra: ['Fundos', 'INMOBILIARIA', 'Parcelas de 5.000 m²', 'Ver los proyectos', 'Recorrer con una ejecutiva'], letra: 'Cormorant Garamond',
+    disenar: 'https://biplot.cl/propuestas/fundos-inmobiliaria/', zona: 'lote25', titulo: 'Lote 25', chips: '5.000 m² | $35.990.000 | Disponible',
+    enlace: 'Verlo en el plano https://biplot.cl/propuestas/fundos-inmobiliaria/#lote-puerto-varas-25', paradas: 7, recorrido: ['La entrada', 'El mirador 360°'],
+    ceja: 'Hecho con BiPlot', chip: 'A la medida', pantallas: 7 },
+  { id: 'haru', nombre: 'Haru 360', barra: ['Haru Isidora', 'SUSHI DE AUTOR · ARICA', 'Ver la carta', 'Recorrer con la anfitriona'], letra: 'Montserrat',
+    disenar: 'https://haru-carta.vercel.app', zona: 'barra', titulo: 'Chinchorrero', chips: '$8.000 | Rolls de autor', enlace: 'Ver la carta https://haru-carta.vercel.app', paradas: 7, recorrido: ['La entrada', 'La barra de sushi'],
+    ceja: 'Hecho con BiPlot', chip: 'En implementación', pantallas: 7 },
+  { id: 'eleven', nombre: 'Eleven 360', barra: ['Eleven Club', 'FITNESS AND BXO', 'Ver planes', 'Recorrer con un coach'], letra: 'Anton',
+    disenar: 'https://eleven-360.vercel.app/#planes', zona: 'clases', titulo: 'Power Jump', chips: 'Martes y jueves · 19:30 | 60 min | Incluida en tu plan',
+    enlace: 'Ver planes https://eleven-360.vercel.app/#planes', paradas: 8,
+    recorrido: ['La recepción', 'El peso libre'], ceja: 'Propuesta de BiPlot', chip: 'Propuesta', pantallas: 4 },
+  { id: 'rumbo', nombre: 'Rumbo', barra: ['Rumbo', 'by BiPlot', 'Abrir Rumbo', 'Recorrer un día'], letra: 'Space Grotesk',
+    disenar: 'https://rumbo.biplot.cl', zona: 'elefante', titulo: '¿Cómo te comes un elefante?', chips: 'Cría · Joven · Adulto · Sabio | Seis tipos', enlace: 'Abrir Rumbo https://rumbo.biplot.cl', paradas: 7,
+    recorrido: ['Tu día', 'El ritual de mañana'], ceja: 'Hecho en BiPlot', chip: 'Publicado', pantallas: 3 },
+];
+
 for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, true]]) {
   console.log(`\n${w}×${h}${movil ? ' (celular)' : ''}`);
   consola = [];
@@ -177,15 +195,24 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(await enSala() && (await js('location.hash')) === '#haru', '«Entrar a la sala» abre la sala de Haru (' + await js('location.hash') + ')');
   const cs = await caminan('#sala-dibujo');
   ok(cs.n === 2 && cs.movio, 'en la sala de Haru la gente camina (' + cs.n + ')');
-  const pin = await js(`(async () => { document.querySelector('#sala-dibujo-caja .pin[data-pin="3"]').dispatchEvent(new MouseEvent('click', { bubbles: true })); await ${W(150)};
-    const img = document.querySelector('.visor img'); return { src: img ? img.getAttribute('src') : '', activo: document.querySelector('#sala-dibujo-caja .pin.activo')?.dataset.pin, tira: document.querySelector('.tira [aria-pressed="true"]')?.dataset.pin }; })()`);
-  ok(/media\/salas\/haru-3-comandas\.webp$/.test(pin.src) && pin.activo === '3' && pin.tira === '3', 'el punto 3 de la sala muestra la pantalla real de las comandas');
-  ok(await js("[...document.querySelectorAll('.visor img, .tira img')].every(i => i.complete && i.naturalWidth > 0)"), 'las pantallas reales de la sala cargan');
-  ok(await js("!!document.querySelector('#panel .enlace-copia code') && document.querySelector('#panel .enlace-copia code').textContent === 'biplot.cl/oficina/haru'"), 'la sala muestra su enlace para compartir');
-  const vecina = await js(`(async () => { document.querySelector('#sala-sig').click(); await ${W(400)}; return [document.querySelector('#panel-titulo').textContent, location.hash]; })()`);
-  ok(vecina[0] === 'Eleven 360' && vecina[1] === '#eleven', 'el botón de la sala vecina pasa a Eleven 360');
-  const sinImg = await js("!!document.querySelector('.visor svg.visor-sala use')");
-  ok(sinImg, 'en una sala sin capturas, el punto muestra su rincón de la sala');
+  // Haru tiene su propia sala: sin números ni panel; la cocina muestra la pantalla real de las comandas
+  const hr = await js(`(async () => { const b = document.querySelector('#sala-barra'), d = b.querySelector('a.sp-btn');
+    const r = { propia: document.body.classList.contains('en-sala-propia') && document.querySelector('#panel').hidden && !document.querySelector('#sala-dibujo-caja .pin'),
+      barra: !b.hidden ? b.textContent : '', disenar: d ? d.getAttribute('href') + ' ' + d.target : '' };
+    const z = document.querySelector('.zona-sala[data-zona="cocina"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
+    const img = document.querySelector('#sala-tarjeta .tarjeta-img img');
+    if (img && !(img.complete && img.naturalWidth)) await new Promise((listo) => { img.onload = img.onerror = listo; setTimeout(listo, 4000); });
+    r.t = document.querySelector('#sala-tarjeta-t')?.textContent; r.img = img ? img.getAttribute('src') : ''; r.carga = !!img && img.complete && img.naturalWidth > 0;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(120)};
+    const bz = document.querySelector('.zona-sala[data-zona="biplot"]'); bz.focus(); bz.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
+    r.comparte = document.querySelector('#sala-tarjeta .enlace-copia code')?.textContent;
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(120)}; return r; })()`);
+  ok(hr.propia && /Haru Isidora/.test(hr.barra) && /Recorrer con la anfitriona/.test(hr.barra) && hr.disenar === 'https://haru-carta.vercel.app _blank', 'la sala de Haru es su propia sala: sin números ni panel, con su barra y «Ver la carta»');
+  ok(hr.t === 'Comandas sin papel' && /media\/salas\/haru-3-comandas\.webp$/.test(hr.img) && hr.carga, 'la cocina abre su tarjeta con la pantalla real de las comandas, y la pantalla carga');
+  ok(hr.comparte === 'biplot.cl/oficina/haru', 'su rincón de BiPlot trae el enlace para compartir la sala');
+  const vecina = await js(`(async () => { document.querySelector('#sala-sig').click(); await ${W(500)};
+    return [document.querySelector('#sala-nombre').textContent, location.hash, document.body.classList.contains('en-sala-propia') && document.querySelector('#panel').hidden]; })()`);
+  ok(vecina[0] === 'Eleven 360' && vecina[1] === '#eleven' && vecina[2], 'el botón de la sala vecina pasa a la sala de Eleven 360');
   ok(await js(`(async () => { document.querySelector('#sala-volver').click(); await ${W(300)}; return document.querySelector('#sala').hidden && !location.hash && document.querySelector('#panel').hidden; })()`), '«Volver a la calle» cierra la sala y limpia la dirección');
   await sleep(700);
   ok(await techosCerrados() && await js("!document.querySelector('#sala-dibujo .andante')"), 'y el local vuelve a cerrarse');
@@ -298,15 +325,52 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(bp.video && bp.equipo === 9 && bp.comparte === 'biplot.cl/oficina/nuhome' && bp.hq && !bp.desborde, 'y trae el video, el equipo, «Comparte esta sala» y «Pasar a BiPlot HQ»');
   ok(await js(`(async () => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(120)}; const t = document.querySelector('#sala-tarjeta').hidden;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(300)}; return t && document.querySelector('#sala').hidden && !location.hash; })()`), 'Escape cierra primero la tarjeta y después sale a la calle');
-  // Las salas vecinas: de Nu Home a Fundos (con sus números y su panel, como siempre) y de vuelta
+  // Las salas vecinas: de Nu Home a Fundos (otra sala propia, con su barra) y de vuelta
   await abrir(w, h, movil, false, '#nuhome');
   await sleep(700);
-  const vec = await js(`(async () => { document.querySelector('#sala-sig').click(); await ${W(500)};
-    const f = { hash: location.hash, propia: document.body.classList.contains('en-sala-propia'), panel: !document.querySelector('#panel').hidden, pines: document.querySelectorAll('#sala-dibujo-caja .pin').length, barra: document.querySelector('#sala-barra').hidden, titulo: document.querySelector('#panel-titulo')?.textContent };
-    document.querySelector('#sala-ant').click(); await ${W(500)};
-    return { f, n: { hash: location.hash, propia: document.body.classList.contains('en-sala-propia'), panel: document.querySelector('#panel').hidden, barra: !document.querySelector('#sala-barra').hidden } }; })()`);
-  ok(vec.f.hash === '#fundos' && !vec.f.propia && vec.f.panel && vec.f.pines === 7 && vec.f.barra && vec.f.titulo === 'Fundos 360' && vec.n.hash === '#nuhome' && vec.n.propia && vec.n.panel && vec.n.barra,
-    'el botón de la sala vecina pasa a Fundos 360 (con sus números y su panel) y vuelve a la sala propia de Nu Home');
+  const vec = await js(`(async () => { const estado = () => ({ hash: location.hash, propia: document.body.classList.contains('en-sala-propia'), panel: document.querySelector('#panel').hidden,
+      pines: document.querySelectorAll('#sala-dibujo-caja .pin').length, barra: document.querySelector('#sala-barra').hidden ? '' : document.querySelector('#sala-barra').textContent, nombre: document.querySelector('#sala-nombre').textContent });
+    document.querySelector('#sala-sig').click(); await ${W(500)}; const f = estado();
+    document.querySelector('#sala-ant').click(); await ${W(500)}; return { f, n: estado() }; })()`);
+  ok(vec.f.hash === '#fundos' && vec.f.propia && vec.f.panel && vec.f.pines === 0 && /Ver los proyectos/.test(vec.f.barra) && vec.f.nombre === 'Fundos 360' &&
+    vec.n.hash === '#nuhome' && vec.n.propia && vec.n.panel && /Diseñar la mía/.test(vec.n.barra) && vec.n.nombre === 'Nu Home 360', 'el botón de la sala vecina pasa a la sala de Fundos 360, con su barra, y vuelve a la de Nu Home');
+  // Las otras cuatro salas propias: su barra con su letra, todas sus zonas y su gente, una tarjeta con lo real, su recorrido y BiPlot en su rincón
+  for (const s of SALAS_PROPIAS) {
+    await abrir(w, h, movil, false, '#' + s.id);
+    await sleep(900);
+    const r = await js(`(async () => { const PP = window.OFICINA_DATOS.proyectos.find(p => p.id === '${s.id}').salaPropia, b = document.querySelector('#sala-barra'), d = b.querySelector('a.sp-btn');
+      const zonas = [...document.querySelectorAll('.zona-sala')].map(z => z.dataset.zona), quienes = [...document.querySelectorAll('.quien-sala')].map(q => q.dataset.quien);
+      const r = { sala: document.body.classList.contains('en-sala-propia') && document.querySelector('#panel').hidden && !document.querySelector('#sala-dibujo-caja .pin'), nombre: document.querySelector('#sala-nombre').textContent,
+        barra: !b.hidden ? b.textContent : '', disenar: d ? d.getAttribute('href') + ' ' + d.target : '', wa: [...document.querySelectorAll('#sala a')].some(a => /wa\\.me/.test(a.href)),
+        letra: getComputedStyle(b.querySelector('.sp-logo')).fontFamily, desborde: document.documentElement.scrollWidth > innerWidth,
+        faltan: Object.keys(PP.zonas).filter(z => !zonas.includes(z)).concat([...new Set(PP.burbujas.map(x => x.quien))].filter(q => !quienes.includes(q))) };
+      const t = document.querySelector('#sala-tarjeta'), z = document.querySelector('.zona-sala[data-zona="${s.zona}"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
+      const img = t.querySelector('.tarjeta-img img');
+      if (img && !(img.complete && img.naturalWidth)) await new Promise((listo) => { img.onload = img.onerror = listo; setTimeout(listo, 4000); });
+      r.tj = { abierta: !t.hidden && t.classList.contains('empresa'), t: document.querySelector('#sala-tarjeta-t')?.textContent, chips: [...t.querySelectorAll('.tarjeta-chips li')].map(l => l.textContent).join(' | '),
+        enlace: [...t.querySelectorAll('a.sp-btn')].map(a => a.textContent.replace(/ \\(se abre.*/, '') + ' ' + a.getAttribute('href')).join(' | '), carga: !img || (img.complete && img.naturalWidth > 0),
+        hoja: t.classList.contains('hoja'), etiqueta: document.querySelector('.sala-etiqueta')?.textContent, desborde: document.documentElement.scrollWidth > innerWidth };
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(150)};
+      const s = document.querySelector('.sala-svg'), rec = () => ({ n: document.querySelector('[data-rec="n"]').textContent, t: document.querySelector('[data-rec="t"]').textContent, vb: s.getAttribute('viewBox'),
+        guia: document.querySelector('#sala-capa .burbuja.de-guia')?.textContent || '' });
+      document.querySelector('#sala-barra [data-recorrer]').click(); await ${W(1500)}; const p1 = rec();
+      document.querySelector('#sala-barra [data-rec="sig"]').click(); await ${W(1600)}; const p2 = rec();
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(150)};
+      r.rec = { p1, p2, esperado: PP.recorrido.slice(0, 2).map(p => PP.textos.guia + p.texto), fin: !document.querySelector('#sala-barra').classList.contains('recorriendo') && document.body.classList.contains('en-sala-propia') };
+      const bz = document.querySelector('.zona-sala[data-zona="biplot"]'); bz.focus(); bz.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
+      r.bp = { bp: t.classList.contains('bp') && !t.hidden, ceja: t.querySelector('.ceja')?.textContent, chip: t.querySelector('h3 .chip')?.textContent, tira: t.querySelectorAll('.tira-bp button').length,
+        comparte: t.querySelector('.enlace-copia code')?.textContent, hq: !!t.querySelector('[data-hq]'), desborde: document.documentElement.scrollWidth > innerWidth };
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(120)}; return r; })()`);
+    ok(r.sala && r.nombre === s.nombre && s.barra.every((x) => r.barra.includes(x)) && r.disenar === s.disenar + ' _blank' && !/Hablar|Escribir/.test(r.barra) && !r.wa && r.letra.includes(s.letra),
+      `oficina/#${s.id} abre la sala propia de ${s.nombre}, con su barra en su letra (${s.letra}) y «${s.barra.at(-1)}»`);
+    ok(!r.faltan.length && !r.desborde, `en la sala de ${s.nombre} están todas sus zonas y toda su gente` + (r.faltan.length ? ' (faltan: ' + r.faltan.join(', ') + ')' : ''));
+    ok(r.tj.abierta && r.tj.t === s.titulo && r.tj.chips === s.chips && r.tj.enlace === s.enlace && r.tj.carga && r.tj.hoja === !!movil && !r.tj.desborde,
+      `${s.zona} abre su tarjeta de ${s.nombre}: «${r.tj.t}» (${r.tj.chips})`);
+    ok(r.rec.p1.n === '1 de ' + s.paradas && r.rec.p1.t === s.recorrido[0] && r.rec.p2.n === '2 de ' + s.paradas && r.rec.p2.t === s.recorrido[1] && r.rec.p2.vb !== r.rec.p1.vb &&
+      r.rec.p1.guia === r.rec.esperado[0] && r.rec.p2.guia === r.rec.esperado[1] && r.rec.fin, `«${s.barra.at(-1)}» pasa de ${s.recorrido.join(' a ')}, y quien guía habla en cada parada`);
+    ok(r.bp.bp && r.bp.ceja === s.ceja && r.bp.chip === s.chip && r.bp.tira === s.pantallas && r.bp.comparte === 'biplot.cl/oficina/' + s.id && r.bp.hq && !r.bp.desborde,
+      `el rincón de BiPlot abre su tarjeta: «${r.bp.ceja}», ${s.nombre} «${r.bp.chip}» y ${r.bp.tira} pantallas`);
+  }
   // Desde la calle: el local de Nu Home, «Entrar a la sala» y el botón atrás del navegador
   await abrir(w, h, movil, false);
   const atras = await js(`(async () => { document.querySelector('#recorrer [data-id="nuhome"]').click(); await ${W(400)}; document.querySelector('#panel [data-entrar="nuhome"]').click(); await ${W(1500)};
@@ -331,7 +395,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     await listo; cargada = null;
     for (let i = 0; i < 60; i++) { try { if (await js("location.hash === '#haru' && document.documentElement.classList.contains('lista')")) break; } catch { /* navegando */ } await sleep(250); }
     await sleep(900);
-    ok((await js("document.querySelector('#panel-titulo')?.textContent")) === 'Haru 360' && await enSala(), 'biplot.cl/oficina/haru/ lleva a la oficina, dentro de la sala de Haru');
+    ok(await enSala() && await js("document.body.classList.contains('en-sala-propia') && document.querySelector('#sala-nombre').textContent === 'Haru 360' && !document.querySelector('#sala-barra').hidden"), 'biplot.cl/oficina/haru/ lleva a la oficina, dentro de la sala de Haru');
     const og = fs.readFileSync(path.join(raiz, 'oficina', 'haru', 'index.html'), 'utf8');
     ok(/og:image" content="https:\/\/biplot\.cl\/oficina\/kit\/png\/sala-haru-og\.png"/.test(og) && fs.existsSync(path.join(raiz, 'oficina', 'kit', 'png', 'sala-haru-og.png')), 'la página de Haru trae su vista previa para compartir');
   }

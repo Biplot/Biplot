@@ -1,10 +1,11 @@
 # Propuesta: la sala de Nu Home como su propia sala de ventas
 
-Borrador de la sala nueva de Nu Home, para revisar con Nu Home antes de construirla. Todavía no está en la oficina:
-cuando se apruebe, la sala pasa a `dibujos/barrio/salas-grandes.mjs` y lo que se ve encima (las burbujas, las tarjetas,
-el recorrido con una asesora y la barra de Nu Home) a `oficina.js`, en lugar de los puntos numerados.
+La propuesta de la sala nueva de Nu Home, ya aprobada y en la oficina: la sala está en `dibujos/barrio/salas-grandes.mjs`
+y lo que se ve encima (las burbujas, las tarjetas, el recorrido con una asesora y la barra de Nu Home), en `oficina.js`
+y en su `salaPropia` de `datos.js`. Aquí quedan las fotos y las maquetas con que se revisó.
 
-- `sala.mjs`: la sala (20 × 14 baldosas) con el mismo motor de las salas grandes. Tiene el taller detrás del vidrio, el
+- `sala.mjs`: la sala tal como se propuso (20 × 14 baldosas), con el mismo motor de las salas grandes, y `componer`, que
+  usan todas las propuestas. Tiene el taller detrás del vidrio, el
   muro de la marca y el ventanal, el salón y la entrega, las terminaciones, la asesoría con la mesa de maqueta, la casa
   piloto con terraza y pérgola, los modelos en maqueta, la recepción y el rincón de BiPlot con Bucle. No lleva alfileres:
   `lugar(id, x, y, z)` marca dónde van las burbujas y las tarjetas.

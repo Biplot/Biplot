@@ -176,7 +176,7 @@ export function salaRumbo() {
       `<circle cx="41" cy="84" r="22" fill="none" stroke="#DDE7F0" stroke-width="7"/><path d="M41 62A22 22 0 1 1 20 91" fill="none" stroke="${CIAN}" stroke-width="7" stroke-linecap="round"/>` + txt(33, 90, '12', 15, TINTA) +
       HABITOS.map((h, i) => `<rect x="9" y="${118 + i * 14}" width="8" height="8" rx="2" fill="${i < 3 ? CIAN : 'none'}" stroke="${CIAN}" stroke-width="1.2"/>` + txt(21, 125 + i * 14, h, 7, SUAVE, ' font-weight="500"')).join(''), 18.9 + 10.7 + 0.51);
     plantaAlta(L, 19.55, 12.9, 1.0, ['#FFFFFF', '#DCDFD9']);
-    zona('celular', { formas: [{ piso: [[18.6, 10.5], [19.7, 10.5], [19.7, 10.9], [18.6, 10.9]], alto: 2.15 }], lugar: [19.15, 10.7, 2.35] });
+    zona('celular', { formas: [{ piso: [[18.6, 10.5], [19.7, 10.5], [19.7, 10.9], [18.6, 10.9]], alto: 2.15 }], lugar: [19.15, 10.7, 2.35], guia: [17.9, 11.5] });
     lugar('entrada', 17.6, 13.1, 0.9);
     camina('caminante', [[16.4, 10.4, 2.5], [13.0, 9.9, 2], [7.3, 8.1, 2], [8.3, 3.6, 2], [7.3, 8.1], [13.0, 9.9]], { vel: 0.5 });
     camina('rmGuia', [[15.6, 11.4, 3], [13.4, 10.6, 2], [15.6, 11.4]], { vel: 0.45 });

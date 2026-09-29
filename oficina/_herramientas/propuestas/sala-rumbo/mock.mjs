@@ -1,7 +1,7 @@
 // Maquetas de la sala de Rumbo dentro de la oficina, sin números.
 // ?e=a al entrar · ?e=b al tocar el elefante · ?e=c el rincón de BiPlot con Tamandúa
 import { salaRumbo, componer, P } from './sala.mjs';
-import { ETAPAS } from './elefantes.mjs';
+import { ETAPAS } from '../../dibujos/barrio/salas-propias/elefantes.mjs';
 import { maqueta, caras } from '../mock-comun.mjs';
 
 const EQUIPO = ['architect', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa'];
@@ -31,7 +31,7 @@ const css = `
 const estados = { a: { centro: [96, 250], zoom: 1.1 }, b: { centro: P(11.2, 7.0, 1.4), zoom: 1.9 }, c: { centro: P(10.6, 12.0, 1.2), zoom: 2.2 } };
 const guion = `
 if (est === 'a') {
-  poner('<small>Apertura del día</small>Tres prioridades y mi elefante. Parto por lo difícil.', 16.2, 1.85, 1.4, 'burbuja rm');
+  poner('<small>Apertura del día</small>Mi elefante de hoy: primero lo difícil.', 16.2, 1.85, 1.4, 'burbuja rm');
   poner('<small>Hábitos</small>¡12 días de racha! Hoy tampoco la suelto.', 0.85, 6.3, 2.05, 'burbuja rm');
   poner('<small>Objetivos</small>Meta del trimestre: correr mis primeros 10K.', 9.55, 1.3, 2.65, 'burbuja rm');
   poner('<small>Cierre del día</small>¿Qué salió bien hoy? Anotado en el diario.', 1.4, 12.2, 1.75, 'burbuja rm');

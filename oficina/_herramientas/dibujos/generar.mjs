@@ -25,6 +25,9 @@ import { VECTOR } from './cabezones/todos.mjs';
 import { callePrincipal, piezas, adentro, G, HQ, PRINCIPAL, CAMINANTES, DE_PASO } from './barrio/barrio.mjs';
 import { PASO } from './barrio/maqueta.mjs';
 import { SALAS_GRANDES } from './barrio/salas-grandes.mjs';
+import { SALAS_PROPIAS } from './barrio/salas-propias/index.mjs';
+// Las salas de cada empresa: todas son salas propias (sin números); la de Nu Home está en salas-grandes.mjs
+const SALAS = { ...SALAS_PROPIAS, ...SALAS_GRANDES };
 import { VISITANTES } from './barrio/visitantes.mjs';
 import { DEFS_ENTORNO } from './barrio/entorno.mjs';
 
@@ -231,7 +234,7 @@ console.log('locales.js', kb(localesJs), '·', enLocales.size, 'personajes');
 const DEFS_SALA = `<linearGradient id="luz-cocina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E0B341" stop-opacity="0"/><stop offset="1" stop-color="#E0B341" stop-opacity=".35"/></linearGradient>` +
   `<linearGradient id="brillo-pantalla" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".16"/><stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>`;
 const salas = {}, enSalas = new Set();
-for (const [id, fn] of Object.entries(SALAS_GRANDES)) {
+for (const [id, fn] of Object.entries(SALAS)) {
   const r = fn(), vb = r.vb.split(' ').map(Number);
   vb[1] += 36; vb[3] -= 30;
   r.usados.forEach((u) => { if (!enBarrio.has(u) && !enLocales.has(u)) enSalas.add(u); });
@@ -259,7 +262,7 @@ console.log('salas.js', kb(salasJs), '·', Object.keys(salas).join(', '), '·', 
 // Quien pega biplot.cl/oficina/haru en un chat ve la imagen de la sala; quien lo abre llega a la oficina, en esa sala.
 const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const ICONO = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='1.7' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='11.5' cy='20.5' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='16' cy='17' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='23' cy='11' r='2.8' fill='%23FF6B4A'/%3E%3C/svg%3E`;
-for (const id of Object.keys(SALAS_GRANDES)) {
+for (const id of Object.keys(SALAS)) {
   const pr = DATOS.proyectos.find((p) => p.id === id);
   if (!pr) continue;
   const url = `https://biplot.cl/oficina/${id}/`, img = `https://biplot.cl/oficina/kit/png/sala-${id}-og.png`;
@@ -311,4 +314,4 @@ a { color: #17C3B2; font-weight: 600; }
   mkdirSync(path.join(oficina, id), { recursive: true });
   writeFileSync(path.join(oficina, id, 'index.html'), html);
 }
-console.log('páginas para compartir:', Object.keys(SALAS_GRANDES).map((id) => `oficina/${id}/`).join(', '));
+console.log('páginas para compartir:', Object.keys(SALAS).map((id) => `oficina/${id}/`).join(', '));
