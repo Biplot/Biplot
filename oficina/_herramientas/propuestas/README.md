@@ -43,3 +43,20 @@ De dónde sale cada cosa:
 
 Las personas son ilustraciones sin nombre. Las frases de las burbujas y las tarjetas son de ejemplo hasta que cada
 cliente las apruebe.
+
+## El Archivo, el museo de BiPlot (propuesta)
+
+`sala-archivo/` propone que El Archivo sea el museo de BiPlot: una pieza única de cada desarrollo en su vitrina (la
+terminal del primer día, la escritura inscrita de Fundos 360, el QR de la mesa de Haru 360, el módulo de Nu Home 360,
+la huella de Eleven 360 y el elefante de Rumbo en sus cuatro etapas), unidas por una línea en el piso en el orden en que
+llegaron a biplot.cl, y al final un pedestal libre para el próximo. En el muro va la línea de tiempo y el primer plano
+de BiPlot HQ; a la izquierda, el fichero con todos los casos por rubro. Lo cuida Pepa (Cosecha).
+
+Todavía no está en la oficina: su dibujo vive entero en `sala-archivo/sala.mjs` hasta que se apruebe, y sólo ahí pasa a
+`../dibujos/`. Las fechas son las del historial del sitio (cuándo llegó cada caso a biplot.cl), no las del inicio de
+cada proyecto. Usa Space Grotesk y Space Mono.
+
+```bash
+SALIDA=/tmp/sala-archivo node oficina/_herramientas/propuestas/dibujar-sala.mjs archivo
+SALIDA=/tmp/sala-archivo node oficina/_herramientas/propuestas/sala-archivo/mock.mjs
+```
