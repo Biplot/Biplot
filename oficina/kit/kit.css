@@ -125,6 +125,10 @@
 .s-pie .bp-wordmark { font-size: 31px; }
 .f-og.p-sala::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 10px; background: var(--acento); }
 .f-og.p-sala .k-eyebrow { left: 60px; top: 64px; font-size: 19px; }
+/* Un nombre largo (el de la sala de ventas, «Tu proyecto aquí») va en dos líneas, más chico, para no tapar la sala */
+.f-og.p-sala.nombre-largo .s-nombre { width: 400px; font-size: 70px; }
+.f-og.p-sala.nombre-largo .s-rubro { top: 250px; }
+.f-og.p-sala.nombre-largo .s-esencia { top: 300px; font-size: 27px; }
 .f-4x5.p-sala .k-eyebrow { top: 84px; }
 .f-4x5.p-sala .s-nombre { left: 74px; top: 124px; font-size: 150px; }
 .f-4x5.p-sala .s-rubro { left: 80px; top: 292px; width: 900px; font-size: 36px; }

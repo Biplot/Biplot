@@ -69,7 +69,7 @@ se ve al abrirlo. En el **pasaje** está el directorio con las calles del barrio
 | Haru 360 | Su logo (el cuadrado rojo) y HARU | La barra de sushi y las mesas; la mesera va y viene | Su vista previa, con su video |
 | Eleven 360 | El 11 de su sala y ELEVEN | La trotadora, las pesas y el torniquete; el instructor recorre | Su vista previa, con su sala dibujada |
 | Rumbo | La bandera de su sala y RUMBO | El camino del día 1 al 30; la corredora lo recorre | Su vista previa, con su sala dibujada |
-| Tu proyecto aquí | «Se arrienda · Tu proyecto aquí», punteado | El local disponible; una visita lo recorre | La conversación con Plotty |
+| Tu proyecto aquí | «Se arrienda · Tu proyecto aquí», punteado | El local disponible; una visita lo recorre | La sala de ventas dibujada, «Entrar a la sala de ventas» y la conversación con Plotty |
 | El Archivo | Su carpeta de colores y EL ARCHIVO | Los estantes de carpetas; alguien busca un caso | El museo dibujado, «Entrar al museo» y el fichero con todos los casos |
 
 Eleven 360 y Rumbo llevan la marca de su sala mientras no tengamos su logo oficial (va en `media/salas/` y en `LOGO`,
@@ -163,6 +163,20 @@ barra: «Todos los casos») y, entre el fichero y el primer plano, un cuadro con
 septiembre, con una sala por proyecto adentro; en la imagen, el letrero de una mesa va en blanco). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
 doce paradas, con cuatro visitas. Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
 
+**La sala de ventas de BiPlot.** El local libre de la calle principal («Se arrienda · Tu proyecto aquí») también tiene su
+sala propia (su dibujo en `barrio/salas-propias/ventas.mjs`; sus textos en `datos.js`, en `proyectos` → `libre` →
+`salaPropia`). Se entra desde su panel en la calle («Entrar a la sala de ventas»), con `#libre` o con
+**biplot.cl/oficina/libre/**, y va entre Rumbo y El Archivo en las salas vecinas. Es una sala de ventas como la de una
+inmobiliaria: Plotty recibe en la entrada, en su tótem de las tres preguntas, y guía el recorrido de nueve paradas; la
+sala de espera, con otras pymes y sus planillas; la maqueta de la calle principal, con el sitio libre marcado «Tu local» y
+Atlas flotando encima, que proyecta el mapa y ve todo el panorama; un local piloto armado adentro, con «Tu marca» y el
+enlace biplot.cl/oficina/tu-empresa; en los muros, «Así avanza tu proyecto» (cuatro etapas, diez fases, el entregable de
+cada una, el local de la calle en cada estado y Atlas, que ve las diez a la vez), la lista de precios y la promesa (siete
+compromisos) y la ventana a la calle, con un botón a la sala de cada vecino; al fondo, la mesa de Lupe, donde termina el
+recorrido y está «Agenda tu diagnóstico» (el único coral de la sala). Todo lo que dice sale del sitio: el diagnóstico desde
+$0, la respuesta en menos de 48 horas hábiles, las diez fases y la medición a los 30, 60 y 90 días; quienes la visitan son
+ilustraciones sin nombre. Bajo las diez fases de su tarjeta va también Atlas (`atlas: true` en la zona).
+
 **Las vitrinas, en 3D.** Al tocar una vitrina del museo (cada época, cada desarrollo y el pedestal libre) se abre en
 grande y en 3D, sobre la sala oscurecida: su pedestal con su cédula, su vidrio y la pieza del centro van girando, una
 vuelta cada 20 segundos, con su texto al lado (su capítulo, su pantalla real, «Entrar a su sala»). Al abrirse se ve igual
@@ -186,7 +200,8 @@ chico no se agranda más de 3,2 veces y, en celular, la línea de tiempo trae ad
 `salaPropia` en su proyecto (sus colores, su letra, su marca, sus textos, quién habla, qué dice cada zona y el recorrido)
 y con sus zonas en el dibujo (`zona()` y `lugar()`): la de Nu Home en `barrio/salas-grandes.mjs` y las demás en
 `barrio/salas-propias/`, una por archivo, con sus piezas comunes (muros, pantallas, sillas, el kiosco de BiPlot) en
-`salas-propias/comun.mjs`. La del museo no es de un proyecto: su `salaPropia` está en `salas.archivo`.
+`salas-propias/comun.mjs`. La del museo no es de un proyecto: su `salaPropia` está en `salas.archivo`; la sala de ventas
+es la del local libre (`proyectos` → `libre`). Quien camina puede volar (`camina(id, ruta, { z })`, como Plotty).
 
 **Cómo crece el barrio: una calle por rubro.** La calle principal queda con los proyectos que tienen sala dibujada a
 mano. Los demás casos van a la **calle de su rubro** (los mismos rubros de la primera pregunta de Plotty), que aparece
@@ -316,7 +331,9 @@ el museo de El Archivo (sus épocas con su capítulo, las diez fases, sus casos 
 y el recorrido con Pepa), la vista de frente (las diez fases, la línea de tiempo y el cuadro de BiPlot HQ del museo, una
 pieza de cada sala, la pantalla del diseñador de Nu Home con un clic de verdad, las fotos de las tarjetas y las pantallas
 del rincón de BiPlot, siempre completas, con la sala oscurecida detrás, y el recorrido que sigue detrás), las vitrinas en
-3D (giran solas, se pausan y se giran a mano; con movimiento reducido, quietas),
+3D (giran solas, se pausan y se giran a mano; con movimiento reducido, quietas), la sala de ventas del local libre (se
+entra desde la calle; la lista de precios de frente con «Agenda tu diagnóstico», las diez fases con Atlas, la ventana a
+los vecinos, la mesa de Lupe, Atlas que habla y el recorrido con Plotty),
 chat de Plotty con la cámara en
 el rubro, vitrina,
 El Archivo, teclado, enlaces directos y las páginas para compartir, pausa, movimiento reducido, errores de consola y
