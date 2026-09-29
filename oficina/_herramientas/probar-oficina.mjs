@@ -502,13 +502,13 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     // La terminal, en 3D: gira sola sobre su pedestal; la pausa la detiene y los botones la giran, sin cerrar la vista
     await abre('terminal');
     const cara = () => { const p = [...f.querySelectorAll('.v3d-capa polygon')].find((e) => e.style.display !== 'none'); return p ? p.getAttribute('points') : ''; };
-    const sv = f.querySelector('.v3d'), pausa = f.querySelector('[data-v3d="pausa"]');
+    const tv = f.querySelector('.v3d'), pausa = f.querySelector('[data-v3d="pausa"]');
     const g0 = cara(); await ${W(500)}; const g1 = cara();
     pausa.click(); await ${W(60)}; const q0 = cara(); await ${W(500)}; const q1 = cara();
     f.querySelector('[data-v3d="der"]').click(); await ${W(60)}; const q2 = cara();
-    r.v3d = { svg: !!sv && sv.getAttribute('role') === 'img', caras: sv ? [...sv.querySelectorAll('.v3d-capa > *')].filter((e) => e.style.display !== 'none').length : 0, texto: document.querySelector('#sala-frente-t')?.textContent,
+    r.v3d = { svg: !!tv && tv.getAttribute('role') === 'img', caras: tv ? [...tv.querySelectorAll('.v3d-capa > *')].filter((e) => e.style.display !== 'none').length : 0, texto: document.querySelector('#sala-frente-t')?.textContent,
       gira: g0 !== g1, pausa: q0 === q1 && pausa.getAttribute('aria-pressed') === 'true' && pausa.textContent === 'Seguir girando', aMano: q2 !== q1, abierta: !f.hidden,
-      cabe: (() => { const b = sv.getBoundingClientRect(); return b.left >= 0 && b.right <= innerWidth + 1 && b.top >= 0 && b.width >= Math.min(innerWidth * 0.8, 300); })(), desborde: document.documentElement.scrollWidth > innerWidth };
+      cabe: (() => { const b = tv.getBoundingClientRect(); return b.left >= 0 && b.right <= innerWidth + 1 && b.top >= 0 && b.width >= Math.min(innerWidth * 0.8, 300); })(), desborde: document.documentElement.scrollWidth > innerWidth };
     await cierra();
     r.v3d.cierra = f.hidden && document.body.classList.contains('en-sala-propia');
     // Recorrer con Pepa
