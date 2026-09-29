@@ -2050,7 +2050,7 @@
       v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.setAttribute("aria-hidden", "true");
       v.preload = "metadata";
       if (hv.poster) v.poster = hv.poster;
-      [["webm", "video/webm"], ["mp4", "video/mp4"]].forEach(function (t) {
+      [["mp4", "video/mp4"], ["webm", "video/webm"]].forEach(function (t) {
         if (!hv[t[0]]) return;
         var so = document.createElement("source");
         so.src = hv[t[0]]; so.type = t[1];

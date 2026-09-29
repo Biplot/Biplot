@@ -58,7 +58,7 @@ Mínimo antes de publicar: `interacciones.js`, `plano.js`, `qa.js`, `anchos.js` 
   (HLG): convertir a SDR con `zscale` + `tonemap` antes de codificar.
 
 ## Decisiones tomadas con el cliente
-- Portada con la foto real del equipo; el video de portada ocupará el marco de esa foto cuando llegue el archivo.
+- Portada: video de caballos pastando (entregado por el cliente, `assets/video/portada*`: bucle sin salto con fundido, sin audio, versión vertical para celular) en el marco de la foto del equipo, que queda de respaldo.
 - Una tarjeta y una ficha (ventana) por persona del equipo, con su presentación en sus palabras (sin reescribirla).
   No suponer género ni cargos: hoy todos dicen "Equipo comercial" hasta tener los cargos reales.
 - Santo Domingo fuera de la propuesta. No bajar videos de internet: solo material propio del cliente.
