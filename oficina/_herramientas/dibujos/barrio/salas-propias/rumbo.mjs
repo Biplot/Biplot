@@ -96,28 +96,35 @@ export function salaRumbo() {
         AREAS.map((_, i) => { const [x, y] = pt(i, 10); return `<path d="M${cx} ${cy}L${r1(x)} ${r1(y)}" stroke="#C3D2E0" stroke-width="1.2"/>`; }).join('') +
         `<polygon points="${notas.map((v, i) => pt(i, v).map(r1).join(',')).join(' ')}" fill="${CIAN}" fill-opacity=".35" stroke="${CIAN}" stroke-width="3" stroke-linejoin="round"/>` +
         notas.map((v, i) => { const [x, y] = pt(i, v); return `<circle cx="${r1(x)}" cy="${r1(y)}" r="4" fill="${AZUL}"/>`; }).join(''); };
-    L.planoX(3.7, 2.3, 320, 210, `<rect width="320" height="210" rx="8" fill="#FFFFFF" stroke="#D6D8D3" stroke-width="2"/>` + txt(16, 30, 'RUEDA DE LA VIDA', 16, AZUL, ' letter-spacing="2"') +
+    const RUEDA = `<rect width="320" height="210" rx="8" fill="#FFFFFF" stroke="#D6D8D3" stroke-width="2"/>` + txt(16, 30, 'RUEDA DE LA VIDA', 16, AZUL, ' letter-spacing="2"') +
       txt(16, 48, 'Cada área, del 0 al 10', 11, SUAVE, ' font-weight="500"') + rueda(96, 132, 66) +
-      AREAS.map((a, i) => txt(186, 76 + i * 16, a, 10.5, TINTA, ' font-weight="500"') + `<rect x="300" y="${68 + i * 16}" width="6" height="9" rx="2" fill="${CIAN}" opacity="${0.3 + notas[i] / 14}"/>`).join(''), -38);
+      AREAS.map((a, i) => txt(186, 76 + i * 16, a, 10.5, TINTA, ' font-weight="500"') + `<rect x="300" y="${68 + i * 16}" width="6" height="9" rx="2" fill="${CIAN}" opacity="${0.3 + notas[i] / 14}"/>`).join('');
+    L.planoX(3.7, 2.3, 320, 210, RUEDA, -38);
     const HABITOS = ['Ritual de mañana', 'Leer 20 min', 'Caminar', 'Ahorrar', 'Diario'];
-    L.planoX(8.2, 2.3, 400, 190, `<rect width="400" height="190" rx="8" fill="#FFFFFF" stroke="#D6D8D3" stroke-width="2"/>` + txt(16, 30, 'HÁBITOS', 16, AZUL, ' letter-spacing="2"') +
+    const HABITOS_MURO = `<rect width="400" height="190" rx="8" fill="#FFFFFF" stroke="#D6D8D3" stroke-width="2"/>` + txt(16, 30, 'HÁBITOS', 16, AZUL, ' letter-spacing="2"') +
       `<path d="M300 14C308 24 300 28 306 36C298 36 292 30 294 22C288 28 288 34 290 38C282 34 282 22 300 14Z" fill="${CORAL}"/>` + txt(314, 34, '12 días', 16, CORAL) +
       ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => mono(166 + i * 30, 58, d, 11, SUAVE)).join('') +
-      HABITOS.map((h, f) => txt(16, 82 + f * 24, h, 12, TINTA, ' font-weight="500"') + Array.from({ length: 7 }, (_, i) => { const hecho = !(f === 3 && i === 5) && i < 6; return `<rect x="${160 + i * 30}" y="${70 + f * 24}" width="18" height="18" rx="5" fill="${hecho ? CIAN : '#FFFFFF'}" stroke="${CIAN}" stroke-width="1.6"/>` + (hecho ? `<path d="M${164 + i * 30} ${79 + f * 24}l4 4 7-8" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round"/>` : ''); }).join('')).join(''), -38);
+      HABITOS.map((h, f) => txt(16, 82 + f * 24, h, 12, TINTA, ' font-weight="500"') + Array.from({ length: 7 }, (_, i) => { const hecho = !(f === 3 && i === 5) && i < 6; return `<rect x="${160 + i * 30}" y="${70 + f * 24}" width="18" height="18" rx="5" fill="${hecho ? CIAN : '#FFFFFF'}" stroke="${CIAN}" stroke-width="1.6"/>` + (hecho ? `<path d="M${164 + i * 30} ${79 + f * 24}l4 4 7-8" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round"/>` : ''); }).join('')).join('');
+    L.planoX(8.2, 2.3, 400, 190, HABITOS_MURO, -38);
     pj('rmHabito', 0.85, 6.3, 0, 'i');
     const RANGOS = [['Aprendiz', '#7A8CA0'], ['Constante', '#FF6B4A'], ['Enfocado', TEAL], ['Imparable', '#3EE0CF'], ['Maestro', TEAL], ['Élite', '#8FF3E8'], ['Alto Valor', '#FFC24A']];
     const INSIGNIAS = [['Primer Paso', CORAL], ['Semana de Fuego', '#FF8A3D'], ['Madrugador', '#F6B98E'], ['Bocado a Bocado', CIAN], ['Página Uno', '#8E6BB8'], ['Mes Redondo', TEAL]];
-    L.planoX(11.1, 2.3, 250, 190, `<rect width="250" height="190" rx="8" fill="${AZUL}"/>` + txt(14, 28, 'RECOMPENSAS', 15, '#FFFFFF', ' letter-spacing="2"') +
+    const RECOMPENSAS = `<rect width="250" height="190" rx="8" fill="${AZUL}"/>` + txt(14, 28, 'RECOMPENSAS', 15, '#FFFFFF', ' letter-spacing="2"') +
       RANGOS.map(([n, c], i) => `<rect x="14" y="${42 + i * 20}" width="${40 + i * 12}" height="14" rx="4" fill="${c}" opacity="${i === 3 ? 1 : 0.55}"/>` + txt(20 + 40 + i * 12, 53 + i * 20, n, 9.5, i === 3 ? '#FFFFFF' : '#AFC0D2', i === 3 ? '' : ' font-weight="500"')).join('') +
-      INSIGNIAS.map(([n, c], i) => { const x = 184 + (i % 2) * 34, y = 58 + Math.floor(i / 2) * 38; return `<circle cx="${x}" cy="${y}" r="13" fill="${c}" stroke="#FFFFFF" stroke-width="2"/>` + ESTRELLA(x, y, 6, '#FFFFFF'); }).join(''), -38);
-    zona('rueda', { formas: [{ plano: [[0.03, 3.7, 0.2], [0.03, 0.5, 0.2], [0.03, 0.5, 2.3], [0.03, 3.7, 2.3]] }], lugar: [0.05, 2.1, 2.45], guia: [1.5, 3.8] });
-    zona('habitos', { formas: [{ plano: [[0.03, 8.2, 0.4], [0.03, 4.2, 0.4], [0.03, 4.2, 2.3], [0.03, 8.2, 2.3]] }, { piso: [[0.4, 5.9], [1.3, 5.9], [1.3, 6.7], [0.4, 6.7]], alto: 1.8 }], lugar: [0.05, 6.2, 2.45], guia: [2.2, 6.9] });
-    zona('recompensas', { formas: [{ plano: [[0.03, 11.1, 0.4], [0.03, 8.6, 0.4], [0.03, 8.6, 2.3], [0.03, 11.1, 2.3]] }], lugar: [0.05, 9.85, 2.45], guia: [1.9, 9.6] });
+      INSIGNIAS.map(([n, c], i) => { const x = 184 + (i % 2) * 34, y = 58 + Math.floor(i / 2) * 38; return `<circle cx="${x}" cy="${y}" r="13" fill="${c}" stroke="#FFFFFF" stroke-width="2"/>` + ESTRELLA(x, y, 6, '#FFFFFF'); }).join('');
+    L.planoX(11.1, 2.3, 250, 190, RECOMPENSAS, -38);
+    zona('rueda', { formas: [{ plano: [[0.03, 3.7, 0.2], [0.03, 0.5, 0.2], [0.03, 0.5, 2.3], [0.03, 3.7, 2.3]] }], lugar: [0.05, 2.1, 2.45], guia: [1.5, 3.8],
+      frente: { svg: RUEDA, ancho: 320, alto: 210 } });
+    zona('habitos', { formas: [{ plano: [[0.03, 8.2, 0.4], [0.03, 4.2, 0.4], [0.03, 4.2, 2.3], [0.03, 8.2, 2.3]] }, { piso: [[0.4, 5.9], [1.3, 5.9], [1.3, 6.7], [0.4, 6.7]], alto: 1.8 }], lugar: [0.05, 6.2, 2.45], guia: [2.2, 6.9],
+      frente: { svg: HABITOS_MURO, ancho: 400, alto: 190 } });
+    zona('recompensas', { formas: [{ plano: [[0.03, 11.1, 0.4], [0.03, 8.6, 0.4], [0.03, 8.6, 2.3], [0.03, 11.1, 2.3]] }], lugar: [0.05, 9.85, 2.45], guia: [1.9, 9.6],
+      frente: { svg: RECOMPENSAS, ancho: 250, alto: 190 } });
 
     // ── Cierre del día: la ventana de noche, el sofá y el diario ──
-    L.planoX(13.7, 2.35, 250, 185, `<defs><linearGradient id="rm-noche" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E2A47"/><stop offset="1" stop-color="#2E4F7A"/></linearGradient></defs><rect width="250" height="185" fill="url(#rm-noche)"/>` +
+    const NOCHE = `<defs><linearGradient id="rm-noche" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E2A47"/><stop offset="1" stop-color="#2E4F7A"/></linearGradient></defs><rect width="250" height="185" fill="url(#rm-noche)"/>` +
       `<circle cx="178" cy="52" r="22" fill="#F4ECD8"/><circle cx="188" cy="46" r="20" fill="url(#rm-noche)"/>` + [[40, 30], [90, 60], [60, 110], [130, 26], [210, 120], [150, 90], [30, 150]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.2" fill="#FFFFFF"/>`).join('') +
-      `<path d="M0 160Q70 138 130 156T250 150V185H0Z" fill="#0A1F35"/>` + [0, 1, 2].map((i) => `<rect x="${i * 121}" width="8" height="185" fill="#DCDFD9"/>`).join('') + `<rect width="250" height="185" fill="none" stroke="#DCDFD9" stroke-width="10"/>`, -38);
+      `<path d="M0 160Q70 138 130 156T250 150V185H0Z" fill="#0A1F35"/>` + [0, 1, 2].map((i) => `<rect x="${i * 121}" width="8" height="185" fill="#DCDFD9"/>`).join('') + `<rect width="250" height="185" fill="none" stroke="#DCDFD9" stroke-width="10"/>`;
+    L.planoX(13.7, 2.35, 250, 185, NOCHE, -38);
     L.planoX(13.7, 2.57, 250, 20, txt(0, 16, 'CIERRA TU DÍA', 16, AZUL, ' letter-spacing="3"'), -37);
     L.caja(1.0, 11.2, 0, 0.85, 2.2, 0.4, { t: '#8E6BB8', l: '#6E4E96', r: '#5A3E7E' }, 12.6);
     L.caja(1.75, 11.2, 0.4, 0.22, 2.2, 0.48, { t: '#8E6BB8', l: '#6E4E96', r: '#5A3E7E' }, 13.9);
@@ -127,7 +134,8 @@ export function salaRumbo() {
     L.cil(3.15, 10.15, 0.62, 0.05, 0.3, '#2A3038', '#1F242B', 13.3); L.cil(3.15, 10.15, 0.9, 0.13, 0.14, '#FFF3D6', '#F2DFB3', 13.31);
     silla(L, 3.0, 11.0, { t: '#DDE7F0', l: '#C3D2E0', r: '#A9BACB' }, 0.42);
     pj('rmDiario', 3.0, 11.0, 0.46, 'i', EA, 14.3);
-    zona('noche', { formas: [{ plano: [[0.03, 13.7, 0.5], [0.03, 11.2, 0.5], [0.03, 11.2, 2.35], [0.03, 13.7, 2.35]] }, { piso: [[0.9, 11.1], [2.0, 11.1], [2.0, 13.5], [0.9, 13.5]], alto: 1.5 }], lugar: [0.05, 12.45, 2.55], guia: [3.3, 12.9] });
+    zona('noche', { formas: [{ plano: [[0.03, 13.7, 0.5], [0.03, 11.2, 0.5], [0.03, 11.2, 2.35], [0.03, 13.7, 2.35]] }, { piso: [[0.9, 11.1], [2.0, 11.1], [2.0, 13.5], [0.9, 13.5]], alto: 1.5 }], lugar: [0.05, 12.45, 2.55], guia: [3.3, 12.9],
+      frente: { svg: NOCHE, ancho: 250, alto: 185 } });
     zona('diario', { formas: [{ piso: [[2.5, 9.8], [3.5, 9.8], [3.5, 11.4], [2.5, 11.4]], alto: 1.6 }], lugar: [2.95, 10.4, 1.85] });
 
     // ── Tu elefante: la estatua al centro, sobre su alfombra y su pedestal ──

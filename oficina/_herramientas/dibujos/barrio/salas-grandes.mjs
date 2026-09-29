@@ -143,8 +143,10 @@ export function montar(fn) {
   const propia = zonas.length ? { lugares, zonas, gente } : {};
   return { vb: r.vb, ancho: r.ancho, alto: r.alto, capas, arriba, caminan, pines, usados: [...usados], ...propia, ...info };
 }
-// Una zona que se toca: formas (en coordenadas del mundo) y, opcional, su lugar (donde va la etiqueta) y guia (el punto
-// del piso donde se para la asesora cuando el recorrido pasa por ahí).
+// Una zona que se toca: formas (en coordenadas del mundo) y, opcional, su lugar (donde va la etiqueta), guia (el punto
+// del piso donde se para la asesora cuando el recorrido pasa por ahí) y frente: lo que es una imagen (un mural, una
+// pizarra, un cartel, una pantalla) trae su dibujo derecho, { svg, ancho, alto }, o su pantalla real, { img, ancho, alto }
+// (el nombre en media/salas/), y al tocarla se abre de frente y en grande, con la sala oscurecida detrás.
 //   { piso: [[x, y], …], alto }   un pedazo de piso, levantado hasta alto (un mueble, un rincón con su gente)
 //   { plano: [[x, y, z], …] }     un plano (una pantalla o un cuadro en el muro)
 // Devuelve { id, silueta, suelo, caja, prof, guia }: silueta es el contorno que se toca (la envolvente de todo, en el
@@ -161,7 +163,8 @@ function zonaDe(id, o) {
     for (const [x, y] of borde) { px += x + y; n++; }
   }
   const silueta = envolvente(pts), xs = silueta.map((p) => p[0]), ys = silueta.map((p) => p[1]);
-  return { id, silueta: puntos(silueta), suelo, caja: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)].map(r1), prof: r1(px / n), ...(o.guia ? { guia: o.guia } : {}) };
+  return { id, silueta: puntos(silueta), suelo, caja: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)].map(r1), prof: r1(px / n), ...(o.guia ? { guia: o.guia } : {}),
+    ...(o.frente ? { frente: o.frente } : {}) };
 }
 const puntos = (a) => a.map(([x, y]) => r1(x) + ',' + r1(y)).join(' ');
 // Envolvente convexa (cadena monótona) de puntos del dibujo
@@ -347,23 +350,25 @@ export function nuhome() {
     zona('entrega', { formas: [{ piso: [[16.6, 1.0], [19.6, 1.0], [19.6, 4.0], [16.6, 4.0]], alto: 2.2 }], lugar: [17.9, 2.4, 2.05] });
 
     // ── Terminaciones: el muro de muestras y su cajonera ──
-    L.planoX(6.95, 2.25, 205, 175, `<rect width="205" height="175" rx="4" fill="#F7F1E4" stroke="#CDBF9F" stroke-width="3"/>` + serif(14, 34, 'Terminaciones', 28, TINTA) + `<rect x="15" y="42" width="60" height="3" fill="${ORO}"/>` +
+    const MUESTRAS = `<rect width="205" height="175" rx="4" fill="#F7F1E4" stroke="#CDBF9F" stroke-width="3"/>` + serif(14, 34, 'Terminaciones', 28, TINTA) + `<rect x="15" y="42" width="60" height="3" fill="${ORO}"/>` +
       [['#2B2724', 14, 58], ['#B98B5E', 62, 58], ['#8B6A4E', 110, 58], ['#E9EEF2', 158, 58], ['#6E757C', 14, 112], ['#D6B68C', 62, 112], ['#9AAEBD', 110, 112], ['#F4ECD8', 158, 112]]
         .map(([c, x, y]) => `<rect x="${x}" y="${y}" width="40" height="46" rx="2" fill="${c}" stroke="${TINTA}" stroke-width="1.6"/>`).join('') +
-      `<path d="M62 58l40 46M72 58l30 34M62 70l28 34" stroke="#9C7550" stroke-width="2"/>`, -38);
+      `<path d="M62 58l40 46M72 58l30 34M62 70l28 34" stroke="#9C7550" stroke-width="2"/>`;
+    L.planoX(6.95, 2.25, 205, 175, MUESTRAS, -38);
     L.caja(0.08, 4.95, 0, 0.55, 1.95, 0.88, NOGAL, 0.35 + 5.9);
     for (const [y, c] of [[5.15, '#2B2724'], [5.55, '#B98B5E'], [5.95, '#E9EEF2'], [6.4, '#6E757C']]) L.caja(0.18, y, 0.88, 0.32, 0.26, 0.05, { t: c, l: c, r: c }, 0.35 + y + 0.6);
     pj('nhAbuela', 1.15, 5.75, 0, 'i');
     pj('nhAbuelo', 1.35, 6.75, 0, 'i');
     zona('terminaciones', { formas: [{ plano: [[0.02, 6.95, 0.5], [0.02, 4.9, 0.5], [0.02, 4.9, 2.25], [0.02, 6.95, 2.25]] }, { piso: [[0.08, 4.95], [0.7, 4.95], [0.7, 6.95], [0.08, 6.95]], alto: 0.93 }],
-      lugar: [0.05, 5.9, 2.45], guia: [2.3, 6.1] });
+      lugar: [0.05, 5.9, 2.45], guia: [2.3, 6.1], frente: { svg: MUESTRAS, ancho: 205, alto: 175 } });
     // La ingeniera, entre el taller y la asesoría
     pj('ingeniera', 7.95, 5.55, 0, 'i');
 
     // ── Asesoría: la pantalla grande del diseñador, los escritorios y la mesa de maqueta ──
     L.planoX(13.2, 2.35, 190, 44, serif(4, 32, 'Asesoría', 34, TINTA) + `<rect x="6" y="40" width="54" height="3" fill="${ORO}"/>`, -38);
     pantallaX(L, 10.6, 2.35, 3.1, 1.74, '§M§recorte-nuhome-1-disenador.webp', { k: -38, marco: TINTA });
-    zona('disenador', { formas: [{ plano: [[0.02, 10.6, 0.61], [0.02, 7.5, 0.61], [0.02, 7.5, 2.35], [0.02, 10.6, 2.35]] }], lugar: [0.05, 9.05, 2.5] });
+    zona('disenador', { formas: [{ plano: [[0.02, 10.6, 0.61], [0.02, 7.5, 0.61], [0.02, 7.5, 2.35], [0.02, 10.6, 2.35]] }], lugar: [0.05, 9.05, 2.5],
+      frente: { img: 'nuhome-1-disenador', ancho: 1280, alto: 720 } });
     const escritorio = (x0, y0, img, k) => {
       L.caja(x0, y0, 0.7, 1.5, 0.8, 0.05, ROBLE, k);
       L.caja(x0 + 0.05, y0 + 0.05, 0, 0.08, 0.7, 0.7, NEGRO, k - 0.4); L.caja(x0 + 1.37, y0 + 0.05, 0, 0.08, 0.7, 0.7, NEGRO, k - 0.1);

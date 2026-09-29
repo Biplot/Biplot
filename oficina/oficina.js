@@ -1024,7 +1024,7 @@
      con su nombre y abre su tarjeta; la gente habla sola, de a una o de a dos; abajo va la barra de la empresa y BiPlot
      está en su rincón, con todo lo del proyecto. «Recorrer con una asesora» pasa zona por zona. Es el modelo para las
      demás salas: todo lo que es de la empresa (textos, colores, quién habla) sale de datos.js y de su dibujo. */
-  var propia = null, capaSala = $('#sala-capa'), barraSala = $('#sala-barra'), tarjeta = $('#sala-tarjeta'), avisoSala = $('#sala-aviso');
+  var propia = null, capaSala = $('#sala-capa'), barraSala = $('#sala-barra'), tarjeta = $('#sala-tarjeta'), avisoSala = $('#sala-aviso'), frenteEl = $('#sala-frente');
   var toqueS = null, dedosS = {}, dichas = {};
   function esPropia(id) { var pr = salaDe(id); return !!(pr && pr.salaPropia); }
   // En celular la tarjeta es una hoja que sube desde abajo
@@ -1051,18 +1051,19 @@
     var pr = salaDe(id), PP = pr.salaPropia, svgS = salaCaja.querySelector('.sala-svg');
     var vb = S.vb.split(' ').map(Number);
     propia = { id: id, pr: pr, P: PP, S: S, svg: svgS, vb: vb, cam: { x: vb[0] + vb[2] / 2, y: vb[1] + vb[3] / 2, z: 1 }, zonas: {}, hablan: [],
-      burbujas: [], tarjeta: null, origen: null, volver: null, aMano: false, recorrido: null, resalte: null, anillo: null, sobre: '', vuelo: null, latido: 0, turno: 0, reloj: null };
+      burbujas: [], tarjeta: null, frente: null, origenFrente: null, origen: null, volver: null, aMano: false, recorrido: null, resalte: null, anillo: null, sobre: '', vuelo: null, latido: 0, turno: 0, reloj: null };
     dichas = {};
     // Los colores y la letra de la empresa (lo que no trae, queda como en oficina.css); la barra puede llevar los suyos
     var f = PP.fuente || {};
-    pintarColores(salaEl, PP.colores); pintarColores(barraSala, PP.coloresBarra);
+    // (la vista de frente vive fuera de la sala, sobre toda la página: lleva los mismos)
+    pintarColores(salaEl, PP.colores); pintarColores(frenteEl, PP.colores); pintarColores(barraSala, PP.coloresBarra);
     [['--p-serif', f.familia], ['--p-peso', f.peso], ['--p-espacio', f.espacio], ['--p-caja', f.caja], ['--p-titulo-tam', f.titulo], ['--p-sub-letra', f.sub]
-    ].forEach(function (t) { salaEl.style.setProperty(t[0], t[1] || ''); });
+    ].forEach(function (t) { salaEl.style.setProperty(t[0], t[1] || ''); frenteEl.style.setProperty(t[0], t[1] || ''); });
     (S.zonas || []).forEach(function (z) { propia.zonas[z.id] = { z: z, pts: puntosDe(z.silueta), d: (PP.zonas || {})[z.id] }; });
     var h = '<g class="sala-resalte" aria-hidden="true"></g><g class="sala-anillo" aria-hidden="true"></g><g class="sala-toques">';
     Object.keys(PP.zonas || {}).forEach(function (zid) {
       var z = propia.zonas[zid], d = PP.zonas[zid]; if (!z) return;
-      h += '<g class="zona-sala" data-zona="' + esc(zid) + '" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="sala-tarjeta" aria-expanded="false" aria-label="' +
+      h += '<g class="zona-sala" data-zona="' + esc(zid) + '" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="' + (z.z.frente ? 'sala-frente' : 'sala-tarjeta') + '" aria-expanded="false" aria-label="' +
         esc(nombreZonaSala(d)) + '"><polygon points="' + z.z.silueta + '"/></g>';
     });
     (PP.burbujas || []).forEach(function (b) {
@@ -1093,7 +1094,7 @@
     if (!propia) return;
     var yo = propia;
     if (yo.recorrido) terminarRecorrido(true);
-    cerrarTarjeta(true);
+    cerrarFrente(true); cerrarTarjeta(true);
     clearTimeout(yo.reloj); if (yo.vuelo) cancelAnimationFrame(yo.vuelo); if (yo.latido) cancelAnimationFrame(yo.latido);
     propia = null; toqueS = null; dedosS = {};
     capaSala.innerHTML = ''; avisoSala.textContent = '';
@@ -1103,8 +1104,9 @@
     document.body.classList.remove('sala-hoja'); document.body.style.removeProperty('--alto-barra');
     $('#controles [data-accion="todo"]').setAttribute('aria-label', 'Ver toda la oficina');
   }
-  // Escape: primero la tarjeta, después el recorrido (y recién entonces se sale de la sala)
+  // Escape: primero la vista de frente o la tarjeta, después el recorrido (y recién entonces se sale de la sala)
   function escapePropia() {
+    if (propia.frente) { cerrarFrente(); return true; }
     if (propia.tarjeta) { cerrarTarjeta(); return true; }
     if (propia.recorrido) { terminarRecorrido(); return true; }
     return false;
@@ -1330,7 +1332,7 @@
   function turnoBurbujas() {
     if (!propia) return;
     propia.reloj = setTimeout(turnoBurbujas, 3400);
-    if (reducido || quieta() || document.hidden || propia.tarjeta || propia.recorrido || propia.burbujas.length >= 2) return;
+    if (reducido || quieta() || document.hidden || propia.tarjeta || propia.frente || propia.recorrido || propia.burbujas.length >= 2) return;
     var n = propia.hablan.length;
     for (var k = 0; k < n; k++) {
       var b = propia.hablan[(propia.turno + k) % n];
@@ -1385,11 +1387,16 @@
   function htmlHitos(h) {
     return '<ol class="tarjeta-fases tarjeta-hitos">' + h.map(function (x) { return '<li><span class="cod">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '<span>' + esc(x[2] || '') + '</span></b></li>'; }).join('') + '</ol>';
   }
+  // Una foto que se abre en grande (y completa) al tocarla
+  var ICONO_VER = '<span class="ver-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></span>';
+  function botonFoto(src, alt, dato) {
+    return '<button type="button" class="ver-foto" ' + dato + ' aria-label="' + esc('Ver en grande: ' + alt) + '"><img src="' + esc(src) + '" alt="" width="1280" height="720">' + ICONO_VER + '</button>';
+  }
   function htmlTarjetaZona(d) {
     // La imagen es de la sala o, en el museo, del caso de esa pieza (con su nombre y su módulo)
     var pr = (d.caso && salaDe(d.caso)) || propia.pr, pin = d.imagen && (pr.pines || []).filter(function (p) { return p[3] === d.imagen; })[0];
     return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre) + '</p><h3 id="sala-tarjeta-t" tabindex="-1">' + esc(d.titulo) + '</h3>' +
-      (d.imagen ? '<figure class="tarjeta-img"><img src="' + MEDIOS + esc(d.imagen) + '.webp" alt="' + esc(pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : '')) + '" width="1280" height="720">' +
+      (d.imagen ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : ''), 'data-ver-foto') +
         '<figcaption>' + esc(pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo') + '</figcaption></figure>' : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
@@ -1423,13 +1430,16 @@
   // Una pantalla real de la tira de la tarjeta de BiPlot
   function elegirPantalla(i) {
     var pr = propia.pr, p = (pr.pines || [])[i], v = tarjeta.querySelector('.visor'); if (!p || !v) return;
-    v.innerHTML = (p[3] ? '<img src="' + MEDIOS + esc(p[3]) + '.webp" alt="' + esc(pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1]) + '" width="1280" height="720">' : '') +
+    v.innerHTML = (p[3] ? botonFoto(MEDIOS + p[3] + '.webp', pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1], 'data-ver-pantalla="' + i + '"') : '') +
       '<div class="visor-txt"><span class="mod">' + esc(nombreModulo(p[0])) + '</span><b>' + esc(p[1]) + '</b><span>' + esc(p[2]) + '</span></div>';
     tarjeta.querySelectorAll('[data-pantalla]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-pantalla') === i ? 'true' : 'false'); });
   }
   function abrirTarjeta(id, o) {
     o = o || {};
     var z = propia && propia.zonas[id]; if (!z || !z.d) return;
+    // Lo que es una imagen se abre de frente
+    if (z.z.frente) { abrirFrente(id, o); return; }
+    if (propia.frente) cerrarFrente(true);
     if (propia.recorrido) terminarRecorrido(true);
     var antes = propia.tarjeta, c0 = propia.cam;
     if (antes) { detenerMedios(tarjeta); marcarZona(antes, false); }
@@ -1479,11 +1489,12 @@
     if (!sinFoco) { if (o && o !== document.body && salaEl.contains(o)) o.focus({ preventScroll: true }); else salaCaja.focus({ preventScroll: true }); }
     return true;
   }
-  tarjeta.addEventListener('click', function (e) {
-    var b = e.target.closest('button, a'); if (!b || !propia) return;
-    if (b.classList.contains('tarjeta-cerrar')) { cerrarTarjeta(); return; }
+  // Lo que hacen los botones de una tarjeta (y de la vista de frente)
+  function accionSala(b, e) {
     if (b.hasAttribute('data-recorrer')) { e.preventDefault(); iniciarRecorrido(0); return; }
     if (b.hasAttribute('data-pantalla')) { elegirPantalla(+b.getAttribute('data-pantalla')); return; }
+    if (b.hasAttribute('data-ver-foto')) { e.preventDefault(); verFoto(propia.frente || propia.tarjeta); return; }
+    if (b.hasAttribute('data-ver-pantalla')) { e.preventDefault(); verPantalla(+b.getAttribute('data-ver-pantalla')); return; }
     if (b.hasAttribute('data-hq')) { e.preventDefault(); entrarOficina({ boton: $('#recorrer-toggle') }); return; }
     if (b.hasAttribute('data-sala-ir')) { e.preventDefault(); entrarSala(b.getAttribute('data-sala-ir'), { directo: true }); return; }
     if (b.hasAttribute('data-zona-ir')) { e.preventDefault(); abrirTarjeta(b.getAttribute('data-zona-ir'), { desde: b }); return; }
@@ -1491,6 +1502,109 @@
     if (b.hasAttribute('data-grande')) { e.preventDefault(); abrirLightbox(b.getAttribute('data-grande'), b.getAttribute('data-grande-v'), b); return; }
     if (b.classList.contains('copiar')) { copiar(b); return; }
     if (b.classList.contains('compartir')) compartir(b);
+  }
+  tarjeta.addEventListener('click', function (e) {
+    var b = e.target.closest('button, a'); if (!b || !propia) return;
+    if (b.classList.contains('tarjeta-cerrar')) { cerrarTarjeta(); return; }
+    accionSala(b, e);
+  });
+
+  // ── La vista de frente: lo que es una imagen (un mural, una pizarra, un cartel, una pantalla) se abre derecho y en
+  // grande, con la sala oscurecida detrás; debajo (al lado, si la imagen es angosta) va lo que cuenta su tarjeta ──
+  var CERRAR_F = '<button type="button" class="frente-cerrar" data-frente-cerrar aria-label="Cerrar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+  // El texto alternativo de una pantalla real: el caso, su módulo y lo que muestra (como en la tarjeta)
+  function altPantalla(pr, img) {
+    var pin = img && (pr.pines || []).filter(function (p) { return p[3] === img; })[0];
+    return pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : '');
+  }
+  // (la imagen va siempre completa: un cartel chico no se agranda más de 3,2 veces y lo muy apaisado, como la línea de tiempo,
+  // en celular trae además sus fechas en texto, debajo. Una pantalla real lleva su pie; los botones van antes de la lista de fases)
+  function htmlFrente(f, d, o) {
+    o = o || {};
+    var an = f.ancho || 1280, al = f.alto || 720, prop = an / al, nombre = d.titulo || d.nombre || '';
+    var pr = (d.caso && salaDe(d.caso)) || propia.pr, pin = f.img && (pr.pines || []).filter(function (x) { return x[3] === f.img; })[0];
+    var pie = f.pie || (pin ? pr.nombre + ' · ' + nombreModulo(pin[0]) + ' · datos de ejemplo' : '');
+    var dib = f.img ? '<img src="' + MEDIOS + esc(f.img) + '.webp" alt="' + esc(f.alt || altPantalla(pr, f.img)) + '" width="' + an + '" height="' + al + '">'
+      : '<svg viewBox="0 0 ' + an + ' ' + al + '" role="img" aria-label="' + esc(d.nombre || nombre) + '">' + conMedios(f.svg) + '</svg>';
+    var img = d.imagen && d.imagen !== f.img ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', altPantalla(pr, d.imagen), 'data-ver-foto') +
+      '<figcaption>' + esc(pr.nombre + ' · datos de ejemplo') + '</figcaption></figure>' : '';
+    return '<div class="frente-velo" data-frente-cerrar></div>' + CERRAR_F +
+      '<div class="frente-caja' + (prop > 3 ? ' ancha' : prop < 2 ? ' lado' : '') + '" style="--frente-prop:' + prop.toFixed(3) + ';--frente-max:' + Math.round(an * 3.2) + 'px' +
+      (f.fondo ? ';--frente-fondo:' + esc(f.fondo) : '') + '">' +
+      '<figure class="frente-lamina"><div class="frente-marco">' + dib + '</div>' + (pie ? '<figcaption class="frente-pie">' + esc(pie) + '</figcaption>' : '') + '</figure>' +
+      '<div class="frente-texto' + (img ? ' con-img' : '') + (o.bp ? ' bp' : '') + '"><div class="frente-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre || '') + '</p><h3 id="sala-frente-t" tabindex="-1">' + esc(nombre) + '</h3>' +
+      (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
+      (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
+      (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
+        esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') +
+      (d.fases ? htmlFases() : '') + (d.hitos ? '<div class="frente-lista">' + htmlHitos(d.hitos) + '</div>' : '') + '</div>' + img + '</div></div>';
+  }
+  function abrirFrente(id, o) {
+    o = o || {};
+    var z = propia && propia.zonas[id], fr = o.frente || (z && z.z.frente); if (!z || !fr) return;
+    // (el recorrido sigue detrás: al cerrarla se vuelve a la misma parada; si había una tarjeta, se cierra y el foco vuelve a lo que la abrió)
+    var desde = o.desde || document.activeElement;
+    if (propia.tarjeta) { if (propia.origen) desde = propia.origen; cerrarTarjeta(true); }
+    if (propia.frente) marcarZona(propia.frente, false); else propia.origenFrente = desde;
+    propia.frente = id; propia.frenteT = Date.now();
+    callarSolas(); anillo(null);
+    frenteEl.innerHTML = htmlFrente(fr, o.datos || z.d || {}, o);
+    frenteEl.hidden = false;
+    document.body.classList.add('con-frente');
+    marcarZona(id, true); resaltarZona(id);
+    requestAnimationFrame(function () { if (propia && propia.frente === id) frenteEl.classList.add('visible'); });
+    var h = frenteEl.querySelector('#sala-frente-t'); if (h) h.focus({ preventScroll: true });
+  }
+  // La foto (pantalla real) de una tarjeta o de la vista de frente, en grande y completa, con los textos de su zona
+  function verFoto(id) {
+    var z = id && propia.zonas[id], d = z && z.d; if (!d || !d.imagen) return;
+    abrirFrente(id, { frente: { img: d.imagen, ancho: 1280, alto: 720 } });
+  }
+  // Una pantalla del rincón de BiPlot, en grande: su módulo, lo que muestra y para qué
+  function verPantalla(i) {
+    var pr = propia.pr, p = (pr.pines || [])[i]; if (!p || !p[3] || !propia.tarjeta) return;
+    abrirFrente(propia.tarjeta, { frente: { img: p[3], ancho: 1280, alto: 720, alt: pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1] },
+      datos: { ceja: pr.nombre + ' · ' + nombreModulo(p[0]), titulo: p[1], texto: p[2] }, bp: true });
+  }
+  function cerrarFrente(sinFoco) {
+    if (!propia || !propia.frente) return false;
+    var id = propia.frente, o = propia.origenFrente;
+    propia.frente = null; propia.origenFrente = null;
+    frenteEl.hidden = true; frenteEl.classList.remove('visible'); frenteEl.innerHTML = '';
+    document.body.classList.remove('con-frente');
+    marcarZona(id, false);
+    // Lo marcado vuelve a ser lo de la parada del recorrido, si hay uno
+    var r = propia.recorrido, p = r && r.i >= 0 && propia.P.recorrido[r.i];
+    if (p) resaltarZona(p.zona, p.ver); else resaltarZona(null);
+    if (!sinFoco) { if (o && o !== document.body && salaEl.contains(o)) o.focus({ preventScroll: true }); else salaCaja.focus({ preventScroll: true }); }
+    return true;
+  }
+  frenteEl.addEventListener('click', function (e) {
+    if (!propia || !propia.frente) return;
+    // (en el celular, el clic que sigue al toque que la abrió no la cierra ni aprieta un botón)
+    if (e.detail && Date.now() - propia.frenteT < 350) { e.preventDefault(); return; }
+    if (e.target.closest('[data-frente-cerrar]')) { cerrarFrente(); return; }
+    var b = e.target.closest('button, a'); if (!b) return;
+    if (b.hasAttribute('data-ver-foto')) { verFoto(propia.frente); return; }
+    // Lo que lleva a otra parte de la oficina cierra antes la vista de frente (lo que se abre en otra pestaña la deja)
+    if (b.tagName === 'A' && b.target === '_blank') return;
+    var o = propia.origenFrente;
+    cerrarFrente(true);
+    if (b.hasAttribute('data-zona-ir')) { e.preventDefault(); abrirTarjeta(b.getAttribute('data-zona-ir'), { desde: o }); return; }
+    accionSala(b, e);
+  });
+  // Mientras está abierta, el foco se queda en ella (también si un clic en la imagen lo soltó)
+  frenteEl.addEventListener('mousedown', function (e) { if (propia && propia.frente && Date.now() - propia.frenteT < 350) e.preventDefault(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Tab' || !propia || !propia.frente) return;
+    var f = Array.prototype.slice.call(frenteEl.querySelectorAll('button, a[href], [tabindex="0"]')).filter(function (x) { return x.offsetParent !== null; });
+    if (!f.length) return;
+    var i = f.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && (i === f.length - 1 || i < 0)) { e.preventDefault(); f[0].focus(); }
+  });
+  document.addEventListener('focusin', function (e) {
+    if (propia && propia.frente && !frenteEl.contains(e.target)) { var h = frenteEl.querySelector('#sala-frente-t'); if (h) h.focus({ preventScroll: true }); }
   });
 
   // ── «Recorrer con una asesora»: la cámara va zona por zona y la asesora se para al lado de cada una ──
@@ -1503,7 +1617,7 @@
   function iniciarRecorrido(i) {
     if (!propia || !(propia.P.recorrido || []).length) return;
     // (se callan todos, también quien se acaba de tocar, para que nadie tape lo que dice quien guía)
-    cerrarTarjeta(true); propia.burbujas.slice().forEach(function (x) { callarSala(x); }); anillo(null);
+    cerrarFrente(true); cerrarTarjeta(true); propia.burbujas.slice().forEach(function (x) { callarSala(x); }); anillo(null);
     propia.recorrido = { i: -1 };
     barraSala.classList.add('recorriendo'); barraSala.innerHTML = htmlBarraRecorrido();
     acomodarPropia();
@@ -1572,7 +1686,7 @@
     propia.sobre = clave;
     anillo(q ? q.quien : null);
     // Con una tarjeta o el recorrido abiertos, lo marcado es lo suyo
-    if (!propia.tarjeta && !propia.recorrido) resaltarZona(z ? z.z.id : null);
+    if (!propia.tarjeta && !propia.frente && !propia.recorrido) resaltarZona(z ? z.z.id : null);
   }
   salaCaja.addEventListener('pointerdown', function (e) {
     if (!propia) return;
@@ -1606,7 +1720,7 @@
   }
   window.addEventListener('pointerup', soltarSala);
   window.addEventListener('pointercancel', soltarSala);
-  salaCaja.addEventListener('pointerleave', function (e) { if (propia && e.pointerType === 'mouse' && !toqueS) { propia.sobre = ''; salaCaja.classList.remove('sobre'); anillo(null); if (!propia.tarjeta && !propia.recorrido) resaltarZona(null); } });
+  salaCaja.addEventListener('pointerleave', function (e) { if (propia && e.pointerType === 'mouse' && !toqueS) { propia.sobre = ''; salaCaja.classList.remove('sobre'); anillo(null); if (!propia.tarjeta && !propia.frente && !propia.recorrido) resaltarZona(null); } });
   salaCaja.addEventListener('wheel', function (e) {
     if (!propia) return;
     e.preventDefault();
@@ -1636,7 +1750,7 @@
     var z = e.target.closest && e.target.closest('.zona-sala'), q = e.target.closest && e.target.closest('.quien-sala');
     if (z) {
       var id = z.getAttribute('data-zona'), l = propia.S.lugares[id];
-      if (!propia.tarjeta && !propia.recorrido) resaltarZona(id);
+      if (!propia.tarjeta && !propia.frente && !propia.recorrido) resaltarZona(id);
       if (l) { var a = aCaja(l[0], l[1]), f = libreSala(); if (a[0] < f.x0 || a[0] > f.x1 || a[1] < f.y0 || a[1] > f.y1) volarSala(l[0], l[1], propia.cam.z, 450); }
     }
     if (q) { var b = burbujaDe(q.getAttribute('data-quien')); if (b) { anillo(b.quien); hablarSala(b, { foco: true }); } }
@@ -1645,7 +1759,7 @@
     if (!propia) return;
     var z = e.target.closest && e.target.closest('.zona-sala'), q = e.target.closest && e.target.closest('.quien-sala');
     if (q) { anillo(null); callarDe(q.getAttribute('data-quien'), true); }
-    if (z && !propia.tarjeta && !propia.recorrido) resaltarZona(null);
+    if (z && !propia.tarjeta && !propia.frente && !propia.recorrido) resaltarZona(null);
   });
   // La burbuja de BiPlot lleva a su tarjeta; en el museo (que es todo de BiPlot, sin rincón aparte), al recorrido con Pepa
   capaSala.addEventListener('click', function (e) {

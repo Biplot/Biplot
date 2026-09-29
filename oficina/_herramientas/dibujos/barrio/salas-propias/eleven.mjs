@@ -176,14 +176,18 @@ export function salaEleven() {
 
     // ── El muro de la izquierda: su lema en neón, el horario vivo y el Team Eleven ──
     L.planoX(10.8, HM - 0.06, 520, 40, letreroNeon('el-neon-2', '¿Y TÚ, YA ERES ELEVEN?', 34), -37);
-    L.planoX(10.6, 2.1, 250, 150, `<rect width="250" height="150" rx="5" fill="#141414" stroke="#3A3531" stroke-width="3"/>` + ANTON(12, 26, 'HORARIO VIVO', 18, PAPEL, ' letter-spacing="1"') + `<circle cx="150" cy="19" r="4" fill="#37D67A"/>` + MANROPE(158, 23, 'Abierto', 9, '#B8B2AA') +
+    const HORARIO = `<rect width="250" height="150" rx="5" fill="#141414" stroke="#3A3531" stroke-width="3"/>` + ANTON(12, 26, 'HORARIO VIVO', 18, PAPEL, ' letter-spacing="1"') + `<circle cx="150" cy="19" r="4" fill="#37D67A"/>` + MANROPE(158, 23, 'Abierto', 9, '#B8B2AA') +
       ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => MANROPE(21 + i * 33, 44, d, 9, '#B8B2AA', ' text-anchor="middle"')).join('') +
-      SEMANA.map((dia, i) => dia.map((c, j) => `<rect x="${8 + i * 33}" y="${50 + j * 16}" width="27" height="13" rx="3" fill="${COLOR_CAT[c]}" opacity=".92"/>`).join('')).join(''), -38);
+      SEMANA.map((dia, i) => dia.map((c, j) => `<rect x="${8 + i * 33}" y="${50 + j * 16}" width="27" height="13" rx="3" fill="${COLOR_CAT[c]}" opacity=".92"/>`).join('')).join('');
+    L.planoX(10.6, 2.1, 250, 150, HORARIO, -38);
     const team = ['elCoach', 'elCoach2', 'elRecepcion', 'instructor'];
-    L.planoX(7.9, 2.1, 260, 100, ANTON(6, 22, 'TEAM ELEVEN', 20, PAPEL, ' letter-spacing="1"') +
-      team.map((id, i) => { const cx = 34 + i * 62; return `<clipPath id="el-ret-${i}"><circle cx="${cx}" cy="62" r="24"/></clipPath><circle cx="${cx}" cy="62" r="26" fill="${OR}"/><circle cx="${cx}" cy="62" r="24" fill="#2A2623"/><g clip-path="url(#el-ret-${i})"><use href="#v-${id}" transform="translate(${cx - 24} ${62 - 20}) scale(1.45)"/></g>`; }).join(''), -38);
-    zona('horario', { formas: [{ plano: [[0.03, 10.6, 0.6], [0.03, 8.1, 0.6], [0.03, 8.1, 2.1], [0.03, 10.6, 2.1]] }], lugar: [0.05, 9.35, 2.3], guia: [1.9, 9.6] });
-    zona('team', { formas: [{ plano: [[0.03, 7.9, 1.1], [0.03, 5.3, 1.1], [0.03, 5.3, 2.1], [0.03, 7.9, 2.1]] }, { plano: [[0.03, 10.8, 2.14], [0.03, 5.6, 2.14], [0.03, 5.6, 2.54], [0.03, 10.8, 2.54]], soloToque: true }], lugar: [0.05, 6.6, 2.3], guia: [1.9, 7.4] });
+    const TEAM = ANTON(6, 22, 'TEAM ELEVEN', 20, PAPEL, ' letter-spacing="1"') +
+      team.map((id, i) => { const cx = 34 + i * 62; return `<clipPath id="el-ret-${i}"><circle cx="${cx}" cy="62" r="24"/></clipPath><circle cx="${cx}" cy="62" r="26" fill="${OR}"/><circle cx="${cx}" cy="62" r="24" fill="#2A2623"/><g clip-path="url(#el-ret-${i})"><use href="#v-${id}" transform="translate(${cx - 24} ${62 - 20}) scale(1.45)"/></g>`; }).join('');
+    L.planoX(7.9, 2.1, 260, 100, TEAM, -38);
+    zona('horario', { formas: [{ plano: [[0.03, 10.6, 0.6], [0.03, 8.1, 0.6], [0.03, 8.1, 2.1], [0.03, 10.6, 2.1]] }], lugar: [0.05, 9.35, 2.3], guia: [1.9, 9.6],
+      frente: { svg: HORARIO, ancho: 250, alto: 150 } });
+    zona('team', { formas: [{ plano: [[0.03, 7.9, 1.1], [0.03, 5.3, 1.1], [0.03, 5.3, 2.1], [0.03, 7.9, 2.1]] }, { plano: [[0.03, 10.8, 2.14], [0.03, 5.6, 2.14], [0.03, 5.6, 2.54], [0.03, 10.8, 2.54]], soloToque: true }], lugar: [0.05, 6.6, 2.3], guia: [1.9, 7.4],
+      frente: { svg: TEAM, ancho: 260, alto: 100, fondo: '#211E1C' } });
     camina('elToalla', [[6.3, 8.0, 2.5], [6.3, 4.9, 2], [6.3, 9.6, 2], [6.3, 8.0]], { vel: 0.45 });
 
     // ── Cafetería: el mesón contra el muro, la máquina y quienes recargan ──

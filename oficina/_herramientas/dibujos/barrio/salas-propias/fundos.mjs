@@ -202,10 +202,12 @@ export function salaFundos() {
     // ── Tres paisajes, un mismo cuidado: los ventanales de sus proyectos ──
     const vent = [['malalcahuello', 5.1], ['marchigue', 10.05], ['puerto-varas', 15.0]];
     for (const [id, x0] of vent) {
-      L.planoY(x0, 0.025, 2.28, 400, 170, paisaje(id), -39);
+      const cuadro = paisaje(id);
+      L.planoY(x0, 0.025, 2.28, 400, 170, cuadro, -39);
       const [n, reg] = NOMBRES[id];
       L.planoY(x0 + 0.9, 0.025, 0.5, 220, 34, `<rect width="220" height="34" rx="3" fill="${TINTA}" stroke="${ORO}" stroke-width="1.6"/>` + serif(12, 23, n, 19, ORO2) + sans(12 + n.length * 9.2, 22, reg, 9, 'rgba(247,245,240,.75)'), -38);
-      zona(id, { formas: [{ plano: [[x0, 0.03, 0.58], [x0 + 4.0, 0.03, 0.58], [x0 + 4.0, 0.03, 2.28], [x0, 0.03, 2.28]] }], lugar: [x0 + 2.0, 0.05, 2.45], guia: [x0 + 2.0, 1.5] });
+      zona(id, { formas: [{ plano: [[x0, 0.03, 0.58], [x0 + 4.0, 0.03, 0.58], [x0 + 4.0, 0.03, 2.28], [x0, 0.03, 2.28]] }], lugar: [x0 + 2.0, 0.05, 2.45], guia: [x0 + 2.0, 1.5],
+        frente: { svg: cuadro, ancho: 400, alto: 170 } });
     }
     // Banca de galería y plantas entre ventanales
     L.caja(5.6, 0.45, 0, 3.0, 0.5, 0.42, RAULI, 5.6 + 1.5 + 0.7 + 0.2);
@@ -253,9 +255,10 @@ export function salaFundos() {
 
     // ── El equipo: el muro de las personas y los escritorios de reserva y validación ──
     const retratos = ['fdRecepcion', 'fdMaqueta', 'fdGuia', 'fdEjecutiva1', 'fdEjecutiva2', 'fdFirma'];
-    L.planoX(9.5, 2.5, 470, 96, serif(8, 24, 'Detrás de cada venta hay personas', 23, ORO2) +
+    const PERSONAS = serif(8, 24, 'Detrás de cada venta hay personas', 23, ORO2) +
       retratos.map((id, i) => { const cx = 36 + i * 72; return `<clipPath id="fd-ret-${i}"><circle cx="${cx}" cy="62" r="25"/></clipPath><circle cx="${cx}" cy="62" r="27" fill="${ORO}"/><circle cx="${cx}" cy="62" r="25" fill="#E9E1CF"/>` +
-        `<g clip-path="url(#fd-ret-${i})"><use href="#v-${id}" transform="translate(${cx - 23.5} ${62 - 20}) scale(1.45)"/></g>`; }).join(''), -38);
+        `<g clip-path="url(#fd-ret-${i})"><use href="#v-${id}" transform="translate(${cx - 23.5} ${62 - 20}) scale(1.45)"/></g>`; }).join('');
+    L.planoX(9.5, 2.5, 470, 96, PERSONAS, -38);
     const escritorio = (y0, img, k) => {
       L.caja(2.35, y0, 0.7, 1.5, 0.8, 0.05, RAULI, k);
       L.caja(2.4, y0 + 0.05, 0, 0.08, 0.7, 0.7, VERDE, k - 0.4); L.caja(3.72, y0 + 0.05, 0, 0.08, 0.7, 0.7, VERDE, k - 0.1);
@@ -269,7 +272,8 @@ export function salaFundos() {
     silla(L, 1.95, 8.6); pj('fdEjecutiva2', 1.95, 8.6, 0.47, 'd');
     escritorio(8.2, '§M§recorte-fundos-4-escrituras.webp', 13.1);
     silla(L, 4.3, 8.6, MUSGO); pj('comensal4', 4.3, 8.6, 0.47, 'i');
-    zona('equipo', { formas: [{ plano: [[0.03, 9.5, 1.54], [0.03, 4.8, 1.54], [0.03, 4.8, 2.5], [0.03, 9.5, 2.5]] }, { piso: [[1.6, 5.9], [4.6, 5.9], [4.6, 9.1], [1.6, 9.1]], alto: 1.4 }], lugar: [0.05, 7.2, 2.7], guia: [5.3, 7.7] });
+    zona('equipo', { formas: [{ plano: [[0.03, 9.5, 1.54], [0.03, 4.8, 1.54], [0.03, 4.8, 2.5], [0.03, 9.5, 2.5]] }, { piso: [[1.6, 5.9], [4.6, 5.9], [4.6, 9.1], [1.6, 9.1]], alto: 1.4 }], lugar: [0.05, 7.2, 2.7], guia: [5.3, 7.7],
+      frente: { svg: PERSONAS, ancho: 470, alto: 96, fondo: '#1C3829' } });
 
     // ── La firma y la inscripción: la escritura sobre la mesa y el certificado en el muro ──
     L.planoX(12.55, 2.2, 200, 118, `<rect width="200" height="118" rx="3" fill="${ORO}"/><rect x="6" y="6" width="188" height="106" fill="#F4ECD8"/>` + serif(18, 32, 'Inscrita a tu nombre', 19, TINTA) +
