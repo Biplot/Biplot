@@ -308,6 +308,8 @@
   $('#controles').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     var r = rect(), acc = b.getAttribute('data-accion');
+    // En una sala propia, los mismos botones mueven su cámara
+    if (propia && acc !== 'pausa') { propia.aMano = true; if (acc === 'todo') verSalaEntera(600); else zoomSalaCentro(acc === 'acercar' ? 1.35 : 0.74); return; }
     if (acc === 'acercar') zoomEn(r.left + r.width / 2, r.top + r.height / 2, 1.35);
     if (acc === 'alejar') zoomEn(r.left + r.width / 2, r.top + r.height / 2, 0.74);
     if (acc === 'todo') verTodo();
@@ -322,6 +324,8 @@
     if (si || enSala) esc3.detener(); else esc3.iniciar();
     esc3.moverLocal(!si && !reducido && !enSala);
     if (vivaSala) vivaSala.mover(!si && !reducido);
+    // En una sala propia la gente deja de hablar sola (sigue su turno al reanudar)
+    if (propia && si) callarSolas();
     guardar('pausa', si ? '1' : '0');
   }
 
@@ -482,7 +486,8 @@
     if (e.key !== 'Escape') return;
     if (window.innerWidth < 900 && !menu.classList.contains('cerrado')) { alternarMenu(false); $('#recorrer-toggle').focus(); return; }
     if ($('#lightbox') && !$('#lightbox').hidden) { cerrarLightbox(); return; }
-    if (enSala) { salirSala(); return; }
+    // En una sala propia, Escape cierra primero la tarjeta (o el recorrido); después, sale a la calle
+    if (enSala) { if (propia && escapePropia()) return; salirSala(); return; }
     if (!panel.hidden) cerrarPanel();
     else if (!$('#guia').hidden) terminarGuia();
     else if (esc3.abierta()) salirOficina();
@@ -855,6 +860,7 @@
     if (!enSala) return;
     var m = margenes(), marco = $('#sala-marco');
     marco.style.left = m.izq + 'px'; marco.style.right = m.der + 'px'; marco.style.bottom = m.aba + 'px';
+    if (propia) acomodarPropia();
   }
   function entrarSala(id, o) {
     o = o || {};
@@ -863,6 +869,8 @@
     cerrarIntro();
     if (esc3.abierta()) salirOficina({ sinCamara: true, sinHistoria: true });
     var ya = enSala;
+    // La sala propia anterior (su tarjeta, su recorrido y sus burbujas) se cierra antes de pasar a otra
+    terminarPropia();
     detenerMedios();
     // Cada sala tiene su dirección (#haru): el botón «atrás» del navegador vuelve a la calle. Si ya hay una entrada nuestra
     // en el historial (otra sala o la calle a la que se volvió), se reemplaza, para no llenarlo.
@@ -872,14 +880,23 @@
     }
     enSala = id; invocador = o.boton || invocador || document.activeElement; abierto = { tipo: 'sala', id: id };
     document.body.classList.add('en-sala');
+    // Una sala propia (salaPropia en datos.js) no lleva panel: la sala ocupa todo el espacio libre
+    var conPropia = esPropia(id);
+    document.body.classList.toggle('en-sala-propia', conPropia);
     resaltar({ tipo: 'zona', id: id }); ocultarRotulo();
-    // El panel con todo lo de la empresa
-    panelCuerpo.innerHTML = htmlSala(pr);
-    panel.hidden = false; panel.classList.add('panel-sala'); panel.classList.remove('panel-local'); document.body.classList.add('panel-abierto');
-    $('#panel-nombre').textContent = tituloPanel({ tipo: 'sala', id: id });
-    $('#panel-cerrar').setAttribute('aria-label', 'Volver a la calle');
-    panel.setAttribute('aria-label', 'La sala de ' + pr.nombre);
-    panel.scrollTop = 0; panelCuerpo.scrollTop = 0;
+    if (conPropia) {
+      panelCuerpo.innerHTML = '';
+      panel.hidden = true; panel.classList.remove('panel-sala', 'panel-local'); document.body.classList.remove('panel-abierto');
+      $('#panel-cerrar').setAttribute('aria-label', 'Cerrar');
+    } else {
+      // El panel con todo lo de la empresa
+      panelCuerpo.innerHTML = htmlSala(pr);
+      panel.hidden = false; panel.classList.add('panel-sala'); panel.classList.remove('panel-local'); document.body.classList.add('panel-abierto');
+      $('#panel-nombre').textContent = tituloPanel({ tipo: 'sala', id: id });
+      $('#panel-cerrar').setAttribute('aria-label', 'Volver a la calle');
+      panel.setAttribute('aria-label', 'La sala de ' + pr.nombre);
+      panel.scrollTop = 0; panelCuerpo.scrollTop = 0;
+    }
     // La calle queda detrás de la sala: su gente (también la del local abierto) se detiene mientras tanto
     esc3.detener(); esc3.moverLocal(false);
     var mostrar = function () {
@@ -888,6 +905,7 @@
         pintarSala(id);
         salaEl.hidden = false; acomodarSala();
         requestAnimationFrame(function () { salaEl.classList.add('visible'); });
+        if (propia) { mirarPropia(); return; }
         activarMedios();
         var t = $('#panel-titulo'); if (t) t.focus({ preventScroll: true });
       });
@@ -900,11 +918,21 @@
   function pintarSala(id) {
     var S = window.Salas.salas[id], pr = PROYECTOS[id]; if (!S) return;
     if (vivaSala) vivaSala.destruir();
+    var conPropia = esPropia(id) && !!S.zonas;
     salaCaja.innerHTML = '<svg class="sala-svg" viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid meet" role="group" aria-label="La sala de ' + esc(pr.nombre) + ': ' + esc(pr.esencia) + '">' +
+      // En una sala propia, lo que se toca brilla (un halo dorado difuso bajo el contorno punteado)
+      (conPropia ? '<defs><filter id="sala-brillo" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="6"/></filter></defs>' : '') +
       '<g id="sala-dibujo" class="sala-dibujo' + (reducido ? ' quieto' : '') + '"></g></svg>';
     // La sala en capas, con quienes caminan entre los muebles (quietos con la animación pausada)
     vivaSala = window.Escena.maqueta(salaCaja.querySelector('#sala-dibujo'), S, { pintar: conMedios });
     vivaSala.mover(!quieta() && !reducido);
+    if (conPropia) montarPropia(id, S);
+    else if (esPropia(id)) {
+      // Una sala propia cuyo dibujo todavía no trae zonas (salas.js sin regenerar) se ve como las demás, con su panel
+      document.body.classList.remove('en-sala-propia');
+      panelCuerpo.innerHTML = htmlSala(pr); panel.hidden = false; panel.classList.add('panel-sala'); document.body.classList.add('panel-abierto');
+      $('#panel-nombre').textContent = tituloPanel({ tipo: 'sala', id: id }); $('#panel-cerrar').setAttribute('aria-label', 'Volver a la calle');
+    }
     salaCaja.querySelectorAll('.pin').forEach(function (g) {
       var p = (pr.pines || [])[g.getAttribute('data-pin') - 1];
       g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
@@ -917,7 +945,7 @@
     bA.hidden = !ant; bS.hidden = !sig;
     if (ant) { bA.setAttribute('data-sala', ant); bA.querySelector('span').textContent = PROYECTOS[ant].nombre; }
     if (sig) { bS.setAttribute('data-sala', sig); bS.querySelector('span').textContent = PROYECTOS[sig].nombre; }
-    elegirPin(1, false, true);
+    if (!conPropia) elegirPin(1, false, true);
   }
   // Un punto de la sala: la pantalla real de ese módulo (o, si no hay, el rincón de la sala donde está)
   function elegirPin(n, mover, inicial) {
@@ -940,11 +968,12 @@
     o = o || {};
     if (!enSala) return;
     var id = enSala;
+    terminarPropia();
     enSala = null;
     if (vivaSala) { vivaSala.destruir(); vivaSala = null; }
     cerrarLocal();
     salaEl.classList.remove('visible'); salaEl.hidden = true; salaCaja.innerHTML = '';
-    document.body.classList.remove('en-sala');
+    document.body.classList.remove('en-sala', 'en-sala-propia');
     detenerMedios();
     panel.hidden = true; panel.classList.remove('panel-sala'); abierto = null; document.body.classList.remove('panel-abierto');
     $('#panel-cerrar').setAttribute('aria-label', 'Cerrar');
@@ -971,6 +1000,607 @@
     var g = e.target.closest && e.target.closest('.pin'); if (!g) return;
     e.preventDefault(); elegirPin(+g.getAttribute('data-pin'), true);
   });
+
+  /* ── La sala propia (salaPropia en datos.js; hoy, la de Nu Home) ──
+     La sala de la empresa como su propia sala de ventas, sin números ni panel: llena el espacio libre y se mueve y se
+     acerca como la oficina (arrastrar, rueda, pellizco, flechas, + y −). Lo que se toca (sus zonas, en salas.js) se ilumina
+     con su nombre y abre su tarjeta; la gente habla sola, de a una o de a dos; abajo va la barra de la empresa y BiPlot
+     está en su rincón, con todo lo del proyecto. «Recorrer con una asesora» pasa zona por zona. Es el modelo para las
+     demás salas: todo lo que es de la empresa (textos, colores, quién habla) sale de datos.js y de su dibujo. */
+  var propia = null, capaSala = $('#sala-capa'), barraSala = $('#sala-barra'), tarjeta = $('#sala-tarjeta'), avisoSala = $('#sala-aviso');
+  var toqueS = null, dedosS = {}, dichas = {};
+  function esPropia(id) { return !!(PROYECTOS[id] && PROYECTOS[id].salaPropia); }
+  // En celular la tarjeta es una hoja que sube desde abajo
+  function hojaSala() { return window.innerWidth < 700; }
+  function textoPropia(k, d) { return (propia.P.textos || {})[k] || d; }
+  function puntosDe(s) { return String(s).split(' ').map(function (p) { return p.split(',').map(Number); }); }
+  // El nombre de una zona para lectores de pantalla, sin repetirse: «Casa piloto: Un módulo de 6 m…», «Modelo: Un módulo»
+  function nombreZonaSala(d) {
+    var n = normal(d.nombre);
+    if (d.titulo && n.indexOf(normal(d.titulo)) < 0) return d.nombre + ': ' + d.titulo;
+    return d.ceja && n.indexOf(normal(d.ceja)) < 0 ? d.ceja + ': ' + d.nombre : d.nombre;
+  }
+  // Arma lo que va encima del dibujo: lo que se ilumina, las zonas y la gente que habla (botones de verdad, en el orden
+  // de datos.js), la barra de la empresa y sus colores
+  function montarPropia(id, S) {
+    var pr = PROYECTOS[id], PP = pr.salaPropia, svgS = salaCaja.querySelector('.sala-svg');
+    var vb = S.vb.split(' ').map(Number);
+    propia = { id: id, pr: pr, P: PP, S: S, svg: svgS, vb: vb, cam: { x: vb[0] + vb[2] / 2, y: vb[1] + vb[3] / 2, z: 1 }, zonas: {}, hablan: [],
+      burbujas: [], tarjeta: null, origen: null, volver: null, aMano: false, recorrido: null, resalte: null, anillo: null, sobre: '', vuelo: null, latido: 0, turno: 0, reloj: null };
+    dichas = {};
+    // Los colores y la letra de la empresa (lo que no trae, queda como en oficina.css)
+    var c = PP.colores || {}, f = PP.fuente || {};
+    [['--p-fondo', c.fondo], ['--p-fondo-2', c.fondo2], ['--p-tinta', c.tinta], ['--p-tinta-2', c.tinta2], ['--p-oro', c.oro], ['--p-ceja', c.ceja],
+      ['--p-ceja-burbuja', c.cejaBurbuja], ['--p-borde', c.borde], ['--p-brillo', c.brillo], ['--p-sub', c.sub], ['--p-pie', c.pie], ['--p-velo', c.velo],
+      ['--p-hover', c.hover], ['--p-btn-fondo', c.boton], ['--p-btn-tinta', c.botonTinta], ['--p-btn-punto', c.botonPunto],
+      ['--p-serif', f.familia], ['--p-peso', f.peso], ['--p-espacio', f.espacio], ['--p-caja', f.caja], ['--p-titulo-tam', f.titulo], ['--p-sub-letra', f.sub]
+    ].forEach(function (t) { salaEl.style.setProperty(t[0], t[1] || ''); });
+    (S.zonas || []).forEach(function (z) { propia.zonas[z.id] = { z: z, pts: puntosDe(z.silueta), d: (PP.zonas || {})[z.id] }; });
+    var h = '<g class="sala-resalte" aria-hidden="true"></g><g class="sala-anillo" aria-hidden="true"></g><g class="sala-toques">';
+    Object.keys(PP.zonas || {}).forEach(function (zid) {
+      var z = propia.zonas[zid], d = PP.zonas[zid]; if (!z) return;
+      h += '<g class="zona-sala" data-zona="' + esc(zid) + '" role="button" tabindex="0" aria-haspopup="dialog" aria-controls="sala-tarjeta" aria-expanded="false" aria-label="' +
+        esc(nombreZonaSala(d)) + '"><polygon points="' + z.z.silueta + '"/></g>';
+    });
+    (PP.burbujas || []).forEach(function (b) {
+      var g = S.gente && S.gente[b.quien]; if (!g) return;
+      propia.hablan.push(b);
+      var w = Math.max(26, g[2] * 0.46);
+      h += '<g class="quien-sala" data-quien="' + esc(b.quien) + '" role="button" tabindex="0" aria-label="' + esc(b.nombre + ' dice: «' + b.texto + '»') + '">' +
+        '<rect x="' + (g[0] - w / 2) + '" y="' + (g[1] - g[2]) + '" width="' + w + '" height="' + (g[2] + 6) + '"/></g>';
+    });
+    svgS.insertAdjacentHTML('beforeend', h + '</g>');
+    // La sala es una región que se recorre con teclado
+    salaCaja.setAttribute('tabindex', '0'); salaCaja.setAttribute('role', 'region'); salaCaja.setAttribute('aria-roledescription', 'sala interactiva');
+    salaCaja.setAttribute('aria-label', 'La sala de ' + pr.nombre + '. Arrastra o usa las flechas para moverte, + y − para acercarte y 0 para ver toda la sala. Toca o elige lo que quieras conocer.');
+    capaSala.innerHTML = '<div class="sala-etiqueta" hidden></div>';
+    barraSala.innerHTML = htmlBarraPropia(); barraSala.hidden = false; barraSala.classList.remove('recorriendo');
+    barraSala.setAttribute('aria-label', pr.cliente || pr.nombre);
+    $('#controles [data-accion="todo"]').setAttribute('aria-label', 'Ver toda la sala');
+  }
+  // Al abrirse la sala (ya con su tamaño): el encuadre inicial, el foco y el turno de las burbujas
+  function mirarPropia() {
+    if (!propia) return;
+    acomodarPropia();
+    encuadreInicialSala();
+    salaCaja.focus({ preventScroll: true });
+    clearTimeout(propia.reloj); propia.reloj = setTimeout(turnoBurbujas, 1200);
+  }
+  function terminarPropia() {
+    if (!propia) return;
+    var yo = propia;
+    if (yo.recorrido) terminarRecorrido(true);
+    cerrarTarjeta(true);
+    clearTimeout(yo.reloj); if (yo.vuelo) cancelAnimationFrame(yo.vuelo); if (yo.latido) cancelAnimationFrame(yo.latido);
+    propia = null; toqueS = null; dedosS = {};
+    capaSala.innerHTML = ''; avisoSala.textContent = '';
+    barraSala.hidden = true; barraSala.innerHTML = ''; barraSala.classList.remove('recorriendo');
+    ['tabindex', 'role', 'aria-roledescription', 'aria-label'].forEach(function (a) { salaCaja.removeAttribute(a); });
+    salaCaja.classList.remove('sobre', 'arrastrando');
+    document.body.classList.remove('sala-hoja'); document.body.style.removeProperty('--alto-barra');
+    $('#controles [data-accion="todo"]').setAttribute('aria-label', 'Ver toda la oficina');
+  }
+  // Escape: primero la tarjeta, después el recorrido (y recién entonces se sale de la sala)
+  function escapePropia() {
+    if (propia.tarjeta) { cerrarTarjeta(); return true; }
+    if (propia.recorrido) { terminarRecorrido(); return true; }
+    return false;
+  }
+  function acomodarPropia() {
+    // Con el menú cerrado (en escritorio) su botón queda arriba a la izquierda: «Volver a la calle» se corre a su lado
+    var marco = $('#sala-marco'), rm = marco.getBoundingClientRect(), izq = 16, rt = $('#recorrer-toggle').getBoundingClientRect();
+    if (window.innerWidth >= 900 && menu.classList.contains('cerrado') && rt.width) izq = Math.max(16, Math.round(rt.right - rm.left + 10));
+    marco.style.setProperty('--volver-izq', izq + 'px');
+    // En escritorio la barra (al centro) no llega a los controles de la cámara, abajo a la derecha; en celular van encima
+    var rc = $('#controles').getBoundingClientRect();
+    barraSala.style.maxWidth = window.innerWidth >= 900 && rc.width ? Math.max(300, Math.floor(2 * (rc.left - 14 - (rm.left + rm.width / 2)))) + 'px' : '';
+    document.body.style.setProperty('--alto-barra', (barraSala.hidden ? 0 : barraSala.offsetHeight) + 'px');
+    if (propia.tarjeta) { tarjeta.classList.toggle('hoja', hojaSala()); document.body.classList.toggle('sala-hoja', hojaSala()); }
+    aplicarSala();
+  }
+
+  // ── La cámara de la sala (en coordenadas del dibujo, como la de la oficina) ──
+  function tamSala() { return { w: salaCaja.clientWidth, h: salaCaja.clientHeight }; }
+  // El área libre: sin los botones de arriba ni la barra de abajo
+  function libreSala() {
+    var t = tamSala(), abajo = barraSala.hidden ? 16 : t.h - barraSala.offsetTop + 14;
+    return { x0: 12, y0: 70, x1: t.w - 12, y1: Math.max(140, t.h - abajo) };
+  }
+  // Hasta dónde llega una tarjeta por la derecha: en escritorio, hasta los controles de la cámara
+  function derSala() {
+    var t = tamSala(); if (window.innerWidth < 900) return t.w - 16;
+    var rc = $('#controles').getBoundingClientRect(), rk = salaCaja.getBoundingClientRect();
+    return rc.width ? Math.min(t.w - 16, rc.left - rk.left - 12) : t.w - 76;
+  }
+  function ajusteSala() { var l = libreSala(), vb = propia.vb; return Math.min((l.x1 - l.x0) / vb[2], (l.y1 - l.y0) / vb[3]); }
+  function limitesSala() { var a = ajusteSala(); return [a * 0.8, Math.max(2.4, a * 6)]; }
+  function aplicarSala() {
+    if (!propia) return;
+    var t = tamSala(); if (!t.w || !t.h) return;
+    var c = propia.cam, lz = limitesSala(), vb = propia.vb;
+    c.z = Math.max(lz[0], Math.min(lz[1], c.z));
+    // El centro no se aleja de la sala (con un margen, para dejar una zona al lado de su tarjeta)
+    c.x = Math.max(vb[0] - vb[2] * 0.25, Math.min(vb[0] + vb[2] * 1.25, c.x)); c.y = Math.max(vb[1] - vb[3] * 0.25, Math.min(vb[1] + vb[3] * 1.25, c.y));
+    var w = t.w / c.z, h = t.h / c.z;
+    propia.svg.setAttribute('viewBox', [c.x - w / 2, c.y - h / 2, w, h].map(function (n) { return Math.round(n * 100) / 100; }).join(' '));
+    reubicarSala();
+  }
+  // Centro de cámara que deja el punto (px, py) del dibujo al medio del área libre l
+  function centroSala(px, py, z, l) { var t = tamSala(); l = l || libreSala(); return { x: px - ((l.x0 + l.x1) / 2 - t.w / 2) / z, y: py - ((l.y0 + l.y1) / 2 - t.h / 2) / z }; }
+  // Lleva la cámara a { x, y, z } (su centro y su acercamiento), con una curva suave; sin animación, al tiro
+  function camaraA(c, dur, fin) {
+    var yo = propia, cam = yo.cam, desde = { x: cam.x, y: cam.y, z: cam.z }, t0 = performance.now();
+    if (yo.vuelo) { cancelAnimationFrame(yo.vuelo); yo.vuelo = null; }
+    if (reducido || !dur) { cam.x = c.x; cam.y = c.y; cam.z = c.z; aplicarSala(); if (fin) fin(); return; }
+    (function cuadro(t) {
+      if (propia !== yo) return;
+      var k = Math.min(1, (t - t0) / dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      cam.z = Math.exp(Math.log(desde.z) + (Math.log(c.z) - Math.log(desde.z)) * e);
+      cam.x = desde.x + (c.x - desde.x) * e; cam.y = desde.y + (c.y - desde.y) * e;
+      aplicarSala();
+      if (k < 1) yo.vuelo = requestAnimationFrame(cuadro); else { yo.vuelo = null; if (fin) fin(); }
+    })(t0);
+  }
+  function volarSala(px, py, z, dur, fin, l) { var c = centroSala(px, py, z, l); camaraA({ x: c.x, y: c.y, z: z }, dur, fin); }
+  // Encuadra un rectángulo del dibujo [x0, y0, x1, y1] en el área libre (o en o.libre), con aire alrededor
+  function encuadrarSala(caja, dur, o) {
+    o = o || {};
+    var l = o.libre || libreSala(), lz = limitesSala(), aire = o.aire || 0.84;
+    var z = Math.min((l.x1 - l.x0) * aire / Math.max(40, caja[2] - caja[0]), (l.y1 - l.y0) * aire / Math.max(40, caja[3] - caja[1]), o.zMax || 2.2);
+    volarSala((caja[0] + caja[2]) / 2, (caja[1] + caja[3]) / 2, Math.max(lz[0], Math.min(lz[1], z)), dur, o.fin, l);
+  }
+  function verSalaEntera(dur) { var vb = propia.vb; encuadrarSala([vb[0], vb[1], vb[0] + vb[2], vb[1] + vb[3]], dur, { aire: 1 }); }
+  // Se entra viendo la sala entera; en celular, la entrada de cerca
+  function encuadreInicialSala() {
+    var e = propia.S.lugares && propia.S.lugares.entrada;
+    if (hojaSala() && e) encuadrarSala([e[0] - 230, e[1] - 190, e[0] + 230, e[1] + 110], 0, { aire: 1 });
+    else verSalaEntera(0);
+  }
+  function zoomSala(clx, cly, factor) {
+    var r = salaCaja.getBoundingClientRect(), c = propia.cam, lz = limitesSala(), z2 = Math.max(lz[0], Math.min(lz[1], c.z * factor));
+    if (propia.vuelo) { cancelAnimationFrame(propia.vuelo); propia.vuelo = null; }
+    var wx = c.x + (clx - r.left - r.width / 2) / c.z, wy = c.y + (cly - r.top - r.height / 2) / c.z;
+    c.z = z2; c.x = wx - (clx - r.left - r.width / 2) / z2; c.y = wy - (cly - r.top - r.height / 2) / z2;
+    aplicarSala();
+  }
+  function zoomSalaCentro(factor) { var r = salaCaja.getBoundingClientRect(); zoomSala(r.left + r.width / 2, r.top + r.height / 2, factor); }
+  // Del dibujo a la caja de la sala (px) y de la pantalla al dibujo
+  function aCaja(px, py) { var vb = propia.svg.viewBox.baseVal, t = tamSala(); return [(px - vb.x) * t.w / vb.width, (py - vb.y) * t.h / vb.height]; }
+  function aDibujoSala(clx, cly) { var r = salaCaja.getBoundingClientRect(), vb = propia.svg.viewBox.baseVal; return [vb.x + (clx - r.left) * vb.width / r.width, vb.y + (cly - r.top) * vb.height / r.height]; }
+  // Una caja del dibujo que junta varias zonas
+  function cajaDe(ids) {
+    var c = null;
+    ids.forEach(function (id) { var z = propia.zonas[id]; if (!z) return; var b = z.z.caja; c = c ? [Math.min(c[0], b[0]), Math.min(c[1], b[1]), Math.max(c[2], b[2]), Math.max(c[3], b[3])] : b.slice(); });
+    return c;
+  }
+
+  // ── Qué hay bajo el dedo: la gente que habla manda sobre las zonas; entre zonas, la de adelante ──
+  function posQuien(id) {
+    var g = propia.S.gente && propia.S.gente[id]; if (!g) return null;
+    var w = vivaSala && vivaSala.gente.filter(function (q) { return q.c.id === id; })[0];
+    if (w) { var p = window.Escena.P(w.x, w.y, 0); return [p[0], p[1], g[2]]; }
+    return g;
+  }
+  function quienEn(px, py) {
+    var mejor = null, pie = -Infinity;
+    propia.hablan.forEach(function (b) {
+      var p = posQuien(b.quien); if (!p) return;
+      var w = Math.max(26, p[2] * 0.46);
+      if (px >= p[0] - w / 2 && px <= p[0] + w / 2 && py >= p[1] - p[2] && py <= p[1] + 6 && p[1] > pie) { mejor = b; pie = p[1]; }
+    });
+    return mejor;
+  }
+  function dentroDe(x, y, pts) {
+    var c = false;
+    for (var i = 0, j = pts.length - 1; i < pts.length; j = i++) { var a = pts[i], b = pts[j]; if ((a[1] > y) !== (b[1] > y) && x < (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]) + a[0]) c = !c; }
+    return c;
+  }
+  function zonaEn(px, py) {
+    var mejor = null;
+    Object.keys(propia.zonas).forEach(function (id) { var z = propia.zonas[id]; if (z.d && dentroDe(px, py, z.pts) && (!mejor || z.z.prof > mejor.z.prof)) mejor = z; });
+    return mejor;
+  }
+
+  // ── Lo que se ilumina: el contorno punteado dorado, con su brillo, y el nombre de la zona ──
+  function resaltarZona(id, extras) {
+    if (!propia) return;
+    var g = propia.svg.querySelector('.sala-resalte'), s = '';
+    propia.resalte = id || null;
+    [id].concat(extras || []).forEach(function (zid) {
+      var z = zid && propia.zonas[zid]; if (!z) return;
+      z.z.suelo.forEach(function (p) { s += '<polygon class="resalte-brillo" points="' + p + '"/><polygon class="resalte-linea" points="' + p + '"/>'; });
+    });
+    g.innerHTML = s;
+    var et = capaSala.querySelector('.sala-etiqueta'), z0 = id && propia.zonas[id];
+    if (et) { et.hidden = !(z0 && z0.d); if (z0 && z0.d) et.textContent = z0.d.nombre; }
+    ubicarEtiqueta();
+  }
+  function ubicarEtiqueta() {
+    var et = capaSala.querySelector('.sala-etiqueta'), l = propia.resalte && propia.S.lugares && propia.S.lugares[propia.resalte];
+    if (!et || et.hidden || !l) return;
+    var a = aCaja(l[0], l[1]);
+    et.style.transform = 'translate(' + Math.round(a[0]) + 'px,' + Math.round(a[1]) + 'px) translate(-50%, -50%)';
+    // Si alguien habla encima del nombre, manda lo que dice (el nombre vuelve cuando se calla)
+    var r = et.getBoundingClientRect();
+    et.classList.toggle('tapada', propia.burbujas.some(function (x) { var q = x.el.getBoundingClientRect(); return r.left < q.right && q.left < r.right && r.top < q.bottom && q.top < r.bottom; }));
+  }
+  // Un anillo dorado bajo los pies de quien se toca o se elige
+  function anillo(id) { if (!propia) return; propia.anillo = id || null; ubicarAnillo(); }
+  function ubicarAnillo() {
+    var g = propia.svg.querySelector('.sala-anillo'), p = propia.anillo && posQuien(propia.anillo);
+    g.innerHTML = p ? '<ellipse class="anillo-quien" cx="' + Math.round(p[0]) + '" cy="' + Math.round(p[1]) + '" rx="' + Math.round(p[2] * 0.3) + '" ry="' + Math.round(p[2] * 0.12) + '"/>' : '';
+  }
+  function marcarZona(id, si) { var g = id && propia.svg.querySelector('.zona-sala[data-zona="' + id + '"]'); if (g) g.setAttribute('aria-expanded', si ? 'true' : 'false'); }
+  function anunciar(t) { avisoSala.textContent = ''; setTimeout(function () { avisoSala.textContent = t; }, 40); }
+
+  // ── La gente habla: una burbuja sobre la cabeza, que sigue a quien camina ──
+  function burbujaDe(id) { return propia.hablan.filter(function (b) { return b.quien === id; })[0]; }
+  // o: { sola (turno automático), foco (hasta que se va el foco), fija (el recorrido), guia, dura, anunciar }
+  function hablarSala(b, o) {
+    o = o || {};
+    var ya = propia.burbujas.filter(function (x) { return x.quien === b.quien; })[0];
+    if (ya) {
+      // Ya lo está diciendo: se alarga (y deja de ser «sola» si alguien la eligió)
+      if (ya.texto === b.texto) {
+        ya.sola = ya.sola && !!o.sola; ya.foco = ya.foco || !!o.foco; ya.fija = ya.fija || !!o.fija;
+        ya.hasta = ya.fija || ya.foco ? Infinity : Math.max(ya.hasta, performance.now() + (o.dura || 6000));
+        if (o.anunciar) anunciar((b.nombre ? b.nombre + ': ' : '') + b.texto);
+        return ya;
+      }
+      callarSala(ya, true);
+    }
+    var el = document.createElement('div');
+    el.className = 'burbuja' + (b.biplot ? ' bp' : '') + (o.guia ? ' de-guia' : '') + (!b.rol && b.texto.length < 24 ? ' corta' : '');
+    el.innerHTML = (b.rol ? '<small>' + esc(b.rol) + '</small>' : '') + '<span>' + esc(b.texto) + '</span>';
+    capaSala.appendChild(el);
+    var x = { quien: b.quien, texto: b.texto, el: el, sola: !!o.sola, fija: !!o.fija, foco: !!o.foco, hasta: o.fija || o.foco ? Infinity : performance.now() + (o.dura || 6000) };
+    propia.burbujas.push(x);
+    ubicarBurbuja(x);
+    if (reducido) el.classList.add('visible'); else requestAnimationFrame(function () { el.classList.add('visible'); });
+    if (o.anunciar) anunciar((b.nombre ? b.nombre + ': ' : '') + b.texto);
+    pedirLatido();
+    return x;
+  }
+  function callarSala(x, ya) {
+    var i = propia.burbujas.indexOf(x); if (i > -1) propia.burbujas.splice(i, 1);
+    if (ya || reducido) { x.el.remove(); return; }
+    x.el.classList.remove('visible'); setTimeout(function () { x.el.remove(); }, 420);
+  }
+  function callarSolas() { if (propia) propia.burbujas.slice().forEach(function (x) { if (x.sola) callarSala(x); }); }
+  function callarDe(id, soloFoco) { propia.burbujas.slice().forEach(function (x) { if (x.quien === id && (!soloFoco || x.foco)) callarSala(x); }); }
+  function ubicarBurbuja(x) {
+    var p = posQuien(x.quien); if (!p) return;
+    var a = aCaja(p[0], p[1] - p[2] + 4), t = tamSala(), el = x.el, w = el.offsetWidth, h = el.offsetHeight;
+    var izq = Math.max(8, Math.min(t.w - w - 8, a[0] - w / 2)), arr = a[1] - h - 12, alta = arr < 8;
+    if (alta) arr = 8;
+    el.style.transform = 'translate(' + Math.round(izq) + 'px,' + Math.round(arr) + 'px)';
+    el.style.setProperty('--cola', Math.round(Math.max(16, Math.min(w - 16, a[0] - izq))) + 'px');
+    el.classList.toggle('sin-cola', alta);
+    el.classList.toggle('fuera', a[0] < -20 || a[0] > t.w + 20 || a[1] < -20 || a[1] > t.h + 60);
+  }
+  // Mientras hay burbujas, cada cuadro las acompaña (a quien camina y a la cámara) y apaga las que ya dijeron lo suyo
+  function latirSala() {
+    if (!propia) return;
+    propia.latido = 0;
+    var ahora = performance.now();
+    propia.burbujas.slice().forEach(function (x) { if (ahora > x.hasta) callarSala(x); });
+    reubicarSala();
+    if (propia.burbujas.length) propia.latido = requestAnimationFrame(latirSala);
+  }
+  function pedirLatido() { if (propia && !propia.latido) propia.latido = requestAnimationFrame(latirSala); }
+  function reubicarSala() {
+    if (!propia) return;
+    propia.burbujas.forEach(ubicarBurbuja);
+    ubicarEtiqueta(); ubicarAnillo();
+    if (propia.tarjeta && !tarjeta.classList.contains('hoja')) ubicarTarjeta();
+  }
+  // Cada tanto habla alguien que está a la vista: nunca más de dos a la vez, y nunca con la animación detenida
+  function aLaVista(id) {
+    var p = posQuien(id); if (!p) return false;
+    var a = aCaja(p[0], p[1] - p[2]), l = libreSala();
+    return a[0] > l.x0 + 40 && a[0] < l.x1 - 40 && a[1] > l.y0 + 70 && a[1] < l.y1 - 20;
+  }
+  function seTapan(x) {
+    var r = x.el.getBoundingClientRect();
+    return propia.burbujas.some(function (y) { if (y === x) return false; var q = y.el.getBoundingClientRect(); return r.left < q.right + 6 && q.left < r.right + 6 && r.top < q.bottom + 6 && q.top < r.bottom + 6; });
+  }
+  function turnoBurbujas() {
+    if (!propia) return;
+    propia.reloj = setTimeout(turnoBurbujas, 3400);
+    if (reducido || quieta() || document.hidden || propia.tarjeta || propia.recorrido || propia.burbujas.length >= 2) return;
+    var n = propia.hablan.length;
+    for (var k = 0; k < n; k++) {
+      var b = propia.hablan[(propia.turno + k) % n];
+      if (propia.burbujas.some(function (x) { return x.quien === b.quien; }) || !aLaVista(b.quien)) continue;
+      var x = hablarSala(b, { sola: true, dura: 5600 });
+      if (seTapan(x)) { callarSala(x, true); continue; }
+      // Cada frase se anuncia una vez por visita (después sólo se ve)
+      if (!dichas[b.quien]) { dichas[b.quien] = true; anunciar((b.nombre ? b.nombre + ': ' : '') + b.texto); }
+      propia.turno = (propia.turno + k + 1) % n;
+      return;
+    }
+  }
+
+  // ── Las tarjetas: junto a lo que se tocó (en celular, una hoja desde abajo) ──
+  var CERRAR_T = '<button type="button" class="tarjeta-cerrar" aria-label="Cerrar"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span></button>';
+  function nombreModulo(t) { return String(t).replace(/^\s*\d+\s*·\s*/, ''); }
+  function whatsappPropia() { var PP = propia.P; return 'https://wa.me/' + String(PP.whatsapp).replace(/\D/g, '') + '?text=' + encodeURIComponent(PP.mensaje || ''); }
+  // Los botones de la empresa (negro y dorado): diseñar (el cotizador), recorrer con una asesora y, si hay WhatsApp de la
+  // empresa, hablar con una asesora. Nunca el WhatsApp de BiPlot.
+  function botonesPropia(lista) {
+    var PP = propia.P, h = '';
+    lista.forEach(function (b) {
+      if (b === 'disenar' && PP.disenar) h += '<a class="sp-btn negro" href="' + esc(PP.disenar.url) + '" target="_blank" rel="noopener">' + esc(PP.disenar.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>';
+      if (b === 'recorrer' && (PP.recorrido || []).length) h += '<button type="button" class="sp-btn borde" data-recorrer="1">' + esc(textoPropia('recorrer', 'Recorrer con una asesora')) + '</button>';
+      if (b === 'hablar' && PP.whatsapp) h += '<a class="sp-btn borde" href="' + esc(whatsappPropia()) + '" target="_blank" rel="noopener">' + esc(textoPropia('hablar', 'Hablar con una asesora')) + '<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>';
+    });
+    return h;
+  }
+  function htmlBarraPropia() {
+    var PP = propia.P, m = PP.marca || {};
+    return '<p class="sp-marca"><span class="sp-logo" aria-hidden="true">' + esc(m.nombre || propia.pr.cliente) + '</span>' + (m.sub ? '<span class="sp-sub" aria-hidden="true">' + esc(m.sub) + '</span>' : '') +
+      '<span class="sr">' + esc(propia.pr.cliente + (m.sub ? ', ' + m.sub : '')) + '</span></p><span class="sp-sep" aria-hidden="true"></span>' +
+      (m.texto ? '<p class="sp-txt">' + esc(m.texto) + '</p>' : '') + '<div class="sp-acciones">' + botonesPropia(['disenar', 'recorrer', 'hablar']) + '</div>';
+  }
+  function htmlTarjetaZona(d) {
+    var pr = propia.pr, pin = d.imagen && (pr.pines || []).filter(function (p) { return p[3] === d.imagen; })[0];
+    return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre) + '</p><h3 id="sala-tarjeta-t" tabindex="-1">' + esc(d.titulo) + '</h3>' +
+      (d.imagen ? '<figure class="tarjeta-img"><img src="' + MEDIOS + esc(d.imagen) + '.webp" alt="' + esc(pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : '')) + '" width="1280" height="720">' +
+        '<figcaption>' + esc(pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo') + '</figcaption></figure>' : '') +
+      (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
+      (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
+      (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
+        esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') + '</div>';
+  }
+  // La tarjeta de BiPlot, en su rincón: todo lo que hicimos (lo mismo que el panel de las demás salas)
+  function htmlTarjetaBiplot(pr) {
+    var pines = pr.pines || [];
+    return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc((pr.salaPropia && pr.salaPropia.cejaBiplot) || 'Hecho con BiPlot') + '</p>' +
+      '<h3 id="sala-tarjeta-t" tabindex="-1">' + esc(pr.nombre) + ' <span class="chip">' + esc(pr.corto || pr.estado) + '</span></h3>' +
+      '<p class="tarjeta-sub">' + esc(pr.cliente) + ' · ' + esc(pr.rubro) + '</p><p>' + esc(pr.resumen) + '</p>' +
+      '<div class="tarjeta-botones"><button type="button" class="bp-btn primario" data-hq="1"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Pasar a BiPlot HQ</button></div>' +
+      (pines.length ? '<section class="tarjeta-bloque" style="--acento:#17C3B2"><h4>Lo que construimos</h4><div class="visor" aria-live="polite"></div>' +
+        '<div class="tira-bp" role="group" aria-label="' + esc('Pantallas de ' + pr.nombre) + '">' + pines.map(function (p, i) {
+          return '<button type="button" data-pantalla="' + i + '" aria-pressed="false">' + (p[3] ? '<img src="' + MEDIOS + esc(p[3]) + '.webp" alt="" loading="lazy" width="160" height="90">' : '') + '<span>' + esc(nombreModulo(p[0])) + '</span></button>';
+        }).join('') + '</div>' + (pr.nota ? '<p class="nota">' + esc(pr.nota) + '</p>' : '') + '</section>' : '') +
+      (pr.media ? '<section class="tarjeta-bloque"><h4>Míralo funcionar</h4>' + htmlMedia(pr) + '</section>' : '') +
+      '<section class="tarjeta-bloque"><h4>Lo que resolvimos</h4><ul class="puntos">' + pr.puntos.map(function (x) { return '<li><b>' + esc(x[0]) + '</b>' + esc(x[1]) + '</li>'; }).join('') + '</ul></section>' +
+      (pr.enlaces.length ? '<section class="tarjeta-bloque"><h4>Visítalos</h4>' + pr.enlaces.map(function (l) {
+        return '<a class="sala-enlace" style="--acento:#17C3B2" href="' + esc(l.url) + '" target="_blank" rel="noopener"><span>' + esc(l.texto) + '<small>' + esc(l.url.replace(/^https?:\/\//, '')) + '</small></span><span class="ico" aria-hidden="true">' + icono('afuera') + '</span><span class="sr">(se abre en otra pestaña)</span></a>';
+      }).join('') + '</section>' : '') +
+      '<section class="tarjeta-bloque"><h4>El equipo que lo hizo</h4>' + chipsEquipo(pr.equipo) + '</section>' +
+      '<section class="tarjeta-bloque"><h4>Resultados</h4><ol class="medicion"><li><b>Día 30</b><span>Pendiente</span></li><li><b>Día 60</b><span>Pendiente</span></li><li><b>Día 90</b><span>Pendiente</span></li></ol><p class="nota">' + esc(pr.medicion || '') + '</p></section>' +
+      '<section class="tarjeta-bloque sala-comparte"><h4>Comparte esta sala</h4><div class="enlace-copia"><code>' + esc(urlSala(pr.id).replace(/^https:\/\/|\/$/g, '')) + '</code><button type="button" class="copiar" data-url="' + esc(urlSala(pr.id)) + '">Copiar</button></div>' +
+      (navigator.share ? '<button type="button" class="bp-btn compartir" data-url="' + esc(urlSala(pr.id)) + '"><span class="ico" aria-hidden="true">' + icono('compartir') + '</span>Compartir</button>' : '') +
+      '<p class="nota">Abre la oficina directo en esta sala, y al pegarlo en un chat se ve su imagen.</p></section>' +
+      '<div class="sala-final"><p>¿Tu negocio se parece a este?</p><div class="acciones"><a class="bp-cta" href="' + whatsapp('Hola BiPlot, vi la sala de ' + pr.nombre + ' en la oficina y quiero agendar un diagnóstico.') + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>' + botonChat() + '</div></div></div>';
+  }
+  // Una pantalla real de la tira de la tarjeta de BiPlot
+  function elegirPantalla(i) {
+    var pr = propia.pr, p = (pr.pines || [])[i], v = tarjeta.querySelector('.visor'); if (!p || !v) return;
+    v.innerHTML = (p[3] ? '<img src="' + MEDIOS + esc(p[3]) + '.webp" alt="' + esc(pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1]) + '" width="1280" height="720">' : '') +
+      '<div class="visor-txt"><span class="mod">' + esc(nombreModulo(p[0])) + '</span><b>' + esc(p[1]) + '</b><span>' + esc(p[2]) + '</span></div>';
+    tarjeta.querySelectorAll('[data-pantalla]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-pantalla') === i ? 'true' : 'false'); });
+  }
+  function abrirTarjeta(id, o) {
+    o = o || {};
+    var z = propia && propia.zonas[id]; if (!z || !z.d) return;
+    if (propia.recorrido) terminarRecorrido(true);
+    var antes = propia.tarjeta, c0 = propia.cam;
+    if (antes) { detenerMedios(tarjeta); marcarZona(antes, false); }
+    // (al cerrarla, la cámara vuelve a donde estaba, si nadie la movió a mano mientras tanto)
+    else { propia.origen = o.desde || document.activeElement; propia.volver = { x: c0.x, y: c0.y, z: c0.z }; propia.aMano = false; }
+    propia.tarjeta = id;
+    callarSolas(); anillo(null);
+    var hoja = hojaSala(), d = z.d;
+    tarjeta.className = 'sala-tarjeta ' + (d.biplot ? 'bp' : 'empresa') + (hoja ? ' hoja' : '');
+    tarjeta.innerHTML = d.biplot ? htmlTarjetaBiplot(propia.pr) : htmlTarjetaZona(d);
+    tarjeta.hidden = false;
+    document.body.classList.toggle('sala-hoja', hoja);
+    marcarZona(id, true);
+    resaltarZona(id);
+    if (d.biplot) { elegirPantalla(0); activarMedios(tarjeta); }
+    // La cámara deja la zona al lado de la tarjeta (en celular, arriba de la hoja); la tarjeta aparece al llegar
+    var l = libreSala(), t = tamSala();
+    if (hoja) l.y1 = Math.max(l.y0 + 120, t.h - tarjeta.offsetHeight - 10);
+    else l.x1 = Math.max(l.x0 + 160, derSala() - tarjeta.offsetWidth - 40);
+    ubicarTarjeta();
+    encuadrarSala(z.z.caja, 650, { libre: l, zMax: hoja ? 1.6 : 2.0, aire: 0.8, fin: function () { if (propia && propia.tarjeta === id) { ubicarTarjeta(); tarjeta.classList.add('visible'); } } });
+    var h = tarjeta.querySelector('#sala-tarjeta-t'); if (h) h.focus({ preventScroll: true });
+  }
+  function ubicarTarjeta() {
+    if (!propia || !propia.tarjeta || tarjeta.classList.contains('hoja')) { tarjeta.style.transform = ''; tarjeta.style.maxHeight = ''; return; }
+    var c = propia.zonas[propia.tarjeta].z.caja, a = aCaja(c[0], c[1]), b = aCaja(c[2], c[3]), l = libreSala();
+    // Entre los botones de arriba y la barra de abajo (si no cabe, se desplaza por dentro)
+    tarjeta.style.maxHeight = Math.max(220, l.y1 - 72) + 'px';
+    var cw = tarjeta.offsetWidth, ch = tarjeta.offsetHeight, der = derSala();
+    var x = b[0] + 24; if (x + cw > der) x = a[0] - 24 - cw;
+    x = Math.max(16, Math.min(der - cw, x));
+    var y = Math.max(72, Math.min(l.y1 - ch, (a[1] + b[1]) / 2 - ch / 2));
+    tarjeta.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)';
+  }
+  function cerrarTarjeta(sinFoco) {
+    if (!propia || !propia.tarjeta) return false;
+    var id = propia.tarjeta, o = propia.origen, v = propia.volver;
+    propia.tarjeta = null; propia.origen = null; propia.volver = null;
+    detenerMedios(tarjeta);
+    tarjeta.hidden = true; tarjeta.classList.remove('visible', 'hoja'); tarjeta.innerHTML = ''; tarjeta.style.transform = '';
+    document.body.classList.remove('sala-hoja');
+    marcarZona(id, false);
+    resaltarZona(null);
+    // La cámara vuelve a como estaba antes de la tarjeta (si nadie la movió a mano)
+    if (v && !propia.aMano) camaraA(v, 550);
+    if (!sinFoco) { if (o && o !== document.body && salaEl.contains(o)) o.focus({ preventScroll: true }); else salaCaja.focus({ preventScroll: true }); }
+    return true;
+  }
+  tarjeta.addEventListener('click', function (e) {
+    var b = e.target.closest('button, a'); if (!b || !propia) return;
+    if (b.classList.contains('tarjeta-cerrar')) { cerrarTarjeta(); return; }
+    if (b.hasAttribute('data-recorrer')) { e.preventDefault(); iniciarRecorrido(0); return; }
+    if (b.hasAttribute('data-pantalla')) { elegirPantalla(+b.getAttribute('data-pantalla')); return; }
+    if (b.hasAttribute('data-hq')) { e.preventDefault(); entrarOficina({ boton: $('#recorrer-toggle') }); return; }
+    if (b.hasAttribute('data-abrir')) { e.preventDefault(); var v = b.getAttribute('data-abrir').split(':'); abrir({ tipo: v[0], id: v[1] }, false, $('#recorrer-toggle')); return; }
+    if (b.hasAttribute('data-grande')) { e.preventDefault(); abrirLightbox(b.getAttribute('data-grande'), b.getAttribute('data-grande-v'), b); return; }
+    if (b.classList.contains('copiar')) { copiar(b); return; }
+    if (b.classList.contains('compartir')) compartir(b);
+  });
+
+  // ── «Recorrer con una asesora»: la cámara va zona por zona y la asesora se para al lado de cada una ──
+  function htmlBarraRecorrido() {
+    return '<div class="sp-rec"><p class="sp-rec-n"><span>' + esc(textoPropia('recorrido', 'Recorrido con una asesora')) + '</span> · <span data-rec="n"></span></p><p class="sp-rec-t" data-rec="t"></p></div>' +
+      '<div class="sp-acciones"><button type="button" class="sp-btn borde" data-rec="ant">Anterior</button><button type="button" class="sp-btn borde" data-rec="mas">Ver más</button>' +
+      '<button type="button" class="sp-btn negro" data-rec="sig">Siguiente</button></div>' +
+      '<button type="button" class="sp-cerrar" data-rec="fin" aria-label="Terminar el recorrido"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+  }
+  function iniciarRecorrido(i) {
+    if (!propia || !(propia.P.recorrido || []).length) return;
+    // (se callan todos, también quien se acaba de tocar, para que nadie tape lo que dice quien guía)
+    cerrarTarjeta(true); propia.burbujas.slice().forEach(function (x) { callarSala(x); }); anillo(null);
+    propia.recorrido = { i: -1 };
+    barraSala.classList.add('recorriendo'); barraSala.innerHTML = htmlBarraRecorrido();
+    acomodarPropia();
+    pasoRecorrido(i || 0);
+    var s = barraSala.querySelector('[data-rec="sig"]'); if (s) s.focus({ preventScroll: true });
+  }
+  function pasoRecorrido(i) {
+    var R = propia.P.recorrido; i = Math.max(0, Math.min(R.length - 1, i));
+    var p = R[i], z = propia.zonas[p.zona], quien = propia.P.guia, yo = propia;
+    propia.recorrido.i = i;
+    barraSala.querySelector('[data-rec="n"]').textContent = (i + 1) + ' de ' + R.length;
+    barraSala.querySelector('[data-rec="t"]').textContent = p.titulo;
+    barraSala.querySelector('[data-rec="ant"]').disabled = i === 0;
+    barraSala.querySelector('[data-rec="sig"]').textContent = i === R.length - 1 ? 'Terminar' : 'Siguiente';
+    resaltarZona(p.zona, p.ver);
+    anunciar((i + 1) + ' de ' + R.length + '. ' + p.titulo + '. ' + p.texto);
+    var decirlo = function () { if (propia !== yo || !yo.recorrido || yo.recorrido.i !== i) return; hablarSala({ quien: quien, rol: textoPropia('guia', ''), texto: p.texto }, { fija: true, guia: true }); };
+    if (quien) callarDe(quien);
+    // La asesora se para junto a la zona, mirándola (con un fundido; sin animación, al tiro)
+    var g = z && z.z.guia, w = g && quien && vivaSala && vivaSala.gente.filter(function (q) { return q.c.id === quien; })[0];
+    var caja = cajaDe([p.zona].concat(p.ver || [])) || propia.zonas[p.zona].z.caja;
+    if (w) {
+      var pie = window.Escena.P(g[0], g[1], 0), alto = propia.S.gente[quien][2], lg = propia.S.lugares[p.zona] || pie;
+      caja = [Math.min(caja[0], pie[0] - 60), Math.min(caja[1], pie[1] - alto - 90), Math.max(caja[2], pie[0] + 60), Math.max(caja[3], pie[1] + 10)];
+      // (si mientras tanto se pasó a otra parada o se terminó el recorrido, de ella se encarga la otra parada o el final)
+      var llevar = function () { if (propia !== yo || !yo.recorrido || yo.recorrido.i !== i) return; vivaSala.llevar(quien, g[0], g[1], lg[0] >= pie[0]); w.g.classList.remove('salta'); decirlo(); };
+      if (reducido) llevar(); else { w.g.classList.add('salta'); setTimeout(llevar, 240); }
+    } else setTimeout(decirlo, reducido ? 0 : 240);
+    encuadrarSala(caja, 900, { zMax: 1.8 });
+  }
+  function terminarRecorrido(sinFoco) {
+    if (!propia || !propia.recorrido) return;
+    var quien = propia.P.guia;
+    propia.recorrido = null;
+    // La asesora vuelve a su ruta (y se ve, si estaba a medio fundido)
+    if (quien) { callarDe(quien); var w = vivaSala && vivaSala.llevar(quien); if (w) w.g.classList.remove('salta'); }
+    resaltarZona(null);
+    barraSala.classList.remove('recorriendo'); barraSala.innerHTML = htmlBarraPropia();
+    acomodarPropia();
+    if (!sinFoco) { var b = barraSala.querySelector('[data-recorrer]'); if (b) b.focus({ preventScroll: true }); }
+  }
+  barraSala.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || !propia) return;
+    if (b.hasAttribute('data-recorrer')) { iniciarRecorrido(0); return; }
+    var a = b.getAttribute('data-rec'); if (!a || !propia.recorrido) return;
+    var i = propia.recorrido.i, R = propia.P.recorrido;
+    if (a === 'ant') pasoRecorrido(i - 1);
+    else if (a === 'sig') { if (i >= R.length - 1) terminarRecorrido(); else pasoRecorrido(i + 1); }
+    else if (a === 'mas') abrirTarjeta(R[i].zona, { desde: barraSala.querySelector('[data-rec="mas"]') });
+    else if (a === 'fin') terminarRecorrido();
+  });
+
+  // ── Tocar, arrastrar, pellizcar, la rueda y el teclado, sobre la sala ──
+  function tocarSala(clx, cly) {
+    var d = aDibujoSala(clx, cly), q = quienEn(d[0], d[1]);
+    if (q) { anillo(q.quien); hablarSala(q, { anunciar: true }); return; }
+    var z = zonaEn(d[0], d[1]);
+    if (z) { abrirTarjeta(z.z.id); return; }
+    if (propia.tarjeta) cerrarTarjeta(true);
+  }
+  function sobreSala(clx, cly) {
+    var d = aDibujoSala(clx, cly), q = quienEn(d[0], d[1]), z = q ? null : zonaEn(d[0], d[1]), clave = q ? 'q' + q.quien : z ? 'z' + z.z.id : '';
+    salaCaja.classList.toggle('sobre', !!clave);
+    if (clave === propia.sobre) return;
+    propia.sobre = clave;
+    anillo(q ? q.quien : null);
+    // Con una tarjeta o el recorrido abiertos, lo marcado es lo suyo
+    if (!propia.tarjeta && !propia.recorrido) resaltarZona(z ? z.z.id : null);
+  }
+  salaCaja.addEventListener('pointerdown', function (e) {
+    if (!propia) return;
+    dedosS[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(dedosS);
+    if (ids.length === 1) toqueS = { x: e.clientX, y: e.clientY, cx: propia.cam.x, cy: propia.cam.y, movio: false };
+    else if (ids.length === 2) { var a = dedosS[ids[0]], b = dedosS[ids[1]]; toqueS = { pellizco: true, d: Math.hypot(a.x - b.x, a.y - b.y) || 1, z: propia.cam.z, movio: true }; }
+    if (propia.vuelo) { cancelAnimationFrame(propia.vuelo); propia.vuelo = null; }
+  });
+  window.addEventListener('pointermove', function (e) {
+    if (!propia) return;
+    if (dedosS[e.pointerId]) dedosS[e.pointerId] = { x: e.clientX, y: e.clientY };
+    if (!toqueS) { if (e.pointerType === 'mouse' && salaCaja.contains(e.target)) sobreSala(e.clientX, e.clientY); return; }
+    if (toqueS.pellizco) {
+      var ids = Object.keys(dedosS); if (ids.length < 2) return;
+      var a = dedosS[ids[0]], b = dedosS[ids[1]];
+      propia.aMano = true; zoomSala((a.x + b.x) / 2, (a.y + b.y) / 2, toqueS.z * Math.hypot(a.x - b.x, a.y - b.y) / toqueS.d / propia.cam.z);
+      return;
+    }
+    var dx = e.clientX - toqueS.x, dy = e.clientY - toqueS.y;
+    if (!toqueS.movio && Math.hypot(dx, dy) > 6) { toqueS.movio = true; propia.aMano = true; salaCaja.classList.add('arrastrando'); }
+    if (toqueS.movio) { propia.cam.x = toqueS.cx - dx / propia.cam.z; propia.cam.y = toqueS.cy - dy / propia.cam.z; aplicarSala(); }
+  });
+  function soltarSala(e) {
+    if (!dedosS[e.pointerId]) return;
+    delete dedosS[e.pointerId];
+    if (!toqueS || !propia) { toqueS = null; return; }
+    if (!toqueS.movio && e.type === 'pointerup') tocarSala(e.clientX, e.clientY);
+    if (!Object.keys(dedosS).length) { toqueS = null; salaCaja.classList.remove('arrastrando'); }
+    else if (toqueS.pellizco) { var k = Object.keys(dedosS)[0]; toqueS = { x: dedosS[k].x, y: dedosS[k].y, cx: propia.cam.x, cy: propia.cam.y, movio: true }; }
+  }
+  window.addEventListener('pointerup', soltarSala);
+  window.addEventListener('pointercancel', soltarSala);
+  salaCaja.addEventListener('pointerleave', function (e) { if (propia && e.pointerType === 'mouse' && !toqueS) { propia.sobre = ''; salaCaja.classList.remove('sobre'); anillo(null); if (!propia.tarjeta && !propia.recorrido) resaltarZona(null); } });
+  salaCaja.addEventListener('wheel', function (e) {
+    if (!propia) return;
+    e.preventDefault();
+    var d = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+    propia.aMano = true; zoomSala(e.clientX, e.clientY, Math.exp(-d * (e.ctrlKey ? 0.01 : 0.0016)));
+  }, { passive: false });
+  salaCaja.addEventListener('keydown', function (e) {
+    if (!propia) return;
+    var z = e.target.closest && e.target.closest('.zona-sala'), q = e.target.closest && e.target.closest('.quien-sala');
+    if ((e.key === 'Enter' || e.key === ' ') && (z || q)) {
+      e.preventDefault();
+      if (z) abrirTarjeta(z.getAttribute('data-zona'), { desde: z }); else hablarSala(burbujaDe(q.getAttribute('data-quien')), { foco: true });
+      return;
+    }
+    var paso = 90 / propia.cam.z, usado = true;
+    if (e.key === 'ArrowLeft') propia.cam.x -= paso; else if (e.key === 'ArrowRight') propia.cam.x += paso;
+    else if (e.key === 'ArrowUp') propia.cam.y -= paso; else if (e.key === 'ArrowDown') propia.cam.y += paso;
+    else if (e.key === '+' || e.key === '=') zoomSalaCentro(1.25);
+    else if (e.key === '-' || e.key === '_') zoomSalaCentro(0.8);
+    else if (e.key === '0') verSalaEntera(500);
+    else usado = false;
+    if (usado) { e.preventDefault(); propia.aMano = true; if (propia.vuelo) { cancelAnimationFrame(propia.vuelo); propia.vuelo = null; } aplicarSala(); }
+  });
+  // Con teclado: la zona elegida se ilumina (y la cámara la busca si quedó fuera); quien habla dice lo suyo
+  salaCaja.addEventListener('focusin', function (e) {
+    if (!propia) return;
+    var z = e.target.closest && e.target.closest('.zona-sala'), q = e.target.closest && e.target.closest('.quien-sala');
+    if (z) {
+      var id = z.getAttribute('data-zona'), l = propia.S.lugares[id];
+      if (!propia.tarjeta && !propia.recorrido) resaltarZona(id);
+      if (l) { var a = aCaja(l[0], l[1]), f = libreSala(); if (a[0] < f.x0 || a[0] > f.x1 || a[1] < f.y0 || a[1] > f.y1) volarSala(l[0], l[1], propia.cam.z, 450); }
+    }
+    if (q) { var b = burbujaDe(q.getAttribute('data-quien')); if (b) { anillo(b.quien); hablarSala(b, { foco: true }); } }
+  });
+  salaCaja.addEventListener('focusout', function (e) {
+    if (!propia) return;
+    var z = e.target.closest && e.target.closest('.zona-sala'), q = e.target.closest && e.target.closest('.quien-sala');
+    if (q) { anillo(null); callarDe(q.getAttribute('data-quien'), true); }
+    if (z && !propia.tarjeta && !propia.recorrido) resaltarZona(null);
+  });
+  // La burbuja de BiPlot lleva a su tarjeta
+  capaSala.addEventListener('click', function (e) { if (propia && e.target.closest('.burbuja.bp')) abrirTarjeta(Object.keys(propia.zonas).filter(function (id) { return propia.zonas[id].d && propia.zonas[id].d.biplot; })[0]); });
+
   function copiar(btn) {
     var url = btn.getAttribute('data-url'), code = btn.parentNode.querySelector('code');
     function listo() { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1600); }
@@ -1053,21 +1683,26 @@
   }
 
   /* ── Videos ── */
-  function activarMedios() {
-    var v = panelCuerpo.querySelector('video.panel-video'); if (!v) return;
+  // (caja: dónde está el video; por defecto, el panel. La tarjeta de BiPlot de una sala propia también trae uno)
+  function activarMedios(caja) {
+    var v = (caja || panelCuerpo).querySelector('video.panel-video'); if (!v) return;
     v.src = v.getAttribute('data-src');
     var auto = !reducido && window.innerWidth >= 900 && !(navigator.connection && navigator.connection.saveData);
     if (auto) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } else v.setAttribute('controls', '');
   }
-  function detenerMedios() { var v = panelCuerpo.querySelector('video'); if (v) { v.pause(); v.removeAttribute('src'); v.load(); } }
-  var lightbox = $('#lightbox'), lbVideo = $('#lightbox video');
-  function abrirLightbox(h, v) {
+  function detenerMedios(caja) { var v = (caja || panelCuerpo).querySelector('video'); if (v) { v.pause(); v.removeAttribute('src'); v.load(); } }
+  var lightbox = $('#lightbox'), lbVideo = $('#lightbox video'), lbDesde = null;
+  function abrirLightbox(h, v, desde) {
+    lbDesde = desde || null;
     lbVideo.src = (v && window.innerHeight > window.innerWidth) ? v : h;
     lightbox.hidden = false; lbVideo.muted = false;
     var pr = lbVideo.play(); if (pr && pr.catch) pr.catch(function () {});
     $('#lightbox-cerrar').focus();
   }
-  function cerrarLightbox() { lbVideo.pause(); lbVideo.removeAttribute('src'); lbVideo.load(); lightbox.hidden = true; var b = panelCuerpo.querySelector('.media-grande'); if (b) b.focus(); }
+  function cerrarLightbox() {
+    lbVideo.pause(); lbVideo.removeAttribute('src'); lbVideo.load(); lightbox.hidden = true;
+    var b = lbDesde && document.contains(lbDesde) ? lbDesde : panelCuerpo.querySelector('.media-grande'); lbDesde = null; if (b) b.focus();
+  }
   $('#lightbox-cerrar').addEventListener('click', cerrarLightbox);
   lightbox.addEventListener('click', function (e) { if (e.target === lightbox) cerrarLightbox(); });
 

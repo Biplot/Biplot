@@ -8,7 +8,8 @@
 //                             de un caso según su plantilla o su estado, con su gente y quien camina (window.Locales);
 //                             se carga al abrir el primer local
 //   oficina/salas.js          la sala grande de cada empresa, con su gente, quienes caminan y un punto por módulo
-//                             (window.Salas); se carga al entrar a una sala, después de locales.js
+//                             (window.Salas); se carga al entrar a una sala, después de locales.js. Una sala propia
+//                             (la de Nu Home) no lleva puntos: trae sus lugares, sus zonas y dónde está su gente
 //   oficina/<sala>/index.html la página para compartir cada sala (biplot.cl/oficina/haru): trae su vista previa
 //                             (kit/png/sala-<sala>-og.png) y lleva a la oficina, directo a esa sala (#haru)
 //
@@ -24,6 +25,9 @@ import { VECTOR } from './cabezones/todos.mjs';
 import { callePrincipal, piezas, adentro, G, HQ, PRINCIPAL, CAMINANTES, DE_PASO } from './barrio/barrio.mjs';
 import { PASO } from './barrio/maqueta.mjs';
 import { SALAS_GRANDES } from './barrio/salas-grandes.mjs';
+import { SALAS_PROPIAS } from './barrio/salas-propias/index.mjs';
+// Las salas de cada empresa: todas son salas propias (sin números); la de Nu Home está en salas-grandes.mjs
+const SALAS = { ...SALAS_PROPIAS, ...SALAS_GRANDES };
 import { VISITANTES } from './barrio/visitantes.mjs';
 import { DEFS_ENTORNO } from './barrio/entorno.mjs';
 
@@ -194,8 +198,16 @@ writeFileSync(path.join(oficina, 'barrio.js'), barrio);
 console.log('barrio.js', kb(barrio), '·', enBarrio.size, 'personajes');
 
 // Un dibujo en capas (una sala, un local por dentro): cada capa redondeada y quienes caminan con su dibujo redondeado
-const enCapas = (r) => ({ capas: r.capas.map(redondear), arriba: redondear(r.arriba),
-  caminan: r.caminan.map((c) => ({ id: c.id, svg: redondear(c.svg), ruta: c.ruta, vel: c.vel })) });
+const enCapas = (r, red = redondear) => ({ capas: r.capas.map(red), arriba: red(r.arriba),
+  caminan: r.caminan.map((c) => ({ id: c.id, svg: red(c.svg), ruta: c.ruta, vel: c.vel })) });
+// Las salas propias redondean igual, pero conservan los coeficientes de sus planos (matrix(a,b,c,d,…)) y la escala de su
+// gente: con un decimal, lo que va pintado en un muro o en el piso se tuerce y se sale de su lugar (0,32 pasa a 0,3 y
+// 0,16 a 0,2), y la gente crece un poco. Las demás salas, los locales y el barrio quedan como estaban.
+const redondearPreciso = (svg) => {
+  const guardados = [];
+  const s = svg.replace(/matrix\([^,]+,[^,]+,[^,]+,[^,]+,|scale\([^)]*\)/g, (m) => { guardados.push(m); return `§G${guardados.length - 1}§`; });
+  return redondear(s).replace(/§G(\d+)§/g, (_, i) => guardados[+i]);
+};
 
 // Los locales por dentro (locales.js va primero: define los personajes que no están en el barrio)
 const dentro = adentro(DATOS);
@@ -222,16 +234,23 @@ console.log('locales.js', kb(localesJs), '·', enLocales.size, 'personajes');
 const DEFS_SALA = `<linearGradient id="luz-cocina" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E0B341" stop-opacity="0"/><stop offset="1" stop-color="#E0B341" stop-opacity=".35"/></linearGradient>` +
   `<linearGradient id="brillo-pantalla" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".16"/><stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>`;
 const salas = {}, enSalas = new Set();
-for (const [id, fn] of Object.entries(SALAS_GRANDES)) {
+for (const [id, fn] of Object.entries(SALAS)) {
   const r = fn(), vb = r.vb.split(' ').map(Number);
   vb[1] += 36; vb[3] -= 30;
   r.usados.forEach((u) => { if (!enBarrio.has(u) && !enLocales.has(u)) enSalas.add(u); });
-  salas[id] = { vb: vb.map((n) => Math.round(n * 10) / 10).join(' '), ...enCapas(r), pines: r.pines };
+  // Una sala propia (sin números) lleva además sus lugares, sus zonas y dónde está su gente
+  const propia = r.zonas ? { lugares: r.lugares, zonas: r.zonas, gente: r.gente } : {};
+  salas[id] = { vb: vb.map((n) => Math.round(n * 10) / 10).join(' '), ...enCapas(r, r.zonas ? redondearPreciso : redondear), pines: r.pines, ...propia };
 }
 const salasJs = CABECERA('salas grandes') + `/*
  * La sala de cada empresa por dentro: su gente, sus pantallas reales (§M§ = carpeta de medios) y un punto por módulo.
  * En capas por profundidad, como locales.js (capas, arriba: los puntos), con quienes caminan aparte (caminan).
  * pines: [{ n, x, y }] en coordenadas del dibujo; los textos e imágenes de cada punto están en datos.js.
+ * Una sala propia (salaPropia en datos.js, hoy la de Nu Home) no tiene puntos (pines: []) y trae, en coordenadas del
+ * dibujo: lugares { id: [x, y] } (dónde va la etiqueta de cada zona, y la entrada), zonas [{ id, silueta, suelo, caja,
+ * prof, guia }] (lo que se toca: su contorno, lo que se ilumina, su rectángulo, su profundidad y, si el recorrido pasa por
+ * ahí, el punto del piso —en baldosas— donde se para la asesora) y gente { id: [x, y, alto] } (dónde pisa o se sienta
+ * cada persona y cuánto mide: ahí va su burbuja). Sus textos están en datos.js.
  * defs: los personajes que no están ni en el barrio ni en los locales (barrio.js y locales.js definen los demás).
  */
 window.Salas = ${JSON.stringify({ defs: DEFS_SALA + defsDe(enSalas), paso: PASO, salas })};
@@ -243,7 +262,7 @@ console.log('salas.js', kb(salasJs), '·', Object.keys(salas).join(', '), '·', 
 // Quien pega biplot.cl/oficina/haru en un chat ve la imagen de la sala; quien lo abre llega a la oficina, en esa sala.
 const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const ICONO = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='1.7' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='11.5' cy='20.5' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='16' cy='17' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='23' cy='11' r='2.8' fill='%23FF6B4A'/%3E%3C/svg%3E`;
-for (const id of Object.keys(SALAS_GRANDES)) {
+for (const id of Object.keys(SALAS)) {
   const pr = DATOS.proyectos.find((p) => p.id === id);
   if (!pr) continue;
   const url = `https://biplot.cl/oficina/${id}/`, img = `https://biplot.cl/oficina/kit/png/sala-${id}-og.png`;
@@ -295,4 +314,4 @@ a { color: #17C3B2; font-weight: 600; }
   mkdirSync(path.join(oficina, id), { recursive: true });
   writeFileSync(path.join(oficina, id, 'index.html'), html);
 }
-console.log('páginas para compartir:', Object.keys(SALAS_GRANDES).map((id) => `oficina/${id}/`).join(', '));
+console.log('páginas para compartir:', Object.keys(SALAS).map((id) => `oficina/${id}/`).join(', '));

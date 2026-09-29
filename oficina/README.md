@@ -77,12 +77,79 @@ en `barrio/barrio.mjs`).
 
 **La sala de cada empresa.** La vista previa de un local trae su video (o su sala dibujada), lo que hicimos, los enlaces,
 quién trabajó y el botón **Entrar a la sala**: la cámara entra y se abre su sala en grande (`salas.js`, se carga recién
-la primera vez), con su gente (en cada sala dos personas caminan entre los muebles: en Haru la mesera y quien hace el
-aseo, en Eleven el instructor y un socio que entra por el torniquete…) y un **punto por módulo**. Cada punto muestra la pantalla real de ese módulo
-(de los videos de cada caso, con datos de ejemplo) o, si todavía no hay capturas, el rincón de la sala donde está. El
-panel trae lo que construimos, lo que resolvimos, el video, los enlaces para visitarlos, el equipo que lo hizo, los
-resultados (día 30, 60 y 90: pendientes hasta que se midan y el cliente lo autorice) y el enlace para compartirla. Cada
-sala tiene su dirección (`#haru`): el botón atrás del navegador vuelve a la calle.
+la primera vez). Las cinco salas de la calle principal son **salas propias**: al entrar se está en el lugar de la
+empresa (su sala de ventas, su restaurante, su club, su día), en sus colores y con su letra, sin números ni panel. Lo que
+se toca se ilumina con su nombre y abre su tarjeta; su gente habla sola en burbujas; abajo va su barra, con su marca, su
+frase, su botón y un recorrido con alguien de la empresa; y en un rincón chico está BiPlot, cuya tarjeta trae todo lo que
+traía el panel: lo que construimos (con las pantallas reales, de los videos de cada caso, con datos de ejemplo), lo que
+resolvimos, el video, los enlaces, el equipo que lo hizo, los resultados (día 30, 60 y 90: pendientes hasta que se midan
+y el cliente lo autorice) y el enlace para compartirla. En cada sala dos personas caminan entre los muebles, y una es
+quien guía el recorrido. Cada sala tiene su dirección (`#haru`): el botón atrás del navegador vuelve a la calle. Una sala
+sin `salaPropia` (una sala nueva, mientras se arma) se ve como antes: un **punto por módulo** y el panel al lado.
+
+**La sala propia de Nu Home.** La sala de Nu Home 360 ya no es una sala con puntos: al entrar se está en la sala de ventas
+de Nu Home (20 × 14 baldosas, la propuesta aprobada), sin números ni panel. Tiene el taller detrás del vidrio («Así se
+arma tu casa», con la carta Gantt real en su pantalla), el muro de la marca y el ventanal hacia la cordillera, el salón y
+la entrega (una familia recibe sus llaves), las terminaciones, la asesoría (los escritorios, la mesa de maqueta con el
+terreno a escala y la pantalla grande con el diseñador 3D real), la casa piloto (un módulo de 6 m con terraza y pérgola),
+los tres modelos en maqueta, la recepción con su felpudo y, chico, el rincón de BiPlot («Hecho con BiPlot») con Bucle
+(E5, porque Nu Home 360 está en desarrollo). Así se recorre:
+
+- La sala llena el espacio libre y se mueve y se acerca como la oficina (arrastrar, rueda, pellizco, flechas, `+` y `−`,
+  `0` para verla entera); se entra viendo la sala entera y, en celular, la entrada de cerca.
+- Lo que se toca se ilumina con un contorno dorado punteado y su nombre; al tocarlo (o con Enter) se abre su tarjeta, en
+  el estilo de Nu Home (crema, títulos en Cormorant Garamond, botones negros con su punto dorado), junto a la zona o, en
+  celular, como hoja desde abajo. Se cierra con la × o con `Escape`. Las zonas: recepción, cada modelo, casa piloto,
+  asesoría, mesa de maqueta, pantalla del diseñador, terminaciones, taller, salón y ventanal, entrega y el rincón de BiPlot.
+- La gente habla sola: cada tanto aparece una frase sobre alguien, de a una o de a dos (nunca con la animación pausada ni
+  con «reducir movimiento»). Al tocar o elegir con teclado a quien habla, se ve su frase.
+- Abajo va la barra de Nu Home: su marca, «Casas modulares. Pasa, recorre la casa piloto y conversa con nuestras
+  asesoras.», **Diseñar la mía** (el cotizador, en otra pestaña) y **Recorrer con una asesora**. «Hablar con una asesora»
+  aparece sólo cuando esté el WhatsApp de Nu Home en `datos.js` (hoy `null`, pendiente). Los contactos de Nu Home nunca
+  van al WhatsApp de BiPlot; el coral sigue reservado para «Agenda tu diagnóstico» de BiPlot.
+- **Recorrer con una asesora**: la cámara va zona por zona (la entrada, la casa piloto, la asesoría, las terminaciones,
+  el taller, el salón y el rincón de BiPlot), la asesora se para junto a cada una y dice lo suyo, y la barra lleva
+  «Anterior», «Ver más» (abre la tarjeta de esa zona), «Siguiente» y la ×. Sin animación con «reducir movimiento».
+- El rincón de BiPlot abre la tarjeta de BiPlot (en sus colores): «Hecho con BiPlot», Nu Home 360 «En desarrollo», el
+  resumen, las pantallas reales en una tira con el nombre de cada módulo, el video, lo que resolvimos, el enlace, el
+  equipo, los resultados, «Comparte esta sala», «Pasar a BiPlot HQ» y «Agenda tu diagnóstico»: todo lo que traía el panel.
+- Siguen «Volver a la calle», las salas vecinas, el botón atrás del navegador y `#nuhome`. `Escape` cierra primero la
+  tarjeta (o el recorrido) y después sale a la calle.
+
+**Los diálogos son de ejemplo.** Las frases de las burbujas, lo que dice la asesora en el recorrido y los textos de las
+tarjetas son borradores («los diálogos los vemos después»), marcados en `datos.js`, hasta que Nu Home los revise. Las
+medidas de las tarjetas son las del diseñador de Nu Home 360 y las asesoras y asesores son ilustraciones sin nombre.
+
+**Las salas propias de Fundos, Haru, Eleven y Rumbo.** Siguen el modelo de la de Nu Home, cada una con lo real de la
+empresa (su sitio, su carta, su app) y sus propios textos de ejemplo:
+
+- **Fundos 360**: la sala de ventas de Fundos Inmobiliaria, en su verde y dorado. La recepción con sus valores, el
+  mirador 360° con los tres paisajes en el ventanal (Malalcahuello, Marchigüe y Puerto Varas), el salón, la maqueta del
+  predio con el lote 25 (5.000 m², $35.990.000, disponible, «Verlo en el plano»), el equipo, la firma y «mi compra» (con
+  sus pantallas reales) y Celda en el rincón de BiPlot. Barra: «Ver los proyectos» (su propuesta en biplot.cl) y
+  «Recorrer con una ejecutiva».
+- **Haru 360**: Haru Isidora, sushi de autor en Arica, en su negro y rojo con Montserrat. La barra de sushi (el
+  Chinchorrero, $8.000), la pizarra de los rolls, la cocina a la vista (las comandas en pantalla), el salón con el QR de
+  la carta, el bar, la terraza, retiro y delivery, la caja y Faro en el rincón de BiPlot. Barra: «Ver la carta» (su carta
+  digital) y «Recorrer con la anfitriona».
+- **Eleven 360**: Eleven Club, en su negro y naranja con Anton y Chakra Petch. La recepción con sus planes y la huella,
+  el trofeo, el peso libre, la asesoría, la zona fuerza, el cardio frente a su frase, la sala de clases (Power Jump),
+  calistenia, el horario real de la semana, el team, la cafetería, la tienda y Lupe en el rincón de BiPlot, con la
+  propuesta («Propuesta de BiPlot»). Barra: «Ver planes» (su sitio) y «Recorrer con un coach».
+- **Rumbo**: un día con la app, en su blanco y azul con Space Grotesk. El celular como centro del día, el ritual de
+  mañana y de noche, los objetivos, las lecturas, la rueda de la vida, los hábitos y la racha, las recompensas, el
+  diario, las finanzas, la salud, la tienda y el elefante que crece (de Cría a Sabio), con Tamandúa en el rincón de
+  BiPlot («Hecho en BiPlot», porque Rumbo es nuestro). Barra: «Abrir Rumbo» y «Recorrer un día».
+
+Como en Nu Home, las frases, lo que dice quien guía el recorrido y los textos de las tarjetas son de ejemplo (marcados en
+`datos.js`) hasta que cada empresa los revise; la gente de las salas son ilustraciones sin nombre, y ninguna sala tiene
+todavía WhatsApp propio (sin él, no hay botón para escribirles; nunca va el de BiPlot en su lugar).
+
+**Cómo se arma una sala propia.** Todo lo de la empresa sale de su dibujo y de `datos.js`: una sala pasa a ser propia con
+`salaPropia` en su proyecto (sus colores, su letra, su marca, sus textos, quién habla, qué dice cada zona y el recorrido)
+y con sus zonas en el dibujo (`zona()` y `lugar()`): la de Nu Home en `barrio/salas-grandes.mjs` y las demás en
+`barrio/salas-propias/`, una por archivo, con sus piezas comunes (muros, pantallas, sillas, el kiosco de BiPlot) en
+`salas-propias/comun.mjs`.
 
 **Cómo crece el barrio: una calle por rubro.** La calle principal queda con los proyectos que tienen sala dibujada a
 mano. Los demás casos van a la **calle de su rubro** (los mismos rubros de la primera pregunta de Plotty), que aparece
@@ -113,14 +180,14 @@ sólo para su vitrina.
 | Archivo | Qué es |
 |---|---|
 | `index.html` | La página: barra de marca, escena, «Salir a la calle», la sala de cada empresa, menú "Recorre la oficina", controles, bienvenida, recorrido guiado y panel |
-| `datos.js` | **Lo único que hay que tocar para cambiar textos y sumar casos**: equipo, mascotas, fases, lugares, proyectos (con los puntos de cada sala), calles del barrio, casos de referencia, vitrina y Plotty |
+| `datos.js` | **Lo único que hay que tocar para cambiar textos y sumar casos**: equipo, mascotas, fases, lugares, proyectos (con los puntos de cada sala, o su `salaPropia`), calles del barrio, casos de referencia, vitrina y Plotty |
 | `escena.js` | La oficina isométrica y su barrio: arma la calle principal, las calles por rubro (con el techo de cada caso) y El Archivo desde `datos.js`; la oficina cerrada que se abre, los locales que se abren al tocarlos, zonas, vitrina, los recorridos del equipo y la gente que camina (por la vereda, dentro de un local abierto y en las salas) |
 | `oficina.js` | Interfaz: cámara (arrastrar, rueda, pellizco, teclado), entrar y salir de la oficina, menú con el barrio y su buscador, el local abierto con su vista previa, la sala de cada empresa, El Archivo, recorrido guiado, paneles, chat, videos y enlaces directos |
 | `oficina.css` | Estilos con los tokens oscuros de la marca y todas las animaciones |
 | `elenco.js` | *Generado.* Los cabezones de la oficina y la credencial (lo usan la oficina y el kit) |
 | `barrio.js` | *Generado.* La oficina cerrada y la calle principal (locales con su techo, plaza, pasaje, El Archivo), y las piezas de las calles por rubro: el local cerrado en cada estado, el dibujo de cada rubro y la gente de paso |
 | `locales.js` | *Generado.* Cada local por dentro, como se ve al abrirlo: los de la calle principal y el de un caso según su plantilla o su estado, con su gente y quien camina; se carga al abrir el primer local (o con el mouse encima de uno) |
-| `salas.js` | *Generado.* La sala grande de cada empresa, con su gente, quienes caminan y sus puntos; se carga (después de `locales.js`) al entrar a la primera sala o con la primera vista previa sin video |
+| `salas.js` | *Generado.* La sala grande de cada empresa, con su gente, quienes caminan y sus puntos (una sala propia, en vez de puntos, trae sus lugares, sus zonas y dónde está su gente); se carga (después de `locales.js`) al entrar a la primera sala o con la primera vista previa sin video |
 | `ilustraciones.js` | *Generado.* Las ilustraciones de ficha; se cargan recién al abrir la primera ficha |
 | `<sala>/index.html` | *Generado.* La página para compartir cada sala (`fundos/`, `haru/`, `eleven/`, `nuhome/`, `rumbo/`): su vista previa y el paso a la oficina |
 | `kit/` | Galería y plantilla de las piezas de Instagram y de cada sala (`?pieza=sala-haru&formato=og`) |
@@ -130,7 +197,8 @@ sólo para su vitrina.
 | `_herramientas/` | Scripts internos y las fuentes de los dibujos. **No se publican en biplot.cl** (Jekyll ignora carpetas con `_`) |
 
 Sin librerías ni build para la página: SVG, CSS y JavaScript planos. Lo único externo son las fuentes de Google Fonts
-(Inter, Space Grotesk y Space Mono). Al abrir la página sólo se dibujan el barrio y la oficina cerrada: el interior se
+(Inter, Space Grotesk y Space Mono; y, para los letreros y las barras y tarjetas de las salas propias, Cormorant Garamond
+(Nu Home y Fundos), Montserrat (Haru) y Anton y Chakra Petch (Eleven)). Al abrir la página sólo se dibujan el barrio y la oficina cerrada: el interior se
 dibuja y se anima al entrar, los videos se cargan al abrir la vista previa de su local, y las salas grandes y los
 locales por dentro, recién cuando se necesitan. Un local se dibuja por dentro sólo mientras está abierto, y su gente
 camina sólo mientras se ve.
@@ -148,8 +216,21 @@ camina sólo mientras se ve.
 - **Un proyecto destacado, con sala hecha a mano**: se suben su logo y sus pantallas a `media/salas/`; en
   `_herramientas/dibujos/barrio/barrio.mjs` se agregan su logo a `LOGO`, su nombre a `LETRERO`, su lugar a `PRINCIPAL` y
   lo que se ve al abrir su local a `ADENTRO` (su interior chico, su gente y quien camina); se dibuja su sala grande en
-  `barrio/salas-grandes.mjs` (con un `pin()` por módulo) y se regenera todo; después, `exportar-kit.mjs --solo sala-<id>`
+  `barrio/salas-propias/<id>.mjs` (con sus zonas; se suma a `salas-propias/index.mjs`) o, para partir con puntos, en
+  `barrio/salas-grandes.mjs` con un `pin()` por módulo, y se regenera todo; después, `exportar-kit.mjs --solo sala-<id>`
   para su vista previa. Lo que se mueve en una sala lleva una clase `loc-…` con su animación en `oficina.css`.
+- **Una sala propia** (como las cinco de la calle principal), en vez de puntos: en su dibujo (`barrio/salas-propias/<id>.mjs`) cada cosa que se
+  toca va con `zona(id, { formas, lugar, guia })`: sus formas son pedazos de piso levantados hasta un alto
+  (`{ piso: [[x, y], …], alto }`, un mueble o un rincón con su gente) o planos (`{ plano: [[x, y, z], …] }`, una pantalla
+  o un cuadro en el muro); `lugar` es donde va su nombre y `guia`, el punto del piso donde se para la asesora cuando el
+  recorrido pasa por ahí. `lugar('entrada', …)` marca dónde parte la cámara en celular. La gente que habla se nombra por
+  su id en el dibujo (`nhRecepcion`, `bucle`…). En `datos.js`, su proyecto lleva `salaPropia`: sus colores y su letra
+  (`colores`, `fuente`), su marca y la frase de su barra, el botón de su barra con su enlace (`disenar`: «Diseñar la
+  mía», «Ver la carta»…), su WhatsApp (o `null`), quién habla y qué dice, qué cuenta cada zona (con sus medidas, una
+  pantalla real, un enlace o sus botones), el recorrido y, si no es «Hecho con BiPlot», lo que dice su tarjeta de BiPlot
+  (`cejaBiplot`). Sus dibujos se generan sin redondear los planos (lo
+  pintado en muros y pisos no se tuerce) ni la escala de su gente; las demás salas, los locales y el barrio siguen con un
+  decimal, como siempre (ahí lo pintado en un muro o en el piso se corre un poco: se ve al acercarse a sus bordes).
 - **Quien camina** (en un local o en una sala) va con `camina(id, ruta)` en vez de `pj(…)`: la ruta son paradas
   `[x, y, espera en segundos]` por los pasillos libres, que se recorren en círculo (para ir y volver se anotan las de
   vuelta); la primera es donde aparece en las imágenes fijas. Los dibujos salen en capas por profundidad y escena.js lo
@@ -177,9 +258,13 @@ npx http-server . -p 5480 -c-1
 
 Abrir http://localhost:5480/oficina/. La prueba funcional (el barrio cerrado con los techos y sus logos, la oficina que
 se abre al entrar y se cierra con Escape y con el botón atrás, menú y buscador del barrio, recorrido guiado, el local que
-se abre al tocarlo con su gente caminando y su vista previa, su sala con gente caminando, sus puntos y sus pantallas,
-chat de Plotty con la cámara en el rubro, vitrina,
-El Archivo, teclado, enlaces directos y la página para compartir, pausa, movimiento reducido, errores de consola y
+se abre al tocarlo con su gente caminando y su vista previa, su sala con gente caminando y su pantalla real,
+la sala propia de Nu Home (sin números ni panel, su barra, sus zonas y sus tarjetas, la gente que habla, la cámara, el
+recorrido con una asesora, la tarjeta de BiPlot, las salas vecinas y el botón atrás), las de Fundos, Haru, Eleven y
+Rumbo (su barra con su letra, todas sus zonas y su gente, una tarjeta con lo real, su recorrido y el rincón de BiPlot),
+chat de Plotty con la cámara en
+el rubro, vitrina,
+El Archivo, teclado, enlaces directos y las páginas para compartir, pausa, movimiento reducido, errores de consola y
 desbordes a 1440, 1366 y 375 px, y las calles por rubro con casos de prueba que sólo existen en su navegador) corre sola
 con Edge o Chrome sin interfaz y no necesita servidor:
 
@@ -196,8 +281,11 @@ el barrio agrupado por calle, buscador y filtros. Al recorrer el menú con Tab l
 cosa (lo de adentro, con la oficina abierta; lo de la calle, con la oficina cerrada). «Entrar a la oficina» está al
 comienzo del menú y dice «Salir a la calle» cuando la oficina está abierta. Sobre la escena: flechas para moverse, `+`
 y `−` para acercar, `0` para ver todo, `Escape` cierra el panel y, sin panel abierto, sale de la oficina. En la sala de
-una empresa, cada punto es un botón (Enter o espacio) y también está en la tira de módulos del panel; `Escape` vuelve a
-la calle. El chat de Plotty son botones, con los mensajes anunciados a lectores de pantalla. Con "reducir movimiento"
+una empresa con puntos, cada punto es un botón (Enter o espacio) y también está en la tira de módulos del panel; `Escape`
+vuelve a la calle. En las salas propias, la sala es una región que se recorre con las flechas, `+`, `−` y `0`; cada zona
+y cada persona que habla es un botón con su nombre (con Tab, la zona se ilumina y la cámara la busca si quedó fuera; la
+persona muestra su frase), las frases se anuncian a lectores de pantalla (sin repetir las que ya dijeron), la tarjeta
+recibe el foco al abrirse y lo devuelve al cerrarse, y los botones miden al menos 44 px. El chat de Plotty son botones, con los mensajes anunciados a lectores de pantalla. Con "reducir movimiento"
 todo queda quieto y la cámara salta sin animación (los locales se abren igual, con su gente quieta en su lugar);
 además hay un botón para pausar, que también detiene a la gente de los locales y de las salas.
 

@@ -11,6 +11,8 @@
   var TELEFONO = '56966275675';
   var WHATSAPP = 'https://wa.me/' + TELEFONO + '?text=' +
     encodeURIComponent('Hola BiPlot, vengo de la oficina virtual y quiero agendar un diagnóstico.');
+  // El cotizador de Nu Home 360: el enlace de su local y el «Diseñar la mía» de su sala
+  var COTIZADOR_NUHOME = 'https://nuhome-crm-nu.vercel.app/cotizador';
 
   window.OFICINA_DATOS = {
     version: '2026-09-26',
@@ -194,6 +196,7 @@
        calle de su rubro, con una plantilla. `media` usa los teasers del sitio. `pines`: un punto por módulo en la sala,
        [módulo, título, detalle, pantalla en media/salas/ o null]. `medicion` dice en qué va la medición (sin cifras
        hasta que se midan y el cliente lo autorice). El local `libre` es el que espera al próximo proyecto.
+       `salaPropia` cambia su sala: sin números ni panel, como su propia casa (ver el bloque de Nu Home, el primero).
        Un caso nuevo con plantilla, mientras el CRM no esté conectado, se suma aquí con este formato:
          { id, nombre, cliente, rubro: 'Clínica dental · Arica', calle: 'salud', plantilla: 'clinica' | 'taller' | 'basica',
            fase: 'E0'…'E9' (cómo se ve el local), permiso: 'nombre' | 'rubro' (sólo el rubro) | 'archivo' (sólo en El Archivo),
@@ -223,7 +226,56 @@
         enlaces: [],
         equipo: ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa'],
         media: { h: '../assets/casos/fundos-360-h.mp4', v: '../assets/casos/fundos-360-v.mp4', poster: '../assets/casos/fundos-360-h.jpg' },
-        nota: 'Pantallas ilustrativas con datos de ejemplo.'
+        nota: 'Pantallas ilustrativas con datos de ejemplo.',
+        /* Sala propia: su sala de ventas de parcelas, sin números (ver la de Nu Home). TEXTOS DE EJEMPLO hasta que Fundos
+           los apruebe; lotes y precios, los referenciales de la propuesta de su sitio. Su gente va sin nombre. */
+        salaPropia: {
+          textosDeEjemplo: true,
+          marca: { nombre: 'Fundos', sub: 'INMOBILIARIA', texto: 'Parcelas de 5.000 m² en la cordillera, el valle y el lago. Recorre la sala y elige tu lote.' },
+          colores: { fondo: '#0F1F16', fondo2: '#1B3526', tinta: '#F7F5F0', tinta2: 'rgba(247,245,240,.82)', oro: '#C8A165', ceja: '#D8B982', cejaBurbuja: '#7A5D33',
+            borde: 'rgba(200,161,101,.45)', brillo: '216, 185, 130', sub: '#D8B982', pie: 'rgba(247,245,240,.6)', velo: 'rgba(255,255,255,.08)', hover: '#D8B982',
+            boton: '#C8A165', botonTinta: '#0F1F16', botonPunto: '#0F1F16' },
+          fuente: { espacio: '.02em', titulo: '31px', sub: "600 10px/1.4 'Space Grotesk', sans-serif" },
+          textos: { recorrer: 'Recorrer con una ejecutiva', hablar: 'Hablar con una ejecutiva', recorrido: 'Recorrido con una ejecutiva', guia: 'Ejecutiva · Fundos' },
+          disenar: { texto: 'Ver los proyectos', url: 'https://biplot.cl/propuestas/fundos-inmobiliaria/' },
+          guia: 'fdGuia2',
+          // Pendiente: el WhatsApp de su equipo (en la propuesta de su sitio todavía es uno de ejemplo)
+          whatsapp: null,
+          mensaje: 'Hola Fundos, vi su sala en la oficina de BiPlot y quiero conocer sus parcelas.',
+          burbujas: [
+            { quien: 'fdRecepcion', nombre: 'La ejecutiva de la recepción', rol: 'Ejecutiva · Fundos', texto: '¡Hola! ¿Cordillera, valle o lago?' },
+            { quien: 'fdMaqueta', nombre: 'La ejecutiva de la maqueta', rol: 'Ejecutiva · Fundos', texto: 'Este es Puerto Varas: bosque nativo y un estero que cruza el predio.' },
+            { quien: 'fdGuia', nombre: 'El ejecutivo del mirador', rol: 'Ejecutivo · Fundos', texto: 'Mira alrededor: así se ve el río Lolén.' },
+            { quien: 'fdFirma', nombre: 'La ejecutiva de la firma', rol: 'Ejecutiva · Fundos', texto: 'Firmamos la escritura y después la inscribimos a tu nombre.' },
+            { quien: 'fdCompradora', nombre: 'Una compradora con su celular', rol: 'Compradora', texto: 'Sigo mi compra desde el celular.' },
+            { quien: 'nino', nombre: 'Un niño junto a la maqueta', rol: '', texto: '¡Aquí hay un río!' },
+            { quien: 'celda', nombre: 'Celda, de BiPlot', rol: 'Celda · BiPlot', texto: 'Fundos 360 es la plataforma que hicimos con Fundos para seguir cada venta. ¿Te cuento cómo?', biplot: true }
+          ],
+          zonas: {
+            recepcion: { nombre: 'Recepción', ceja: 'Recepción', titulo: 'Bienvenido a Fundos', texto: 'Una ejecutiva te recibe y te acompaña a recorrer la sala: los paisajes, la maqueta y el camino de la compra, de la reserva a la inscripción.', botones: ['recorrer', 'disenar', 'hablar'] },
+            valores: { nombre: 'Sus valores', ceja: 'Sus valores', titulo: 'Transparencia, cercanía, innovación y confianza', texto: 'Los valores de su sitio, como un letrero de sendero en la entrada.' },
+            mirador: { nombre: 'Mirador 360°', ceja: 'Mirador 360°', titulo: 'Camina el terreno antes de viajar', texto: 'La pantalla envuelve el rincón con el río Lolén, en Malalcahuello: su recorrido virtual, hecho lugar.', botones: ['disenar'] },
+            malalcahuello: { nombre: 'Malalcahuello', ceja: 'La Araucanía · Cordillera', titulo: 'Malalcahuello', texto: 'Bosque nativo, volcanes y el río Lolén. Nieve en invierno; pesca, senderos y termas el resto del año.', chips: ['Parcelas de 5.000 m²', 'Frente al río Lolén'], botones: ['disenar'] },
+            marchigue: { nombre: 'Marchigüe', ceja: "O'Higgins · Valle de Colchagua", titulo: 'Marchigüe', texto: 'Lomajes suaves, viñedos y cielos despejados. Clima templado todo el año, a unos 40 minutos de Pichilemu.', chips: ['Parcelas de 5.000 m²', 'Zona vitivinícola'], botones: ['disenar'] },
+            'puerto-varas': { nombre: 'Puerto Varas', ceja: 'Los Lagos · Entre mar y lago', titulo: 'Puerto Varas', texto: 'Bosque nativo atravesado por un estero, con camino principal y caminos interiores. Puerto Montt y el aeropuerto, a unos 20 km.', chips: ['Parcelas de 5.000 m²', 'Estero en el predio'], botones: ['disenar'] },
+            salon: { nombre: 'Salón', ceja: 'Salón', titulo: 'El sur, con calma', texto: 'La estufa a leña, un mate y el perro echado: así se conversa con tu ejecutiva, sin apuro.' },
+            maqueta: { nombre: 'Maqueta de Puerto Varas', ceja: 'Maqueta', titulo: 'El predio sobre la mesa', texto: 'Bosque nativo, el estero y cada lote con el color de su precio, como en su plano. La banderita marca el lote 25.', imagen: 'fundos-2-parcelas', botones: ['disenar'] },
+            lote25: { nombre: 'Lote 25', ceja: 'Puerto Varas · Los Lagos', titulo: 'Lote 25', texto: 'Reserva con $1.000.000 y recibe el comprobante y los antecedentes del lote. Te acompañamos hasta la inscripción en el Conservador. Valores referenciales, sujetos a disponibilidad.', chips: ['5.000 m²', '$35.990.000', 'Disponible'], enlace: { texto: 'Verlo en el plano', url: 'https://biplot.cl/propuestas/fundos-inmobiliaria/#lote-puerto-varas-25' } },
+            equipo: { nombre: 'El equipo', ceja: 'El equipo', titulo: 'Detrás de cada venta hay personas', texto: 'En los escritorios se reserva y se validan los antecedentes, con Fundos 360 en las pantallas.', imagen: 'fundos-3-reservas' },
+            firma: { nombre: 'Firma e inscripción', ceja: 'Firma e inscripción', titulo: 'El día que la tierra es tuya', texto: 'Se firma la escritura y se inscribe en el Conservador: «Inscrita a tu nombre». Ahí termina la huella de bronce.', imagen: 'fundos-4-escrituras' },
+            micompra: { nombre: 'Tu compra en el celular', ceja: 'Tu compra', titulo: 'Paso a paso, hasta el Conservador', texto: 'Aranceles e inscripción de cada parcela después de escriturar, a la vista.', imagen: 'fundos-5-postventa' },
+            biplot: { nombre: 'Rincón de BiPlot', ceja: 'Hecho con BiPlot', titulo: 'Fundos 360', biplot: true }
+          },
+          recorrido: [
+            { zona: 'recepcion', titulo: 'La entrada', ver: ['valores'], texto: '¡Hola! Te acompaño. Comprar una parcela tiene su orden, y aquí es un recorrido.' },
+            { zona: 'mirador', titulo: 'El mirador 360°', texto: 'Aquí caminas el terreno antes de viajar: el río Lolén, en Malalcahuello.' },
+            { zona: 'marchigue', titulo: 'Tres paisajes', ver: ['malalcahuello', 'puerto-varas'], texto: 'Cordillera, valle o lago: Malalcahuello, Marchigüe y Puerto Varas.' },
+            { zona: 'maqueta', titulo: 'La maqueta', ver: ['lote25'], texto: 'Este es el predio de Puerto Varas. El lote 25 está disponible: toca su banderita.' },
+            { zona: 'equipo', titulo: 'El equipo', texto: 'Aquí reservas y validamos tus antecedentes, con Fundos 360.' },
+            { zona: 'firma', titulo: 'La firma', texto: 'Firmamos la escritura y la inscribimos a tu nombre en el Conservador.' },
+            { zona: 'biplot', titulo: 'El rincón de BiPlot', texto: 'Este rincón es de BiPlot, que hizo con nosotros Fundos 360 para seguir cada venta.' }
+          ]
+        }
       },
       {
         id: 'haru', nombre: 'Haru 360', cliente: 'Haru Isidora', rubro: 'Restaurante · cocina japonesa, Arica', estado: 'Sistema a la medida · en implementación',
@@ -249,7 +301,53 @@
         enlaces: [{ texto: 'Ver la carta digital', url: 'https://haru-carta.vercel.app' }],
         equipo: ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro'],
         media: { h: '../assets/casos/haru-360-h.mp4', v: '../assets/casos/haru-360-v.mp4', poster: '../assets/casos/haru-360-h.jpg' },
-        nota: 'Las cifras del video son ilustrativas: salen del generador de datos de prueba.'
+        nota: 'Las cifras del video son ilustrativas: salen del generador de datos de prueba.',
+        /* Sala propia: su restaurante, sin números (ver la de Nu Home). TEXTOS DE EJEMPLO hasta que Haru los apruebe; los
+           rolls y precios, los de su carta digital. Su equipo va sin nombre. */
+        salaPropia: {
+          textosDeEjemplo: true,
+          marca: { nombre: 'Haru Isidora', sub: 'SUSHI DE AUTOR · ARICA', texto: 'Rolls de autor, barra, salón y terraza. Pide desde la mesa, para retiro o delivery.' },
+          colores: { fondo: '#15120F', fondo2: '#1F1B16', tinta: '#F3EDE1', tinta2: '#CFC5B3', oro: '#E0482F', ceja: '#C9A24E', cejaBurbuja: '#B93620',
+            borde: 'rgba(201,162,78,.4)', brillo: '224, 72, 47', sub: '#C9A24E', pie: '#958B7B', velo: 'rgba(255,255,255,.08)', hover: '#C93A22',
+            boton: '#E0482F', botonTinta: '#FFFFFF', botonPunto: '#FFFFFF' },
+          fuente: { familia: "Montserrat, 'DejaVu Sans', sans-serif", peso: 800, espacio: '.01em', titulo: '26px', sub: "700 10px/1.4 Montserrat, sans-serif" },
+          textos: { recorrer: 'Recorrer con la anfitriona', hablar: 'Escribir a Haru', recorrido: 'Recorrido con la anfitriona', guia: 'Anfitriona · Haru' },
+          disenar: { texto: 'Ver la carta', url: 'https://haru-carta.vercel.app' },
+          guia: 'hrGuia',
+          // Pendiente: el WhatsApp oficial de Haru (en la carta digital todavía es uno de ejemplo)
+          whatsapp: null,
+          mensaje: 'Hola Haru, vi su local en la oficina de BiPlot y quiero hacer un pedido.',
+          burbujas: [
+            { quien: 'hrAnfitriona', nombre: 'La anfitriona de la entrada', rol: 'Anfitriona · Haru', texto: '¡Bienvenidos a Haru! ¿Barra, salón o terraza?' },
+            { quien: 'hrItamae2', nombre: 'La itamae de la barra', rol: 'Itamae · Haru', texto: 'Hoy el Chinchorrero sale con mariscos salteados al estilo nikkei.' },
+            { quien: 'garzon', nombre: 'El garzón del salón', rol: 'Garzón · Haru', texto: 'La carta está en el QR de la mesa. Pidan cuando quieran.' },
+            { quien: 'cajera', nombre: 'La cajera del retiro', rol: 'Cajera · Haru', texto: '¡Pedido para retiro listo!' },
+            { quien: 'barman', nombre: 'El barman', rol: 'Barman · Haru', texto: '¿Algo de la barra mientras esperan?' },
+            { quien: 'jefacocina', nombre: 'La jefa de cocina', rol: 'Cocina · Haru', texto: 'La comanda de la mesa cuatro ya está en pantalla.' },
+            { quien: 'faro', nombre: 'Faro, de BiPlot', rol: 'Faro · BiPlot', texto: 'Haru 360 junta la caja, la cocina, el delivery y la bodega. ¿Te muestro cómo llega una comanda?', biplot: true }
+          ],
+          zonas: {
+            recepcion: { nombre: 'La entrada', ceja: 'La entrada', titulo: 'Bienvenidos a Haru', texto: 'La anfitriona te recibe bajo el noren y te lleva a la barra, al salón o a la terraza.', botones: ['recorrer', 'disenar', 'hablar'] },
+            barra: { nombre: 'Barra de sushi', ceja: 'La barra de sushi', titulo: 'Chinchorrero', texto: 'Camarón furay, queso crema y palta, apanado en chicharrón, bañado en salsa olivo y mariscos salteados al estilo nikkei.', chips: ['$8.000', 'Rolls de autor'], botones: ['disenar'] },
+            carta: { nombre: 'Rolls de la casa', ceja: 'La pizarra', titulo: 'Rolls de la casa', texto: 'Teo Roll, Acevichado, Chinchorrero, Azapa, Payachata y Mangojito, con sus precios, en la carta digital.', chips: ['Desde $7.000'], botones: ['disenar'] },
+            cocina: { nombre: 'Cocina', ceja: 'La cocina', titulo: 'Comandas sin papel', texto: 'Cada plato llega a la pantalla de la cocina con su cronómetro y su alerta de atraso.', imagen: 'haru-3-comandas' },
+            salon: { nombre: 'Salón', ceja: 'El salón', titulo: 'Se pide desde la mesa', texto: 'En cada mesa, el QR de la carta digital: se elige, se pide y llega a la cocina.', imagen: 'haru-2-mesas', botones: ['disenar'] },
+            bar: { nombre: 'Bar', ceja: 'El bar', titulo: 'Bar y coctelería', texto: 'Tragos, vinos y bebidas para acompañar los rolls. Venta de alcohol solo a mayores de 18 años.' },
+            terraza: { nombre: 'Terraza', ceja: 'La terraza', titulo: 'Afuera, bajo los quitasoles', texto: 'Madera, quitasoles, palmeras y caña: la atención en terraza de su local.' },
+            delivery: { nombre: 'Retiro y delivery', ceja: 'Retiro y delivery', titulo: 'Pedidos directos, delivery en vivo', texto: 'La carta online sin comisiones y el repartidor en el mapa. También para retiro en el local.', imagen: 'haru-6-delivery', botones: ['disenar'] },
+            caja: { nombre: 'Caja', ceja: 'La caja', titulo: 'El día, en una pantalla', texto: 'Ventas, costo, margen y alertas del día, en vivo, desde la caja.', imagen: 'haru-1-dashboard' },
+            biplot: { nombre: 'Rincón de BiPlot', ceja: 'Hecho con BiPlot', titulo: 'Haru 360', biplot: true }
+          },
+          recorrido: [
+            { zona: 'recepcion', titulo: 'La entrada', ver: ['caja'], texto: '¡Bienvenidos! Los acompaño. Partimos por la barra de sushi.' },
+            { zona: 'barra', titulo: 'La barra de sushi', ver: ['carta'], texto: 'Aquí trabajan los itamaes. En la pizarra, los rolls de la casa.' },
+            { zona: 'cocina', titulo: 'La cocina', texto: 'La cocina está a la vista: las comandas llegan a la pantalla, sin papel.' },
+            { zona: 'salon', titulo: 'El salón', ver: ['bar'], texto: 'En cada mesa está el QR de la carta. Al fondo, el bar.' },
+            { zona: 'terraza', titulo: 'La terraza', texto: 'Y afuera, la terraza, bajo los quitasoles.' },
+            { zona: 'delivery', titulo: 'Retiro y delivery', texto: 'Por aquí salen los pedidos para retiro y delivery, directo desde la carta.' },
+            { zona: 'biplot', titulo: 'El rincón de BiPlot', texto: 'Este rincón es de BiPlot, que puso en marcha con nosotros Haru 360.' }
+          ]
+        }
       },
       {
         id: 'eleven', nombre: 'Eleven 360', cliente: 'Eleven Club Fitness and BXO', rubro: 'Gimnasio, Arica', estado: 'Propuesta',
@@ -272,7 +370,59 @@
         enlaces: [{ texto: 'Ver el sitio', url: 'https://eleven-360.vercel.app' }],
         equipo: ['lupe', 'architect', 'grilla', 'bucle', 'tamandua'],
         media: null,
-        nota: 'Horario y cupos de ejemplo.'
+        nota: 'Horario y cupos de ejemplo.',
+        /* Sala propia: su club, sin números (ver la de Nu Home). TEXTOS DE EJEMPLO hasta que Eleven los apruebe; clases,
+           horarios, planes y cifras, los de su sitio (septiembre de 2026). Su team va sin nombre. */
+        salaPropia: {
+          textosDeEjemplo: true,
+          cejaBiplot: 'Propuesta de BiPlot',
+          marca: { nombre: 'Eleven Club', sub: 'FITNESS AND BXO', texto: 'Peso libre, fuerza, cardio y 240 m² de clases, abierto los 7 días en Arica.' },
+          colores: { fondo: '#0B0B0B', fondo2: '#1A1A1A', tinta: '#F2EDE5', tinta2: '#CFC8BE', oro: '#FF6600', ceja: '#FF8A1F', cejaBurbuja: '#CC5200',
+            borde: 'rgba(255,102,0,.4)', brillo: '255, 102, 0', sub: '#B8B2AA', pie: '#8F877D', velo: 'rgba(255,255,255,.08)', hover: '#FF8A1F',
+            boton: '#FF6600', botonTinta: '#0B0B0B', botonPunto: '#0B0B0B' },
+          fuente: { familia: "Anton, Impact, 'Arial Narrow', sans-serif", peso: 400, espacio: '.04em', caja: 'uppercase', titulo: '34px', sub: "700 10px/1.4 'Chakra Petch', sans-serif" },
+          textos: { recorrer: 'Recorrer con un coach', hablar: 'Escribir al club', recorrido: 'Recorrido con un coach', guia: 'Coach · Eleven' },
+          disenar: { texto: 'Ver planes', url: 'https://eleven-360.vercel.app/#planes' },
+          guia: 'elGuia',
+          // Sin WhatsApp: la sala se muestra con la propuesta, antes de conectar a nadie con el club
+          whatsapp: null,
+          mensaje: 'Hola Eleven, vi su club en la oficina de BiPlot y quiero conocer los planes.',
+          burbujas: [
+            { quien: 'elRecepcion', nombre: 'La recepcionista', rol: 'Recepción · Eleven', texto: '¡Hola! ¿Vienes a conocer el club? El pase diario es de $4.000.' },
+            { quien: 'elCoach', nombre: 'El coach de la asesoría', rol: 'Coach · Eleven', texto: 'Armamos tu plan según tu objetivo y vemos tu progreso cada semana.' },
+            { quien: 'instructor', nombre: 'El instructor de la clase', rol: 'Instructor · Eleven', texto: '¡Vamos que se puede! Power Jump, martes y jueves a las 19:30.' },
+            { quien: 'elCoach2', nombre: 'La coach de calistenia', rol: 'Coach · Eleven', texto: 'Calistenia Kids: lunes, miércoles y viernes a las 17:00.' },
+            { quien: 'elSocio', nombre: 'Un socio en el torniquete', rol: 'Socio', texto: 'Entro con mi huella, como siempre.' },
+            { quien: 'elBatido', nombre: 'Una socia en la cafetería', rol: 'Socia', texto: 'Recargo aquí antes de la clase.' },
+            { quien: 'lupe', nombre: 'Lupe, de BiPlot', rol: 'Lupe · BiPlot', texto: 'Hice el diagnóstico de Eleven: más socios, que se queden y que vuelvan por más. ¿Te cuento la propuesta?', biplot: true }
+          ],
+          zonas: {
+            recepcion: { nombre: 'Recepción', ceja: 'Recepción', titulo: '¿Y tú, ya eres Eleven?', texto: 'Aquí te inscribes con tus datos y tu huella. Pase diario de $4.000; los viernes y domingos, $2.000.', chips: ['Eleven Full $35.000', 'Estudiantes $24.990', 'Jubilados $24.990'], botones: ['recorrer', 'disenar'] },
+            huella: { nombre: 'Acceso con huella', ceja: 'El acceso', titulo: 'Se entra con la huella', texto: 'La registras en recepción el día que te inscribes y desde ahí entras siempre así, sin tarjetas ni llaveros.' },
+            trofeo: { nombre: 'El trofeo', ceja: 'Campeonato de Calistenia', titulo: '¡El título se quedó en casa!', texto: '4ª edición del Campeonato de Calistenia y Lucha Libre, con las promesas de Calistenia Kids en el podio.' },
+            peso: { nombre: 'Peso libre', ceja: 'Peso libre', titulo: 'Diez toneladas de hierro', texto: 'Racks, barras y bancos para entrenar pesado: 4.400 kg en mancuernas y 5.600 kg en discos preolímpicos.' },
+            asesoria: { nombre: 'Asesoría personalizada', ceja: 'Asesoría personalizada', titulo: 'Un plan según tu objetivo', texto: 'Planificación según tus objetivos, corrección técnica y seguimiento de tu progreso, con el team de profesionales.', botones: ['disenar'] },
+            fuerza: { nombre: 'Zona fuerza', ceja: 'Zona fuerza', titulo: 'Máquinas Life Fitness 2024', texto: 'Máquinas de fuerza de última generación para trabajar cada grupo muscular con seguridad y precisión.' },
+            cardio: { nombre: 'Zona cardio', ceja: 'Zona cardio', titulo: 'Esto no es un gimnasio, esto es Eleven', texto: 'Trotadoras y bicicletas Life Fitness para calentar, quemar y recuperar. Abierto desde las 6:00 de lunes a viernes.' },
+            clases: { nombre: 'Sala de clases', ceja: 'Sala de clases · Cardio', titulo: 'Power Jump', texto: 'Trabajo cardiovascular sobre mini trampolín que fortalece piernas, mejora el equilibrio y ayuda a quemar calorías.', chips: ['Martes y jueves · 19:30', '60 min', 'Incluida en tu plan'], botones: ['disenar'] },
+            calistenia: { nombre: 'Calistenia', ceja: 'Calistenia', titulo: 'También para niñas y niños', texto: 'Calistenia Kids los lunes, miércoles y viernes a las 17:00, y Calistenia Adulto a las 18:00.' },
+            horario: { nombre: 'Horario vivo', ceja: 'Horario vivo', titulo: 'Las clases de la semana', texto: 'Zumba, Body Combat, Power Jump, Core, GRIT, Body Pump, GAP, Calistenia y Salsa y Bachata: todas incluidas en tu membresía.' },
+            team: { nombre: 'Team Eleven', ceja: 'Team Eleven', titulo: 'Un team de profesionales', texto: 'Personal trainers para rendimiento, fuerza, hipertrofia, movilidad y nutrición.' },
+            cafe: { nombre: 'Cafetería', ceja: 'Cafetería', titulo: 'Recarga antes y después', texto: 'Un punto de encuentro dentro del club para recuperar energía y compartir con la comunidad Eleven.' },
+            tienda: { nombre: 'Tienda', ceja: 'Identity Eleven', titulo: 'La ropa del club', texto: 'Los polos Gym Time y Why Not en seis colores, la colección hombre y la tienda de nutrición y suplementos, en el mismo edificio.' },
+            biplot: { nombre: 'Rincón de BiPlot', ceja: 'Propuesta de BiPlot', titulo: 'Eleven 360', biplot: true }
+          },
+          recorrido: [
+            { zona: 'recepcion', titulo: 'La recepción', ver: ['huella', 'trofeo'], texto: '¡Hola! Te muestro el club. Aquí se entra con la huella de siempre.' },
+            { zona: 'peso', titulo: 'El peso libre', ver: ['asesoria'], texto: 'Diez toneladas de hierro. Y si quieres, armamos tu plan con un coach.' },
+            { zona: 'fuerza', titulo: 'La zona fuerza', texto: 'Máquinas Life Fitness para trabajar cada grupo muscular.' },
+            { zona: 'cardio', titulo: 'El cardio', texto: 'Trotadoras y bicicletas, frente a nuestra frase.' },
+            { zona: 'clases', titulo: 'La sala de clases', texto: '240 m² y diez clases distintas, todas incluidas. Ahora mismo, Power Jump.' },
+            { zona: 'calistenia', titulo: 'Calistenia', texto: 'Barras y paralelas. Los lunes, miércoles y viernes, Calistenia Kids.' },
+            { zona: 'cafe', titulo: 'Cafetería y tienda', ver: ['tienda'], texto: 'Para recargar, la cafetería. Al lado, la ropa Identity Eleven.' },
+            { zona: 'biplot', titulo: 'El rincón de BiPlot', texto: 'Este rincón es de BiPlot, que nos preparó la propuesta Eleven 360.' }
+          ]
+        }
       },
       {
         id: 'nuhome', nombre: 'Nu Home 360', cliente: 'Nu Home', rubro: 'Casas modulares', estado: 'Plataforma a la medida · en desarrollo',
@@ -295,10 +445,68 @@
           ['Fábrica a la vista', 'producción con carta Gantt y alertas tempranas'],
           ['Portal del cliente', 'cada cliente sigue su casa sin llamar']
         ],
-        enlaces: [{ texto: 'Probar el cotizador', url: 'https://nuhome-crm-nu.vercel.app/cotizador' }],
+        enlaces: [{ texto: 'Probar el cotizador', url: COTIZADOR_NUHOME }],
         equipo: ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa'],
         media: { h: 'media/nuhome-360-h.mp4', v: 'media/nuhome-360-v.mp4', poster: 'media/nuhome-360-h.jpg' },
-        nota: 'Pantallas recreadas con datos de ejemplo.'
+        nota: 'Pantallas recreadas con datos de ejemplo.',
+        /* Sala propia: al entrar se está en la sala de Nu Home, como en su propia sala de ventas. Sin números ni panel: se
+           toca lo que se ve (las zonas de su dibujo, en salas.js), la gente habla sola y abajo va la barra de Nu Home. BiPlot
+           aparece en su rincón, con todo lo del proyecto. Es el modelo para las demás salas.
+           TEXTOS DE EJEMPLO: las frases de las burbujas, las del recorrido y las tarjetas son borradores («los diálogos los
+           vemos después»), hasta que Nu Home los revise y los apruebe. Las medidas son las del diseñador de Nu Home 360.
+           Las asesoras y asesores son ilustraciones sin nombre. */
+        salaPropia: {
+          textosDeEjemplo: true,
+          marca: { nombre: 'NÜHOME', sub: 'Vida & Hogar', texto: 'Casas modulares. Pasa, recorre la casa piloto y conversa con nuestras asesoras.' },
+          // Los colores de su barra y sus tarjetas: crema, tinta y dorado
+          colores: { fondo: '#F6EFDF', tinta: '#1C1917', oro: '#E0B341' },
+          textos: { recorrer: 'Recorrer con una asesora', hablar: 'Hablar con una asesora', recorrido: 'Recorrido con una asesora', guia: 'Asesora · Nu Home' },
+          disenar: { texto: 'Diseñar la mía', url: COTIZADOR_NUHOME },
+          // Quien acompaña el recorrido (la asesora que camina por la sala, por su id en el dibujo)
+          guia: 'nhGuia',
+          // Pendiente: el número de WhatsApp de Nu Home. Mientras sea null no aparece «Hablar con una asesora».
+          // Nunca el de BiPlot: los contactos de Nu Home van a Nu Home.
+          whatsapp: null,
+          mensaje: 'Hola Nu Home, vi su sala en la oficina de BiPlot y quiero conversar con una asesora.',
+          // La gente que habla (por su id en el dibujo): quién es (para lectores de pantalla), su rótulo y su frase de ejemplo
+          burbujas: [
+            { quien: 'nhRecepcion', nombre: 'La asesora de la recepción', rol: 'Asesora · Nu Home', texto: '¡Hola! Pasa, la casa piloto está abierta.' },
+            { quien: 'nhMaqueta', nombre: 'La asesora de la mesa de maqueta', rol: 'Asesora · Nu Home', texto: 'Dibujamos tu terreno a escala y vemos qué casa te cabe.' },
+            { quien: 'nino', nombre: 'Un niño en la terraza', rol: '', texto: '¡Tiene terraza!' },
+            { quien: 'maestro', nombre: 'El maestro del taller', rol: 'Taller', texto: 'Este módulo sale el jueves.' },
+            { quien: 'ejecutivo', nombre: 'El asesor de la terraza', rol: 'Asesor · Nu Home', texto: '¿Tienes terreno? Te muestro cómo quedaría en el tuyo.' },
+            { quien: 'clienta2', nombre: 'Una clienta con su celular', rol: 'Clienta', texto: 'Veo el avance de mi casa desde el celular.' },
+            { quien: 'bucle', nombre: 'Bucle, de BiPlot', rol: 'Bucle · BiPlot', texto: 'Con Nu Home estamos construyendo Nu Home 360, la plataforma detrás de esta sala. ¿Te cuento cómo?', biplot: true }
+          ],
+          // Lo que cuenta cada zona al tocarla (la del rincón de BiPlot abre la tarjeta de BiPlot). botones: disenar
+          // (el cotizador), recorrer (el recorrido con una asesora) y hablar (sólo con el WhatsApp de Nu Home).
+          // imagen: una pantalla real de Nu Home 360 (media/salas/).
+          zonas: {
+            recepcion: { nombre: 'Recepción', ceja: 'Recepción', titulo: 'Pasa, estás en Nu Home', texto: 'Aquí te recibe una asesora. Si quieres, te acompaña a recorrer la sala: la casa piloto, la asesoría y el taller.', botones: ['recorrer', 'disenar', 'hablar'] },
+            'modelo-1': { nombre: 'Un módulo', ceja: 'Modelo', titulo: 'Un módulo', texto: 'Toda la casa en un solo módulo de 12 m.', chips: ['12 m', '27,2 m²'], botones: ['disenar'] },
+            'modelo-2': { nombre: 'Dos pisos', ceja: 'Modelo', titulo: 'Dos pisos', texto: 'Un módulo de 12 m abajo y uno de 6 m arriba.', chips: ['40,8 m²', '12 m abajo y 6 m arriba'], botones: ['disenar'] },
+            'modelo-3': { nombre: 'Con terraza', ceja: 'Modelo', titulo: 'Con terraza', texto: 'Un módulo con su terraza. La casa piloto tiene una: pasa a verla.', botones: ['disenar'] },
+            piloto: { nombre: 'Casa piloto', ceja: 'Casa piloto', titulo: 'Un módulo de 6 m, con terraza y pérgola', texto: 'Así se ve un módulo terminado: forro negro, madera y ventanales que se abren a la terraza. Se combina con otros módulos para armar tu casa.', chips: ['6 × 2,5 m · 13,6 m²', 'Terraza 4 × 3 m', 'Pérgola 4 × 4 m'], botones: ['disenar', 'hablar'] },
+            asesoria: { nombre: 'Asesoría', ceja: 'Asesoría', titulo: 'Diseña tu casa con una asesora', texto: 'En los escritorios te sientas con una asesora y arman juntos tu casa en el diseñador 3D, sobre tu terreno.', botones: ['disenar', 'hablar'] },
+            maqueta: { nombre: 'Mesa de maqueta', ceja: 'Mesa de maqueta', titulo: 'Tu terreno, a escala', texto: 'Sobre la mesa se dibuja tu terreno a escala y se prueba qué casa te cabe, igual que en el diseñador.', botones: ['disenar'] },
+            disenador: { nombre: 'Pantalla del diseñador 3D', ceja: 'El diseñador 3D', titulo: 'Diseña tu casa, pieza por pieza', texto: 'Terreno a escala, segundo piso y precio referencial al instante.', imagen: 'nuhome-1-disenador', botones: ['disenar'] },
+            terminaciones: { nombre: 'Terminaciones', ceja: 'Terminaciones', titulo: 'Las muestras, en la mano', texto: 'Colores y materiales de muestra, para elegir cómo se ve tu casa.', botones: ['disenar'] },
+            taller: { nombre: 'Taller', ceja: 'Taller', titulo: 'Así se arma tu casa', texto: 'Detrás del vidrio se arma cada módulo. En la pantalla, la carta Gantt del taller: cada partida a tiempo, con alerta antes del atraso.', imagen: 'nuhome-5-fabricacion' },
+            salon: { nombre: 'Salón y ventanal', ceja: 'Salón', titulo: 'Tu casa, paso a paso', texto: 'Mientras esperas, sigues tu casa desde el celular: avance y fotos en el portal del cliente, en un link privado.', imagen: 'nuhome-6-portal' },
+            entrega: { nombre: 'La entrega', ceja: 'Entrega', titulo: 'El día de las llaves', texto: 'La familia recibe su casa y el acta de entrega se firma en el celular, sin papel.', imagen: 'nuhome-7-entrega' },
+            biplot: { nombre: 'Rincón de BiPlot', ceja: 'Hecho con BiPlot', titulo: 'Nu Home 360', biplot: true }
+          },
+          // «Recorrer con una asesora»: una parada por zona (ver: otras zonas que entran en el cuadro), con lo que dice la asesora
+          recorrido: [
+            { zona: 'recepcion', titulo: 'La entrada', ver: ['modelo-1', 'modelo-3'], texto: '¡Hola! Te acompaño a recorrer la sala. Partimos por la casa piloto.' },
+            { zona: 'piloto', titulo: 'La casa piloto', texto: 'Es un módulo de 6 m, con su terraza y su pérgola. Pasa, está abierta.' },
+            { zona: 'asesoria', titulo: 'La asesoría', ver: ['maqueta', 'disenador'], texto: 'Aquí diseñamos contigo tu casa en el diseñador 3D, sobre tu terreno y a escala.' },
+            { zona: 'terminaciones', titulo: 'Las terminaciones', texto: 'Aquí eliges las terminaciones, con las muestras en la mano.' },
+            { zona: 'taller', titulo: 'El taller', texto: 'Detrás del vidrio se arma cada módulo. En la pantalla, la carta Gantt dice qué sale y cuándo.' },
+            { zona: 'salon', titulo: 'El salón', ver: ['entrega'], texto: 'Aquí se conversa, se espera y se entregan las llaves. El avance de tu casa lo sigues desde el celular.' },
+            { zona: 'biplot', titulo: 'El rincón de BiPlot', texto: 'Este rincón es de BiPlot, que construye con nosotros Nu Home 360: la plataforma detrás de esta sala.' }
+          ]
+        }
       },
       {
         id: 'rumbo', nombre: 'Rumbo', cliente: 'Producto propio de BiPlot', rubro: 'App de desarrollo personal', estado: 'Producto propio · publicado',
@@ -320,7 +528,58 @@
         enlaces: [{ texto: 'Abrir Rumbo', url: 'https://rumbo.biplot.cl' }],
         equipo: ['architect', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa'],
         media: null,
-        nota: 'Racha y hábitos de ejemplo.'
+        nota: 'Racha y hábitos de ejemplo.',
+        /* Sala propia: un día con Rumbo, sin números (ver la de Nu Home). La racha, las metas y los hábitos son de ejemplo;
+           los módulos, rangos, insignias y el elefante, los de la app. */
+        salaPropia: {
+          textosDeEjemplo: true,
+          cejaBiplot: 'Hecho en BiPlot',
+          marca: { nombre: 'Rumbo', sub: 'by BiPlot', texto: 'Tu vida en un solo lugar: rituales, hábitos, metas, finanzas y más, con un elefante que crece contigo.' },
+          colores: { fondo: '#FFFFFF', fondo2: '#F4F5F2', tinta: '#111F31', tinta2: '#45505F', oro: '#3B6FB0', ceja: '#3B6FB0', cejaBurbuja: '#3B6FB0',
+            borde: '#D6D8D3', brillo: '59, 111, 176', sub: '#5F6975', pie: '#5F6975', velo: 'rgba(17,31,49,.06)', hover: '#33629C',
+            boton: '#3B6FB0', botonTinta: '#FFFFFF', botonPunto: '#FFFFFF' },
+          fuente: { familia: "'Space Grotesk', 'DejaVu Sans', sans-serif", peso: 700, espacio: '-.02em', titulo: '25px', sub: "500 11px/1.4 'Space Grotesk', sans-serif" },
+          textos: { recorrer: 'Recorrer un día', recorrido: 'Un día con Rumbo', guia: 'Rumbo' },
+          disenar: { texto: 'Abrir Rumbo', url: 'https://rumbo.biplot.cl' },
+          guia: 'rmGuia',
+          whatsapp: null,
+          burbujas: [
+            { quien: 'meditadora', nombre: 'Quien abre su día en la colchoneta', rol: 'Apertura del día', texto: 'Mi elefante de hoy: primero lo difícil.' },
+            { quien: 'rmHabito', nombre: 'Quien marca sus hábitos', rol: 'Hábitos', texto: '¡12 días de racha! Hoy tampoco la suelto.' },
+            { quien: 'rmSube', nombre: 'Quien sube la escalera de las metas', rol: 'Objetivos', texto: 'Meta del trimestre: correr mis primeros 10K.' },
+            { quien: 'rmNoche', nombre: 'Quien cierra su día en el sofá', rol: 'Cierre del día', texto: '¿Qué salió bien hoy? Anotado en el diario.' },
+            { quien: 'lectora', nombre: 'Quien lee en el sillón', rol: 'Lecturas', texto: 'Página 120 de 300. Veinte minutos al día.' },
+            { quien: 'rmAhorro', nombre: 'Quien mira su ahorro del mes', rol: 'Finanzas', texto: 'Este mes el frasco va mejor que el anterior.' },
+            { quien: 'nino', nombre: 'Un niño junto al elefante', rol: '', texto: '¡Está feliz porque cerraste el día!' },
+            { quien: 'rmTienda', nombre: 'Quien compra en la tienda', rol: 'Tienda', texto: 'Con mis estrellas le compré el jockey.' },
+            { quien: 'tamandua', nombre: 'Tamandúa, de BiPlot', rol: 'Tamandúa · BiPlot', texto: 'Rumbo es nuestro. Cada cambio pasa por sus pruebas antes de llegar a tu celular.', biplot: true }
+          ],
+          zonas: {
+            celular: { nombre: 'Tu día en Rumbo', ceja: 'Hoy', titulo: 'Tu centro de control diario', texto: 'Abres la app y ves tu día: el ritual, tus hábitos, tus metas y tu racha.', botones: ['disenar', 'recorrer'] },
+            manana: { nombre: 'Ritual de mañana', ceja: 'Ritual', titulo: 'Abre tu día', texto: 'Cada mañana se abre el día y se elige el elefante: la tarea más importante, un bocado a la vez. Con recordatorio, para no soltarlo.' },
+            objetivos: { nombre: 'Objetivos', ceja: 'Objetivos', titulo: 'Tus metas del trimestre y del mes', texto: 'Cada meta con sus pasos, y cada semana con su foco y sus tres prioridades. Se sube un peldaño a la vez.' },
+            lecturas: { nombre: 'Lecturas', ceja: 'Lecturas', titulo: 'Tu biblioteca personal', texto: 'Lo que lees, lo que vas a leer y cuánto avanzas.' },
+            rueda: { nombre: 'Rueda de la vida', ceja: 'Rueda de la vida', titulo: 'Cada área, del 0 al 10', texto: 'Salud y deporte, familia y amor, trabajo y finanzas, ocio y amistad, tiempo para mí, emocional, educativa y cultural, y espiritual y ética.' },
+            habitos: { nombre: 'Hábitos', ceja: 'Hábitos', titulo: 'Marca cada día y cuida tu racha', texto: 'Los hábitos de la semana en una grilla, con la racha a la vista.' },
+            recompensas: { nombre: 'Recompensas', ceja: 'Recompensas', titulo: 'Tu rango y tus insignias', texto: 'De Aprendiz a Alto Valor. Insignias como Primer Paso, Semana de Fuego, Madrugador y Bocado a Bocado.' },
+            noche: { nombre: 'Cierre del día', ceja: 'Ritual', titulo: 'Cierra tu día', texto: 'Lo mejor del día, tu gratitud y cómo te sentiste. Y el elefante se pone feliz.' },
+            diario: { nombre: 'Diario', ceja: 'Diario', titulo: 'Tu día a día', texto: 'Ánimo, reflexión e historial del ritual, en un solo lugar.' },
+            finanzas: { nombre: 'Finanzas', ceja: 'Finanzas', titulo: 'Ahorro, gastos y seguimiento mensual', texto: 'El frasco del ahorro, los gastos del mes y cómo vas.' },
+            salud: { nombre: 'Salud y bienestar', ceja: 'Salud y bienestar', titulo: 'Entrenamiento, cocina y peso', texto: 'Tu rutina por bloques, lo que cocinas y tu peso, junto al resto de tu día.' },
+            elefante: { nombre: 'Tu elefante', ceja: 'Tu elefante', titulo: '¿Cómo te comes un elefante?', texto: 'Un bocado a la vez: así se llama tu tarea más importante del día. Tu elefante crece con tu constancia, de Cría a Sabio, y se pone feliz cuando cierras el día.', chips: ['Cría · Joven · Adulto · Sabio', 'Seis tipos'], botones: ['disenar'] },
+            tienda: { nombre: 'Tienda', ceja: 'Tienda', titulo: 'Tus estrellas valen', texto: 'Útiles, funciones y cosméticos: ropa para tu elefante, como un jockey o una bufanda.' },
+            biplot: { nombre: 'Rincón de BiPlot', ceja: 'Hecho en BiPlot', titulo: 'Rumbo', biplot: true }
+          },
+          recorrido: [
+            { zona: 'celular', titulo: 'Tu día', texto: 'Así es un día con Rumbo. Partimos temprano.' },
+            { zona: 'manana', titulo: 'El ritual de mañana', texto: 'Se abre el día y se elige el elefante: la tarea más importante.' },
+            { zona: 'objetivos', titulo: 'Los objetivos', ver: ['lecturas'], texto: 'Las metas del trimestre y del mes, un peldaño a la vez.' },
+            { zona: 'habitos', titulo: 'Hábitos y recompensas', ver: ['rueda', 'recompensas'], texto: 'Cada hábito cuenta para la racha, y la racha para tu rango.' },
+            { zona: 'elefante', titulo: 'Tu elefante', texto: 'Tu elefante crece contigo: de Cría a Sabio.' },
+            { zona: 'noche', titulo: 'El cierre del día', ver: ['diario', 'finanzas'], texto: 'En la noche se cierra el día y se anota qué salió bien.' },
+            { zona: 'biplot', titulo: 'El rincón de BiPlot', texto: 'Rumbo lo hacemos en BiPlot HQ. Aquí te cuentan cómo.' }
+          ]
+        }
       },
       {
         id: 'libre', nombre: 'Tu proyecto aquí', cliente: '', rubro: 'Local disponible', estado: 'Disponible', libre: true, corto: 'Disponible',

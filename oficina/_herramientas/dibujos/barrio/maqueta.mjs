@@ -2,6 +2,8 @@
 import { readFileSync } from 'fs';
 const MED = JSON.parse(readFileSync(new URL('../cabezones/medidas.json', import.meta.url), 'utf8'));
 export function registrarMedida(id, m) { MED[id] = m; }
+// Las medidas de un personaje (su alto, en unidades de personaje): las salas las usan para ubicar su cabeza
+export function medidaDe(id) { return MED[id]; }
 const TW = 32, TH = 16, ZH = 39;
 const r1 = (n) => Math.round(n * 10) / 10;
 export const P = (x, y, z = 0) => [(x - y) * TW, (x + y) * TH - z * ZH];

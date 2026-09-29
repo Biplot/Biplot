@@ -370,6 +370,152 @@ button { font: inherit; color: inherit; }
 .lugares .mt a { font-size: 14px; color: var(--bp-acento-texto); min-height: 32px; }
 .archivo-busca { margin: 14px 0 6px; }
 
+/* ── La sala propia (salaPropia en datos.js): la sala de cada empresa como su propia casa ──
+   Sin números ni panel: la sala llena el espacio libre y se recorre; lo que se toca brilla en su color con su nombre y
+   abre su tarjeta; la gente habla en burbujas; abajo, la barra de la empresa. Los colores y la letra de cada empresa
+   vienen de datos.js (colores y fuente de su salaPropia); estos, los de Nu Home, son los de partida. BiPlot conserva los
+   suyos en su tarjeta. */
+.sala { --p-fondo: #F6EFDF; --p-fondo-2: #EADFC6; --p-tinta: #1C1917; --p-tinta-2: #3A3530; --p-oro: #E0B341; --p-ceja: #7A5F12; --p-borde: #CFC1A3;
+  --p-brillo: 224, 179, 65; --p-sub: #5E5446; --p-pie: #6B6152; --p-velo: rgba(28, 25, 23, .07); --p-hover: #2B2724; --p-ceja-burbuja: var(--p-ceja);
+  --p-btn-fondo: var(--p-tinta); --p-btn-tinta: var(--p-fondo); --p-btn-punto: var(--p-oro);
+  --p-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif; --p-peso: 600; --p-espacio: .14em; --p-caja: none; --p-titulo-tam: 29px;
+  --p-sub-letra: italic 500 13.5px/1 var(--p-serif); }
+.en-sala-propia .sala-dibujo-caja { inset: 0; transform: none; transition: none; touch-action: none; cursor: grab; outline: none; }
+.en-sala-propia .sala-dibujo-caja.arrastrando { cursor: grabbing; }
+.en-sala-propia .sala-dibujo-caja.sobre { cursor: pointer; }
+.en-sala-propia .sala-dibujo-caja:focus-visible { box-shadow: inset 0 0 0 3px rgba(var(--p-brillo), .75); }
+.en-sala-propia .sala-ayuda { display: none; }
+.en-sala-propia .sala-vecinos { top: 16px; bottom: auto; right: 16px; }
+.en-sala-propia .sala-volver { left: var(--volver-izq, 16px); }
+.en-sala-propia .controles { display: flex; }
+.sala-toques, .sala-resalte, .sala-anillo { pointer-events: none; }
+.zona-sala polygon, .quien-sala rect { fill: transparent; stroke: none; }
+.zona-sala:focus, .quien-sala:focus { outline: none; }
+/* Lo que se toca: un halo difuso en el color de la empresa y el contorno punteado encima (el mismo grosor a cualquier distancia) */
+.resalte-brillo { fill: rgba(var(--p-brillo), .16); stroke: var(--p-oro); stroke-width: 12; stroke-linejoin: round; opacity: .55; filter: url(#sala-brillo); }
+.resalte-linea { fill: none; stroke: var(--p-oro); stroke-width: 2.5; stroke-linejoin: round; stroke-dasharray: 10 7; vector-effect: non-scaling-stroke; }
+.anillo-quien { fill: rgba(var(--p-brillo), .22); stroke: var(--p-oro); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.sala-dibujo .andante { transition: opacity .22s ease; }
+.sala-dibujo .andante.salta { opacity: 0; }
+/* Encima del dibujo: burbujas y la etiqueta de la zona */
+.sala-capa { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.burbuja { position: absolute; left: 0; top: 0; max-width: 240px; padding: 9px 12px 10px; border-radius: 14px; background: #FFFFFF; color: #13202E;
+  font: 500 13.5px/1.36 var(--bp-f-texto); box-shadow: 0 8px 24px rgba(4, 12, 22, .35); opacity: 0; transition: opacity .35s ease; }
+.burbuja::after { content: ""; position: absolute; left: var(--cola, 50%); bottom: -7px; width: 14px; height: 14px; margin-left: -7px; background: inherit; transform: rotate(45deg); border-radius: 0 0 3px 0; }
+.burbuja.visible { opacity: 1; }
+.burbuja.fuera { visibility: hidden; }
+.burbuja.sin-cola::after { display: none; }
+.burbuja.corta { white-space: nowrap; }
+.burbuja small { display: block; margin-bottom: 3px; font: 700 10.5px/1.25 var(--bp-f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--p-ceja-burbuja); }
+.burbuja.bp { background: var(--bp-superficie); color: var(--bp-texto); border: 1.5px solid var(--bp-marca-cian); pointer-events: auto; cursor: pointer; }
+.burbuja.bp::after { bottom: -8.5px; border-right: 1.5px solid var(--bp-marca-cian); border-bottom: 1.5px solid var(--bp-marca-cian); }
+.burbuja.bp small { color: #7FD8CF; }
+.burbuja.de-guia { max-width: 290px; padding: 11px 14px 12px; background: var(--p-fondo); color: var(--p-tinta); border: 1.5px solid var(--p-oro); font-size: 14.5px; }
+.burbuja.de-guia::after { bottom: -8.5px; border-right: 1.5px solid var(--p-oro); border-bottom: 1.5px solid var(--p-oro); }
+.burbuja.de-guia small { color: var(--p-ceja); }
+.sala-etiqueta { position: absolute; left: 0; top: 0; padding: 7px 14px 8px; border-radius: 99px; background: var(--p-tinta); color: var(--p-fondo); border: 1.5px solid var(--p-oro);
+  font: var(--p-peso) 17px/1 var(--p-serif); letter-spacing: .01em; text-transform: var(--p-caja); white-space: nowrap; box-shadow: 0 0 0 6px rgba(var(--p-brillo), .18), 0 8px 20px rgba(4, 12, 22, .35); }
+.sala-etiqueta[hidden] { display: none; }
+.sala-etiqueta { transition: opacity .2s; }
+.sala-etiqueta.tapada { opacity: 0; }
+/* La barra de la empresa: su marca, su frase y sus botones negros y dorados */
+.sala-barra { position: absolute; z-index: 3; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; width: max-content;
+  max-width: calc(100% - 184px); padding: 10px 12px 10px 20px; border-radius: 18px; background: var(--p-fondo); color: var(--p-tinta); box-shadow: 0 18px 40px rgba(4, 12, 22, .45); }
+.sala-barra[hidden] { display: none; }
+.sp-marca { margin: 0; flex: none; display: flex; flex-direction: column; align-items: flex-start; }
+.sp-logo { font: var(--p-peso) 23px/1 var(--p-serif); letter-spacing: var(--p-espacio); text-transform: var(--p-caja); }
+.sp-sub { margin-top: 4px; font: var(--p-sub-letra); letter-spacing: .05em; color: var(--p-sub); }
+.sp-sep { flex: none; width: 1px; align-self: stretch; margin: 4px 0; background: var(--p-borde); }
+.sp-txt { margin: 0; flex: 1 1 250px; min-width: 170px; max-width: 320px; font: 500 14px/1.4 var(--bp-f-texto); color: var(--p-tinta-2); }
+.sp-acciones { flex: none; display: flex; flex-wrap: wrap; gap: 8px; }
+.sp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 18px; border-radius: 99px; border: 1.5px solid var(--p-tinta);
+  font: 600 14.5px/1.15 var(--bp-f-texto); text-decoration: none; white-space: nowrap; cursor: pointer; }
+.sp-btn.negro { background: var(--p-btn-fondo); border-color: var(--p-btn-fondo); color: var(--p-btn-tinta); }
+.sp-btn.negro::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--p-btn-punto); }
+.sp-btn.negro:hover { background: var(--p-hover); border-color: var(--p-hover); }
+.sp-btn.borde { background: transparent; color: var(--p-tinta); }
+.sp-btn.borde:hover { background: var(--p-velo); }
+.sp-btn[disabled] { opacity: .38; cursor: default; }
+.sala-barra :focus-visible, .sala-tarjeta.empresa :focus-visible { box-shadow: 0 0 0 2px var(--p-fondo), 0 0 0 4.5px var(--p-tinta); }
+/* El título de la tarjeta recibe el foco al abrirse (para lectores de pantalla), sin marco */
+.sala-tarjeta #sala-tarjeta-t:focus, .sala-tarjeta #sala-tarjeta-t:focus-visible { outline: none; box-shadow: none; }
+/* El recorrido con una asesora: la barra lleva sus controles */
+.sala-barra.recorriendo { padding-right: 60px; }
+.sp-rec { min-width: 0; flex: 1 1 auto; }
+.sp-rec-n { margin: 0 0 4px; font: 700 10.5px/1.3 var(--bp-f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--p-ceja); }
+.sp-rec-t { margin: 0; font: var(--p-peso) 22px/1.1 var(--p-serif); text-transform: var(--p-caja); }
+.sp-cerrar { position: absolute; top: 50%; right: 8px; width: 44px; height: 44px; margin-top: -22px; display: grid; place-items: center; border: 0; border-radius: 50%; background: none;
+  color: var(--p-tinta); cursor: pointer; }
+.sp-cerrar:hover { background: var(--p-velo); }
+.sp-cerrar svg, .tarjeta-cerrar svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+/* Las tarjetas: junto a lo que se tocó. La de la empresa en crema; la de BiPlot, en sus colores */
+.sala-tarjeta { position: absolute; z-index: 4; left: 0; top: 0; width: 360px; max-width: calc(100% - 32px); max-height: calc(100% - 88px); display: flex; flex-direction: column;
+  border-radius: 16px; box-shadow: 0 22px 50px rgba(4, 12, 22, .5); opacity: 0; transition: opacity .25s ease; }
+.sala-tarjeta.visible { opacity: 1; }
+.sala-tarjeta[hidden] { display: none; }
+.tarjeta-cuerpo { flex: 1 1 auto; min-height: 0; overflow: auto; overscroll-behavior: contain; padding: 18px 18px 18px; border-radius: inherit; }
+.tarjeta-cerrar { position: absolute; z-index: 1; top: 6px; right: 6px; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: none; color: inherit; cursor: pointer; }
+.tarjeta-cerrar span { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: var(--p-velo); }
+.tarjeta-cerrar:hover span { background: rgba(28, 25, 23, .14); background: color-mix(in srgb, var(--p-tinta) 14%, transparent); }
+.sala-tarjeta .ceja { margin: 2px 44px 0 0; font: 700 11px/1.3 var(--bp-f-mono); letter-spacing: .14em; text-transform: uppercase; }
+.sala-tarjeta.empresa { background: var(--p-fondo); color: var(--p-tinta); }
+.sala-tarjeta.empresa .ceja { color: var(--p-ceja); }
+.sala-tarjeta.empresa h3 { margin: 8px 36px 10px 0; font: var(--p-peso) var(--p-titulo-tam)/1.08 var(--p-serif); letter-spacing: -.005em; text-transform: var(--p-caja); text-wrap: balance; outline: none; }
+.sala-tarjeta.empresa p { margin: 0 0 12px; font: 400 14.5px/1.5 var(--bp-f-texto); color: var(--p-tinta-2); }
+.tarjeta-chips { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.tarjeta-chips li { padding: 8px 10px; border-radius: 99px; background: var(--p-fondo-2); color: var(--p-tinta-2); font: 600 12.5px/1 var(--bp-f-texto); }
+.tarjeta-botones { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 2px; }
+.tarjeta-img { margin: 0 0 12px; }
+.tarjeta-img img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; border: 1px solid var(--p-borde); background: var(--p-fondo-2); }
+.tarjeta-img figcaption { margin-top: 5px; font: 500 12px/1.3 var(--bp-f-texto); color: var(--p-pie); }
+.sala-tarjeta.bp { width: 420px; background: var(--bp-superficie); color: var(--bp-texto); border: 1px solid var(--bp-borde-fuerte); }
+.sala-tarjeta.bp .tarjeta-cerrar span { background: rgba(255, 255, 255, .07); }
+.sala-tarjeta.bp .tarjeta-cerrar:hover span { background: rgba(255, 255, 255, .14); }
+.sala-tarjeta.bp .ceja { color: #7FD8CF; }
+.sala-tarjeta.bp h3 { margin: 8px 40px 4px 0; font: 700 27px/1.1 var(--bp-f-display); letter-spacing: -.02em; outline: none; }
+.sala-tarjeta.bp h3 .chip { margin-left: 6px; vertical-align: 5px; }
+.sala-tarjeta.bp p { margin: 0 0 12px; font-size: 14.5px; color: var(--bp-texto-2); }
+.sala-tarjeta.bp .tarjeta-sub { margin-bottom: 10px; font: 500 14px/1.3 var(--bp-f-texto); color: var(--bp-texto-3); }
+.sala-tarjeta.bp h4 { margin: 16px 0 8px; font: 600 11.5px/1.3 var(--bp-f-display); letter-spacing: .28em; text-transform: uppercase; color: var(--bp-texto-3); }
+.sala-tarjeta.bp .tarjeta-botones { margin-bottom: 4px; }
+.tarjeta-bloque { margin-top: 16px; border-top: 1px solid var(--bp-borde); }
+.sala-tarjeta .media { margin: 0 0 10px; border-radius: 10px; }
+.sala-tarjeta .media-grande, .sala-tarjeta .enlace-copia button, .sala-tarjeta .bp-cta { min-height: 44px; }
+.sala-tarjeta .puntos { margin: 0 0 6px; }
+.sala-tarjeta .sala-final { margin-top: 18px; }
+.tira-bp { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 6px; margin: 10px 0 8px; }
+.tira-bp button { min-height: 44px; display: flex; flex-direction: column; gap: 5px; padding: 0 0 6px; border: 1.5px solid var(--bp-borde); border-radius: 8px; overflow: hidden; background: #0B1726;
+  color: var(--bp-texto-2); font: 600 11.5px/1.2 var(--bp-f-display); text-align: center; cursor: pointer; }
+.tira-bp img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; opacity: .72; }
+.tira-bp span { padding: 0 4px; }
+.tira-bp button:hover { border-color: var(--bp-acento); }
+.tira-bp button[aria-pressed="true"] { border-color: var(--bp-acento); box-shadow: 0 0 0 2px var(--bp-acento); color: var(--bp-texto); }
+.tira-bp button[aria-pressed="true"] img { opacity: 1; }
+/* En celular la tarjeta es una hoja que sube desde abajo (sin los controles de la cámara encima) */
+.sala-tarjeta.hoja { top: auto; bottom: 0; left: 0; right: 0; width: auto; max-width: none; max-height: 62%; border-radius: 18px 18px 0 0; transform: none !important; }
+.sala-tarjeta.hoja .tarjeta-cuerpo { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+.sala-hoja .controles { display: none !important; }
+@media (max-width: 899px) {
+  .en-sala-propia .recorrer { display: none; }
+  .en-sala-propia .controles { bottom: calc(var(--alto-barra, 0px) + 26px); }
+}
+@media (max-width: 699px) {
+  .sala-barra { left: 8px; right: 8px; bottom: 8px; transform: none; width: auto; max-width: none; flex-wrap: wrap; gap: 6px 12px; padding: 10px 12px 12px; border-radius: 16px; }
+  .sp-sep { display: none; }
+  .sp-logo { font-size: 20px; }
+  .sp-sub { font-size: 12.5px; }
+  .sp-txt { flex: 1 1 0; min-width: 0; max-width: none; font-size: 12.5px; line-height: 1.35; }
+  .sp-acciones { flex: 1 1 100%; flex-wrap: nowrap; }
+  .sp-acciones .sp-btn { flex: 1 1 0; min-width: 0; padding: 8px 10px; font-size: 13.5px; white-space: normal; text-align: center; }
+  .sala-barra.recorriendo { padding-right: 12px; }
+  .sala-barra.recorriendo .sp-rec { flex: 1 1 100%; padding-right: 40px; }
+  .sp-rec-t { font-size: 20px; }
+  .sp-cerrar { top: 4px; right: 4px; margin-top: 0; }
+  .burbuja { max-width: 200px; font-size: 13px; }
+  .burbuja.de-guia { max-width: 240px; font-size: 13.5px; }
+  .sala-etiqueta { font-size: 15.5px; padding: 6px 12px 7px; }
+}
+
 /* Video grande */
 .lightbox { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: rgba(9, 29, 51, .94); padding: 56px 16px 16px; }
 .lightbox[hidden] { display: none; }
@@ -555,4 +701,5 @@ button { font: inherit; color: inherit; }
   .dato-luz:nth-of-type(odd), .qa-ok { opacity: 1; }
   .traza { stroke-dashoffset: 0; }
   .paquete { opacity: 0; }
+  .burbuja, .sala-tarjeta, .sala-etiqueta, .sala-dibujo .andante { transition: none; }
 }

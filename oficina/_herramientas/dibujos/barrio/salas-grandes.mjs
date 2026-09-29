@@ -1,7 +1,9 @@
 // Las salas grandes: el local de cada empresa por dentro, con su gente, sus pantallas reales y un punto por módulo.
 // Cada sala se dibuja en su propia escena (la misma proyección de la oficina) y devuelve { vb, capas, arriba, caminan,
 // pines, usados }: el dibujo en capas por profundidad y, aparte, la gente que camina por la sala con su ruta.
-import { escena, P, registrarMedida, andante } from './maqueta.mjs';
+// Una sala propia (la de Nu Home) no lleva puntos numerados: marca lo que se toca con zona() y dónde van las etiquetas
+// con lugar(), y devuelve además { lugares, zonas, gente } (ver montar()).
+import { escena, P, registrarMedida, andante, medidaDe } from './maqueta.mjs';
 import * as S from './locales.mjs';
 import { VISITANTES, persona, PIEL, medida } from './visitantes.mjs';
 
@@ -11,13 +13,13 @@ const HM = 2.0;
 const FUENTE = `font-family="'Space Grotesk','DejaVu Sans',sans-serif"`, MONO = `font-family="'Space Mono','DejaVu Sans Mono',monospace"`;
 const txt = (x, y, t, fs, color, extra = '') => `<text x="${x}" y="${y}" ${FUENTE} font-weight="700" font-size="${fs}" fill="${color}"${extra}>${t}</text>`;
 const mono = (x, y, t, fs, color, extra = '') => `<text x="${x}" y="${y}" ${MONO} font-weight="700" font-size="${fs}" fill="${color}"${extra}>${t}</text>`;
-const MADERA = { t: '#8B6A4E', l: '#6E5238', r: '#5A4330' };
 const ACERO = { t: '#C4D2E0', l: '#8FA3B8', r: '#6B7A8C' };
 
 // ───────── Gente nueva: los perfiles reales de cada sistema y quienes los usan ─────────
 const JEAN = ['#35679A', '#27507C'], OSCURO = ['#2A3038', '#1E232A'], CAQUI = ['#C9B28A', '#A8936A'], NEGRO = ['#1F2733', '#141A23'];
 const Z = { blancas: ['#F2F4F7', '#B9C8D8', '#17C3B2'], cafe: ['#6E4A30', '#4A3222', null], negras: ['#1F2733', '#0B1726', null], botas: ['#8B6A4E', '#4A3222', null], rojas: ['#C8474A', '#F2F4F7', '#F2F4F7'] };
 const PELO = { negro: ['#1A1613', '#0B0908', '#3A322C'], cafe: ['#4A3222', '#2E1F15', '#7A5334'], castano: ['#6E4A30', '#4A3222', '#8B6A4E'], canoso: ['#B9C0C8', '#8E949C', '#E4E7EB'], rojizo: ['#8E3E20', '#6E2C14', '#B5532E'], rubio: ['#D9A441', '#B8862A', '#F4DDA8'] };
+const UNIFORME_NH = ['#1C1917', '#0F0D0C', ['#F4ECD8', '#C9A227']];
 const NUEVOS = {
   // Haru 360: los nueve perfiles de su sistema (Dueño, Encargado, Caja, Garzón, Jefa de cocina, Barman, Runner, Repartidor, Aseo)
   dueno: { piel: PIEL.clara, pelo: PELO.canoso, peinado: 'peinado', arriba: 'blazer', arribaCol: ['#2A3038', '#1E232A', ['#F2F4F7', '#E0524A']], abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.negras, brazoD: 'sostiene', objeto: 'tablet', lentes: 'rectos', boca: 'media' },
@@ -49,7 +51,17 @@ const NUEVOS = {
   ciclista2: { piel: PIEL.oscura, pelo: PELO.negro, peinado: 'rizado', arriba: 'deportiva', arribaCol: ['#17C3B2', '#0A8A7E', null], abajo: 'short', abajoCol: NEGRO, zapatos: Z.rojas, piernas: 'sentado', brazoD: 'frente', brazoI: 'frente', boca: 'dientes' },
   // Rumbo: quien medita en el ritual de la mañana y quien escribe su diario
   meditadora: { piel: PIEL.trigo, pelo: PELO.negro, peinado: 'mono', cuerpo: 'fino', arriba: 'polera', arribaCol: ['#DDF4F1', '#B9D8D3'], manga: 'larga', abajo: 'pantalon', abajoCol: ['#2A7C78', '#1F5F5C'], zapatos: Z.blancas, piernas: 'sentado', brazoD: 'abajo', brazoI: 'abajo', ojos: 'felices', boca: 'sonrisa' },
-  corredora: { piel: PIEL.clara, pelo: PELO.rubio, peinado: 'cola', lazo: '#17C3B2', cuerpo: 'fino', arriba: 'deportiva', arribaCol: ['#3E9C95', '#2A7C78', null], abajo: 'short', abajoCol: NEGRO, zapatos: Z.blancas, audifonos: '#7FD8CF', piernas: 'camina', brazoD: 'frente', brazoI: 'atras', ojos: 'felices' }
+  corredora: { piel: PIEL.clara, pelo: PELO.rubio, peinado: 'cola', lazo: '#17C3B2', cuerpo: 'fino', arriba: 'deportiva', arribaCol: ['#3E9C95', '#2A7C78', null], abajo: 'short', abajoCol: NEGRO, zapatos: Z.blancas, audifonos: '#7FD8CF', piernas: 'camina', brazoD: 'frente', brazoI: 'atras', ojos: 'felices' },
+  // La sala de Nu Home: su equipo de asesoría (chaqueta negra, camisa crema y botón dorado), sin nombre, y quienes visitan
+  nhRecepcion: { piel: PIEL.media, pelo: PELO.castano, peinado: 'melena', cuerpo: 'fino', arriba: 'blazer', arribaCol: UNIFORME_NH, abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.negras, brazoD: 'saluda', ojos: 'grandes', aros: '#E0B341', boca: 'dientes' },
+  nhAsesor: { piel: PIEL.trigo, pelo: PELO.negro, peinado: 'corto', arriba: 'blazer', arribaCol: UNIFORME_NH, abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.negras, piernas: 'sentado', brazoD: 'frente', brazoI: 'frente', lentes: 'rectos', barba: '#1A1613' },
+  nhAsesora: { piel: PIEL.morena, pelo: PELO.negro, peinado: 'mono', cuerpo: 'fino', arriba: 'blazer', arribaCol: UNIFORME_NH, abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.negras, piernas: 'sentado', brazoD: 'frente', brazoI: 'frente', ojos: 'grandes', aros: '#E0B341' },
+  nhMaqueta: { piel: PIEL.clara, pelo: PELO.rubio, peinado: 'cola', cuerpo: 'fino', arriba: 'blazer', arribaCol: UNIFORME_NH, abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.negras, brazoD: 'senala', brazoI: 'sostiene', objetoI: 'carpeta', ojos: 'grandes' },
+  nhGuia: { piel: PIEL.trigo, pelo: PELO.cafe, peinado: 'peinado', arriba: 'blazer', arribaCol: UNIFORME_NH, abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.negras, brazoD: 'sostiene', objeto: 'tablet', piernas: 'camina' },
+  nhEntrega: { piel: PIEL.media, pelo: PELO.castano, peinado: 'largo', cuerpo: 'fino', arriba: 'blazer', arribaCol: UNIFORME_NH, abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.negras, brazoD: 'saluda', brazoI: 'sostiene', objetoI: 'carpeta', ojos: 'felices', boca: 'dientes' },
+  nhAbuela: { piel: PIEL.rosada, pelo: PELO.canoso, peinado: 'rizado', cuerpo: 'fino', arriba: 'cardigan', arribaCol: ['#C9824E', '#A8683A', ['#F2F4F7']], abajo: 'pantalon', abajoCol: ['#3A4A5A', '#2A3848'], zapatos: Z.cafe, brazoD: 'senala', brazoI: 'abajo', objetoI: 'bolso', bolsoCol: '#6E4A30', lentes: 'redondos', rubor: '#E9967A' },
+  nhAbuelo: { piel: PIEL.clara, pelo: PELO.canoso, peinado: 'calvo', arriba: 'chaqueta', arribaCol: ['#4A5A4A', '#3A483A', ['#E8DFC8', null]], abajo: 'pantalon', abajoCol: ['#8B8272', '#6E6658'], zapatos: Z.cafe, brazoD: 'cadera', bigote: '#DADDE2', boca: 'media' },
+  nhSentada: { piel: PIEL.clara, pelo: PELO.castano, peinado: 'melena', cuerpo: 'fino', arriba: 'polera', arribaCol: ['#8E6BB8', '#6E4E96'], manga: 'larga', abajo: 'pantalon', abajoCol: JEAN, zapatos: Z.blancas, piernas: 'sentado', brazoD: 'frente', brazoI: 'frente', ojos: 'grandes', rubor: '#E9967A' }
 };
 // Medidas de todos los visitantes (los de siempre y los nuevos)
 for (const id of Object.keys(VISITANTES)) registrarMedida(id, medida(id, VISITANTES[id]()));
@@ -60,32 +72,27 @@ for (const [id, o] of Object.entries(NUEVOS)) {
 }
 
 // ───────── Piezas comunes ─────────
-// Piso, muros de atrás (en tramos, para el orden por profundidad), zócalo y canto de la losa
+// Piso, muros de atrás (en tramos, para el orden por profundidad), zócalo y canto de la losa. c.alto, c.zocaloAlto y
+// c.grosor cambian el alto de los muros, el del zócalo y el grosor del tope (por defecto, los de todas las salas).
 function base(E, L, W, D, c) {
+  const hm = c.alto ?? HM, hz = c.zocaloAlto ?? 0.12, g = c.grosor ?? 0.12;
   E.losa(-0.12, -0.12, W + 0.12, D + 0.12, 0, c.piso, -1000);
-  if (c.dibujo) L.piso(0, 0, c.dibujo, -55);
+  if (c.dibujo) L.piso(0, 0, c.dibujo, c.dibujoK ?? -55);
   const s = 0.5;
   for (let x = 0; x < W - 0.001; x += s) {
     const b = Math.min(W, x + s);
-    L.add(-50 + b * 0.01, L.poly([[x, 0, 0], [b, 0, 0], [b, 0, HM], [x, 0, HM]], `fill="${c.muroY}"`) +
-      L.poly([[x, 0, 0], [b, 0, 0], [b, 0, 0.12], [x, 0, 0.12]], `fill="${c.zocalo}"`) +
-      L.poly([[x, 0, HM], [b, 0, HM], [b, -0.12, HM], [x, -0.12, HM]], `fill="${c.tope}"`));
+    L.add(-50 + b * 0.01, L.poly([[x, 0, 0], [b, 0, 0], [b, 0, hm], [x, 0, hm]], `fill="${c.muroY}"`) +
+      L.poly([[x, 0, 0], [b, 0, 0], [b, 0, hz], [x, 0, hz]], `fill="${c.zocalo}"`) +
+      L.poly([[x, 0, hm], [b, 0, hm], [b, -g, hm], [x, -g, hm]], `fill="${c.tope}"`));
   }
   for (let y = 0; y < D - 0.001; y += s) {
     const b = Math.min(D, y + s);
-    L.add(-50 + b * 0.01, L.poly([[0, y, 0], [0, b, 0], [0, b, HM], [0, y, HM]], `fill="${c.muroX}"`) +
-      L.poly([[0, y, 0], [0, b, 0], [0, b, 0.12], [0, y, 0.12]], `fill="${c.zocalo}"`) +
-      L.poly([[0, y, HM], [0, b, HM], [-0.12, b, HM], [-0.12, y, HM]], `fill="${c.tope}"`));
+    L.add(-50 + b * 0.01, L.poly([[0, y, 0], [0, b, 0], [0, b, hm], [0, y, hm]], `fill="${c.muroX}"`) +
+      L.poly([[0, y, 0], [0, b, 0], [0, b, hz], [0, y, hz]], `fill="${c.zocalo}"`) +
+      L.poly([[0, y, hm], [0, b, hm], [-g, b, hm], [-g, y, hm]], `fill="${c.tope}"`));
   }
   // Cantos de los muros
-  L.add(-49, L.poly([[W, 0, 0], [W, 0, HM], [W, -0.12, HM], [W, -0.12, 0]], `fill="${c.canto}"`) + L.poly([[0, D, 0], [0, D, HM], [-0.12, D, HM], [-0.12, D, 0]], `fill="${c.canto}"`));
-}
-// Mostrador largo en tramos a lo largo de x (o de y), para que la gente de atrás y de adelante quede bien tapada
-function mostradorX(L, x0, x1, y0, d, h, col, s = 0.45) {
-  for (let x = x0; x < x1 - 0.001; x += s) { const b = Math.min(x1, x + s); L.caja(x, y0, 0, b - x, d, h, col); }
-}
-function mostradorY(L, x0, w, y0, y1, h, col, s = 0.45) {
-  for (let y = y0; y < y1 - 0.001; y += s) { const b = Math.min(y1, y + s); L.caja(x0, y, 0, w, b - y, h, col); }
+  L.add(-49, L.poly([[W, 0, 0], [W, 0, hm], [W, -g, hm], [W, -g, 0]], `fill="${c.canto}"`) + L.poly([[0, D, 0], [0, D, hm], [-g, D, hm], [-g, D, 0]], `fill="${c.canto}"`));
 }
 // Pantalla en el muro de atrás (y = 0) o en el izquierdo (x = 0) con una pantalla real del sistema
 function pantallaY(L, x0, zTop, w, h, img, o = {}) {
@@ -106,21 +113,6 @@ function planoXen(L, x, y0, zTop, ancho, alto, svg, k) {
   const [px, py] = L.P(x, y0, zTop); L.E.marca(x, y0, zTop); L.E.marca(x, y0 - ancho / 100, zTop - alto / 100);
   return L.add(k, `<g transform="matrix(0.32,-0.16,0,0.39,${r1(px)},${r1(py)})">${svg}</g>`);
 }
-// Farol de papel colgando del cielo (se mece con la animación loc-farol de la oficina)
-function farol(L, x, y, z, col = ['#E0524A', '#C8423A', '#A8352F'], k) {
-  k = k ?? x + y + 0.35;
-  L.anim('loc-farol', () => {
-    L.linea([[x, y, 2.55], [x, y, z + 0.33]], '#3A424E', 1.3, k + 0.1);
-    L.cil(x, y, z - 0.02, 0.09, 0.03, '#1E232A', '#1E232A', k + 0.101);
-    L.cil(x, y, z, 0.16, 0.3, col[0], col[1], k + 0.102);
-    const [cx, c0] = L.P(x, y, 0), rx = 0.16 * 32 * 1.41, ry = 0.16 * 16 * 1.41;
-    L.add(k + 0.103, [0.08, 0.17, 0.25].map(dz => { const cy = c0 - (z + dz) * 39; return `<path d="M${r1(cx - rx)} ${r1(cy)}A${r1(rx)} ${r1(ry)} 0 0 0 ${r1(cx + rx)} ${r1(cy)}" fill="none" stroke="${col[2]}" stroke-width="1"/>`; }).join(''));
-    L.cil(x, y, z + 0.3, 0.09, 0.03, '#1E232A', '#1E232A', k + 0.104);
-  });
-  L.luz(x, y, 0.01, 30, 15, 'rgba(242,120,90,.10)', -54);
-}
-// Piso de barra (asiento redondo)
-function piso(L, x, y, col = ['#C9A27A', '#8B6A4E']) { L.cil(x, y, 0, 0.035, 0.46, '#3A424E', '#2A3038'); L.cil(x, y, 0.46, 0.15, 0.06, col[0], col[1]); }
 // Punto de interés numerado: un alfiler con la punta en el objeto (en la capa de carteles, siempre arriba)
 function pin(E, pines, n, x, y, z, col, tinta = '#0B1726') {
   const [px, py] = P(x, y, z); E.marca(x, y, z + 1.1);
@@ -134,15 +126,50 @@ const flor = (cx, cy, r) => [0, 72, 144, 216, 288].map(a => { const t = (a - 90)
 // La sala sale en capas por profundidad (E.capas) y la gente que camina va aparte, con su ruta: escena.js la mete en la
 // capa que le toca mientras camina. camina(id, ruta, o): ruta = [[x, y, espera en segundos], …], se recorre en círculo
 // (para ir y volver se anotan los puntos de vuelta); la primera parada es donde se ve en las imágenes fijas.
-function montar(fn) {
+// Una sala propia, además, marca lo que se toca: zona(id, o) y lugar(id, x, y, z) (ver zonaDe()). Entonces devuelve
+// también lugares ({ id: [x, y] } en coordenadas del dibujo), zonas y gente ({ id: [x, y, alto] }: dónde pisa cada
+// persona, o dónde se sienta, y cuánto mide en el dibujo; así la oficina sabe dónde va su burbuja).
+export function montar(fn) {
   const E = escena(); E.txt = 1;
   const L = S.local(E, 0, 0, 0, false, 0);
-  const usados = new Set(), pines = [], caminan = [];
-  const pj = (id, x, y, z = 0, dir = 'd', e = EA, k) => { usados.add(id); L.pj(id, x, y, z, dir, e, k); };
-  const camina = (id, ruta, o = {}) => { usados.add(id); caminan.push(caminante(E, id, ruta, o)); };
-  const info = fn({ E, L, pj, camina, pin: (n, x, y, z, col, tinta) => pin(E, pines, n, x, y, z, col, tinta) });
+  const usados = new Set(), pines = [], caminan = [], lugares = {}, zonas = [], gente = {};
+  const quien = (id, x, y, z, e) => { const [px, py] = P(x, y, z); gente[id] = [r1(px), r1(py), r1(medidaDe(id).alto * e)]; };
+  const pj = (id, x, y, z = 0, dir = 'd', e = EA, k) => { usados.add(id); quien(id, x, y, z, e); L.pj(id, x, y, z, dir, e, k); };
+  const camina = (id, ruta, o = {}) => { usados.add(id); quien(id, ruta[0][0], ruta[0][1], 0, o.e || EA); caminan.push(caminante(E, id, ruta, o)); };
+  const lugar = (id, x, y, z = 0) => { lugares[id] = P(x, y, z).map(r1); };
+  const zona = (id, o) => { zonas.push(zonaDe(id, o)); if (o.lugar) lugar(id, ...o.lugar); };
+  const info = fn({ E, L, pj, camina, lugar, zona, pin: (n, x, y, z, col, tinta) => pin(E, pines, n, x, y, z, col, tinta) });
   const r = E.svg(18), { capas, arriba } = E.capas();
-  return { vb: r.vb, ancho: r.ancho, alto: r.alto, capas, arriba, caminan, pines, usados: [...usados], ...info };
+  const propia = zonas.length ? { lugares, zonas, gente } : {};
+  return { vb: r.vb, ancho: r.ancho, alto: r.alto, capas, arriba, caminan, pines, usados: [...usados], ...propia, ...info };
+}
+// Una zona que se toca: formas (en coordenadas del mundo) y, opcional, su lugar (donde va la etiqueta) y guia (el punto
+// del piso donde se para la asesora cuando el recorrido pasa por ahí).
+//   { piso: [[x, y], …], alto }   un pedazo de piso, levantado hasta alto (un mueble, un rincón con su gente)
+//   { plano: [[x, y, z], …] }     un plano (una pantalla o un cuadro en el muro)
+// Devuelve { id, silueta, suelo, caja, prof, guia }: silueta es el contorno que se toca (la envolvente de todo, en el
+// dibujo), suelo los contornos que se iluminan (el piso y los planos), caja el rectángulo que la encierra y prof su
+// profundidad (x + y del medio): si dos zonas se tapan en pantalla, manda la de adelante.
+function zonaDe(id, o) {
+  const pts = [], suelo = [];
+  let px = 0, n = 0;
+  for (const f of o.formas) {
+    const borde = f.piso ? f.piso.map(([x, y]) => [x, y, 0.02]) : f.plano;
+    if (f.piso) for (const [x, y] of f.piso) pts.push(P(x, y, 0), P(x, y, f.alto));
+    else for (const [x, y, z] of f.plano) pts.push(P(x, y, z));
+    if (!f.soloToque) suelo.push(puntos(borde.map(([x, y, z]) => P(x, y, z))));
+    for (const [x, y] of borde) { px += x + y; n++; }
+  }
+  const silueta = envolvente(pts), xs = silueta.map((p) => p[0]), ys = silueta.map((p) => p[1]);
+  return { id, silueta: puntos(silueta), suelo, caja: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)].map(r1), prof: r1(px / n), ...(o.guia ? { guia: o.guia } : {}) };
+}
+const puntos = (a) => a.map(([x, y]) => r1(x) + ',' + r1(y)).join(' ');
+// Envolvente convexa (cadena monótona) de puntos del dibujo
+function envolvente(a) {
+  const p = a.slice().sort((u, v) => u[0] - v[0] || u[1] - v[1]);
+  const cruz = (o, u, v) => (u[0] - o[0]) * (v[1] - o[1]) - (u[1] - o[1]) * (v[0] - o[0]);
+  const lado = (lista) => { const h = []; for (const q of lista) { while (h.length >= 2 && cruz(h[h.length - 2], h[h.length - 1], q) <= 0) h.pop(); h.push(q); } h.pop(); return h; };
+  return lado(p).concat(lado(p.slice().reverse()));
 }
 // Quien camina: su dibujo parado en el origen, su ruta y su paso (baldosas por segundo). Marca los bordes del dibujo
 // en su primera parada, como si estuviera parado ahí.
@@ -152,389 +179,295 @@ export function caminante(E, id, ruta, o = {}) {
   return { id, svg: andante(id, e), ruta: ruta.map(p => p.map(n => Math.round(n * 100) / 100)), vel: o.vel || 0.5 };
 }
 
-// ───────── Haru 360 · restaurante de cocina japonesa, Arica ─────────
-export function haru() {
-  return montar(({ E, L, pj, camina, pin }) => {
-    const W = 9.6, D = 7.0, ROJO = '#E0524A';
-    base(E, L, W, D, { piso: '#6E4A30', muroY: '#2E2623', muroX: '#262020', zocalo: '#1B1512', tope: '#40352F', canto: '#1B1512',
-      dibujo: `<g stroke="#5E3F28" stroke-width="2.4">${Array.from({ length: 26 }, (_, i) => `<path d="M${(i + 1) * 36} 0V${D * 100}"/>`).join('')}</g>` });
-    // La cocina detrás del noren, con el pase y sus platos listos
-    L.planoY(0.3, 0.02, 1.86, 140, 152, `<rect width="140" height="152" fill="#0B1726"/><rect y="112" width="140" height="40" fill="url(#luz-cocina)"/><rect x="-6" y="0" width="152" height="8" rx="2" fill="#8B6A4E"/>` +
-      [4, 49, 94].map(x => `<rect x="${x}" y="8" width="42" height="60" fill="#22407A"/><path d="M${x} 62H${x + 42}" stroke="#17325F" stroke-width="3"/>`).join('') + flor(70, 36, 8));
-    L.caja(0.35, 0.05, 0, 1.3, 0.34, 0.92, ACERO, 0.9);
-    for (const [x, c] of [[0.62, '#F29A6B'], [1.02, '#C8474A'], [1.4, '#E0B341']]) { L.cil(x, 0.22, 0.92, 0.13, 0.02, '#F2F4F7', '#C4D2E0', 1.3 + x * 0.01); L.luz(x, 0.22, 0.95, 5, 2.4, c, 1.31 + x * 0.01); }
-    // La pantalla de comandas de cocina (pantalla real de Haru 360)
-    pantallaY(L, 1.9, 1.9, 1.15, 0.7, '§M§recorte-haru-3-comandas.webp');
-    // La barra: listones de madera, repisa con botellas y el logo de Haru
-    L.planoY(3.15, 0.02, 1.98, 290, 198, `<rect width="290" height="198" fill="#4A3526"/>` + Array.from({ length: 29 }, (_, i) => `<rect x="${i * 10 + 2}" width="6" height="198" fill="#8B6A4E"/>`).join(''));
-    L.planoY(4.39, 0.03, 1.95, 44, 44, `<image href="§M§logo-haru.webp" width="44" height="44"/>`, -38);
-    L.caja(3.3, 0.0, 1.28, 2.6, 0.2, 0.05, MADERA, -37);
-    for (const x of [3.45, 3.65, 3.85, 4.05, 5.1, 5.3, 5.5, 5.7]) L.cil(x, 0.1, 1.33, 0.05, 0.26, x < 4.5 ? '#E8DFC8' : '#3E7A4E', x < 4.5 ? '#CFC2A3' : '#2F6440', -36 + x * 0.001);
-    mostradorX(L, 3.2, 6.0, 0.85, 0.6, 0.95, { t: '#E8D2A8', l: '#8B6A4E', r: '#6E5238' });
-    ['#F29A6B', '#C8474A', '#F2F4F7', '#F7B58E', '#F29A6B', '#C8474A'].forEach((c, i) => L.caja(3.62 + i * 0.22, 0.95, 0.95, 0.16, 0.13, 0.05, { t: c, l: c, r: c }));
-    const [gx0, gx1, gy0, gy1, gz0, gz1] = [3.5, 4.95, 0.9, 1.16, 0.95, 1.15], kv = 4.95 + 1.16 + 0.6;
-    L.add(kv, L.poly([[gx0, gy1, gz0], [gx1, gy1, gz0], [gx1, gy1, gz1], [gx0, gy1, gz1]], `fill="rgba(221,244,241,.16)" stroke="rgba(221,244,241,.6)" stroke-width="1"`) +
-      L.poly([[gx1, gy0, gz0], [gx1, gy1, gz0], [gx1, gy1, gz1], [gx1, gy0, gz1]], `fill="rgba(221,244,241,.1)" stroke="rgba(221,244,241,.45)" stroke-width="1"`) +
-      L.poly([[gx0, gy0, gz1], [gx1, gy0, gz1], [gx1, gy1, gz1], [gx0, gy1, gz1]], `fill="rgba(221,244,241,.12)" stroke="rgba(221,244,241,.6)" stroke-width="1"`));
-    L.caja(5.15, 1.08, 0.95, 0.42, 0.18, 0.03, { t: '#C9A27A', l: '#A8845E', r: '#8C6D4A' });
-    for (const [x, c] of [[5.25, '#F29A6B'], [5.36, '#C8474A'], [5.47, '#F29A6B']]) { L.luz(x, 1.17, 1.0, 3.2, 1.8, '#F2F4F7', 7.2); L.luz(x, 1.17, 1.02, 2.8, 1.4, c, 7.21); }
-    L.cil(5.78, 1.2, 0.95, 0.12, 0.08, '#F2F4F7', '#C4D2E0'); L.luz(5.78, 1.2, 1.03, 4, 2, '#E0B341', 7.95);
-    L.anim('loc-vapor', () => { L.linea([[5.75, 1.2, 1.06], [5.71, 1.2, 1.22], [5.78, 1.2, 1.38]], 'rgba(242,244,247,.7)', 1.5, 7.96); L.linea([[5.83, 1.2, 1.06], [5.87, 1.2, 1.22]], 'rgba(242,244,247,.55)', 1.3, 7.96); });
-    for (const x of [3.6, 4.45, 5.3]) piso(L, x, 1.9);
-    // La caja: mostrador contra el muro, con el punto de venta y la máquina de pago
-    L.planoY(6.45, 0.02, 1.9, 130, 40, `<rect width="130" height="40" rx="5" fill="#C8474A"/>` + txt(40, 28, 'CAJA', 20, '#F2F4F7'));
-    mostradorX(L, 6.35, 7.75, 0.85, 0.55, 0.95, { t: '#3A2E26', l: '#2A211C', r: '#1E1714' }, 0.47);
-    L.planoY(6.4, 1.401, 0.8, 130, 40, `<rect width="130" height="40" fill="#C8474A"/>` + Array.from({ length: 13 }, (_, i) => `<rect x="${i * 10 + 3}" y="0" width="4" height="40" fill="#A8352F"/>`).join(''), 9.4);
-    L.planoY(6.9, 0.9, 1.34, 44, 34, `<rect width="44" height="34" rx="3" fill="#0B1726"/><rect x="3" y="3" width="38" height="26" rx="2" fill="#123459"/><rect x="6" y="7" width="15" height="6" rx="1" fill="#E0524A"/><rect x="6" y="16" width="28" height="3" fill="#7FD8CF"/><rect x="6" y="22" width="19" height="3" fill="#7FD8CF"/>`, 9.1);
-    L.caja(7.02, 0.93, 0.95, 0.2, 0.1, 0.06, { t: '#1F2733', l: '#141A23', r: '#0B0B0B' }, 9.05);
-    L.caja(7.45, 1.1, 0.95, 0.12, 0.18, 0.03, { t: '#1C1C1E', l: '#141414', r: '#0B0B0B' }, 9.6);
-    // El retiro de delivery y, arriba, el panel del día (pantalla real)
-    mostradorX(L, 8.0, 9.45, 0.08, 0.46, 0.78, MADERA, 0.5);
-    for (const x of [8.12, 8.45, 8.78, 9.1]) { L.caja(x, 0.16, 0.78, 0.22, 0.17, 0.26, { t: '#D9B98C', l: '#C4A06E', r: '#A8845E' }); L.linea([[x + 0.05, 0.25, 1.04], [x + 0.11, 0.25, 1.1], [x + 0.17, 0.25, 1.04]], '#8C6D4A', 1.4, x + 0.4 + 0.52); }
-    L.planoY(8.25, 0.545, 0.66, 96, 18, `<rect width="96" height="18" rx="3" fill="#0B2B45"/>` + mono(8, 13, 'DELIVERY', 10, '#7FD8CF', ` textLength="80" lengthAdjust="spacingAndGlyphs"`), 9.1);
-    pantallaY(L, 8.05, 1.96, 1.35, 0.76, '§M§recorte-haru-1-dashboard.webp');
-    // La carta en pizarra, con el QR para pedir desde la mesa
-    L.planoX(2.75, 1.8, 185, 108, `<rect width="185" height="108" rx="5" fill="#1F2A26" stroke="#8B6A4E" stroke-width="6"/>` + txt(12, 26, 'CARTA', 15, '#F2C14E') +
-      ['Sushi', 'Ramen', 'Gyozas', 'Temaki', 'Yakimeshi'].map((t, i) => mono(12, 44 + i * 13, t, 9.5, '#E8DFC8') + `<path d="M${66} ${41 + i * 13}H112" stroke="#6B7A8C" stroke-width="1.4" stroke-dasharray="2 4"/>`).join('') +
-      `<rect x="124" y="20" width="50" height="50" rx="4" fill="#F2F4F7"/>` + [[1, 1], [9, 1], [1, 9], [6, 6], [10, 9], [5, 1], [1, 5], [10, 5], [3, 3], [8, 7]].map(([a, b]) => `<rect x="${128 + a * 3.4}" y="${24 + b * 3.4}" width="3.4" height="3.4" fill="#0B1726"/>`).join('') +
-      mono(122, 84, 'PIDE DESDE', 8, '#F2C14E') + mono(122, 96, 'TU MESA', 8, '#F2C14E'));
-    // La bodega: estantes con insumos y cajas en el piso
-    L.planoX(5.75, 1.9, 225, 180, `<rect width="225" height="180" rx="4" fill="#3A2E26"/>` + [40, 85, 130, 172].map(y => `<rect x="4" y="${y}" width="217" height="6" fill="#8B6A4E"/>`).join('') +
-      [[10, 10, 30, 30, '#E8DFC8', 'ARROZ'], [48, 14, 22, 26, '#C8474A', ''], [76, 14, 22, 26, '#C8474A', ''], [106, 8, 40, 32, '#D9B98C', 'NORI'], [154, 12, 26, 28, '#3E7A4E', ''], [186, 12, 26, 28, '#3E7A4E', ''],
-        [10, 52, 44, 33, '#D9B98C', 'SALMÓN'], [62, 58, 20, 27, '#1F2733', ''], [86, 58, 20, 27, '#1F2733', ''], [112, 50, 50, 35, '#E8DFC8', 'PALTA'], [170, 56, 40, 29, '#D9B98C', ''],
-        [12, 98, 36, 32, '#F2F4F7', ''], [56, 96, 56, 34, '#D9B98C', 'SOYA'], [120, 102, 22, 28, '#C8474A', ''], [148, 100, 60, 30, '#E8DFC8', 'SAKE'], [14, 142, 70, 30, '#D9B98C', 'VINAGRE'], [96, 146, 38, 26, '#F2F4F7', ''], [144, 140, 64, 32, '#D9B98C', 'JENGIBRE']]
-        .map(([x, y, w, h, c, t]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2" fill="${c}" stroke="#0B1726" stroke-width="1.2"/>` + (t ? mono(x + 3, y + h / 2 + 3, t, 6.4, '#0B1726') : '')).join(''));
-    L.caja(0.12, 5.15, 0, 0.48, 0.44, 0.34, { t: '#D9B98C', l: '#C4A06E', r: '#A8845E' });
-    L.caja(0.16, 5.2, 0.34, 0.4, 0.36, 0.28, { t: '#D9B98C', l: '#C4A06E', r: '#A8845E' });
-    L.cil(0.42, 6.35, 0, 0.2, 0.36, '#E8DFC8', '#CFC2A3');
-    // Mesas con ramen, nigiris y la carta con QR, bajo faroles de papel
-    const mesa = (x, y) => {
-      L.cil(x - 0.62, y, 0, 0.15, 0.42, '#C9A27A', '#8B6A4E'); L.cil(x + 0.62, y, 0, 0.15, 0.42, '#C9A27A', '#8B6A4E');
-      L.caja(x - 0.07, y - 0.07, 0, 0.14, 0.14, 0.58, { t: '#3A2E26', l: '#3A2E26', r: '#2A211C' });
-      L.caja(x - 0.4, y - 0.4, 0.58, 0.8, 0.8, 0.05, { t: '#C9A27A', l: '#A8845E', r: '#8C6D4A' });
-      const k = x + y + 0.35;
-      L.luz(x, y, 0.64, 22, 11, 'rgba(242,120,90,.16)', k);
-      L.cil(x - 0.14, y + 0.08, 0.63, 0.12, 0.08, '#F2F4F7', '#C4D2E0', k + 0.01); L.luz(x - 0.14, y + 0.08, 0.71, 4, 2, '#E0B341', k + 0.011);
-      L.linea([[x - 0.3, y - 0.1, 0.64], [x + 0.02, y - 0.16, 0.64]], '#3A2E26', 1.3, k + 0.012); L.linea([[x - 0.3, y - 0.06, 0.64], [x + 0.02, y - 0.12, 0.64]], '#3A2E26', 1.3, k + 0.013);
-      L.cil(x + 0.18, y + 0.14, 0.63, 0.13, 0.02, '#F2F4F7', '#C4D2E0', k + 0.014);
-      L.luz(x + 0.14, y + 0.14, 0.66, 3, 1.6, '#F29A6B', k + 0.015); L.luz(x + 0.22, y + 0.14, 0.66, 3, 1.6, '#C8474A', k + 0.016);
-      L.cil(x + 0.24, y - 0.2, 0.63, 0.035, 0.12, '#3A2E26', '#5A2A22', k + 0.017);
-      L.caja(x + 0.14, y + 0.3, 0.63, 0.16, 0.03, 0.17, { t: '#F2F4F7', l: '#F2F4F7', r: '#C4D2E0' }, k + 0.018);
-      L.planoY(x + 0.15, y + 0.331, 0.785, 14, 14, [[1, 1], [9, 1], [1, 9], [6, 6], [10, 9], [5, 1], [1, 5], [10, 5]].map(([a, b]) => `<rect x="${a}" y="${b}" width="3.4" height="3.4" fill="#0B1726"/>`).join(''), k + 0.019);
-    };
-    mesa(2.3, 3.2); mesa(4.75, 3.55); mesa(4.3, 5.85);
-    // Guirnalda de luces cálidas en lo alto del muro de la barra
-    L.planoY(3.15, 0.025, 1.97, 470, 30, `<path d="M0 6Q58 22 117 6T235 6T352 6T470 6" fill="none" stroke="#1B1512" stroke-width="1.6"/>` + Array.from({ length: 16 }, (_, i) => { const u = 15 + i * 29.5, v = 6 + 12 * Math.sin(Math.PI * ((u % 117.5) / 117.5)); return `<circle cx="${r1(u)}" cy="${r1(v + 3)}" r="3.4" fill="#F2C14E"/><circle cx="${r1(u)}" cy="${r1(v + 3)}" r="7" fill="#F2C14E" opacity=".18"/>`; }).join(''), -35);
-    // Bambú en la esquina de adelante y planta junto a la bodega
-    L.cil(9.3, 5.0, 0, 0.18, 0.34, '#3A424E', '#2A3038');
-    L.add(14.4, [[-0.05, 1.5], [0.03, 1.72], [0.1, 1.35]].map(([dx, h]) => { const [a, b] = L.P(9.3 + dx, 5.0, 0.32), [, c] = L.P(9.3 + dx, 5.0, h); return `<path d="M${r1(a)} ${r1(b)}V${r1(c)}" stroke="#4E8A55" stroke-width="2.8"/><path d="M${r1(a)} ${r1(c + 10)}l8 -5M${r1(a)} ${r1(c + 19)}l-8 -4M${r1(a)} ${r1(c + 30)}l7 -4" stroke="#6FAF6B" stroke-width="2.4" stroke-linecap="round"/>`; }).join(''));
-    L.planta(0.5, 6.55, 0, undefined, 0.8);
-    // Felpudo de la entrada
-    L.piso(8.0, 6.05, `<rect width="120" height="70" rx="8" fill="#3A2E26"/><rect x="8" y="8" width="104" height="54" rx="5" fill="none" stroke="#C8474A" stroke-width="3"/>` + txt(28, 44, 'HARU', 22, '#E8D2A8'), -54);
-    // La gente: los nueve perfiles del sistema, los comensales y Faro enseñando
-    pj('jefacocina', 1.35, 0.8, 0, 'd');
-    camina('mesera', [[3.35, 2.25, 2.5], [3.45, 3.0], [3.95, 4.95, 2.2], [3.45, 3.0]]);
-    pj('chef', 4.1, 0.45, 0, 'd');
-    pj('barman', 5.55, 0.45, 0, 'i');
-    pj('comensal6', 4.45, 1.9, 0.48, 'i');
-    pj('cajera', 7.05, 0.45, 0, 'd');
-    pj('comensal', 1.68, 3.2, 0.48, 'd'); pj('comensal2', 2.92, 3.2, 0.48, 'i');
-    pj('comensal3', 4.13, 3.55, 0.48, 'd');
-    pj('garzon', 5.6, 4.2, 0, 'i');
-    pj('faro', 6.35, 3.7, 0, 'i');
-    pj('encargado', 0.95, 4.45, 0, 'i');
-    pj('comensal4', 3.68, 5.85, 0.48, 'd'); pj('comensal5', 4.92, 5.85, 0.48, 'i');
-    pj('repartidor', 8.7, 2.85, 0, 'd');
-    pj('dueno', 7.5, 5.45, 0, 'i');
-    camina('aseo', [[1.8, 6.35, 3], [3.2, 6.55], [5.4, 6.55, 2.5], [3.2, 6.55]], { vel: 0.4 });
-    L.cil(1.35, 6.5, 0, 0.13, 0.22, '#17C3B2', '#0A8A7E');
-    // Un alfiler por módulo, en el mismo orden del video
-    pin(1, 8.72, 0.05, 1.62, ROJO, '#FFFFFF');
-    pin(2, 5.6, 4.2, 1.98, ROJO, '#FFFFFF');
-    pin(3, 2.47, 0.05, 1.58, ROJO, '#FFFFFF');
-    pin(4, 0.03, 4.9, 1.3, ROJO, '#FFFFFF');
-    pin(5, 7.12, 0.9, 1.22, ROJO, '#FFFFFF');
-    pin(6, 8.7, 2.85, 2.05, ROJO, '#FFFFFF');
-    pin(7, 7.5, 5.45, 1.98, ROJO, '#FFFFFF');
-    return { id: 'haru', ancho: W, fondo: D };
-  });
+// ───────── Nu Home 360 · casas modulares: su propia sala de ventas ─────────
+// Una sala propia (datos.js, salaPropia): se recorre sin números. Lo que se toca va con zona() y la gente habla sola
+// (sus frases están en datos.js). Crema, negro, madera y un dorado sobrio; los letreros en Cormorant Garamond.
+const SERIF = `font-family="'Cormorant Garamond','DejaVu Serif',serif"`;
+const serif = (x, y, t, fs, color, extra = '') => `<text x="${x}" y="${y}" ${SERIF} font-weight="600" font-size="${fs}" fill="${color}"${extra}>${t}</text>`;
+const NH = {
+  negro: { t: '#2B2724', l: '#1C1917', r: '#141110' }, carbon: { t: '#3A3530', l: '#2B2724', r: '#1F1B18' },
+  roble: { t: '#D6B68C', l: '#BD9A6C', r: '#A27F55' }, nogal: { t: '#9C7550', l: '#7E5C3C', r: '#654830' },
+  crema: { t: '#F4ECD8', l: '#E4D8BE', r: '#CFC1A3' }, acero: { t: '#B9BEC4', l: '#8F959C', r: '#71777E' },
+  oro: '#C9A227', oro2: '#E0B341', tinta: '#1C1917'
+};
+// Vidrio en tramos (para que el orden por profundidad no falle), con sus perfiles negros
+function vidrioY(L, y, x0, x1, h, dk = 0) {
+  for (let x = x0; x < x1 - 0.001; x += 0.5) {
+    const b = Math.min(x1, x + 0.5);
+    L.add((x + b) / 2 + y + dk, L.poly([[x, y, 0], [b, y, 0], [b, y, h], [x, y, h]], `fill="rgba(214,236,240,.20)" stroke="rgba(255,255,255,.35)" stroke-width=".6"`) +
+      L.poly([[x, y, h - 0.06], [b, y, h - 0.06], [b, y, h], [x, y, h]], `fill="${NH.tinta}"`) + L.poly([[x, y, 0], [b, y, 0], [b, y, 0.08], [x, y, 0.08]], `fill="${NH.tinta}"`) +
+      (Math.abs(b - Math.round(b)) < 0.01 ? L.poly([[b - 0.03, y, 0], [b + 0.03, y, 0], [b + 0.03, y, h], [b - 0.03, y, h]], `fill="${NH.tinta}"`) : ''));
+  }
 }
-
-// ───────── Fundos 360 · venta de parcelas ─────────
-const araucaria = (x, y, s) => { const q = (n) => r1(n * s); return `<path d="M${x} ${y}V${r1(y - 33 * s)}" stroke="#1F3B2A" stroke-width="${q(3)}"/>` +
-  `<path d="M${r1(x - 19 * s)} ${r1(y - 29 * s)}C${r1(x - 12 * s)} ${r1(y - 38 * s)} ${r1(x + 12 * s)} ${r1(y - 38 * s)} ${r1(x + 19 * s)} ${r1(y - 29 * s)}Z" fill="#1F3B2A"/>` +
-  `<path d="M${r1(x - 11 * s)} ${r1(y - 36 * s)}C${r1(x - 7 * s)} ${r1(y - 43 * s)} ${r1(x + 7 * s)} ${r1(y - 43 * s)} ${r1(x + 11 * s)} ${r1(y - 36 * s)}Z" fill="#1F3B2A"/>`; };
-export function fundos() {
-  return montar(({ E, L, pj, camina, pin }) => {
-    const W = 9.6, D = 7.0, VERDE = '#6FAF6B', ORO = '#C9A45C';
-    base(E, L, W, D, { piso: '#2B4A3B', muroY: '#1D3A2D', muroX: '#183226', zocalo: '#10241A', tope: '#2F5A45', canto: '#10241A',
-      dibujo: `<rect x="40" y="40" width="${W * 100 - 80}" height="${D * 100 - 80}" rx="18" fill="none" stroke="#335A47" stroke-width="5"/>` });
-    // El plano de loteo en el muro: disponibles, reservadas y escrituradas
-    let lotes = '';
-    const est = ['d', 'v', 'd', 'r', 'v', 'd', 'v', 'd', 'd', 'r', 'v', 'd'];
-    est.forEach((e, i) => {
-      const c = i % 6, f = Math.floor(i / 6), x = 14 + c * 44, y = 40 + f * 40;
-      const col = e === 'v' ? '#17446F' : e === 'r' ? '#E0B341' : '#9CCB8F';
-      lotes += `<rect x="${x}" y="${y}" width="40" height="34" fill="${col}" stroke="#0B1726" stroke-width="2"/>` + mono(x + 7, y + 22, i + 1, 12, e === 'v' ? '#F2F4F7' : '#0B1726');
-    });
-    L.planoY(0.3, 0.02, 1.86, 290, 150, `<rect width="290" height="150" rx="5" fill="#F4ECD8" stroke="#0B1726" stroke-width="4"/>` + txt(14, 27, 'LOTEO · FUNDO NORTE', 14, '#0E2A47') + lotes +
-      `<rect x="10" y="126" width="270" height="6" fill="#CFC2A3"/>` + [['#9CCB8F', 'Disponible'], ['#E0B341', 'Reservada'], ['#17446F', 'Escriturada']].map(([c, t], i) => `<rect x="${16 + i * 92}" y="136" width="9" height="9" fill="${c}" stroke="#0B1726" stroke-width="1.2"/>` + mono(29 + i * 92, 144, t, 8, '#0E2A47')).join(''));
-    // Dos pantallas reales de Fundos 360: los leads y el panel del negocio
-    pantallaY(L, 3.3, 1.92, 1.5, 0.98, '§M§recorte-fundos-1-leads.webp', { marco: '#0B1726' });
-    pantallaY(L, 5.0, 1.92, 1.5, 0.98, '§M§recorte-fundos-6-dashboard.webp', { marco: '#0B1726' });
-    // La ventana al fundo: volcán, araucarias y cerco
-    L.planoY(6.75, 0.02, 1.84, 255, 118, `<rect width="255" height="118" rx="6" fill="#1E5C8A" stroke="#3A2E26" stroke-width="6"/><circle cx="214" cy="28" r="11" fill="#F2C14E"/>` +
-      `<path d="M78 92L140 26H158L224 92Z" fill="#6B7A8C"/><path d="M140 26H158L170 38L161 43L151 35L142 43L130 37Z" fill="#F2F4F7"/>` +
-      `<path d="M4 86Q70 50 140 76T251 70V112H4Z" fill="#3E7A4E"/><path d="M4 98Q100 70 180 94T251 92V112H4Z" fill="#2F6440"/>` +
-      araucaria(30, 104, 1) + araucaria(54, 106, 0.72) + araucaria(228, 102, 0.9) +
-      `<path d="M92 106V95M114 106V95M136 106V95M158 106V95" stroke="#CFC2A3" stroke-width="3"/><path d="M88 99H162" stroke="#CFC2A3" stroke-width="2"/><path d="M127 0V118M0 59H255" stroke="#3A2E26" stroke-width="5"/>`);
-    // El emblema de Fundos y la pantalla del calendario de escrituras (real)
-    L.planoX(1.55, 1.9, 125, 92, `<rect width="125" height="92" rx="6" fill="#10241A" stroke="${ORO}" stroke-width="2.5"/><image href="§M§logo-fundos.webp" x="10" y="8" width="105" height="76"/>`);
-    pantallaX(L, 3.95, 1.9, 1.95, 1.05, '§M§recorte-fundos-4-escrituras.webp');
-    // El archivo de posventa: mueble con carpetas y el timbre del Conservador
-    L.caja(0.05, 4.55, 0, 0.55, 1.9, 1.25, { t: '#6E5238', l: '#5A4330', r: '#4A3526' }, 5.9);
-    planoXen(L, 0.6, 6.45, 1.18, 190, 110, Array.from({ length: 17 }, (_, i) => { const c = ['#17446F', '#E0B341', '#3E7A4E', '#8B3A3A'][i % 4]; return `<rect x="${6 + i * 10.8}" y="${i % 3 ? 8 : 14}" width="9" height="${i % 3 ? 46 : 40}" rx="1.5" fill="${c}" stroke="#0B1726" stroke-width="1"/>`; }).join('') +
-      `<rect x="4" y="60" width="182" height="4" fill="#3A2E26"/>` + Array.from({ length: 17 }, (_, i) => `<rect x="${6 + i * 10.8}" y="${i % 2 ? 68 : 72}" width="9" height="${i % 2 ? 38 : 34}" rx="1.5" fill="${['#F4ECD8', '#17446F', '#3E7A4E'][i % 3]}" stroke="#0B1726" stroke-width="1"/>`).join(''), 6.2);
-    L.caja(0.15, 5.1, 1.25, 0.34, 0.45, 0.02, { t: '#F4ECD8', l: '#E8DFC8', r: '#CFC2A3' }, 6.35);
-    L.piso(0.18, 5.14, `<rect width="28" height="38" fill="none"/><circle cx="14" cy="18" r="10" fill="none" stroke="#C8474A" stroke-width="2.4"/>` + mono(6, 21, 'CBR', 7, '#C8474A'), 6.36, 1.272);
-    L.cil(0.35, 5.8, 1.25, 0.07, 0.1, '#3A2E26', '#2A211C', 6.4); L.cil(0.35, 5.8, 1.35, 0.03, 0.12, '#8B6A4E', '#6E5238', 6.41);
-    // La maqueta del loteo: mesa de madera con el terreno por curvas de nivel, parcelas y pines
-    L.caja(1.5, 2.2, 0, 2.8, 1.7, 0.62, MADERA);
-    L.caja(1.6, 2.3, 0.62, 2.6, 1.5, 0.08, { t: '#4E8A55', l: '#3E7046', r: '#325C39' }, 5.95);
-    L.caja(1.85, 2.45, 0.7, 2.05, 1.2, 0.07, { t: '#6FAF6B', l: '#4E8A55', r: '#3E7046' }, 5.96);
-    L.piso(1.85, 2.45, `<g stroke="#2F6440" stroke-width="1.6" fill="none"><path d="M41 0V120M82 0V120M123 0V120M164 0V120M0 60H205"/></g>`, 5.97, 0.771);
-    L.caja(2.3, 2.7, 0.77, 1.2, 0.7, 0.06, { t: '#9CCB8F', l: '#6FAF6B', r: '#4E8A55' }, 5.98);
-    L.piso(2.3, 2.7, `<g stroke="#4E8A55" stroke-width="1.6" fill="none"><path d="M40 0V70M80 0V70M0 35H120"/></g>`, 5.99, 0.831);
-    const sobre = (x, y) => x > 2.3 && x < 3.5 && y > 2.7 && y < 3.4 ? 0.83 : x > 1.85 && x < 3.9 && y > 2.45 && y < 3.65 ? 0.77 : 0.7;
-    [[2.05, 2.6, '#17C3B2'], [2.75, 2.8, '#17446F'], [3.55, 2.9, '#17C3B2'], [2.6, 3.2, '#E0B341'], [3.2, 3.3, '#17C3B2'], [2.0, 3.4, '#E0B341'], [3.7, 3.5, '#17446F']].forEach(([x, y, c]) => {
-      const z = sobre(x, y), k = 6.0 + (x + y) * 0.01;
-      L.linea([[x, y, z], [x, y, z + 0.3]], '#0B1726', 1.6, k);
-      L.cil(x, y, z + 0.3, 0.065, 0.065, c, c, k + 0.001);
-    });
-    L.anim('loc-pin', () => { const x = 2.95, y = 3.0, z = sobre(x, y), k = 6.0 + (x + y) * 0.01; L.linea([[x, y, z], [x, y, z + 0.3]], '#0B1726', 1.6, k); L.cil(x, y, z + 0.3, 0.065, 0.065, '#E0B341', '#E0B341', k + 0.001); });
-    for (const [x, y] of [[1.75, 3.7], [4.0, 2.4], [4.05, 3.6]]) { const k = 6.0 + (x + y) * 0.01; L.cil(x, y, 0.7, 0.03, 0.09, '#6E5238', '#5A4330', k); L.luz(x, y, 0.94, 7, 7, '#2F6440', k + 0.001); L.luz(x, y, 1.0, 5, 5, '#4E8A55', k + 0.002); }
-    // La alfombra redonda: doce módulos, un solo recorrido
-    const MOD = ['Leads', 'Dashboard', 'Parcelas', 'Promociones', 'Reservas', 'Escrituras', 'Comisiones', 'Calendario', 'Facturación', 'Postventa', 'Clientes', 'Recursos'];
-    L.piso(1.3, 4.7, `<circle cx="110" cy="110" r="106" fill="#1F3B2E" stroke="${ORO}" stroke-width="3"/><circle cx="110" cy="110" r="84" fill="none" stroke="${ORO}" stroke-width="1.6" stroke-dasharray="3 5"/>` +
-      MOD.map((t, i) => { const a = (i / 12) * Math.PI * 2 - Math.PI / 2, x = 110 + Math.cos(a) * 84, y = 110 + Math.sin(a) * 84; return `<circle cx="${r1(x)}" cy="${r1(y)}" r="6.5" fill="${ORO}"/>`; }).join('') +
-      `<image href="§M§logo-fundos.webp" x="62" y="72" width="96" height="70"/>`, -54);
-    // El escritorio de reservas: la ficha con valor, promoción y reserva, y la tablet donde se firma
-    mostradorY(L, 8.05, 0.6, 3.9, 5.7, 0.8, { t: '#E8DFC8', l: '#8B6A4E', r: '#6E5238' }, 0.45);
-    L.caja(8.15, 4.3, 0.8, 0.4, 0.5, 0.03, { t: '#F4ECD8', l: '#E8DFC8', r: '#CFC2A3' });
-    L.piso(8.15, 4.3, mono(5, 14, 'RESERVA', 7, '#0E2A47') + `<rect x="5" y="22" width="30" height="3" fill="#8FA3B8"/><rect x="5" y="30" width="22" height="3" fill="#8FA3B8"/><path d="M6 42Q12 36 18 42T30 40" fill="none" stroke="#17446F" stroke-width="1.6"/>`, 13.0, 0.832);
-    L.caja(8.2, 5.0, 0.8, 0.36, 0.26, 0.025, { t: '#0B1726', l: '#0B1726', r: '#0B1726' });
-    L.piso(8.23, 5.03, `<image href="§M§recorte-fundos-3-reservas.webp" width="30" height="20" preserveAspectRatio="xMidYMid slice"/>`, 13.9, 0.83);
-    L.cil(8.35, 5.5, 0.8, 0.06, 0.12, '#F2F4F7', '#C4D2E0', 14.3);
-    // Teodolito de topógrafo junto a la ventana
-    L.linea([[8.35, 1.55, 1.08], [8.1, 1.4, 0]], '#B9C8D8', 2.4, 9.9); L.linea([[8.35, 1.55, 1.08], [8.6, 1.45, 0]], '#B9C8D8', 2.4, 9.9); L.linea([[8.35, 1.55, 1.08], [8.35, 1.87, 0]], '#B9C8D8', 2.4, 10.2);
-    L.caja(8.25, 1.45, 1.08, 0.22, 0.18, 0.2, { t: '#F2C14E', l: '#E0B341', r: '#B8902E' }, 10.3);
-    L.planta(9.2, 2.9, 0, undefined, 0.85); L.planta(4.9, 0.45, 0, undefined, 0.7);
-    // La gente
-    pj('vendedora', 3.3, 1.65, 0, 'd');
-    pj('senor', 2.35, 4.55, 0, 'd'); pj('senora', 3.15, 4.65, 0, 'i');
-    camina('jefaventas', [[5.75, 1.3, 3], [5.0, 2.1], [4.7, 2.9, 2.5], [5.0, 2.1]]);
-    pj('finanzas', 9.05, 4.65, 0, 'i');
-    pj('comprador', 7.45, 4.95, 0, 'd');
-    pj('maestro', 8.95, 2.1, 0, 'i');
-    camina('nino', [[1.2, 4.2, 2], [1.05, 2.1], [2.3, 1.85, 2.5], [1.05, 2.1]], { e: EA * 0.72, vel: 0.8 });
-    // Un alfiler por módulo del video
-    pin(1, 4.05, 0.05, 1.42, VERDE); pin(2, 2.95, 3.0, 1.15, VERDE); pin(3, 8.35, 4.55, 0.85, VERDE); pin(4, 0.03, 2.95, 1.35, VERDE);
-    pin(5, 0.35, 5.5, 1.3, VERDE); pin(6, 5.75, 0.05, 1.42, VERDE); pin(7, 2.4, 5.8, 0.03, VERDE);
-    return { id: 'fundos', ancho: W, fondo: D };
-  });
+function vidrioX(L, x, y0, y1, h, dk = 0) {
+  for (let y = y0; y < y1 - 0.001; y += 0.5) {
+    const b = Math.min(y1, y + 0.5);
+    L.add(x + (y + b) / 2 + dk, L.poly([[x, y, 0], [x, b, 0], [x, b, h], [x, y, h]], `fill="rgba(214,236,240,.16)" stroke="rgba(255,255,255,.3)" stroke-width=".6"`) +
+      L.poly([[x, y, h - 0.06], [x, b, h - 0.06], [x, b, h], [x, y, h]], `fill="${NH.tinta}"`) + L.poly([[x, y, 0], [x, b, 0], [x, b, 0.08], [x, y, 0.08]], `fill="${NH.tinta}"`) +
+      (Math.abs(b - Math.round(b)) < 0.01 ? L.poly([[x, b - 0.03, 0], [x, b + 0.03, 0], [x, b + 0.03, h], [x, b - 0.03, h]], `fill="${NH.tinta}"`) : ''));
+  }
 }
-
-// ───────── Nu Home 360 · casas modulares ─────────
+// Silla de escritorio (se dibuja antes que quien se sienta)
+function silla(L, x, y, col = NH.negro) {
+  L.cil(x, y, 0, 0.05, 0.4, '#3A3530', '#2B2724', x + y - 0.2);
+  L.caja(x - 0.22, y - 0.22, 0.4, 0.44, 0.44, 0.07, col, x + y - 0.15);
+}
+// Planta alta en macetero negro
+function plantaAlta(L, x, y, t = 1) {
+  L.cil(x, y, 0, 0.26 * t, 0.42 * t, '#2B2724', '#1C1917');
+  const [cx, cy] = L.P(x, y, 0.42 * t + 0.55 * t), k = x + y + 0.12;
+  L.add(k, `<path d="M${r1(cx)} ${r1(cy + 22 * t)}V${r1(cy - 10 * t)}" stroke="#4A3F2E" stroke-width="${r1(2 * t)}"/>` +
+    [[-12, 4, 11, '#3E7A4E'], [11, -2, 12, '#2F6440'], [-4, -14, 11, '#4E8A55'], [8, -22, 9, '#3E7A4E'], [-10, -26, 8, '#2F6440'], [2, 10, 9, '#4E8A55']]
+      .map(([dx, dy, r, c]) => `<ellipse cx="${r1(cx + dx * t)}" cy="${r1(cy + dy * t)}" rx="${r1(r * t)}" ry="${r1(r * 0.72 * t)}" fill="${c}" transform="rotate(${dx > 0 ? -24 : 24} ${r1(cx + dx * t)} ${r1(cy + dy * t)})"/>`).join(''));
+}
+// Casa en miniatura (los modelos): un módulo negro con su franja de madera y ventanas
+function casita(L, x, y, z, w, d, h, o = {}) {
+  L.caja(x, y, z, w, d, h, NH.negro, o.k);
+  const kk = (o.k ?? x + w / 2 + y + d / 2 + z * 0.5) + 0.01;
+  L.add(kk, L.poly([[x + w * 0.72, y + d + 0.002, z], [x + w, y + d + 0.002, z], [x + w, y + d + 0.002, z + h], [x + w * 0.72, y + d + 0.002, z + h]], `fill="#B98B5E"`) +
+    L.poly([[x + w * 0.12, y + d + 0.003, z + h * 0.3], [x + w * 0.55, y + d + 0.003, z + h * 0.3], [x + w * 0.55, y + d + 0.003, z + h * 0.78], [x + w * 0.12, y + d + 0.003, z + h * 0.78]], `fill="#F2C14E" opacity=".85"`) +
+    L.poly([[x + w + 0.002, y + d * 0.25, z + h * 0.3], [x + w + 0.002, y + d * 0.7, z + h * 0.3], [x + w + 0.002, y + d * 0.7, z + h * 0.78], [x + w + 0.002, y + d * 0.25, z + h * 0.78]], `fill="rgba(214,236,240,.7)"`));
+}
+// El paisaje del ventanal: la cordillera con nieve, el bosque y una casa en la pradera con la luz encendida
+function ventanal() {
+  const w = 840, h = 215, T = NH.tinta;
+  let s = `<defs><linearGradient id="nh-cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE0E8"/><stop offset=".75" stop-color="#F6E9CF"/></linearGradient></defs>`;
+  s += `<rect width="${w}" height="${h}" fill="url(#nh-cielo)"/>`;
+  s += `<path d="M0 118L70 70L118 96L190 44L250 88L320 58L392 100L470 52L540 90L610 60L690 96L760 66L840 94V${h}H0Z" fill="#9AAEBD"/>`;
+  s += `<path d="M190 44L172 60L186 58L198 66L210 56ZM470 52L452 68L468 64L482 72L492 62ZM320 58L306 70L320 68L332 74ZM760 66L746 78L760 76L772 82Z" fill="#F7F8FA"/>`;
+  s += `<path d="M0 150Q120 118 250 140T520 132T840 138V${h}H0Z" fill="#7F9A73"/>`;
+  s += `<path d="M0 176Q160 156 330 170T660 164T840 170V${h}H0Z" fill="#6A8A5E"/>`;
+  const pino = (x, y, a) => `<path d="M${x} ${y - a}L${x - a * 0.36} ${y}H${x + a * 0.36}Z" fill="#2F5A3E"/><path d="M${x} ${y - a * 0.72}L${x - a * 0.3} ${y - a * 0.12}H${x + a * 0.3}Z" fill="#3B6B4A"/>`;
+  for (let i = 0; i < 34; i++) { const x = i * 25 + (i % 3) * 6, a = 30 + ((i * 37) % 23); if (x > 540 && x < 700) continue; s += pino(x, 196 + (i % 2) * 6, a); }
+  s += `<rect x="560" y="150" width="120" height="34" fill="#2B2724"/><rect x="560" y="146" width="124" height="6" fill="${T}"/><rect x="650" y="152" width="30" height="32" fill="#B98B5E"/>` +
+    `<rect x="574" y="158" width="52" height="20" fill="#F2C14E"/><rect x="598" y="158" width="2" height="20" fill="${T}"/><rect x="548" y="184" width="150" height="5" fill="#8B6A4E"/>`;
+  s += `<path d="M0 ${h}V200Q300 190 840 200V${h}Z" fill="#587A4E"/>`;
+  s += `<path d="M60 0L10 ${h}H40L90 0ZM330 0L280 ${h}H296L346 0ZM620 0L570 ${h}H600L650 0Z" fill="#FFFFFF" opacity=".16"/>`;
+  s += [0, 210, 420, 630, 834].map(u => `<rect x="${u}" width="6" height="${h}" fill="${T}"/>`).join('') + `<rect width="${w}" height="6" fill="${T}"/><rect y="${h - 6}" width="${w}" height="6" fill="${T}"/>`;
+  return s;
+}
+// El living que se ve por el ventanal corredera de la casa piloto
+function living() {
+  const T = NH.tinta, O = NH.oro2;
+  let s = `<rect x="180" y="18" width="290" height="194" fill="#EFE2C8"/><rect x="180" y="168" width="290" height="44" fill="#C9A27A"/>` +
+    `<rect x="236" y="44" width="70" height="52" fill="#9AAEBD" stroke="#B98B5E" stroke-width="4"/><path d="M240 92L262 66L280 80L302 58V92Z" fill="#6A8A5E"/>` +
+    `<rect x="330" y="118" width="120" height="44" rx="8" fill="#6E757C"/><rect x="330" y="106" width="120" height="22" rx="8" fill="#5E656C"/><rect x="340" y="116" width="30" height="16" rx="4" fill="${O}"/>` +
+    `<path d="M395 18V58" stroke="${T}" stroke-width="2"/><path d="M380 58H410L402 70H388Z" fill="${O}"/><ellipse cx="395" cy="74" rx="26" ry="8" fill="#F2C14E" opacity=".35"/>` +
+    `<rect x="200" y="132" width="26" height="36" fill="#2B2724"/><circle cx="213" cy="120" r="16" fill="#3E7A4E"/><circle cx="222" cy="108" r="12" fill="#4E8A55"/>` +
+    `<path d="M186 18L236 212H262L212 18ZM380 18L430 212H444L394 18Z" fill="#FFFFFF" opacity=".22"/>`;
+  s += [180, 276, 372, 466].map(u => `<rect x="${u}" y="18" width="5" height="194" fill="${T}"/>`).join('') + `<rect x="180" y="16" width="291" height="5" fill="${T}"/>`;
+  return s;
+}
 export function nuhome() {
-  return montar(({ E, L, pj, camina, pin }) => {
-    const W = 9.8, D = 7.0, ORO = '#E0B341';
-    base(E, L, W, D, { piso: '#5E6670', muroY: '#3A3733', muroX: '#33302C', zocalo: '#24211E', tope: '#4A4640', canto: '#24211E',
-      dibujo: `<g stroke="#535A63" stroke-width="2.2">${Array.from({ length: 9 }, (_, i) => `<path d="M${(i + 1) * 100} 0V${D * 100}"/>`).join('')}${Array.from({ length: 6 }, (_, i) => `<path d="M0 ${(i + 1) * 100}H${W * 100}"/>`).join('')}</g>` });
-    // El diseñador 3D en pantalla grande (real) y el logo de Nu Home
-    pantallaY(L, 0.3, 1.92, 2.2, 1.24, '§M§recorte-nuhome-1-disenador.webp', { marco: '#1C1917' });
-    L.planoY(2.85, 0.02, 1.9, 150, 62, `<rect width="150" height="62" rx="4" fill="#1C1917"/><image href="§M§logo-nuhome.webp" x="37" y="4" width="76" height="54"/>`);
-    // Catálogo de módulos
-    const mod = (x, t, c) => `<rect x="${x}" y="6" width="34" height="50" rx="3" fill="#F2F4F7" stroke="#0B1726" stroke-width="1.6"/><path d="M${x + 7} 24L${x + 17} 18L${x + 27} 24V35L${x + 17} 41L${x + 7} 35Z" fill="${c}" stroke="#0B1726" stroke-width="1.2"/><path d="M${x + 7} 24L${x + 17} 30L${x + 27} 24M${x + 17} 30V41" fill="none" stroke="#0B1726" stroke-width="1.2"/>` + mono(x + 5, 52, t, 6.4, '#0B1726');
-    L.planoY(2.85, 0.02, 1.2, 150, 62, `<rect width="150" height="62" rx="4" fill="#4A4640"/>` + mod(4, 'M1', '#E9EEF2') + mod(41, 'M2', '#C9A27A') + mod(78, 'M3', '#7FD8CF') + mod(115, 'M4', ORO));
-    // La carta Gantt de la fábrica (real) y el portón de la fábrica
-    pantallaY(L, 4.75, 1.92, 2.3, 1.2, '§M§recorte-nuhome-5-fabricacion.webp', { marco: '#1C1917' });
-    L.planoY(7.3, 0.02, 1.95, 230, 195, `<rect width="230" height="195" fill="#6B7078"/>` + Array.from({ length: 19 }, (_, i) => `<path d="M0 ${8 + i * 10}H230" stroke="#555A61" stroke-width="3"/>`).join('') +
-      `<rect x="0" y="0" width="230" height="14" fill="#2A2724"/><rect x="70" y="20" width="90" height="22" rx="3" fill="#1C1917"/>` + mono(84, 36, 'FÁBRICA', 11, ORO) + `<path d="M0 195L20 175H210L230 195" fill="none" stroke="#E0B341" stroke-width="4" stroke-dasharray="10 8"/>`);
-    // El CRM de leads (real) y el informe de visita técnica, con su timbre
-    pantallaX(L, 2.45, 1.9, 2.0, 1.1, '§M§recorte-nuhome-2-leads.webp', { marco: '#1C1917' });
-    L.planoX(5.0, 1.88, 200, 118, `<rect width="200" height="118" rx="4" fill="#F4ECD8" stroke="#1C1917" stroke-width="4"/><image href="§M§recorte-nuhome-4-visita.webp" x="6" y="6" width="188" height="106" preserveAspectRatio="xMidYMid slice"/>` +
-      `<g transform="translate(150 92) rotate(-8)"><rect x="-34" y="-11" width="68" height="22" rx="3" fill="rgba(244,236,216,.9)" stroke="#2F8A4E" stroke-width="2.4"/>` + mono(-28, 5, 'FACTIBLE', 11, '#2F8A4E') + `</g>`);
-    // Muestras de materiales
-    L.caja(0.05, 5.6, 0, 0.45, 1.1, 0.9, { t: '#8B7A66', l: '#6E5F4E', r: '#5A4D40' });
-    planoXen(L, 0.5, 6.62, 0.86, 100, 76, [['#C9A27A', 6, 6], ['#8FA3B8', 52, 6], ['#F2F4F7', 6, 40], ['#3A424E', 52, 40]].map(([c, x, y]) => `<rect x="${x}" y="${y}" width="42" height="30" fill="${c}" stroke="#0B1726" stroke-width="1.4"/>`).join(''), 6.5);
-    // El escritorio del ejecutivo, con el cotizador en el notebook
-    mostradorY(L, 1.25, 0.65, 1.1, 2.6, 0.76, { t: '#E8DFC8', l: '#8B6A4E', r: '#6E5238' }, 0.5);
-    L.caja(1.35, 1.55, 0.76, 0.34, 0.46, 0.03, { t: '#1C1917', l: '#1C1917', r: '#0B0B0B' });
-    planoXen(L, 1.38, 2.0, 1.12, 44, 34, `<rect width="44" height="34" rx="2" fill="#1C1917"/><image href="§M§recorte-nuhome-3-cotizacion.webp" x="2" y="2" width="40" height="30" preserveAspectRatio="xMidYMid slice"/>`, 3.9);
-    // La casa armándose en la fábrica: plataforma, módulos y la grúa bajando el último
-    L.caja(4.9, 1.4, 0, 3.4, 2.2, 0.16, { t: '#B98B5E', l: '#9C7B55', r: '#7E6242' });
-    const ventanas = (x, y, z, w, d, h) => L.add(x + w + y + d + 0.4, L.poly([[x + 0.2, y + d + 0.001, z + 0.2], [x + 0.55, y + d + 0.001, z + 0.2], [x + 0.55, y + d + 0.001, z + h - 0.12], [x + 0.2, y + d + 0.001, z + h - 0.12]], `fill="#1C1917"`) +
-      L.poly([[x + w + 0.001, y + 0.22, z + 0.2], [x + w + 0.001, y + 0.62, z + 0.2], [x + w + 0.001, y + 0.62, z + h - 0.12], [x + w + 0.001, y + 0.22, z + h - 0.12]], `fill="rgba(127,216,207,.55)"`));
-    L.caja(5.15, 1.6, 0.16, 1.3, 1.0, 0.7, { t: '#E9EEF2', l: '#C4D2E0', r: '#9FB2C4' }); ventanas(5.15, 1.6, 0.16, 1.3, 1.0, 0.7);
-    L.caja(6.55, 1.6, 0.16, 1.3, 1.0, 0.7, { t: '#C9A27A', l: '#A8845E', r: '#8C6D4A' }); ventanas(6.55, 1.6, 0.16, 1.3, 1.0, 0.7);
-    L.caja(6.55, 1.6, 0.86, 1.3, 1.0, 0.56, { t: '#F2F4F7', l: '#D5E2EE', r: '#B9C8D8' }, 6.55 + 0.65 + 1.6 + 0.5 + 0.8); ventanas(6.55, 1.6, 0.86, 1.3, 1.0, 0.56);
-    L.add(12.3, L.poly([[5.15, 2.75, 0.165], [6.45, 2.75, 0.165], [6.45, 3.5, 0.165], [5.15, 3.5, 0.165]], `fill="none" stroke="#F2F4F7" stroke-width="1.6" stroke-dasharray="5 4"/>`));
-    L.caja(8.75, 1.0, 0, 0.14, 0.14, 2.2, { t: ORO, l: '#B8902E', r: '#8C6D22' }, 9.9);
-    L.linea([[8.82, 1.07, 2.15], [5.82, 3.12, 2.15]], ORO, 4, 11.5);
+  return montar(({ E, L, pj, camina, lugar, zona }) => {
+    const W = 20, D = 14, HM = 2.6;
+    const { negro: NEGRO, carbon: CARBON, roble: ROBLE, nogal: NOGAL, crema: CREMA, acero: ACERO, oro: ORO, oro2: ORO2, tinta: TINTA } = NH;
+    // Piso de tablas de roble, con las uniones corridas
+    let tablas = '';
+    for (let v = 25; v < D * 100; v += 25) tablas += `<path d="M0 ${v}H${W * 100}" stroke="#C7AC84" stroke-width="1.6"/>`;
+    for (let v = 0, i = 0; v < D * 100; v += 25, i++) for (let u = (i % 3) * 70 + 40; u < W * 100; u += 210) tablas += `<path d="M${u} ${v}V${v + 25}" stroke="#C7AC84" stroke-width="1.4"/>`;
+    base(E, L, W, D, { piso: '#D9C29E', muroY: '#EFE6D3', muroX: '#E0D4BC', zocalo: TINTA, tope: '#CDBF9F', canto: '#B8A987', dibujo: tablas, dibujoK: -56, alto: HM, zocaloAlto: 0.1, grosor: 0.14 });
+
+    // ── Así se arma tu casa: el taller al fondo, detrás del vidrio ──
+    const FX = 7.4, FY = 4.6;
+    L.piso(0, 0, `<rect width="${FX * 100}" height="${FY * 100}" fill="#B7B2A7"/>` +
+      `<g stroke="#A8A398" stroke-width="1.4">${Array.from({ length: 7 }, (_, i) => `<path d="M${(i + 1) * 100} 0V${FY * 100}"/>`).join('')}${Array.from({ length: 4 }, (_, i) => `<path d="M0 ${(i + 1) * 100}H${FX * 100}"/>`).join('')}</g>` +
+      `<rect x="70" y="100" width="500" height="260" fill="none" stroke="${ORO2}" stroke-width="6" stroke-dasharray="26 16"/>`, -54);
+    // Muros del taller: plancha acanalada
+    L.planoY(0, 0.02, HM, FX * 100, HM * 100, `<rect width="${FX * 100}" height="${HM * 100}" fill="#8E9398"/>` + Array.from({ length: 37 }, (_, i) => `<rect x="${i * 20 + 4}" width="8" height="${HM * 100}" fill="#80858A"/>`).join(''), -45);
+    L.planoX(FY, HM, FY * 100, HM * 100, `<rect width="${FY * 100}" height="${HM * 100}" fill="#7F8489"/>` + Array.from({ length: 23 }, (_, i) => `<rect x="${i * 20 + 4}" width="8" height="${HM * 100}" fill="#72777C"/>`).join(''), -45);
+    // El portón de despacho y la carta Gantt del taller (pantalla real de Nu Home 360)
+    L.planoX(4.0, 2.25, 300, 225, `<rect width="300" height="225" fill="#5E6368"/>` + Array.from({ length: 21 }, (_, i) => `<path d="M0 ${10 + i * 10}H300" stroke="#4E5358" stroke-width="3"/>`).join('') +
+      `<rect width="300" height="16" fill="${TINTA}"/><rect x="80" y="30" width="140" height="30" rx="3" fill="${TINTA}"/>` + mono(98, 51, 'DESPACHO', 17, ORO2) +
+      `<g>${Array.from({ length: 15 }, (_, i) => `<path d="M${i * 22} 225L${i * 22 + 12} 211H${i * 22 + 23}L${i * 22 + 11} 225Z" fill="${ORO2}"/>`).join('')}</g>`, -40);
+    pantallaY(L, 4.55, 2.4, 2.5, 1.25, '§M§recorte-nuhome-5-fabricacion.webp', { k: -39, marco: TINTA, pie: false });
+    // El módulo que se está armando: su base, la estructura, la mitad ya forrada en madera y la aislación a la vista
+    L.caja(1.0, 1.3, 0, 4.6, 2.2, 0.16, ACERO, 4.3);
+    const mx0 = 1.15, mx1 = 5.45, my0 = 1.45, my1 = 3.35, mz0 = 0.16, mz1 = 2.05;
+    L.add(4.35, L.poly([[mx0, my0, mz0], [mx1, my0, mz0], [mx1, my0, mz1], [mx0, my0, mz1]], `fill="#3A3530"`) + L.poly([[mx0, my0, mz0], [mx0, my1, mz0], [mx0, my1, mz1], [mx0, my0, mz1]], `fill="#2B2724"`));
+    L.planoY(mx0, my1 + 0.004, mz1, (mx1 - mx0) * 100, (mz1 - mz0) * 100,
+      `<rect width="${(mx1 - mx0) * 100}" height="${(mz1 - mz0) * 100}" fill="#F2D98A"/>` + Array.from({ length: 12 }, (_, i) => `<path d="M${i * 18} 0L${i * 18 + 18} ${(mz1 - mz0) * 100}" stroke="#E0B341" stroke-width="3"/>`).join('') +
+      `<rect width="220" height="${(mz1 - mz0) * 100}" fill="#B98B5E"/>` + Array.from({ length: 11 }, (_, i) => `<path d="M${i * 20 + 10} 0V${(mz1 - mz0) * 100}" stroke="#9C7550" stroke-width="3"/>`).join('') +
+      `<rect x="70" y="40" width="110" height="80" fill="#6E8B98" stroke="${TINTA}" stroke-width="6"/>` +
+      [0, 108, 216, 324, 424].map(u => `<rect x="${u}" width="6" height="${(mz1 - mz0) * 100}" fill="${TINTA}"/>`).join('') + `<rect width="${(mx1 - mx0) * 100}" height="6" fill="${TINTA}"/>`, 5.62);
+    planoXen(L, mx1 + 0.004, my1, mz1, (my1 - my0) * 100, (mz1 - mz0) * 100,
+      `<rect width="${(my1 - my0) * 100}" height="${(mz1 - mz0) * 100}" fill="#F2D98A"/>` + Array.from({ length: 6 }, (_, i) => `<path d="M${i * 34} 0L${i * 34 + 34} ${(mz1 - mz0) * 100}" stroke="#E0B341" stroke-width="3"/>`).join('') +
+      [0, 92, 184].map(u => `<rect x="${u}" width="6" height="${(mz1 - mz0) * 100}" fill="${TINTA}"/>`).join('') + `<rect width="${(my1 - my0) * 100}" height="6" fill="${TINTA}"/>`, 5.63);
+    L.add(5.64, L.poly([[mx0, my0, mz1], [mx1, my0, mz1], [mx1, my1, mz1], [mx0, my1, mz1]], `fill="none" stroke="${TINTA}" stroke-width="2.4"`) +
+      [1.9, 2.65, 3.4, 4.15, 4.9].map(x => L.poly([[x, my0, mz1], [x + 0.04, my0, mz1], [x + 0.04, my1, mz1], [x, my1, mz1]], `fill="${TINTA}"`)).join(''));
+    // El puente grúa bajando el panel del techo
+    L.caja(0.35, 2.3, 0, 0.14, 0.14, 2.4, { t: ORO2, l: '#B8902E', r: '#8C6D22' }, 2.9);
+    L.caja(6.85, 2.3, 0, 0.14, 0.14, 2.4, { t: ORO2, l: '#B8902E', r: '#8C6D22' }, 9.4);
+    L.caja(0.35, 2.3, 2.4, 6.64, 0.14, 0.12, { t: ORO2, l: '#B8902E', r: '#8C6D22' }, 9.66);
     L.anim('loc-grua', () => {
-      L.linea([[5.82, 3.12, 2.13], [5.82, 3.12, 1.62]], '#3A424E', 1.4, 11.6);
-      L.caja(5.3, 2.8, 1.2, 1.05, 0.65, 0.42, { t: '#E9EEF2', l: '#C4D2E0', r: '#9FB2C4' }, 11.7);
+      L.caja(2.3, 1.7, 2.12, 1.8, 1.35, 0.07, { t: '#3A3530', l: '#2B2724', r: '#1F1B18' }, 9.6);
+      L.linea([[3.2, 2.37, 2.28], [3.2, 2.37, 2.19]], '#3A424E', 1.4, 9.61);
+      L.caja(3.0, 2.22, 2.28, 0.4, 0.3, 0.12, NEGRO, 9.62);
     });
-    // La casa entregada: dos módulos sobre su radier, puerta y el letrero de entregada
-    L.caja(6.75, 5.0, 0, 2.6, 0.95, 0.1, { t: '#8FA3B8', l: '#6B7A8C', r: '#56687B' });
-    L.caja(6.85, 5.08, 0.1, 1.2, 0.8, 0.66, { t: '#E9EEF2', l: '#C4D2E0', r: '#9FB2C4' }); ventanas(6.85, 5.08, 0.1, 1.2, 0.8, 0.66);
-    L.caja(8.1, 5.08, 0.1, 1.15, 0.8, 0.66, { t: '#C9A27A', l: '#A8845E', r: '#8C6D4A' });
-    L.add(13.95, L.poly([[8.45, 5.881, 0.1], [8.8, 5.881, 0.1], [8.8, 5.881, 0.64], [8.45, 5.881, 0.64]], `fill="#1C1917"`) + L.poly([[8.72, 5.882, 0.36], [8.76, 5.882, 0.36], [8.76, 5.882, 0.4], [8.72, 5.882, 0.4]], `fill="${ORO}"`));
-    L.planoY(7.05, 5.886, 0.6, 58, 20, `<rect width="58" height="20" rx="3" fill="${ORO}"/>` + mono(5, 14, 'ENTREGADA', 7.8, '#1C1917'), 13.9);
-    // Bucle construyendo la siguiente rebanada en su notebook
-    L.caja(2.95, 3.25, 0, 0.7, 0.5, 0.95, { t: '#E8DFC8', l: '#8B6A4E', r: '#6E5238' });
-    L.caja(3.07, 3.33, 0.95, 0.4, 0.3, 0.02, { t: '#1C1917', l: '#1C1917', r: '#0B0B0B' });
-    L.planoY(3.07, 3.35, 1.25, 40, 28, `<rect width="40" height="28" rx="2" fill="#0B1726"/><path d="M5 8H22M5 14H30M5 20H18" stroke="#7FD8CF" stroke-width="2.4"/>`, 7.25);
-    L.planta(9.35, 3.8, 0, undefined, 0.8);
-    // La gente
-    pj('clienta', 1.7, 0.75, 0, 'd');
-    pj('ejecutivo', 0.75, 1.8, 0, 'd');
-    pj('cliente', 2.35, 2.1, 0, 'i');
-    pj('ingeniera', 0.95, 3.85, 0, 'd');
-    pj('bucle', 3.95, 3.5, 0, 'i');
-    camina('maestro', [[8.2, 3.9, 2.5], [5.3, 4.0, 2.5]]);
-    pj('soldador', 8.95, 2.0, 0, 'i');
-    pj('clienta2', 3.4, 5.55, 0, 'd');
-    pj('papa', 7.55, 6.5, 0, 'd'); pj('mama', 8.35, 6.6, 0, 'i'); 
-    camina('nino', [[6.85, 6.6, 2], [5.3, 6.25, 1.5], [6.2, 4.5, 2], [6.4, 5.9]], { e: EA * 0.72, vel: 0.8 });
-    // Un alfiler por paso del video
-    pin(1, 1.4, 0.05, 1.3, ORO); pin(2, 0.03, 1.45, 1.35, ORO); pin(3, 2.35, 2.1, 1.98, ORO); pin(4, 0.03, 4.0, 1.3, ORO);
-    pin(5, 5.9, 0.05, 1.32, ORO); pin(6, 3.4, 5.55, 1.98, ORO); pin(7, 7.55, 6.5, 2.05, ORO);
+    // Quienes trabajan en el taller
+    pj('soldador', 3.15, 3.7, 0, 'd');
+    pj('maestro', 4.4, 4.05, 0, 'i');
+    // El vidrio del taller, con su letrero
+    vidrioY(L, FY, 0, 5.7, 2.2, 0.05); vidrioY(L, FY, 6.75, FX, 2.2, 0.05);
+    L.caja(5.65, FY - 0.05, 0, 0.08, 0.1, 2.2, NEGRO, 5.7 + FY + 0.3); L.caja(6.7, FY - 0.05, 0, 0.08, 0.1, 2.2, NEGRO, 6.75 + FY + 0.3);
+    L.caja(5.65, FY - 0.05, 2.12, 1.13, 0.1, 0.08, NEGRO, 6.2 + FY + 0.31);
+    vidrioX(L, FX, 0, FY, 2.2, 0.05);
+    L.planoY(0.2, FY + 0.01, 2.12, 360, 52, serif(0, 30, '<tspan font-style="italic">Así se arma</tspan> tu casa', 35, '#FFFFFF') + `<rect x="2" y="42" width="110" height="3.5" fill="${ORO2}"/>`, 0.2 + 1.8 + FY + 0.4);
+    zona('taller', { formas: [{ piso: [[0, 0], [FX, 0], [FX, FY], [0, FY]], alto: HM }], lugar: [3.3, 2.4, 2.55], guia: [6.2, 5.35] });
+
+    // ── El muro de la marca y el ventanal hacia el paisaje ──
+    L.planoY(7.85, 0.025, 2.35, 330, 185, `<rect width="330" height="185" rx="3" fill="${TINTA}"/><image href="§M§logo-nuhome.webp" x="95" y="22" width="140" height="99"/>` +
+      `<rect x="120" y="140" width="90" height="2.5" fill="${ORO}"/>`, -39);
+    L.caja(7.9, 0.1, 0, 3.2, 0.5, 0.42, NOGAL, 7.9 + 1.6 + 0.35);
+    L.planoY(11.5, 0.025, 2.45, 840, 215, ventanal(), -39);
+
+    // ── El salón: donde se espera, se conversa y se entregan las llaves ──
+    L.piso(12.1, 1.3, `<rect width="330" height="210" rx="12" fill="#E7D8BA"/><rect x="14" y="14" width="302" height="182" rx="8" fill="none" stroke="#CDB892" stroke-width="4"/>`, -52);
+    L.caja(12.4, 0.35, 0, 2.7, 0.3, 0.86, CARBON, 12.4 + 1.35 + 0.5);
+    L.caja(12.4, 0.65, 0, 2.7, 0.72, 0.42, CARBON, 12.4 + 1.35 + 1.0);
+    L.caja(12.2, 0.35, 0, 0.2, 1.02, 0.6, CARBON, 12.3 + 0.86 + 0.1); L.caja(15.1, 0.35, 0, 0.2, 1.02, 0.6, CARBON, 15.2 + 0.86 + 0.2);
+    L.caja(12.6, 0.72, 0.42, 0.62, 0.5, 0.08, { t: '#C9824E', l: '#A8683A', r: '#8C5530' }, 13.5 + 0.95 + 0.3);
+    L.cil(13.8, 2.35, 0, 0.5, 0.36, '#B98B5E', '#8B6A4E');
+    L.cil(13.62, 2.28, 0.36, 0.1, 0.12, '#F4ECD8', '#CFC1A3', 16.1); L.luz(13.62, 2.28, 0.48, 4, 2, '#3E7A4E', 16.11);
+    L.caja(13.9, 2.25, 0.36, 0.36, 0.26, 0.03, { t: TINTA, l: TINTA, r: '#000' }, 16.2);
+    pj('nhSentada', 13.3, 0.95, 0.42, 'd', EA, 14.9);
+    plantaAlta(L, 11.95, 0.55, 1.1);
+    plantaAlta(L, 19.45, 0.55, 1.15);
+    pj('clienta2', 15.7, 2.8, 0, 'i');
+    zona('salon', { formas: [{ piso: [[11.6, 0.12], [16.25, 0.12], [16.25, 3.5], [11.6, 3.5]], alto: 2.2 }, { plano: [[11.5, 0.03, 0.3], [16.3, 0.03, 0.3], [16.3, 0.03, 2.45], [11.5, 0.03, 2.45]], soloToque: true }],
+      lugar: [13.9, 1.6, 2.05], guia: [14.6, 4.3] });
+    // La entrega: la mesa, las llaves y la familia que recibe su casa
+    L.cil(17.9, 2.3, 0, 0.06, 0.72, '#2B2724', '#1C1917');
+    L.cil(17.9, 2.3, 0.72, 0.6, 0.05, '#D6B68C', '#A27F55');
+    L.cil(17.65, 2.18, 0.77, 0.07, 0.25, '#F4ECD8', '#CFC1A3', 20.4); L.luz(17.65, 2.18, 1.04, 9, 7, '#E8A0B4', 20.41); L.luz(17.6, 2.14, 1.08, 5, 4, '#F2F4F7', 20.42);
+    L.caja(18.05, 2.35, 0.77, 0.34, 0.24, 0.02, { t: '#F4ECD8', l: '#E4D8BE', r: '#CFC1A3' }, 20.43);
+    pj('nhEntrega', 18.9, 1.55, 0, 'i');
+    pj('papa', 17.1, 3.25, 0, 'd');
+    pj('mama', 18.3, 3.55, 0, 'i');
+    zona('entrega', { formas: [{ piso: [[16.6, 1.0], [19.6, 1.0], [19.6, 4.0], [16.6, 4.0]], alto: 2.2 }], lugar: [17.9, 2.4, 2.05] });
+
+    // ── Terminaciones: el muro de muestras y su cajonera ──
+    L.planoX(6.95, 2.25, 205, 175, `<rect width="205" height="175" rx="4" fill="#F7F1E4" stroke="#CDBF9F" stroke-width="3"/>` + serif(14, 34, 'Terminaciones', 28, TINTA) + `<rect x="15" y="42" width="60" height="3" fill="${ORO}"/>` +
+      [['#2B2724', 14, 58], ['#B98B5E', 62, 58], ['#8B6A4E', 110, 58], ['#E9EEF2', 158, 58], ['#6E757C', 14, 112], ['#D6B68C', 62, 112], ['#9AAEBD', 110, 112], ['#F4ECD8', 158, 112]]
+        .map(([c, x, y]) => `<rect x="${x}" y="${y}" width="40" height="46" rx="2" fill="${c}" stroke="${TINTA}" stroke-width="1.6"/>`).join('') +
+      `<path d="M62 58l40 46M72 58l30 34M62 70l28 34" stroke="#9C7550" stroke-width="2"/>`, -38);
+    L.caja(0.08, 4.95, 0, 0.55, 1.95, 0.88, NOGAL, 0.35 + 5.9);
+    for (const [y, c] of [[5.15, '#2B2724'], [5.55, '#B98B5E'], [5.95, '#E9EEF2'], [6.4, '#6E757C']]) L.caja(0.18, y, 0.88, 0.32, 0.26, 0.05, { t: c, l: c, r: c }, 0.35 + y + 0.6);
+    pj('nhAbuela', 1.15, 5.75, 0, 'i');
+    pj('nhAbuelo', 1.35, 6.75, 0, 'i');
+    zona('terminaciones', { formas: [{ plano: [[0.02, 6.95, 0.5], [0.02, 4.9, 0.5], [0.02, 4.9, 2.25], [0.02, 6.95, 2.25]] }, { piso: [[0.08, 4.95], [0.7, 4.95], [0.7, 6.95], [0.08, 6.95]], alto: 0.93 }],
+      lugar: [0.05, 5.9, 2.45], guia: [2.3, 6.1] });
+    // La ingeniera, entre el taller y la asesoría
+    pj('ingeniera', 7.95, 5.55, 0, 'i');
+
+    // ── Asesoría: la pantalla grande del diseñador, los escritorios y la mesa de maqueta ──
+    L.planoX(13.2, 2.35, 190, 44, serif(4, 32, 'Asesoría', 34, TINTA) + `<rect x="6" y="40" width="54" height="3" fill="${ORO}"/>`, -38);
+    pantallaX(L, 10.6, 2.35, 3.1, 1.74, '§M§recorte-nuhome-1-disenador.webp', { k: -38, marco: TINTA });
+    zona('disenador', { formas: [{ plano: [[0.02, 10.6, 0.61], [0.02, 7.5, 0.61], [0.02, 7.5, 2.35], [0.02, 10.6, 2.35]] }], lugar: [0.05, 9.05, 2.5] });
+    const escritorio = (x0, y0, img, k) => {
+      L.caja(x0, y0, 0.7, 1.5, 0.8, 0.05, ROBLE, k);
+      L.caja(x0 + 0.05, y0 + 0.05, 0, 0.08, 0.7, 0.7, NEGRO, k - 0.4); L.caja(x0 + 1.37, y0 + 0.05, 0, 0.08, 0.7, 0.7, NEGRO, k - 0.1);
+      L.caja(x0 + 0.62, y0 + 0.3, 0.75, 0.06, 0.06, 0.2, NEGRO, k + 0.02);
+      L.planoY(x0 + 0.33, y0 + 0.37, 1.32, 64, 42, `<rect width="64" height="42" rx="3" fill="${TINTA}"/><image href="${img}" x="3" y="3" width="58" height="36" preserveAspectRatio="xMidYMid slice"/>`, k + 0.03);
+      L.caja(x0 + 0.95, y0 + 0.45, 0.75, 0.3, 0.2, 0.02, { t: '#F4ECD8', l: '#E4D8BE', r: '#CFC1A3' }, k + 0.04);
+    };
+    silla(L, 1.95, 8.4); pj('nhAsesor', 1.95, 8.4, 0.47, 'd');
+    escritorio(2.45, 8.0, '§M§recorte-nuhome-3-cotizacion.webp', 11.3);
+    silla(L, 4.4, 8.4); pj('tomacafe', 4.4, 8.4, 0.47, 'i');
+    silla(L, 4.3, 10.1); pj('nhAsesora', 4.3, 10.1, 0.47, 'd');
+    escritorio(4.8, 9.7, '§M§recorte-nuhome-2-leads.webp', 15.0);
+    silla(L, 6.75, 10.1); pj('comensal2', 6.75, 10.1, 0.47, 'i');
+    zona('asesoria', { formas: [{ piso: [[1.65, 7.9], [4.7, 7.9], [4.7, 9.55], [7.05, 9.55], [7.05, 10.65], [4.0, 10.65], [4.0, 8.9], [1.65, 8.9]], alto: 2.05 }],
+      lugar: [4.35, 9.25, 2.35], guia: [6.45, 8.3] });
+    // La mesa de maqueta: el terreno a escala y la casa encima, como en el diseñador
+    L.caja(2.3, 11.35, 0, 0.12, 0.12, 0.8, NEGRO, 13.9); L.caja(4.95, 11.35, 0, 0.12, 0.12, 0.8, NEGRO, 16.5);
+    L.caja(2.3, 12.85, 0, 0.12, 0.12, 0.8, NEGRO, 15.4); L.caja(4.95, 12.85, 0, 0.12, 0.12, 0.8, NEGRO, 18.0);
+    L.caja(2.2, 11.3, 0.8, 2.95, 1.75, 0.08, { t: '#F1E7D2', l: '#1C1917', r: '#141110' }, 16.0);
+    L.piso(2.3, 11.4, `<rect width="275" height="155" fill="#E9DDC4"/>` + Array.from({ length: 10 }, (_, i) => `<path d="M${(i + 1) * 25} 0V155" stroke="#D5C6A6" stroke-width="1.6"/>`).join('') +
+      Array.from({ length: 5 }, (_, i) => `<path d="M0 ${(i + 1) * 25}H275" stroke="#D5C6A6" stroke-width="1.6"/>`).join('') +
+      `<rect x="40" y="30" width="190" height="95" fill="none" stroke="${ORO}" stroke-width="3" stroke-dasharray="10 6"/>`, 16.01, 0.881);
+    casita(L, 2.95, 11.75, 0.88, 1.15, 0.42, 0.3, { k: 16.3 });
+    casita(L, 3.2, 11.78, 1.18, 0.55, 0.38, 0.26, { k: 16.6 });
+    L.caja(4.15, 11.9, 0.88, 0.5, 0.36, 0.03, ROBLE, 16.4);
+    for (const [x, y] of [[2.55, 12.75], [4.7, 12.6], [2.6, 11.55]]) { L.cil(x, y, 0.88, 0.03, 0.12, '#4A3F2E', '#4A3F2E', 17); const [cx, cy] = L.P(x, y, 1.12); L.add(17.01 + x * 0.001, `<circle cx="${r1(cx)}" cy="${r1(cy)}" r="7" fill="#3E7A4E"/><circle cx="${r1(cx + 3)}" cy="${r1(cy - 3)}" r="4.5" fill="#4E8A55"/>`); }
+    pj('nhMaqueta', 1.85, 12.15, 0, 'd');
+    pj('clienta', 5.55, 11.75, 0, 'i');
+    pj('cliente', 5.65, 12.75, 0, 'i');
+    zona('maqueta', { formas: [{ piso: [[2.2, 11.3], [5.15, 11.3], [5.15, 13.05], [2.2, 13.05]], alto: 1.45 }], lugar: [3.7, 12.15, 1.75] });
+
+    // ── La casa piloto: un módulo de verdad, con su terraza y su pérgola ──
+    const HX = 10.2, HY = 5.6, HW = 6.0, HD = 2.5, HZ = 0.22, HH = 2.12;
+    L.caja(HX + 0.1, HY + 0.1, 0, HW - 0.2, HD - 0.2, HZ, { t: '#9A9C9E', l: '#86888A', r: '#6E7072' }, HX + HW / 2 + HY + HD / 2 - 0.2);
+    L.caja(HX, HY, HZ, HW, HD, HH, { t: '#2B2724', l: '#23201D', r: '#191614' }, HX + HW / 2 + HY + HD / 2 + 0.3);
+    const kH = HX + HW / 2 + HY + HD / 2 + 0.31;
+    // Fachada del lado de la terraza: forro negro vertical, el ventanal corredera con el living adentro y la franja de madera
+    L.planoY(HX, HY + HD + 0.004, HZ + HH, HW * 100, HH * 100,
+      `<rect width="${HW * 100}" height="${HH * 100}" fill="#23201D"/>` + Array.from({ length: 60 }, (_, i) => `<path d="M${i * 10 + 5} 0V${HH * 100}" stroke="#1A1715" stroke-width="2"/>`).join('') +
+      `<rect x="40" y="40" width="80" height="70" fill="#C8D6DC" stroke="${TINTA}" stroke-width="5"/><path d="M80 40V110" stroke="${TINTA}" stroke-width="3"/>` +
+      living() + `<rect x="490" y="0" width="110" height="${HH * 100}" fill="#B98B5E"/>` + Array.from({ length: 11 }, (_, i) => `<path d="M${495 + i * 10} 0V${HH * 100}" stroke="#9C7550" stroke-width="2.4"/>`).join(''), kH);
+    planoXen(L, HX + HW + 0.004, HY + HD, HZ + HH, HD * 100, HH * 100,
+      `<rect width="${HD * 100}" height="${HH * 100}" fill="#191614"/>` + Array.from({ length: 25 }, (_, i) => `<path d="M${i * 10 + 5} 0V${HH * 100}" stroke="#121010" stroke-width="2"/>`).join('') +
+      `<rect x="60" y="42" width="130" height="100" fill="#D5E2E6" stroke="${TINTA}" stroke-width="5"/><path d="M125 42V142" stroke="${TINTA}" stroke-width="3"/><path d="M70 42L100 142H116L86 42Z" fill="#FFFFFF" opacity=".35"/>`, kH);
+    // Techo con canto de madera
+    L.caja(HX - 0.08, HY - 0.08, HZ + HH, HW + 0.16, HD + 0.16, 0.12, { t: '#2B2724', l: '#B98B5E', r: '#9C7550' }, kH + 0.02);
+    // Terraza de madera y la pérgola
+    const TX0 = 10.9, TX1 = 15.1, TY0 = HY + HD, TY1 = 11.0;
+    L.caja(TX0, TY0, 0, TX1 - TX0, TY1 - TY0, HZ, NOGAL, (TX0 + TX1) / 2 + (TY0 + TY1) / 2 - 1.2);
+    L.piso(TX0, TY0, Array.from({ length: 21 }, (_, i) => `<path d="M${i * 20 + 10} 0V${(TY1 - TY0) * 100}" stroke="#7E5C3C" stroke-width="2"/>`).join(''), (TX0 + TX1) / 2 + (TY0 + TY1) / 2 - 1.19, HZ + 0.002);
+    L.cil(11.8, 9.3, HZ, 0.07, 0.42, '#1C1917', '#1C1917'); L.caja(11.45, 8.95, HZ + 0.42, 0.7, 0.7, 0.05, { t: '#D6B68C', l: '#A27F55', r: '#8B6A4E' }, 11.8 + 9.3 + 0.4);
+    for (const [x, y] of [[11.2, 10.2], [12.5, 10.3]]) { L.caja(x - 0.25, y - 0.25, HZ, 0.5, 0.5, 0.4, { t: '#E8DDC7', l: '#CFC1A3', r: '#B8A987' }, x + y); L.caja(x - 0.25, y - 0.3, HZ + 0.4, 0.5, 0.08, 0.4, { t: '#E8DDC7', l: '#CFC1A3', r: '#B8A987' }, x + y + 0.01); }
+    const PZ = HZ + HH - 0.05;
+    for (const x of [TX0 + 0.05, TX1 - 0.13]) L.caja(x, TY1 - 0.13, HZ, 0.08, 0.08, PZ - HZ, NEGRO, x + TY1 + 0.25);
+    L.caja(TX0 + 0.05, TY1 - 0.13, PZ, TX1 - TX0 - 0.1, 0.1, 0.1, NEGRO, (TX0 + TX1) / 2 + TY1 + 0.6);
+    for (let x = TX0 + 0.2; x < TX1 - 0.1; x += 0.35) L.caja(x, TY0, PZ + 0.1, 0.05, TY1 - TY0, 0.06, NEGRO, x + TY1 + 0.62);
+    // Quienes miran la casa: un asesor con una pareja, y el niño que corre por la terraza
+    pj('ejecutivo', 15.6, 9.05, 0, 'i');
+    pj('senora', 13.75, 11.55, 0, 'd');
+    pj('senor', 14.7, 11.8, 0, 'd');
+    camina('nino', [[12.2, 9.6, 1.5], [13.9, 9.9, 1], [14.2, 8.7, 1.5], [12.4, 8.8], [12.2, 9.6]], { e: EA * 0.72, vel: 0.7 });
+    // El letrero de la casa
+    L.caja(15.55, 10.95, 0, 0.5, 0.1, 1.35, NEGRO, 15.8 + 11.0 + 0.6);
+    L.planoY(15.57, 11.056, 1.32, 46, 60, serif(4, 22, 'Casa', 20, '#F4ECD8') + serif(4, 42, 'piloto', 20, '#F4ECD8', ' font-style="italic"') + `<rect x="5" y="50" width="22" height="2" fill="${ORO}"/>`, 15.8 + 11.06 + 0.61);
+    zona('piloto', { formas: [{ piso: [[10.1, 5.5], [16.3, 5.5], [16.3, 8.2], [15.2, 8.2], [15.2, 11.1], [10.8, 11.1], [10.8, 8.2], [10.1, 8.2]], alto: 2.5 }],
+      lugar: [13.2, 6.85, 2.95], guia: [16.7, 8.9] });
+
+    // ── Los modelos, en maqueta, junto a la entrada ──
+    const pedestal = (x, y, k) => { L.caja(x, y, 0, 0.9, 0.9, 0.86, CREMA, k); };
+    pedestal(11.5, 12.55, 24.5); casita(L, 11.62, 12.8, 0.86, 0.66, 0.36, 0.27, { k: 24.7 });
+    pedestal(12.75, 12.55, 25.7); casita(L, 12.87, 12.8, 0.86, 0.66, 0.36, 0.27, { k: 25.9 }); casita(L, 13.05, 12.82, 1.13, 0.36, 0.32, 0.22, { k: 26.1 });
+    pedestal(14.0, 12.55, 26.9); casita(L, 14.1, 12.62, 0.86, 0.52, 0.34, 0.27, { k: 27.1 }); L.caja(14.1, 12.97, 0.86, 0.52, 0.34, 0.03, NOGAL, 27.2);
+    for (const [x, t] of [[11.5, 'Un módulo'], [12.75, 'Dos pisos'], [14.0, 'Con terraza']]) L.planoY(x + 0.08, 13.452, 0.62, 74, 18, `<rect width="74" height="18" rx="2" fill="${TINTA}"/>` + serif(6, 13, t, 12, '#F4ECD8'), x + 13.5 + 0.9);
+    [[11.5, 1.2], [12.75, 1.4], [14.0, 1.2]].forEach(([x, h], i) => zona('modelo-' + (i + 1), { formas: [{ piso: [[x, 12.55], [x + 0.9, 12.55], [x + 0.9, 13.45], [x, 13.45]], alto: h }], lugar: [x + 0.45, 13.0, h + 0.45] }));
+
+    // ── La entrada: el felpudo, el mesón de recepción y quien te recibe ──
+    L.piso(15.3, 12.9, `<rect width="150" height="90" rx="8" fill="${TINTA}"/><rect x="8" y="8" width="134" height="74" rx="5" fill="none" stroke="${ORO}" stroke-width="2.4"/>` + serif(75, 54, 'NÜHOME', 23, '#F4ECD8', ' letter-spacing="1.5" text-anchor="middle"'), -52);
+    pj('nhRecepcion', 17.9, 10.95, 0, 'i');
+    L.caja(16.7, 11.4, 0, 2.6, 0.6, 1.02, NEGRO, 16.7 + 1.3 + 11.7 + 0.5);
+    L.caja(16.62, 11.34, 1.02, 2.76, 0.72, 0.06, ROBLE, 16.7 + 1.3 + 11.7 + 0.52);
+    L.planoY(16.95, 12.004, 0.86, 210, 60, `<image href="§M§logo-nuhome.webp" x="72" y="2" width="66" height="47" opacity=".95"/>`, 16.7 + 1.3 + 11.7 + 0.51);
+    L.cil(19.05, 11.62, 1.08, 0.1, 0.16, '#F4ECD8', '#CFC1A3', 31.5); L.luz(19.05, 11.62, 1.24, 6, 3, '#3E7A4E', 31.51);
+    plantaAlta(L, 19.55, 10.4, 1.05);
+    zona('recepcion', { formas: [{ piso: [[16.5, 10.55], [19.45, 10.55], [19.45, 12.15], [16.5, 12.15]], alto: 2.2 }], lugar: [18.0, 11.7, 1.6], guia: [15.85, 12.35] });
+    lugar('entrada', 15.9, 12.4, 0.9);
+    // Una asesora que acompaña a recorrer (en el recorrido, se para junto a cada zona)
+    camina('nhGuia', [[16.95, 6.2, 2.5], [16.8, 9.7, 2], [16.95, 6.2]], { vel: 0.45 });
+
+    // ── El rincón de BiPlot: chico, junto a la asesoría ──
+    L.caja(8.05, 12.55, 0, 1.15, 0.72, 1.02, { t: '#0E2A47', l: '#0B1F36', r: '#081628' }, 8.6 + 12.9 + 0.5);
+    L.caja(8.05, 12.55, 1.02, 1.15, 0.72, 0.04, { t: '#17C3B2', l: '#0A8A7E', r: '#087066' }, 8.6 + 12.9 + 0.52);
+    L.planoY(8.15, 13.274, 0.9, 95, 60, `<rect x="4" y="6" width="22" height="22" rx="5" fill="#0E2A47" stroke="#17C3B2" stroke-width="1.6"/><path d="M9 11V23H22" stroke="#3F6DA0" stroke-width="1.4" fill="none"/><circle cx="11" cy="20" r="1.8" fill="#17C3B2"/><circle cx="15" cy="17" r="1.8" fill="#17C3B2"/><circle cx="20.5" cy="12.5" r="2.2" fill="#FF6B4A"/>` +
+      txt(32, 17, 'Hecho con', 9, '#A9B7C6') + txt(32, 28, 'BiPlot', 11, '#FFFFFF') + `<rect x="4" y="38" width="86" height="3" rx="1.5" fill="#17C3B2"/>`, 8.6 + 13.3 + 0.53);
+    L.caja(8.62, 12.88, 1.06, 0.06, 0.05, 0.08, { t: TINTA, l: TINTA, r: '#000' }, 8.6 + 12.9 + 0.6);
+    L.caja(8.26, 12.9, 1.13, 0.78, 0.05, 0.47, { t: TINTA, l: TINTA, r: '#000' }, 8.6 + 12.9 + 0.62);
+    // En la pantalla del quiosco, el video de Nu Home 360 (su póster está en media/, junto a media/salas/)
+    L.planoY(8.28, 12.952, 1.58, 74, 43, `<rect width="74" height="43" rx="2" fill="${TINTA}"/><image href="§M§../nuhome-360-h.jpg" x="2.5" y="2.5" width="69" height="38" preserveAspectRatio="xMidYMid slice"/><circle cx="37" cy="21.5" r="8" fill="rgba(11,23,38,.7)"/><path d="M34.4 17.3V25.7L41.2 21.5Z" fill="#FFFFFF"/>`, 8.6 + 12.95 + 0.63);
+    // Bucle (E5 · Desarrollo), porque Nu Home 360 está en desarrollo, mirando el quiosco
+    pj('bucle', 9.7, 12.95, 0, 'i');
+    zona('biplot', { formas: [{ piso: [[7.95, 12.45], [9.3, 12.45], [9.3, 13.4], [7.95, 13.4]], alto: 1.65 }], lugar: [8.62, 12.9, 1.95], guia: [10.45, 12.2] });
+
     return { id: 'nuhome', ancho: W, fondo: D };
   });
 }
 
-// ───────── Eleven 360 · gimnasio, Arica ─────────
-const OSC = { t: '#3A424E', l: '#2A3038', r: '#1E232A' };
-export function eleven() {
-  return montar(({ E, L, pj, camina, pin }) => {
-    const W = 9.4, D = 7.0, CIAN = '#17C3B2';
-    base(E, L, W, D, { piso: '#23282E', muroY: '#1B232C', muroX: '#161D25', zocalo: '#10161C', tope: '#2A3644', canto: '#10161C',
-      dibujo: `<rect x="30" y="30" width="${W * 100 - 60}" height="${D * 100 - 60}" fill="none" stroke="${CIAN}" stroke-width="3" opacity=".55"/>` +
-        `<path d="M40 330H420M40 360H420" stroke="#2E353F" stroke-width="3"/>` });
-    // Espejo, el horario de clases y el nombre en el muro
-    L.planoY(0.3, 0.02, 1.86, 280, 165, `<rect width="280" height="165" fill="#9FC3D9" stroke="#0B1726" stroke-width="4"/><path d="M93 0V165M186 0V165" stroke="#7FA6BF" stroke-width="3"/>` +
-      `<path d="M20 155L75 10M44 155L99 10M120 155L165 40M200 155L245 20" stroke="#DDF4F1" stroke-width="7" opacity=".55"/>`);
-    L.planoY(3.35, 0.02, 1.86, 175, 112, `<rect width="175" height="112" rx="6" fill="#0B2B45" stroke="#0B1726" stroke-width="4"/>` + mono(12, 20, 'CLASES DE HOY', 10.5, '#7FD8CF') + mono(118, 20, 'CUPOS', 8.5, '#B9C8D8') +
-      [['07:00', 'Funcional', '12/20', .6], ['12:30', 'Yoga', '8/15', .53], ['18:00', 'BXO', '16/18', .89], ['19:30', 'Spinning', '18/20', .9]].map(([h, c, q, f], i) => mono(12, 42 + i * 19, h, 9, '#B9C8D8') + txt(52, 42 + i * 19, c, 10.5, '#F2F4F7') +
-        `<rect x="116" y="${33 + i * 19}" width="46" height="11" rx="5" fill="#123459"/><rect x="116" y="${33 + i * 19}" width="${r1(46 * f)}" height="11" rx="5" fill="${CIAN}"/>` + mono(120, 42 + i * 19, q, 7.6, '#0B1726')).join(''));
-    L.planoY(5.55, 0.02, 1.95, 360, 60, txt(18, 44, 'ELEVEN 360', 40, '#F2F4F7') + `<rect x="276" y="10" width="70" height="42" rx="6" fill="${CIAN}"/>` + txt(290, 44, '11', 34, '#0B1726'));
-    L.planoY(5.55, 0.02, 1.25, 360, 22, `<rect width="360" height="22" fill="#2A3644"/>` + mono(14, 15, 'CLUB FITNESS  ·  BXO  ·  ARICA', 10, '#7FD8CF'));
-    // Bicicletas de spinning
-    const bici = (x, y) => {
-      L.caja(x - 0.45, y - 0.12, 0, 0.9, 0.24, 0.08, OSC);
-      L.caja(x - 0.2, y - 0.04, 0.08, 0.08, 0.08, 0.62, OSC);
-      L.caja(x - 0.34, y - 0.1, 0.7, 0.3, 0.2, 0.06, { t: '#1F2733', l: '#141A23', r: '#0B1726' });
-      L.caja(x + 0.3, y - 0.04, 0.08, 0.08, 0.08, 0.8, OSC);
-      L.caja(x + 0.22, y - 0.18, 0.86, 0.1, 0.36, 0.05, { t: '#B9C8D8', l: '#8FA3B8', r: '#6B7A8C' });
-      L.planoY(x - 0.05, y + 0.13, 0.62, 44, 44, `<circle cx="22" cy="22" r="20" fill="#2A3038" stroke="${CIAN}" stroke-width="4"/><circle cx="22" cy="22" r="5" fill="${CIAN}"/>`, x + y + 0.12);
-    };
-    for (const x of [6.1, 7.35, 8.6]) bici(x, 1.45);
-    // Rack de mancuernas en el muro izquierdo y banca
-    L.caja(0.1, 1.0, 0, 0.55, 2.6, 0.72, OSC);
-    for (let i = 0; i < 6; i++) { const y = 1.15 + i * 0.42; L.caja(0.2, y, 0.72, 0.35, 0.12, 0.08, { t: '#B9C8D8', l: '#8FA3B8', r: '#6B7A8C' }, 0.8 + y); L.cil(0.2, y + 0.06, 0.72, 0.1, 0.14, i % 2 ? CIAN : '#35679A', i % 2 ? '#0A8A7E' : '#17446F', 0.81 + y); L.cil(0.55, y + 0.06, 0.72, 0.1, 0.14, i % 2 ? CIAN : '#35679A', i % 2 ? '#0A8A7E' : '#17446F', 0.82 + y); }
-    // La tienda: repisas con batidos, toallas y poleras, y el mesón de recepción
-    L.planoX(6.6, 1.88, 230, 150, `<rect width="230" height="150" rx="5" fill="#1F2733"/>` + [44, 92, 140].map(y => `<rect x="6" y="${y}" width="218" height="5" fill="#6B7A8C"/>`).join('') +
-      [0, 1, 2, 3, 4, 5].map(i => `<rect x="${14 + i * 34}" y="16" width="20" height="28" rx="4" fill="${i % 2 ? CIAN : '#F2F4F7'}"/><rect x="${14 + i * 34}" y="12" width="20" height="6" rx="2" fill="#0B1726"/>`).join('') +
-      [0, 1, 2, 3].map(i => `<rect x="${12 + i * 52}" y="58" width="40" height="34" rx="3" fill="${['#E0524A', '#F2F4F7', '#17446F', CIAN][i]}"/>` + txt(22 + i * 52, 82, '11', 14, i === 1 ? '#0B1726' : '#F2F4F7')).join('') +
-      [0, 1, 2, 3, 4].map(i => `<rect x="${14 + i * 42}" y="112" width="30" height="28" rx="3" fill="${['#F2F4F7', '#9FD3E6', '#F2F4F7', '#9FD3E6', '#F2F4F7'][i]}"/>`).join('') + mono(8, 12, 'TIENDA', 8, '#7FD8CF'));
-    mostradorX(L, 0.85, 2.95, 5.35, 0.6, 0.95, { t: '#E8EEF4', l: '#35679A', r: '#27507C' }, 0.42);
-    L.planoY(0.9, 5.951, 0.8, 200, 34, `<rect width="200" height="34" fill="${CIAN}"/>` + txt(52, 24, 'RECEPCIÓN', 16, '#0B1726'), 9.2);
-    L.cil(1.25, 5.62, 0.95, 0.07, 0.2, CIAN, '#0A8A7E', 7.9); L.cil(1.45, 5.62, 0.95, 0.07, 0.2, '#F2F4F7', '#C4D2E0', 7.95);
-    L.caja(2.35, 5.45, 0.95, 0.34, 0.26, 0.025, { t: '#0B1726', l: '#0B1726', r: '#0B1726' });
-    // Trotadora y pesas rusas en el centro
-    L.caja(3.6, 2.6, 0, 1.55, 0.72, 0.2, OSC);
-    const franjas = (xs, clase) => `<g class="${clase}">` + xs.map(x => L.poly([[x, 2.67, 0.215], [x, 3.25, 0.215]], `stroke="#2F3945" stroke-width="2"`)).join('') + '</g>';
-    L.add(6.85, L.poly([[3.68, 2.67, 0.21], [4.9, 2.67, 0.21], [4.9, 3.25, 0.21], [3.68, 3.25, 0.21]], `fill="#141A23"`) + franjas([3.9, 4.3, 4.7], 'loc-cinta') + franjas([4.1, 4.5], 'loc-cinta loc-cinta-b'));
-    L.caja(5.0, 2.63, 0.2, 0.1, 0.66, 1.0, OSC, 7.2);
-    L.caja(4.82, 2.7, 1.12, 0.3, 0.52, 0.14, { t: CIAN, l: '#0A8A7E', r: '#077068' }, 7.3);
-    for (const [x, y, t, l] of [[2.75, 3.55, CIAN, '#0A8A7E'], [3.05, 3.7, '#35679A', '#17446F'], [3.35, 3.55, '#E0524A', '#A8352F']]) { L.cil(x, y, 0, 0.14, 0.2, t, l); L.linea([[x - 0.08, y, 0.2], [x - 0.08, y, 0.3], [x + 0.08, y, 0.3], [x + 0.08, y, 0.2]], l, 2.4, x + y + 0.2); }
-    // El plan de The Architect: la propuesta dibujada en un atril
-    L.caja(4.4, 4.3, 0, 0.06, 0.06, 1.35, OSC, 8.75); L.caja(5.4, 4.3, 0, 0.06, 0.06, 1.35, OSC, 9.75);
-    L.planoY(4.3, 4.34, 1.72, 125, 80, `<rect width="125" height="80" rx="4" fill="#F4ECD8" stroke="#0B1726" stroke-width="3"/>` + mono(8, 14, 'LA PROPUESTA', 8, '#0E2A47') +
-      [['Sitio', 10, 26], ['Clases', 64, 26], ['Rescate', 10, 52], ['Tienda', 64, 52]].map(([t, x, y]) => `<rect x="${x}" y="${y}" width="50" height="18" rx="4" fill="none" stroke="#17446F" stroke-width="2"/>` + mono(x + 5, y + 12.5, t, 7.4, '#17446F')).join('') +
-      `<path d="M60 35H64M35 44V52M89 44V52M60 61H64" stroke="#E0524A" stroke-width="2.4"/>`, 9.3);
-    // El torniquete con el lector de huella de siempre
-    L.caja(7.7, 5.3, 0, 0.16, 0.16, 1.0, { t: '#B9C8D8', l: '#8FA3B8', r: '#6B7A8C' });
-    L.caja(7.6, 5.24, 1.0, 0.36, 0.28, 0.06, { t: '#0B2B45', l: '#0B2B45', r: '#091D33' }, 13.6);
-    L.piso(7.63, 5.27, `<g class="loc-huella" fill="none" stroke="${CIAN}" stroke-width="2.6" stroke-linecap="round"><path d="M6 20Q6 6 15 6Q24 6 24 20"/><path d="M10 21Q10 10 15 10Q20 10 20 21"/><path d="M15 14V22"/></g>`, 13.7, 1.065);
-    L.linea([[7.78, 5.46, 0.6], [7.78, 6.1, 0.6]], '#B9C8D8', 3.2, 13.8);
-    L.caja(8.6, 5.3, 0, 0.16, 0.16, 1.0, { t: '#B9C8D8', l: '#8FA3B8', r: '#6B7A8C' });
-    L.planta(9.1, 3.4, 0, undefined, 0.85);
-    // La gente
-    camina('instructor', [[1.6, 1.25, 2.5], [1.9, 2.85, 2], [3.1, 2.2, 2], [1.9, 2.85]]);
-    pj('atleta', 2.45, 1.9, 0, 'i');
-    pj('atleta2', 1.2, 2.25, 0, 'd');
-    pj('ciclista', 5.9, 1.45, 0.74, 'd', EA, 7.7); pj('ciclista2', 7.15, 1.45, 0.74, 'd', EA, 8.95);
-    pj('corredora', 4.25, 2.95, 0.2, 'de');
-    pj('recepcionista', 1.9, 4.95, 0, 'd');
-    pj('architect', 4.0, 4.85, 0, 'd');
-    pj('duenagym', 6.3, 4.7, 0, 'i');
-    camina('socio', [[8.2, 6.6, 2.5], [8.2, 5.85, 1.2], [8.2, 4.6], [7.0, 3.6], [6.1, 2.35, 3], [7.0, 3.6], [8.2, 4.6], [8.2, 5.85, 1]]);
-    // Un alfiler por punto del sistema
-    pin(1, 4.2, 0.05, 1.35, CIAN); pin(2, 6.3, 4.7, 1.95, CIAN); pin(3, 0.03, 5.5, 1.3, CIAN); pin(4, 7.78, 5.38, 1.1, CIAN);
-    return { id: 'eleven', ancho: W, fondo: D };
-  });
-}
-
-// ───────── Rumbo · app de desarrollo personal (producto de BiPlot) ─────────
-export function rumbo() {
-  return montar(({ E, L, pj, camina, pin }) => {
-    const W = 9.0, D = 6.8, TEAL = '#7FD8CF';
-    base(E, L, W, D, { piso: '#1D4F55', muroY: '#173F48', muroX: '#12353D', zocalo: '#0E2B31', tope: '#245A62', canto: '#0E2B31',
-      dibujo: `<path d="M60 610C170 560 250 520 330 470S520 400 600 330S700 230 640 180" fill="none" stroke="${TEAL}" stroke-width="12" stroke-dasharray="2 22" stroke-linecap="round"/>` +
-        `<path class="loc-camino" d="M60 610C170 560 250 520 330 470S520 400 600 330S700 230 640 180" fill="none" stroke="#DDF4F1" stroke-width="6" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100"/>` +
-        [[60, 610, 'Día 1', 24, 8], [330, 470, 'Día 7', -24, -26], [600, 330, 'Día 30', 22, 10]].map(([x, y, t, dx, dy]) => `<circle cx="${x}" cy="${y}" r="18" fill="#0E2A47" stroke="${TEAL}" stroke-width="5"/>` + mono(x + dx, y + dy, t, 20, '#DDF4F1')).join('') });
-    // La ventana del amanecer: el ritual de la mañana
-    L.planoY(0.35, 0.02, 1.84, 220, 128, `<defs><linearGradient id="amanecer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A6B"/><stop offset=".6" stop-color="#F7C98E"/><stop offset="1" stop-color="#F2E0B5"/></linearGradient></defs>` +
-      `<rect width="220" height="128" rx="6" fill="url(#amanecer)" stroke="#0E2B31" stroke-width="6"/><circle cx="110" cy="96" r="24" fill="#FBE3A6"/><path d="M0 104Q60 80 110 100T220 94V128H0Z" fill="#2A7C78"/><path d="M0 116Q80 98 150 114T220 112V128H0Z" fill="#1F5F5C"/><path d="M110 0V128M0 64H220" stroke="#0E2B31" stroke-width="5"/>`);
-    L.cil(1.45, 1.1, 0, 0.42, 0.13, '#E8DFC8', '#CFC2A3');
-    // El celular gigante con la app
-    L.planoY(2.9, 0.02, 1.9, 120, 180, `<rect width="120" height="180" rx="18" fill="#0B1726"/><rect x="8" y="10" width="104" height="160" rx="11" fill="#0E2A47"/>` + mono(20, 32, 'HOY', 10, TEAL) +
-      `<circle cx="60" cy="76" r="27" fill="none" stroke="#17446F" stroke-width="8"/><path d="M60 49A27 27 0 1 1 34 83" fill="none" stroke="#17C3B2" stroke-width="8" stroke-linecap="round"/>` + txt(47, 83, '12', 18, '#F2F4F7', ' class="loc-a"') + txt(47, 83, '13', 18, '#F2F4F7', ' class="loc-b"') +
-      ['Ritual de mañana', 'Leer 20 min', 'Caminar', 'Ahorrar', 'Diario'].map((t, i) => `<rect x="16" y="${116 + i * 11}" width="7" height="7" rx="2" fill="${i < 3 ? '#17C3B2' : 'none'}"${i === 3 ? ' class="loc-habito"' : ''} stroke="#17C3B2" stroke-width="1.4"/>` + mono(28, 122 + i * 11, t, 6.8, '#DDF4F1')).join(''));
-    // El mural de la montaña con la meta arriba
-    L.planoY(4.55, 0.02, 1.9, 410, 150, `<rect width="410" height="150" rx="5" fill="#15546A"/><path d="M0 150L90 60L150 105L250 20L410 135V150Z" fill="#2A7C78"/><path d="M0 150L70 112L150 142L240 78L410 150Z" fill="#1F5F5C"/>` +
-      `<path d="M250 20L250 -2" stroke="#F2F4F7" stroke-width="2.4"/><path d="M250 -2L272 5L250 12Z" fill="#17C3B2"/><path d="M226 40L250 20L270 36L258 42L250 34L240 44Z" fill="#DDF4F1"/>` + txt(18, 30, 'Rumbo', 24, '#DDF4F1'));
-    // La escalera al final del camino: un peldaño por paso, con la bandera arriba
-    for (let j = 4; j >= 0; j--) L.caja(5.6 + j * 0.55, 0.8, 0, 0.55, 1.5, 0.2 * (j + 1), { t: '#3E9C95', l: '#2A7C78', r: '#1F5F5C' });
-    L.linea([[8.1, 1.55, 1.0], [8.1, 1.55, 1.75]], '#F2F4F7', 2.2, 10.2);
-    L.anim('loc-bandera', () => L.add(10.21, L.poly([[8.1, 1.55, 1.75], [8.45, 1.55, 1.65], [8.1, 1.55, 1.55]], `fill="#17C3B2"`)));
-    // Biblioteca y sillón de lectura
-    L.planoX(2.75, 1.88, 200, 150, `<rect width="200" height="150" rx="4" fill="#3A2E26"/>` + [46, 96, 144].map(y => `<rect x="4" y="${y}" width="192" height="5" fill="#8B6A4E"/>`).join('') +
-      [0, 1, 2].map(f => Array.from({ length: 16 }, (_, i) => `<rect x="${8 + i * 11.6}" y="${f * 50 + 10 + (i % 3) * 3}" width="9" height="${36 - (i % 3) * 3}" rx="1" fill="${['#17446F', '#E0B341', '#3E9C95', '#C8474A', '#F4ECD8'][(i + f) % 5]}"/>`).join('')).join(''));
-    L.caja(0.45, 2.95, 0, 0.8, 0.75, 0.42, { t: '#C9824E', l: '#A8683A', r: '#8C5530' });
-    L.caja(0.35, 2.95, 0.42, 0.18, 0.75, 0.55, { t: '#C9824E', l: '#A8683A', r: '#8C5530' }, 3.9);
-    // Muro de insignias: rangos y logros
-    L.planoX(5.3, 1.8, 190, 110, `<rect width="190" height="110" rx="6" fill="#0E2A47" stroke="${TEAL}" stroke-width="2"/>` + mono(12, 20, 'INSIGNIAS', 10, TEAL) +
-      [[30, 55, '#E0B341'], [75, 55, '#B9C8D8'], [120, 55, '#C9824E'], [165, 55, '#17C3B2'], [52, 90, '#7FD8CF'], [98, 90, '#E0B341'], [144, 90, '#F2F4F7']].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="15" fill="${c}" stroke="#0B1726" stroke-width="2"/><path d="M${x - 6} ${y}L${x - 1} ${y + 5}L${x + 7} ${y - 5}" fill="none" stroke="#0B1726" stroke-width="2.4"/>`).join(''));
-    // Mesa de café con el diario y el frasco del ahorro
-    L.cil(3.4, 5.6, 0, 0.05, 0.62, '#3A424E', '#2A3038'); L.cil(3.4, 5.6, 0.62, 0.36, 0.05, '#E8DFC8', '#CFC2A3');
-    L.caja(3.3, 5.45, 0.67, 0.3, 0.22, 0.02, { t: '#F4ECD8', l: '#E8DFC8', r: '#CFC2A3' });
-    L.cil(3.6, 5.72, 0.67, 0.07, 0.16, 'rgba(221,244,241,.5)', 'rgba(221,244,241,.35)', 9.5); L.luz(3.6, 5.72, 0.72, 3, 1.4, '#E0B341', 9.51);
-    L.planta(0.55, 6.2, 0, undefined, 0.9); L.planta(8.6, 4.6, 0, undefined, 0.8);
-    // La gente
-    pj('meditadora', 1.45, 1.1, 0.13, 'd');
-    pj('lectora', 0.85, 3.3, 0.42, 'd');
-    camina('caminante', [[3.3, 4.6, 2], [2.1, 5.3], [0.95, 5.95, 2.5], [2.1, 5.3]]);
-    pj('estudiante', 6.95, 1.55, 0.6, 'de');
-    camina('corredora', [[5.95, 3.85, 1.5], [7.6, 3.55], [7.9, 5.4], [5.2, 5.65]], { vel: 1.0 });
-    pj('tomacafe', 2.8, 5.8, 0.48, 'd');
-    L.cil(2.8, 5.8, 0, 0.16, 0.46, '#3E9C95', '#2A7C78');
-    // Un alfiler por punto de la app
-    pin(1, 1.45, 1.1, 1.85, TEAL); pin(2, 3.5, 0.05, 1.2, TEAL); pin(3, 0.03, 4.35, 1.3, TEAL);
-    return { id: 'rumbo', ancho: W, fondo: D };
-  });
-}
-
-export const SALAS_GRANDES = { fundos, haru, eleven, nuhome, rumbo };
+// Las salas de Fundos, Haru, Eleven y Rumbo son salas propias, como esta: están en salas-propias/ (usan montar())
+export const SALAS_GRANDES = { nuhome };
