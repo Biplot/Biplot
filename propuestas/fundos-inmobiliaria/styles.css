@@ -1839,3 +1839,15 @@ h2 em { text-wrap: balance; }
 .hero-photo .hero-video { z-index: 0; object-position: 50% 40%; }
 .hero-photo::after { z-index: 1; }
 .hero.has-video .hero-photo img { opacity: 0; transition: opacity 1.4s var(--ease-soft); }
+
+/* Computador: chips de precio compactos para que el plano quepa entero en la pantalla */
+@media (min-width: 960px) and (hover: hover) and (pointer: fine) {
+  .plan-cats { gap: .45rem .6rem; padding: .55rem .7rem; }
+  .plan-cats .pl-title { padding: .32rem .6rem; font-size: .76rem; }
+  .pl-cats { gap: .35rem; }
+  .pl-cat { min-height: 36px; gap: .4rem; padding: .25rem .7rem .25rem .45rem; font-size: .74rem; }
+  .pl-cat .sw { width: 13px; height: 13px; }
+  .pl-cat s { font-size: .68rem; }
+  .pl-cat b { font-size: .86rem; }
+  .pl-cat small { font-size: .68rem; }
+}

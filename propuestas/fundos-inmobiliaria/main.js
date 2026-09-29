@@ -552,7 +552,11 @@
       var W = canvas.clientWidth || 1;
       var H = W * b[3] / b[2];
       if (isSmall()) H = clamp(H * 1.5, 260, Math.min(window.innerHeight * 0.6, 460));
-      else H = Math.min(H, Math.max(240, window.innerHeight - navBottom() - 120));   // el plano completo cabe en la pantalla
+      else {
+        // Chips de precio + plano completo caben juntos en la pantalla, bajo la barra de navegación
+        var navH = Math.min(navBottom() || 66, 70), catsH = cats && !cats.hidden ? cats.offsetHeight : 0;
+        H = Math.min(H, Math.max(280, window.innerHeight - navH - catsH - 28));
+      }
       if (!reset && Z.W === W && Z.H) H = Z.H;    // la barra del navegador móvil cambia innerHeight: la altura no salta
       canvas.style.height = Math.round(H) + "px";
       Z.W = W; Z.H = H;
