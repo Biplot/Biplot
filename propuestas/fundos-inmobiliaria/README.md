@@ -64,7 +64,9 @@ assets/img/       Isotipo (del manual, también en 174 px para el menú), logos 
 assets/fonts/     Cormorant Garamond y Mulish (woff2, latín)
 assets/video/     Videos propios: el saludo del equipo (MP4 + WebM de respaldo y su imagen) y, si se usan, portada y proyectos
 .htaccess         Caché para hosting Apache/Hostinger
-tools/            enderezar_planos.py: endereza la geometría de los planos (uso interno)
+tools/            enderezar_planos.py (geometría de los planos), artefacto_build.py (vista previa en Claude)
+tools/pruebas/    Pruebas automáticas con Playwright (ver su LEEME.md)
+CLAUDE.md         Contexto para retomar el trabajo con Claude: publicación, datos, planos, pruebas y decisiones
 ```
 
 ### Videos
