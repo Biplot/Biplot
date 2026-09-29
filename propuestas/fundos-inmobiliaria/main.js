@@ -570,11 +570,11 @@
       if (isSmall()) H = clamp(H * 1.5, 260, Math.min(window.innerHeight * 0.6, 460));
       else {
         // Toda la herramienta (proyectos, filtros, chips, plano y leyenda) cabe en la pantalla bajo la
-        // barra de navegación; el plano nunca pasa de 560 px de alto para no comerse la página.
+        // barra de navegación; el plano nunca pasa de 480 px de alto para no comerse la página.
         var navH = Math.min(navBottom() || 66, 70), catsH = cats && !cats.hidden ? cats.offsetHeight : 0;
         var above = cats ? Math.max(0, cats.getBoundingClientRect().top - root.getBoundingClientRect().top) : 0;
         var legH = legend && !legend.hidden ? legend.offsetHeight : 0;
-        H = Math.min(H, clamp(window.innerHeight - navH - above - catsH - legH - 24, 380, 560));
+        H = Math.min(H, clamp(window.innerHeight - navH - above - catsH - legH - 24, 380, 480));
       }
       if (!reset && Z.W === W && Z.H) H = Z.H;    // la barra del navegador móvil cambia innerHeight: la altura no salta
       canvas.style.height = Math.round(H) + "px";
