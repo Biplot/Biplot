@@ -8,7 +8,7 @@ const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
     const errs = [];
     pg.on("pageerror", e => errs.push(e.message));
     pg.on("console", m => { if (m.type() === "error" && !/ERR_CERT|net::/.test(m.text())) errs.push(m.text()); });
-    await pg.goto(B, { waitUntil: "networkidle" }); await pg.waitForTimeout(500);
+    await pg.goto(B, { waitUntil: "load" }); await pg.waitForTimeout(1500);
     await pg.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 40)); } });
     await pg.waitForTimeout(400);
     const r = await pg.evaluate((W) => {

@@ -1955,3 +1955,17 @@ html:not(.js) .tc-tabs { display: none; }
 .nav::after { content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: calc(var(--avance, 0) * 100%); background: var(--gold); opacity: 0; transition: opacity .3s; pointer-events: none; }
 .nav.is-solid::after { opacity: .9; }
 @media (prefers-reduced-motion: reduce) { .sellers.sellers, .projects { scroll-behavior: auto; } }
+
+/* Computador: leyenda del plano en una franja baja para que la herramienta completa quepa en la pantalla */
+@media (min-width: 960px) {
+  .plan-legend { gap: .45rem; padding: .55rem .9rem .6rem; }
+  .pl-head { align-items: center; }
+  .pl-kicker { display: none; }
+  .pl-name { margin-top: 0; font-size: 1.15rem; }
+  .pl-stats span { padding: .22rem .6rem; font-size: .72rem; }
+  .pl-symbols { gap: .35rem 1rem; padding-top: .45rem; }
+  .pl-symbols li { font-size: .74rem; }
+  .plan-legend .sym-disp { width: 18px; height: 18px; }
+  /* el detalle del lote acompaña al plano con el mismo alto */
+  .plan:not(.is-wide) .lot-panel { max-height: min(calc(100vh - var(--nav-h) - 2rem), var(--stage-h, 100vh)); }
+}
