@@ -681,7 +681,74 @@
         acento: '#7FD8CF',
         esencia: 'El local que espera al próximo proyecto.',
         resumen: 'Este local está esperando un proyecto. Cuéntale a Plotty cómo trabajas hoy: son tres preguntas y te dice por dónde partir.',
-        puntos: [], enlaces: [], equipo: [], media: null
+        puntos: [], enlaces: [], equipo: [], media: null,
+        /* Sala propia: la sala de ventas de BiPlot, como la de una inmobiliaria (maqueta, piloto, lista de precios y la
+           promesa). Todo lo que dice sale del sitio: el diagnóstico desde $0, la respuesta en 48 horas hábiles, las diez
+           fases, la medición a los 30, 60 y 90 días y el local y la sala de cada proyecto. Quienes la visitan son
+           ilustraciones sin nombre; Plotty guía el recorrido y termina en la mesa de Lupe. */
+        salaPropia: {
+          marca: { nombre: 'Tu proyecto aquí', sub: 'SALA DE VENTAS DE BIPLOT', texto: 'Mira cómo se vería tu local, cómo avanza tu proyecto y cuánto cuesta. La primera sesión es sin costo.' },
+          colores: { fondo: '#FBFAF7', fondo2: '#EEF1F0', tinta: '#0E2A47', tinta2: '#2F3A46', oro: '#17C3B2', ceja: '#0B6F66', cejaBurbuja: '#0B6F66',
+            borde: '#DCE3E8', brillo: '23, 195, 178', sub: '#0B6F66', pie: '#5B6776', velo: 'rgba(14, 42, 71, .06)', hover: '#12375E',
+            boton: '#0E2A47', botonTinta: '#FFFFFF', botonPunto: '#17C3B2' },
+          coloresBarra: { fondo: '#0E2A47', tinta: '#F2F4F7', tinta2: '#C9D4DF', sub: '#7FD8CF', borde: 'rgba(127, 216, 207, .35)', ceja: '#7FD8CF',
+            velo: 'rgba(255, 255, 255, .08)', hover: '#3FD3C4', boton: '#17C3B2', botonTinta: '#062B27', botonPunto: '#062B27' },
+          fuente: { familia: "'Space Grotesk', 'DejaVu Sans', sans-serif", peso: 700, espacio: '-.01em', titulo: '25px', sub: "700 10.5px/1.4 'Space Mono', monospace" },
+          textos: { recorrer: 'Recorrer con Plotty', recorrido: 'Recorrido con Plotty', guia: 'Plotty · Recepción' },
+          barra: ['recorrer', { zona: 'precios', texto: 'Lista de precios' }],
+          guia: 'plotty',
+          whatsapp: null,
+          burbujas: [
+            { quien: 'plotty', nombre: 'Plotty, de BiPlot', rol: 'Plotty · Recepción', texto: '¡Hola! Este local espera un proyecto. ¿Te muestro cómo sería el tuyo?', biplot: true },
+            { quien: 'lupe', nombre: 'Lupe, de BiPlot', rol: 'Lupe · Diagnóstico', texto: 'La primera sesión es sin costo. ¿Me cuentas cómo trabajan hoy?', biplot: true },
+            { quien: 'vtElla', nombre: 'Una visitante frente a la maqueta', rol: 'Visita', texto: '¿Y el nuestro iría aquí, al lado de Rumbo?' },
+            { quien: 'vtEl', nombre: 'Un visitante frente a la maqueta', rol: 'Visita', texto: 'Con nuestro logo en el techo.' },
+            { quien: 'vtPiloto', nombre: 'Una visitante en el local piloto', rol: 'Visita', texto: '¡Así se vería el nuestro!' },
+            { quien: 'vtPrecios', nombre: 'Un visitante frente a la lista de precios', rol: 'Visita', texto: 'El diagnóstico parte en $0.' },
+            { quien: 'vtEspera1', nombre: 'Una visitante en la sala de espera', rol: 'Visita', texto: 'Nosotros llevamos todo en tres Excel.' },
+            { quien: 'vtEspera2', nombre: 'Un visitante en la sala de espera', rol: 'Visita', texto: 'Nosotros, en un cuaderno y WhatsApp.' },
+            { quien: 'vtCliente', nombre: 'Una clienta en la mesa de Lupe', rol: 'Visita', texto: 'Traje las planillas de verdad.' }
+          ],
+          zonas: {
+            plotty: { nombre: 'Tres preguntas', ceja: 'Plotty · Recepción', titulo: 'Tres preguntas y te digo por dónde partir',
+              texto: '¿A qué se dedica tu negocio? ¿Dónde vive hoy tu operación? ¿Cuántas horas a la semana se van en tareas que se repiten? Con eso, Plotty te dice por dónde partir. Prometido: no es un formulario.',
+              botones: [{ chat: true }] },
+            espera: { nombre: 'La sala de espera', ceja: 'Pymes como la tuya', titulo: 'Tu operación creció más rápido que tus procesos',
+              texto: 'Trabajamos con pymes de servicios profesionales que sienten que su operación creció más rápido que sus procesos. Si hoy todo vive en planillas, en un cuaderno o en WhatsApp, llegaste al lugar correcto.',
+              chips: ['En planillas', 'En WhatsApp y papel', 'En un sistema que no conversa con nada'], botones: [{ chat: true }] },
+            maqueta: { nombre: 'La maqueta del barrio', ceja: 'La maqueta', titulo: 'Un local para cada proyecto',
+              texto: 'Así es la calle principal: un local por proyecto, cada uno con su marca en el techo y su sala adentro. El sitio libre, entre Rumbo y El Archivo, espera el próximo. Los proyectos que no se muestran con su propio dibujo van en la calle de su rubro.' },
+            piloto: { nombre: 'El local piloto', ceja: 'El local piloto', titulo: 'Así se vería el tuyo',
+              texto: 'Tu nombre y tu logo en el techo, tus productos a la vista de quien pasa por el barrio y, adentro, tu sala con tus pantallas y un enlace para mostrarla a tus clientes. Sólo si quieres: si prefieres no aparecer, se muestra sólo tu rubro.',
+              chips: ['Tu marca en el techo', 'Tu sala, con un enlace', 'biplot.cl/oficina/tu-empresa'] },
+            avance: { nombre: 'Así avanza tu proyecto', ceja: 'Cómo trabajamos', titulo: 'Diez fases, un solo motor',
+              texto: 'Sin plantillas: el proceso real, primero. Tu proyecto pasa por cuatro etapas y diez fases, con alguien del equipo a cargo de cada una. Tú hablas con una persona; el motor hace el resto. Y tu local en la calle cambia con él: en diagnóstico, en obra y, al final, abierto.',
+              fases: true, botones: [{ url: '../#metodologia', texto: 'Ver cómo trabajamos' }] },
+            promesa: { nombre: 'La promesa', ceja: 'La promesa', titulo: 'Lo que te prometemos, por escrito',
+              texto: 'Te respondemos en menos de 48 horas hábiles, hablas siempre con una persona y, si no hay algo real que automatizar, te lo decimos de frente. A los 30, 60 y 90 días medimos contra tu línea base: si no bajó, se dice.',
+              botones: [{ url: '../#faq', texto: 'Ver las preguntas frecuentes' }] },
+            precios: { nombre: 'La lista de precios', ceja: 'Lista de precios', titulo: 'Precios claros, sin letra chica',
+              texto: 'El diagnóstico define el alcance real antes de cualquier número. Parte con una primera sesión sin costo; el proyecto se cotiza según su alcance, y el soporte continuo es mensual, desde el mes 2.',
+              botones: [{ cta: true }, { url: '../#precios', texto: 'Ver los precios en el sitio' }] },
+            vecinos: { nombre: 'La ventana a la calle', ceja: 'Los vecinos', titulo: 'Cada proyecto, con su local y su sala',
+              texto: 'Por la ventana se ve la calle principal: Nu Home 360, Fundos 360, Haru 360, Eleven 360 y Rumbo, cada uno con su marca en el techo y su sala adentro. Pasa a verlas.',
+              botones: [{ sala: 'nuhome', texto: 'Nu Home 360' }, { sala: 'fundos', texto: 'Fundos 360' }, { sala: 'haru', texto: 'Haru 360' }, { sala: 'eleven', texto: 'Eleven 360' }, { sala: 'rumbo', texto: 'Rumbo' }] },
+            diagnostico: { nombre: 'La mesa de Lupe', ceja: 'Lupe · Diagnóstico', titulo: 'La primera sesión es sin costo',
+              texto: 'Lupe se sienta con quien hace el trabajo, mira las planillas y los chats, y cronometra cuánto se va en cada paso. Te llevas la revisión de tu proceso, el mapa de dónde se pierde tiempo, con la línea base, y una propuesta de alcance, sin compromiso. Si no hay algo real que automatizar, te lo decimos de frente.',
+              botones: [{ cta: true }, { chat: true }] }
+          },
+          recorrido: [
+            { zona: 'plotty', titulo: 'La entrada', texto: '¡Hola! Soy Plotty. Este local espera un proyecto: el tuyo. Te muestro cómo se trabaja con BiPlot.' },
+            { zona: 'espera', titulo: 'La sala de espera', texto: 'Aquí esperan otras pymes: tres Excel, un cuaderno, WhatsApp. ¿Te suena?' },
+            { zona: 'maqueta', titulo: 'La maqueta', texto: 'Esta es la calle. Cada proyecto tiene su local, y este sitio libre puede ser el tuyo.' },
+            { zona: 'piloto', titulo: 'El local piloto', texto: 'Así se vería el tuyo: tu marca en el techo y tu sala con un enlace para tus clientes.' },
+            { zona: 'avance', titulo: 'Cómo avanza', texto: 'Cuatro etapas y diez fases, con alguien a cargo de cada una. Tu local cambia con ellas.' },
+            { zona: 'promesa', titulo: 'La promesa', texto: 'Lo que te prometemos, por escrito. Si no bajó, se dice.' },
+            { zona: 'precios', titulo: 'Los precios', texto: 'Precios claros: el diagnóstico parte en $0 y el proyecto se cotiza según su alcance.' },
+            { zona: 'vecinos', titulo: 'Los vecinos', texto: 'Por la ventana, la calle: pasa a la sala de cada proyecto cuando quieras.' },
+            { zona: 'diagnostico', titulo: 'La mesa de Lupe', texto: 'Aquí te espera Lupe. La primera sesión es sin costo.' }
+          ]
+        }
       }
     ],
 

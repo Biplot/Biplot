@@ -140,9 +140,9 @@ export function escena() {
 // El grosor de cada capa, en x + y (escena.js ubica a quien camina con el mismo paso)
 export const PASO = 0.25;
 // Alguien que camina: parado en el origen, mirando a la derecha (el navegador lo mueve y lo da vuelta). La profundidad
-// es la de E.pj: x + y + 0.2.
-export function andante(id, e = 1.4) {
-  const E = escena(); E.pj(id, 0, 0, 0, 'd', e);
+// es la de E.pj: x + y + 0.2. Quien vuela va a la altura z, con su sombra en el piso.
+export function andante(id, e = 1.4, z = 0) {
+  const E = escena(); E.pj(id, 0, 0, z, 'd', e);
   return E.piezas.map(p => p[2]).join('');
 }
 

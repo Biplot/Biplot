@@ -50,7 +50,13 @@
     rubro: SALAS.archivo.sub, esencia: SALAS.archivo.esencia, salaPropia: SALAS.archivo.salaPropia, pines: [], puntos: [], enlaces: [], equipo: ['pepa'] } : null;
   function esMuseo(id) { return id === 'archivo' && !!MUSEO; }
   function salaDe(id) { return esMuseo(id) ? MUSEO : PROYECTOS[id]; }
-  var VECINAS = CON_SALA.concat(MUSEO ? ['archivo'] : []);
+  // El local libre de la calle principal también tiene la suya: la sala de ventas de BiPlot (proyectos.libre.salaPropia
+  // en datos.js). Tampoco es un caso; entre las salas vecinas va en su lugar de la calle, antes del museo.
+  var VENTAS = !!(PROYECTOS.libre && PROYECTOS.libre.salaPropia && ORDEN_PRINCIPAL.indexOf('libre') > -1);
+  function esVentas(id) { return id === 'libre' && VENTAS; }
+  // Cómo se llama cada sala para quien no la ve
+  function nombreSala(id) { var pr = salaDe(id); return esMuseo(id) ? pr.nombre + ', el museo de BiPlot' : esVentas(id) ? pr.nombre + ', la sala de ventas de BiPlot' : 'La sala de ' + pr.nombre; }
+  var VECINAS = CON_SALA.concat(VENTAS ? ['libre'] : [], MUSEO ? ['archivo'] : []);
   var FASE_LOCAL = ['arriendo', 'diagnostico', 'obra', 'obra', 'obra', 'obra', 'obra', 'inauguracion', 'abierto', 'abierto'];
   function estadoDe(pr) {
     if (!pr || pr.libre) return 'libre';
@@ -194,6 +200,7 @@
     if (obj.tipo === 'actor') { var p = PERSONAL[obj.id]; return '<b>' + esc(p.nombre) + '</b><span>' + esc(p.rol) + ' · ' + p.placa + '</span>'; }
     var zn = zonaPorId(obj.id), accion = 'Ver más', pr = PROYECTOS[obj.id];
     if (zn.hq) accion = 'Entrar a la oficina';
+    else if (esVentas(obj.id)) accion = 'Ver la sala de ventas';
     else if (obj.id === 'libre' || zn.libre) accion = 'Conversar con Plotty';
     else if (tieneSala(obj.id)) accion = 'Ver el local y su sala';
     else if (pr) accion = ESTADO_TXT[estadoDe(pr)] + ' · Ver el local';
@@ -728,10 +735,14 @@
       '<div class="acciones"><a class="bp-cta" href="' + whatsapp('Hola BiPlot, vi ' + nombreCaso(pr) + ' en el barrio de la oficina y quiero agendar un diagnóstico.') + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a></div>';
   }
   function htmlLibre(id) {
-    var pr = PROYECTOS.libre, calle = calleDe(id);
-    return vistaSala(id) + '<p class="bp-etiqueta">' + esc(pr.rubro) + (calle ? ' · ' + esc(calle) : '') + '</p>' +
+    var pr = PROYECTOS.libre, calle = calleDe(id), ventas = esVentas(id);
+    // (el de la calle principal es la sala de ventas de BiPlot: se entra como a la sala de un proyecto)
+    return (ventas ? '<div class="media media-sala vista-sala" data-vista-sala="libre" role="img" aria-label="La sala de ventas de BiPlot por dentro"></div>' : vistaSala(id)) +
+      '<p class="bp-etiqueta">' + esc(pr.rubro) + (calle ? ' · ' + esc(calle) : '') + '</p>' +
       '<h2 id="panel-titulo" tabindex="-1">' + esc(pr.nombre) + '</h2>' +
-      '<p class="lema">' + esc(pr.esencia) + '</p><p>' + esc(pr.resumen) + '</p>' + htmlChat();
+      '<p class="lema">' + esc(pr.esencia) + '</p>' +
+      (ventas ? '<div class="acciones entrar-sala"><button type="button" class="bp-btn primario" data-entrar="libre"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Entrar a la sala de ventas</button></div>' : '') +
+      '<p>' + esc(pr.resumen) + '</p>' + htmlChat();
   }
 
   function htmlZona(id) {
@@ -936,7 +947,7 @@
     var S = window.Salas.salas[id], pr = salaDe(id); if (!S) return;
     if (vivaSala) vivaSala.destruir();
     var conPropia = esPropia(id) && !!S.zonas;
-    salaCaja.innerHTML = '<svg class="sala-svg" viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid meet" role="group" aria-label="' + esc((esMuseo(id) ? pr.nombre + ', el museo de BiPlot: ' : 'La sala de ' + pr.nombre + ': ') + pr.esencia) + '">' +
+    salaCaja.innerHTML = '<svg class="sala-svg" viewBox="' + S.vb + '" preserveAspectRatio="xMidYMid meet" role="group" aria-label="' + esc(nombreSala(id) + ': ' + pr.esencia) + '">' +
       // En una sala propia, lo que se toca brilla (un halo dorado difuso bajo el contorno punteado)
       (conPropia ? '<defs><filter id="sala-brillo" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="6"/></filter></defs>' : '') +
       '<g id="sala-dibujo" class="sala-dibujo' + (reducido ? ' quieto' : '') + '"></g></svg>';
@@ -1076,7 +1087,7 @@
     svgS.insertAdjacentHTML('beforeend', h + '</g>');
     // La sala es una región que se recorre con teclado
     salaCaja.setAttribute('tabindex', '0'); salaCaja.setAttribute('role', 'region'); salaCaja.setAttribute('aria-roledescription', 'sala interactiva');
-    salaCaja.setAttribute('aria-label', (esMuseo(id) ? pr.nombre + ', el museo de BiPlot' : 'La sala de ' + pr.nombre) + '. Arrastra o usa las flechas para moverte, + y − para acercarte y 0 para ver toda la sala. Toca o elige lo que quieras conocer.');
+    salaCaja.setAttribute('aria-label', nombreSala(id) + '. Arrastra o usa las flechas para moverte, + y − para acercarte y 0 para ver toda la sala. Toca o elige lo que quieras conocer.');
     capaSala.innerHTML = '<div class="sala-etiqueta" hidden></div>';
     barraSala.innerHTML = htmlBarraPropia(); barraSala.hidden = false; barraSala.classList.remove('recorriendo');
     barraSala.setAttribute('aria-label', pr.cliente || pr.nombre);
@@ -1366,7 +1377,7 @@
       if (b.zona) h += '<button type="button" class="sp-btn borde" data-zona-ir="' + esc(b.zona) + '">' + esc(b.texto) + '</button>';
       if (b.hq) h += '<button type="button" class="sp-btn negro" data-hq="1">' + esc(b.texto || 'Pasar a BiPlot HQ') + '</button>';
       if (b.url) h += '<a class="sp-btn borde" href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(b.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>';
-      if (b.cta) h += '<a class="bp-cta" href="' + esc(whatsapp('Hola BiPlot, vi ' + propia.pr.nombre + ' en la oficina y quiero agendar un diagnóstico.')) + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>';
+      if (b.cta) h += '<a class="bp-cta" href="' + esc(whatsapp(esVentas(propia.id) ? 'Hola BiPlot, vengo de la sala de ventas de la oficina y quiero agendar un diagnóstico.' : 'Hola BiPlot, vi ' + propia.pr.nombre + ' en la oficina y quiero agendar un diagnóstico.')) + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>';
       if (b.chat) h += '<button type="button" class="sp-btn borde" data-abrir="chat:plotty">' + esc(b.texto || 'Conversar con Plotty') + '</button>';
     });
     return h;
@@ -1991,7 +2002,7 @@
   function irAlHash(h, primera) {
     if (!h) { if (enSala) salirSala({ sinHistoria: true }); if (esc3.abierta()) salirOficina({ sinHistoria: true }); return; }
     if (h === enSala) return;
-    if (tieneSala(h) || esMuseo(h)) { entrarSala(h, { sinHistoria: true, directo: primera }); return; }
+    if (tieneSala(h) || esMuseo(h) || esVentas(h)) { entrarSala(h, { sinHistoria: true, directo: primera }); return; }
     if (enSala) salirSala({ sinHistoria: true, sinCamara: true });
     if (h === 'oficina' || h === 'planta-baja') { entrarOficina({ sinHistoria: true, directo: primera }); return; }
     if (h === 'conversar') { abrir({ tipo: 'chat', id: 'plotty' }); return; }

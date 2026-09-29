@@ -269,8 +269,12 @@ for (const id of Object.keys(SALAS)) {
   const pr = museo ? { nombre: DATOS.salas.archivo.nombre, esencia: DATOS.salas.archivo.esencia } : DATOS.proyectos.find((p) => p.id === id);
   if (!pr) continue;
   const url = `https://biplot.cl/oficina/${id}/`, img = `https://biplot.cl/oficina/kit/png/sala-${id}-og.png`;
-  const titulo = museo ? `${pr.nombre}, el museo de BiPlot` : `${pr.nombre} · La oficina de BiPlot`;
-  const desc = museo ? `${pr.esencia} Una pieza de cada época y de cada desarrollo, en la oficina de BiPlot.` : `${pr.esencia} Pasa a la sala de ${pr.nombre} en la oficina de BiPlot y mira lo que construimos.`;
+  // El local libre tampoco: es la sala de ventas de BiPlot (datos.js, proyectos.libre.salaPropia)
+  const ventas = id === 'libre';
+  const titulo = museo ? `${pr.nombre}, el museo de BiPlot` : ventas ? `${pr.nombre}: la sala de ventas de BiPlot` : `${pr.nombre} · La oficina de BiPlot`;
+  const desc = museo ? `${pr.esencia} Una pieza de cada época y de cada desarrollo, en la oficina de BiPlot.` :
+    ventas ? 'Mira cómo se vería tu local en el barrio de BiPlot, cómo avanza tu proyecto y cuánto cuesta. La primera sesión es sin costo.' :
+    `${pr.esencia} Pasa a la sala de ${pr.nombre} en la oficina de BiPlot y mira lo que construimos.`;
   const html = `<!doctype html>
 <html lang="es">
 <head>
@@ -290,7 +294,7 @@ for (const id of Object.keys(SALAS)) {
 <meta property="og:image" content="${img}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${escHtml(`${museo ? `${pr.nombre}, el museo de BiPlot, dibujado` : `La sala de ${pr.nombre} dibujada`}, con su gente. ${pr.esencia}`)}">
+<meta property="og:image:alt" content="${escHtml(`${museo ? `${pr.nombre}, el museo de BiPlot, dibujado` : ventas ? 'La sala de ventas de BiPlot dibujada' : `La sala de ${pr.nombre} dibujada`}, con su gente. ${pr.esencia}`)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${img}">
 <link rel="icon" href="${ICONO}">
@@ -307,10 +311,10 @@ a { color: #17C3B2; font-weight: 600; }
 </head>
 <body>
 <main>
-  <img src="../kit/png/sala-${id}-og.png" alt="${escHtml(museo ? `${pr.nombre}, el museo de BiPlot` : `La sala de ${pr.nombre}`)}" width="1200" height="630">
+  <img src="../kit/png/sala-${id}-og.png" alt="${escHtml(museo ? `${pr.nombre}, el museo de BiPlot` : ventas ? 'La sala de ventas de BiPlot' : `La sala de ${pr.nombre}`)}" width="1200" height="630">
   <h1>${escHtml(pr.nombre)}</h1>
   <p>${escHtml(pr.esencia)}</p>
-  <p><a href="../#${id}">${museo ? 'Entrar al museo en la oficina de BiPlot' : 'Entrar a la sala en la oficina de BiPlot'}</a></p>
+  <p><a href="../#${id}">${museo ? 'Entrar al museo en la oficina de BiPlot' : ventas ? 'Entrar a la sala de ventas en la oficina de BiPlot' : 'Entrar a la sala en la oficina de BiPlot'}</a></p>
 </main>
 </body>
 </html>

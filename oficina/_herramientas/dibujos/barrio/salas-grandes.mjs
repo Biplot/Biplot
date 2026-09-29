@@ -135,7 +135,7 @@ export function montar(fn) {
   const usados = new Set(), pines = [], caminan = [], lugares = {}, zonas = [], gente = {};
   const quien = (id, x, y, z, e) => { const [px, py] = P(x, y, z); gente[id] = [r1(px), r1(py), r1(medidaDe(id).alto * e)]; };
   const pj = (id, x, y, z = 0, dir = 'd', e = EA, k) => { usados.add(id); quien(id, x, y, z, e); L.pj(id, x, y, z, dir, e, k); };
-  const camina = (id, ruta, o = {}) => { usados.add(id); quien(id, ruta[0][0], ruta[0][1], 0, o.e || EA); caminan.push(caminante(E, id, ruta, o)); };
+  const camina = (id, ruta, o = {}) => { usados.add(id); quien(id, ruta[0][0], ruta[0][1], o.z || 0, o.e || EA); caminan.push(caminante(E, id, ruta, o)); };
   const lugar = (id, x, y, z = 0) => { lugares[id] = P(x, y, z).map(r1); };
   const zona = (id, o) => { zonas.push(zonaDe(id, o)); if (o.lugar) lugar(id, ...o.lugar); };
   const info = fn({ E, L, pj, camina, lugar, zona, pin: (n, x, y, z, col, tinta) => pin(E, pines, n, x, y, z, col, tinta) });
@@ -175,11 +175,11 @@ function envolvente(a) {
   return lado(p).concat(lado(p.slice().reverse()));
 }
 // Quien camina: su dibujo parado en el origen, su ruta y su paso (baldosas por segundo). Marca los bordes del dibujo
-// en su primera parada, como si estuviera parado ahí.
+// en su primera parada, como si estuviera parado ahí. o.z: quien vuela (Plotty) va a esa altura, con su sombra en el piso.
 export function caminante(E, id, ruta, o = {}) {
   const e = o.e || EA, [x, y] = ruta[0];
-  E.marca(x, y, 0); E.marca(x, y, 1.9);
-  return { id, svg: andante(id, e), ruta: ruta.map(p => p.map(n => Math.round(n * 100) / 100)), vel: o.vel || 0.5 };
+  E.marca(x, y, 0); E.marca(x, y, 1.9 + (o.z || 0));
+  return { id, svg: andante(id, e, o.z || 0), ruta: ruta.map(p => p.map(n => Math.round(n * 100) / 100)), vel: o.vel || 0.5 };
 }
 
 // ───────── Nu Home 360 · casas modulares: su propia sala de ventas ─────────
