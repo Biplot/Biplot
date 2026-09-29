@@ -6,6 +6,7 @@ const W = ms => new Promise(r => setTimeout(r, ms));
     const mob = w < 700;
     const pg = await (await browser.newContext({ viewport: { width: w, height: h }, isMobile: mob, hasTouch: mob })).newPage();
     await pg.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" });
+    await pg.evaluate(() => document.querySelector('[data-tc-tab="simulador"]').click()); await W(300);
     for (const modo of ["contado", "credito"]) {
       await pg.evaluate(m => { const r = document.querySelector('input[name="modo"][value="' + m + '"]'); if (r) r.click(); }, modo); await W(300);
       await pg.evaluate(() => { const s = document.querySelector("[data-sim]"); scrollTo(0, scrollY + s.getBoundingClientRect().top - 78); }); await W(800);

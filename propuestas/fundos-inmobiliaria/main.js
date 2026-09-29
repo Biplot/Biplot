@@ -103,7 +103,11 @@
   function initNav() {
     var nav = $("[data-nav]");
     if (nav) {
-      var onScroll = function () { nav.classList.toggle("is-solid", window.scrollY > 24); };
+      var onScroll = function () {
+        nav.classList.toggle("is-solid", window.scrollY > 24);
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        nav.style.setProperty("--avance", max > 0 ? Math.min(1, window.scrollY / max).toFixed(3) : 0);
+      };
       onScroll();
       window.addEventListener("scroll", onScroll, { passive: true });
     }
@@ -113,11 +117,23 @@
     if ("IntersectionObserver" in window && links.length) {
       var byId = {};
       links.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
+      // Nombre de la sección actual junto al logo (celular y tablet, donde el menú está plegado)
+      var where = $("[data-nav-where]"), current = "";
+      var nombres = { proyectos: "Proyectos", recorrido: "Recorrido 360°", plano: "Elige tu parcela", nosotros: "Equipo", visita: "Agenda tu visita" };
+      var setWhere = function () {
+        if (!where) return;
+        var t = nombres[current] || "";
+        if (current === "tu-compra") { var sel = $('[data-tc-tab][aria-selected="true"]'); t = sel ? sel.textContent.trim() : "Tu compra"; }
+        where.textContent = t;
+      };
+      document.addEventListener("fundos:tab", setWhere);
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (en) {
           if (!en.isIntersecting) return;
           Object.keys(byId).forEach(function (k) { byId[k].classList.remove("is-current"); });
           if (byId[en.target.id]) byId[en.target.id].classList.add("is-current");
+          current = en.target.id;
+          setWhere();
         });
       }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
       var portal = $(".nav-portal");
@@ -2215,6 +2231,17 @@
         '<span class="seller-more">Ver ficha' + arrow + '</span></span></button>';
       list.insertBefore(li, cta);
     });
+    // El scroll-snap se quedaba "pegado" a la tarjeta final al insertar las demás: volver al inicio
+    list.scrollLeft = 0;
+    requestAnimationFrame(function () { list.scrollLeft = 0; });
+
+    // Flechas del carrusel (computador)
+    $$("[data-sellers-prev], [data-sellers-next]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var card = $("li", list), step = card ? card.getBoundingClientRect().width + 16 : 260;
+        list.scrollBy({ left: (b.hasAttribute("data-sellers-next") ? 1 : -1) * step * 2, behavior: reduced ? "auto" : "smooth" });
+      });
+    });
 
     var dlg = $("[data-sdialog]");
     if (!dlg || typeof dlg.showModal !== "function") return;
@@ -2322,6 +2349,71 @@
     $$(".hero, .ticker, .tour-stage, .phone, .plan-canvas").forEach(function (el) { io.observe(el); });
   }
 
+  /* =============================================================
+     Tu compra: Cómo comprar · Simulador · Preguntas · Mi compra en pestañas
+     Los enlaces #como-comprar, #simulador, #preguntas y #portal abren su pestaña.
+     ============================================================= */
+  function initCompra() {
+    var root = $("[data-tc]");
+    if (!root) return;
+    var tabs = $$("[data-tc-tab]", root), panels = $$("[data-tc-panel]", root);
+    var ids = panels.map(function (p) { return p.id; });
+    tabs.forEach(function (t) {
+      var id = t.getAttribute("data-tc-tab");
+      t.setAttribute("aria-controls", id);
+      var p = document.getElementById(id);
+      if (p) { p.setAttribute("role", "tabpanel"); p.setAttribute("aria-labelledby", t.id); p.setAttribute("tabindex", "-1"); }
+    });
+    function navH() { var nv = $(".nav"); return nv && getComputedStyle(nv).position === "fixed" ? nv.offsetHeight : 0; }
+    function toTop() {
+      var y = window.scrollY + root.getBoundingClientRect().top - navH() + 1;
+      window.scrollTo({ top: y, behavior: reduced ? "auto" : "smooth" });
+    }
+    function activate(id, o) {
+      o = o || {};
+      if (ids.indexOf(id) < 0) return;
+      tabs.forEach(function (t) {
+        var on = t.getAttribute("data-tc-tab") === id;
+        t.setAttribute("aria-selected", on ? "true" : "false");
+        t.setAttribute("tabindex", on ? "0" : "-1");
+        if (on) t.scrollIntoView({ inline: "nearest", block: "nearest" });
+      });
+      panels.forEach(function (p) {
+        p.hidden = p.id !== id;
+        if (!p.hidden) $$(".reveal", p).forEach(function (el) { el.classList.add("is-visible"); });
+      });
+      if (o.hash) { try { history.replaceState(null, "", "#" + id); } catch (e) { /* marco sin historial */ } }
+      if (o.scroll || root.getBoundingClientRect().top < navH() - 2) toTop();
+      document.dispatchEvent(new CustomEvent("fundos:tab", { detail: id }));
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function (e) { e.preventDefault(); activate(t.getAttribute("data-tc-tab"), { hash: true }); });
+      t.addEventListener("keydown", function (e) {
+        var nx = null;
+        if (e.key === "ArrowRight" || e.key === "ArrowLeft") nx = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+        else if (e.key === "Home") nx = tabs[0];
+        else if (e.key === "End") nx = tabs[tabs.length - 1];
+        if (!nx) return;
+        e.preventDefault();
+        nx.focus();
+        activate(nx.getAttribute("data-tc-tab"), { hash: true });
+      });
+    });
+    // Cualquier enlace del sitio a una de las pestañas la abre y lleva a la sección
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || a.hasAttribute("data-tc-tab") || e.defaultPrevented) return;
+      var id = a.getAttribute("href").slice(1);
+      if (ids.indexOf(id) < 0) return;
+      e.preventDefault();
+      activate(id, { hash: true, scroll: true });
+    });
+    function fromHash() { var id = location.hash.slice(1); if (ids.indexOf(id) >= 0) activate(id, { scroll: true }); }
+    window.addEventListener("hashchange", fromHash);
+    activate(ids.indexOf(location.hash.slice(1)) >= 0 ? location.hash.slice(1) : ids[0]);
+    if (ids.indexOf(location.hash.slice(1)) >= 0) window.setTimeout(fromHash, 150);
+  }
+
   function boot() {
     window.__fundosBoot = true;
     document.documentElement.classList.add("js");
@@ -2339,6 +2431,7 @@
     safe(initDialog, "initDialog");
     safe(initMobileBar, "initMobileBar");
     safe(initFaq, "initFaq");
+    safe(initCompra, "initCompra");
     safe(initSellers, "initSellers");
     safe(initOffscreen, "initOffscreen");
     $$('input[type="range"]').forEach(paintRange);

@@ -52,7 +52,7 @@
 
   --nav-h: 76px;
   --gutter: clamp(16px, 4vw, 40px);
-  --section-y: clamp(4.5rem, 10vw, 8.5rem);
+  --section-y: clamp(3.5rem, 7vw, 6rem);
   --shadow-card: 0 1px 2px rgba(10, 20, 14, .05), 0 18px 40px -22px rgba(10, 20, 14, .35);
 }
 
@@ -261,7 +261,7 @@ input[type="range"]:focus-visible { outline: 2px solid var(--gold); outline-offs
 .light { background: var(--n050); color: var(--g900); }
 .cream { background: var(--n100); color: var(--g900); }
 .dark { background: var(--g900); color: var(--n050); }
-.section-head { margin-bottom: clamp(2.5rem, 5vw, 4rem); max-width: 780px; }
+.section-head { margin-bottom: clamp(2rem, 4vw, 3rem); max-width: 780px; }
 .section-head h2 { margin-bottom: 1.2rem; }
 
 /* ---------------- NAV ---------------- */
@@ -1880,3 +1880,78 @@ h2 em { text-wrap: balance; }
   .sim-peek .i { width: 16px; height: 16px; color: var(--gold); flex: none; }
   .sim { gap: .8rem; }
 }
+
+/* =============================================================
+   Página más corta: pestañas "Tu compra", equipo compacto y carruseles
+   ============================================================= */
+/* Tu compra: una sección con pestañas (Cómo comprar · Simulador · Preguntas · Mi compra) */
+.tc-bar { position: sticky; top: 66px; z-index: 40; background: var(--g900); color: var(--n050); border-bottom: 1px solid var(--line-dark); box-shadow: 0 10px 24px -18px rgba(0, 0, 0, .6); }
+.tc-bar-in { display: flex; align-items: center; justify-content: space-between; gap: .6rem 1.5rem; flex-wrap: wrap; padding-block: .7rem; }
+.tc-title { font-size: clamp(1.35rem, 2.4vw, 1.9rem); font-weight: 500; line-height: 1.1; }
+.tc-title em { color: var(--gold); }
+.tc-tabs { display: flex; gap: .35rem; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.tc-tabs::-webkit-scrollbar { display: none; }
+.tc-tab { flex: none; display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; padding: .5rem 1rem; border-radius: 999px; border: 1px solid rgba(247, 245, 240, .18); color: var(--cream-80); font-size: .9rem; font-weight: 700; transition: background-color .25s, color .25s, border-color .25s; }
+.tc-tab .i { width: 1.05em; height: 1.05em; color: var(--gold); }
+.tc-tab:hover { border-color: rgba(200, 161, 101, .6); color: var(--n050); }
+.tc-tab[aria-selected="true"] { background: var(--gold); border-color: var(--gold); color: var(--g900); }
+.tc-tab[aria-selected="true"] .i { color: var(--g900); }
+.tc-tab:focus-visible { outline: 2px solid var(--n050); outline-offset: 2px; }
+.tc-panel { scroll-margin-top: 140px; }
+.js .tu-compra .tc-panel[hidden] { display: none; }
+html:not(.js) .tc-tabs { display: none; }
+.tu-compra { scroll-margin-top: 66px; }
+@media (max-width: 719px) {
+  .tc-bar-in { padding-block: .55rem; }
+  .tc-title { display: none; }
+  .tc-tab { padding: .45rem .8rem; font-size: .84rem; }
+}
+@media (max-height: 500px) { .tc-bar { top: 0; } }
+
+/* Nosotros compacto: historia + valores junto a la foto del equipo */
+.about-copy h2 { margin-bottom: 1rem; }
+.about .values-mini { list-style: none; display: grid; grid-template-columns: 1fr; gap: .9rem 1.4rem; margin-top: 1.6rem; }
+.about .values-mini li { display: grid; grid-template-columns: auto 1fr; gap: .8rem; align-items: start; padding-top: .9rem; border-top: 1px solid var(--n200); }
+.about .values-mini .value-icon { width: 38px; height: 38px; margin: 0; }
+.about .values-mini .value-icon .i { width: 18px; height: 18px; }
+.about .values-mini h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: .15rem; }
+.about .values-mini p { font-size: .88rem; line-height: 1.45; color: var(--n600); }
+@media (min-width: 600px) { .about .values-mini { grid-template-columns: 1fr 1fr; } }
+.about .team-photo img { aspect-ratio: 4 / 3.4; }
+.team { margin-top: clamp(2.5rem, 5vw, 4rem); }
+.sellers-head { align-items: end; margin-top: 0; }
+.sellers-head .kicker { margin-bottom: .4rem; }
+.sellers-head .team-faces { margin: 0; font-size: .92rem; }
+.sellers-head .faces-lg img { width: 38px; height: 38px; border-width: 2px; }
+.sellers-head .faces-lg img + img { margin-left: -10px; }
+.sellers-nav { display: none; gap: .5rem; }
+.sellers-arrow[data-sellers-prev] .i { transform: scaleX(-1); }
+
+/* Equipo en carrusel horizontal (una fila, se desliza) */
+.sellers.sellers { display: grid; grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: min(72vw, 260px); gap: .9rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 2px; padding: 4px 2px 14px; margin-inline: -2px; scrollbar-width: thin; overscroll-behavior-x: contain; }
+.sellers > li { scroll-snap-align: start; }
+.sellers .member-cta { grid-column: auto; min-width: 0; align-content: end; }
+.sellers .member-cta h4 { font-size: clamp(1.5rem, 2.2vw, 1.9rem); }
+.sellers .member-cta p { font-size: .9rem; }
+@media (min-width: 960px) {
+  .sellers.sellers { grid-auto-columns: calc((100% - 3 * 1.1rem) / 4.4); gap: 1.1rem; }
+  .sellers-nav { display: flex; }
+}
+@media (min-width: 720px) and (max-width: 959px) { .sellers.sellers { grid-auto-columns: calc((100% - 2 * .9rem) / 3.3); } }
+
+/* Proyectos en carrusel en el celular (antes 3 tarjetas apiladas) */
+@media (max-width: 719px) {
+  .projects { display: grid; grid-auto-flow: column; grid-auto-columns: 86%; gap: .9rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 14px; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); scrollbar-width: none; overscroll-behavior-x: contain; }
+  .projects::-webkit-scrollbar { display: none; }
+  .projects > .project { scroll-snap-align: start; }
+}
+
+/* Dónde estoy: sección actual junto al logo (celular y tablet) y barra de avance bajo el menú */
+.nav-where { display: none; }
+@media (max-width: 1279px) {
+  .nav.is-solid .nav-where:not(:empty) { display: inline-flex; align-items: center; min-height: 28px; padding: 0 .75rem; border-radius: 999px; background: rgba(200, 161, 101, .14); color: var(--gold); font: 700 .7rem/1 var(--sans); letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
+  .nav.is-solid:has(.nav-where:not(:empty)) .proposal-tag { display: none; }
+}
+.nav::after { content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: calc(var(--avance, 0) * 100%); background: var(--gold); opacity: 0; transition: opacity .3s; pointer-events: none; }
+.nav.is-solid::after { opacity: .9; }
+@media (prefers-reduced-motion: reduce) { .sellers.sellers, .projects { scroll-behavior: auto; } }

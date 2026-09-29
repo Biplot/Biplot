@@ -53,7 +53,7 @@ const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
   // subrayado del menú
   await d.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" })); await d.waitForTimeout(600);
   out.navAtTop = await d.evaluate(() => [...document.querySelectorAll(".nav-links a.is-current, .nav-portal.is-current")].map(a => a.textContent.trim()));
-  await d.evaluate(() => document.querySelector("#portal").scrollIntoView({ behavior: "instant", block: "center" })); await d.waitForTimeout(600);
+  await d.evaluate(() => { document.querySelector('[data-tc-tab="portal"]').click(); document.querySelector("#portal").scrollIntoView({ behavior: "instant", block: "center" }); }); await d.waitForTimeout(600);
   out.navAtPortal = await d.evaluate(() => [...document.querySelectorAll(".nav-links a.is-current, .nav-portal.is-current")].map(a => a.textContent.trim()));
   console.log(JSON.stringify(out, null, 1));
   console.log(logs.join("\n") || "no errors");

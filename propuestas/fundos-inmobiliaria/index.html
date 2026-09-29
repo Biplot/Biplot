@@ -26,10 +26,10 @@
 <link rel="preload" href="assets/fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/cormorant-garamond-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/mulish.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="styles.css?v=20260929f">
-<script defer src="lib/manifest.js?v=20260929f"></script>
-<script defer src="lib/planos.js?v=20260929f"></script>
-<script defer src="main.js?v=20260929f"></script>
+<link rel="stylesheet" href="styles.css?v=20260929g">
+<script defer src="lib/manifest.js?v=20260929g"></script>
+<script defer src="lib/planos.js?v=20260929g"></script>
+<script defer src="main.js?v=20260929g"></script>
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -177,13 +177,14 @@
     </a>
     <!-- Quitar al publicar en el dominio de Fundos -->
     <span class="proposal-tag" title="Maqueta de diseño con datos de ejemplo. No es el sitio oficial.">Propuesta<span class="pt-long"> · datos de ejemplo</span></span>
+    <span class="nav-where" data-nav-where aria-hidden="true"></span>
   </div>
   <nav class="nav-links" aria-label="Principal">
     <a href="#proyectos">Proyectos</a>
     <a href="#recorrido">Recorrido 360°</a>
     <a href="#plano">Elige tu parcela</a>
-    <a href="#como-comprar">Cómo comprar</a>
-    <a href="#nosotros">Nosotros</a>
+    <a href="#tu-compra">Tu compra</a>
+    <a href="#nosotros">Equipo</a>
     <a href="#preguntas">Preguntas</a>
   </nav>
   <div class="nav-actions">
@@ -206,9 +207,10 @@
       <a href="#proyectos" data-menu-link>Proyectos</a>
       <a href="#recorrido" data-menu-link>Recorrido 360°</a>
       <a href="#plano" data-menu-link>Elige tu parcela</a>
+      <a href="#tu-compra" data-menu-link>Tu compra</a>
       <a href="#como-comprar" data-menu-link>Cómo comprar</a>
       <a href="#simulador" data-menu-link>Simulador</a>
-      <a href="#nosotros" data-menu-link>Nosotros</a>
+      <a href="#nosotros" data-menu-link>Equipo</a>
       <a href="#preguntas" data-menu-link>Preguntas</a>
       <a href="#portal" data-menu-link>Mi compra</a>
     </nav>
@@ -674,8 +676,20 @@
   </div>
 </section>
 
-<!-- ============================== CÓMO COMPRAR ============================== -->
-<section class="section light" id="como-comprar" aria-labelledby="pasos-title">
+<!-- ============================== TU COMPRA (pestañas) ============================== -->
+<section class="tu-compra" id="tu-compra" aria-labelledby="tc-title" data-tc>
+  <div class="tc-bar">
+    <div class="container tc-bar-in">
+      <h2 class="tc-title" id="tc-title">Todo sobre <em>tu compra</em></h2>
+      <div class="tc-tabs" role="tablist" aria-labelledby="tc-title">
+        <a class="tc-tab" href="#como-comprar" role="tab" id="tc-tab-como-comprar" data-tc-tab="como-comprar"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg>Cómo comprar</a>
+        <a class="tc-tab" href="#simulador" role="tab" id="tc-tab-simulador" data-tc-tab="simulador"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Simulador</a>
+        <a class="tc-tab" href="#preguntas" role="tab" id="tc-tab-preguntas" data-tc-tab="preguntas"><svg class="i" aria-hidden="true"><use href="#i-people"/></svg>Preguntas</a>
+        <a class="tc-tab" href="#portal" role="tab" id="tc-tab-portal" data-tc-tab="portal"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg>Mi compra</a>
+      </div>
+    </div>
+  </div>
+<section class="section light tc-panel" id="como-comprar" data-tc-panel aria-labelledby="pasos-title">
   <div class="container">
     <header class="section-head reveal">
       <p class="kicker">Cómo comprar</p>
@@ -728,58 +742,7 @@
     </div>
   </div>
 </section>
-
-<!-- ============================== PORTAL (Fundos 360°) ============================== -->
-<section class="section dark portal" id="portal" aria-labelledby="portal-title">
-  <div class="container portal-grid">
-    <div class="portal-copy reveal">
-      <p class="kicker">Fundos 360° · Mi compra</p>
-      <h2 id="portal-title">Tu compra, <em>en tiempo real.</em></h2>
-      <p class="lead">Gestionamos cada venta en Fundos 360°, nuestra propia plataforma. Desde tu reserva verás el avance de tu compra, tus documentos y los próximos hitos en tu celular: lo mismo que ve tu ejecutivo, lo ves tú.</p>
-      <ul class="ticks">
-        <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>El estado de cada etapa, de la reserva a la inscripción</li>
-        <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Comprobantes y documentos siempre disponibles</li>
-        <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Aviso de fechas y vencimientos importantes</li>
-        <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Contacto directo con tu ejecutivo</li>
-      </ul>
-      <div class="portal-actions">
-        <a class="btn btn-gold" href="https://wa.me/56900000000" target="_blank" rel="noopener" data-wa data-wa-msg="Hola, tengo una reserva con Fundos y quiero mi acceso a Mi compra."><svg class="i" aria-hidden="true"><use href="#i-key"/></svg>Pedir mi acceso</a>
-        <a class="btn btn-ghost" href="#como-comprar">Ver las etapas</a>
-      </div>
-      <p class="portal-note">Disponible para compradores con reserva vigente: te enviamos tu acceso por WhatsApp o correo.</p>
-    </div>
-
-    <div class="phone reveal" aria-label="Vista previa de la sección Mi compra" role="img">
-      <div class="phone-screen" aria-hidden="true">
-        <div class="ph-top">
-          <img src="assets/img/isotipo-174.webp" alt="" width="34" height="25" decoding="async" loading="lazy">
-          <span>Mi compra</span>
-        </div>
-        <div class="ph-card">
-          <p class="ph-label">Marchigüe · Lote 7</p>
-          <p class="ph-stage">Etapa 5 de 6 · Escritura</p>
-          <div class="ph-bar"><span style="width:83%"></span></div>
-          <ol class="ph-steps">
-            <li class="done">Conoce</li><li class="done">Reserva</li><li class="done">Validación</li><li class="done">Gastos de escrituración</li><li class="now">Escritura</li><li>Inscripción en el CBR</li>
-          </ol>
-        </div>
-        <div class="ph-next">
-          <svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg>
-          <div><p>Próximo hito</p><strong>Firma en notaría · jueves 10:30</strong></div>
-        </div>
-        <ul class="ph-docs">
-          <li><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg>Comprobante de reserva</li>
-          <li><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg>Plano del lote</li>
-          <li><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg>Borrador de escritura</li>
-        </ul>
-        <span class="ph-btn"><img src="assets/img/cara-4.webp" alt="" width="22" height="22" loading="lazy" decoding="async">Hablar con mi ejecutivo</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================== SIMULADOR ============================== -->
-<section class="section cream" id="simulador" aria-labelledby="sim-title">
+<section class="section cream tc-panel" id="simulador" data-tc-panel aria-labelledby="sim-title">
   <div class="container sim-grid">
     <header class="section-head sim-head reveal">
       <p class="kicker">Simulador</p>
@@ -850,79 +813,7 @@
     </div>
   </div>
 </section>
-
-<!-- ============================== NOSOTROS ============================== -->
-<section class="section light about" id="nosotros" aria-labelledby="nosotros-title">
-  <img class="about-mark" src="assets/img/isotipo.webp" alt="" width="480" height="346" loading="lazy" decoding="async">
-  <div class="container">
-    <div class="about-grid">
-      <div class="about-copy reveal">
-        <p class="kicker">Quiénes somos</p>
-        <h2 id="nosotros-title">La tierra como <em>punto de partida de un sueño.</em></h2>
-        <p>En Fundos Inmobiliaria creemos que la tierra no es solo un terreno: es el punto de partida de un sueño. El sueño de despertar rodeado de naturaleza, de construir un refugio familiar, de emprender un proyecto propio o simplemente de vivir con más calma y espacio.</p>
-        <p>Nacimos para hacer ese camino más simple. Sabemos que comprar un terreno puede parecer complejo y lleno de incertidumbre; por eso construimos una experiencia distinta: transparente en cada etapa, cercana en el trato y respaldada por tecnología que te permite avanzar con seguridad y confianza.</p>
-      </div>
-      <figure class="about-photo reveal">
-        <img src="assets/img/nosotros-rio-720.webp" srcset="assets/img/nosotros-rio-720.webp 720w, assets/img/nosotros-rio.webp 943w" sizes="(min-width: 960px) 584px, 92vw" alt="Río de aguas claras entre árboles nativos" width="943" height="646" loading="lazy" decoding="async">
-        <figcaption>“Si sueñas con vivir más cerca de la naturaleza, aquí encontrarás el camino más seguro para lograrlo.”</figcaption>
-      </figure>
-    </div>
-
-    <ul class="values">
-      <li class="value reveal">
-        <span class="value-icon"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg></span>
-        <h3>Transparencia</h3>
-        <p>Te contamos todo, siempre. Sin letra chica, sin sorpresas. Cada terreno, cada documento y cada etapa del proceso a la vista.</p>
-      </li>
-      <li class="value reveal">
-        <span class="value-icon"><svg class="i" aria-hidden="true"><use href="#i-people"/></svg></span>
-        <h3>Cercanía</h3>
-        <p>Tratamos a cada persona como nos gustaría que nos trataran: con tiempo, escucha y respuestas claras. Aquí no eres un número, eres un proyecto de vida.</p>
-      </li>
-      <li class="value reveal">
-        <span class="value-icon"><svg class="i" aria-hidden="true"><use href="#i-sparkle"/></svg></span>
-        <h3>Innovación</h3>
-        <p>Usamos la tecnología para simplificar lo complejo, para que comprar tu terreno sea una experiencia ágil, segura y al alcance de todos.</p>
-      </li>
-      <li class="value reveal">
-        <span class="value-icon"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></span>
-        <h3>Confianza</h3>
-        <p>Cada terreno que ofrecemos está respaldado y verificado. Tu tranquilidad es el centro de todo lo que hacemos.</p>
-      </li>
-    </ul>
-
-    <div class="team" id="equipo">
-      <div class="team-top">
-        <header class="team-head reveal">
-          <p class="kicker">Nuestro equipo</p>
-          <h3 class="team-title">Detrás de cada venta <em>hay personas.</em></h3>
-          <p>Somos el equipo de Fundos. Te mostramos cada proyecto, resolvemos tus dudas y te acompañamos hasta el día en que ese terreno quede inscrito a tu nombre, con respuestas claras en cada paso.</p>
-          <p class="team-faces"><span class="faces faces-lg" aria-hidden="true"><img src="assets/img/cara-1.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-2.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-3.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-4.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-5.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-6.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-7.webp" alt="" width="52" height="52" loading="lazy" decoding="async"></span><span>Te atiende una persona del equipo, <strong>no un bot.</strong></span></p>
-        </header>
-        <figure class="team-photo reveal">
-          <img src="assets/img/equipo-grupo-800.webp" srcset="assets/img/equipo-grupo-800.webp 800w, assets/img/equipo-grupo-1400.webp 1400w" sizes="(min-width: 960px) 54vw, 92vw" alt="El equipo de Fundos Inmobiliaria, con la polera de la marca, sentado en un banco bajo los árboles" width="1400" height="1050" loading="lazy" decoding="async">
-          <figcaption>El equipo de Fundos Inmobiliaria</figcaption>
-        </figure>
-      </div>
-      <div class="sellers-head reveal">
-        <h4 class="sellers-title">Elige con quién <em>quieres hablar.</em></h4>
-        <p>Abre la ficha de cada persona para escribirle directo o agendar tu visita con ella.</p>
-      </div>
-      <!-- Una tarjeta por persona: se arman desde lib/manifest.js (equipo) -->
-      <ul class="sellers" data-sellers>
-        <li class="member member-cta reveal">
-          <span class="faces faces-cta" aria-hidden="true"><img src="assets/img/cara-1.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-2.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-3.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-4.webp" alt="" width="44" height="44" loading="lazy" decoding="async"></span>
-          <h4>Conversemos <em>cuando te acomode.</em></h4>
-          <p>En terreno o por videollamada: te mostramos el proyecto, resolvemos tus dudas y te ayudamos a elegir.</p>
-          <a class="btn btn-gold" href="#visita">Agendar con el equipo<svg class="i i-go" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!-- ============================== PREGUNTAS ============================== -->
-<section class="section cream" id="preguntas" aria-labelledby="faq-title">
+<section class="section cream tc-panel" id="preguntas" data-tc-panel aria-labelledby="faq-title">
   <div class="container faq-grid">
     <header class="section-head faq-head reveal">
       <p class="kicker">Preguntas frecuentes</p>
@@ -962,6 +853,102 @@
     </div>
   </div>
 </section>
+<section class="section dark portal tc-panel" id="portal" data-tc-panel aria-labelledby="portal-title">
+  <div class="container portal-grid">
+    <div class="portal-copy reveal">
+      <p class="kicker">Fundos 360° · Mi compra</p>
+      <h2 id="portal-title">Tu compra, <em>en tiempo real.</em></h2>
+      <p class="lead">Gestionamos cada venta en Fundos 360°, nuestra propia plataforma. Desde tu reserva verás el avance de tu compra, tus documentos y los próximos hitos en tu celular: lo mismo que ve tu ejecutivo, lo ves tú.</p>
+      <ul class="ticks">
+        <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>El estado de cada etapa, de la reserva a la inscripción</li>
+        <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Comprobantes y documentos siempre disponibles</li>
+        <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Aviso de fechas y vencimientos importantes</li>
+        <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Contacto directo con tu ejecutivo</li>
+      </ul>
+      <div class="portal-actions">
+        <a class="btn btn-gold" href="https://wa.me/56900000000" target="_blank" rel="noopener" data-wa data-wa-msg="Hola, tengo una reserva con Fundos y quiero mi acceso a Mi compra."><svg class="i" aria-hidden="true"><use href="#i-key"/></svg>Pedir mi acceso</a>
+        <a class="btn btn-ghost" href="#como-comprar">Ver las etapas</a>
+      </div>
+      <p class="portal-note">Disponible para compradores con reserva vigente: te enviamos tu acceso por WhatsApp o correo.</p>
+    </div>
+
+    <div class="phone reveal" aria-label="Vista previa de la sección Mi compra" role="img">
+      <div class="phone-screen" aria-hidden="true">
+        <div class="ph-top">
+          <img src="assets/img/isotipo-174.webp" alt="" width="34" height="25" decoding="async" loading="lazy">
+          <span>Mi compra</span>
+        </div>
+        <div class="ph-card">
+          <p class="ph-label">Marchigüe · Lote 7</p>
+          <p class="ph-stage">Etapa 5 de 6 · Escritura</p>
+          <div class="ph-bar"><span style="width:83%"></span></div>
+          <ol class="ph-steps">
+            <li class="done">Conoce</li><li class="done">Reserva</li><li class="done">Validación</li><li class="done">Gastos de escrituración</li><li class="now">Escritura</li><li>Inscripción en el CBR</li>
+          </ol>
+        </div>
+        <div class="ph-next">
+          <svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg>
+          <div><p>Próximo hito</p><strong>Firma en notaría · jueves 10:30</strong></div>
+        </div>
+        <ul class="ph-docs">
+          <li><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg>Comprobante de reserva</li>
+          <li><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg>Plano del lote</li>
+          <li><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg>Borrador de escritura</li>
+        </ul>
+        <span class="ph-btn"><img src="assets/img/cara-4.webp" alt="" width="22" height="22" loading="lazy" decoding="async">Hablar con mi ejecutivo</span>
+      </div>
+    </div>
+  </div>
+</section>
+</section>
+
+<!-- ============================== NOSOTROS ============================== -->
+<section class="section light about" id="nosotros" aria-labelledby="nosotros-title">
+  <img class="about-mark" src="assets/img/isotipo.webp" alt="" width="480" height="346" loading="lazy" decoding="async">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-copy reveal">
+        <p class="kicker">Quiénes somos</p>
+        <h2 id="nosotros-title">Detrás de cada venta <em>hay personas.</em></h2>
+        <p>En Fundos Inmobiliaria creemos que la tierra es el punto de partida de un sueño: despertar rodeado de naturaleza, construir un refugio familiar o vivir con más calma. Nacimos para hacer ese camino simple, transparente y cercano.</p>
+        <ul class="values values-mini">
+          <li><span class="value-icon"><svg class="i" aria-hidden="true"><use href="#i-doc"/></svg></span><div><h3>Transparencia</h3><p>Te contamos todo, siempre.</p></div></li>
+          <li><span class="value-icon"><svg class="i" aria-hidden="true"><use href="#i-people"/></svg></span><div><h3>Cercanía</h3><p>Tratamos a cada persona como nos gustaría que nos trataran: con tiempo, escucha y respuestas claras.</p></div></li>
+          <li><span class="value-icon"><svg class="i" aria-hidden="true"><use href="#i-sparkle"/></svg></span><div><h3>Innovación</h3><p>Usamos la tecnología para simplificar lo complejo, para que comprar tu terreno sea una experiencia ágil, segura y al alcance de todos.</p></div></li>
+          <li><span class="value-icon"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg></span><div><h3>Confianza</h3><p>Cada terreno que ofrecemos está respaldado y verificado.</p></div></li>
+        </ul>
+      </div>
+      <figure class="team-photo reveal">
+        <img src="assets/img/equipo-grupo-800.webp" srcset="assets/img/equipo-grupo-800.webp 800w, assets/img/equipo-grupo-1400.webp 1400w" sizes="(min-width: 960px) 54vw, 92vw" alt="El equipo de Fundos Inmobiliaria, con la polera de la marca, sentado en un banco bajo los árboles" width="1400" height="1050" loading="lazy" decoding="async">
+        <figcaption>El equipo de Fundos Inmobiliaria</figcaption>
+      </figure>
+    </div>
+
+    <div class="team" id="equipo">
+      <div class="sellers-head reveal">
+        <div>
+          <p class="kicker">Nuestro equipo</p>
+          <h3 class="sellers-title">Elige con quién <em>quieres hablar.</em></h3>
+        </div>
+        <p class="team-faces"><span class="faces faces-lg" aria-hidden="true"><img src="assets/img/cara-1.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-2.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-3.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-4.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-5.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-6.webp" alt="" width="52" height="52" loading="lazy" decoding="async"><img src="assets/img/cara-7.webp" alt="" width="52" height="52" loading="lazy" decoding="async"></span><span>Te atiende una persona del equipo, <strong>no un bot.</strong></span></p>
+        <div class="sellers-nav" aria-hidden="true">
+          <button class="icon-btn sellers-arrow" type="button" tabindex="-1" data-sellers-prev aria-label="Ver anteriores"><svg class="i"><use href="#i-arrow"/></svg></button>
+          <button class="icon-btn sellers-arrow" type="button" tabindex="-1" data-sellers-next aria-label="Ver siguientes"><svg class="i"><use href="#i-arrow"/></svg></button>
+        </div>
+      </div>
+      <!-- Una tarjeta por persona: se arman desde lib/manifest.js (equipo) -->
+      <ul class="sellers" data-sellers>
+        <li class="member member-cta reveal">
+          <span class="faces faces-cta" aria-hidden="true"><img src="assets/img/cara-1.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-2.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-3.webp" alt="" width="44" height="44" loading="lazy" decoding="async"><img src="assets/img/cara-4.webp" alt="" width="44" height="44" loading="lazy" decoding="async"></span>
+          <h4>Conversemos <em>cuando te acomode.</em></h4>
+          <p>En terreno o por videollamada: te mostramos el proyecto, resolvemos tus dudas y te ayudamos a elegir.</p>
+          <a class="btn btn-gold" href="#visita">Agendar con el equipo<svg class="i i-go" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
 
 <!-- ============================== VISITA / CONTACTO ============================== -->
 <section class="section dark visit" id="visita" aria-labelledby="visita-title">

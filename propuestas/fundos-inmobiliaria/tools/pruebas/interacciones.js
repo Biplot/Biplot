@@ -99,7 +99,9 @@ const ARGS = ["--proxy-server=" + (process.env.HTTPS_PROXY || "http://127.0.0.1:
   await page.waitForTimeout(300);
   results.dialogClosed = !(await page.locator("#proyecto").evaluate(d => d.open));
 
-  // Simulador en modo financiamiento
+  // Simulador en modo financiamiento (pestaña de "Tu compra")
+  await page.evaluate(() => document.querySelector('[data-tc-tab="simulador"]').click());
+  await page.waitForTimeout(300);
   await page.evaluate(() => document.getElementById("simulador").scrollIntoView({ behavior: "instant" }));
   await page.waitForTimeout(900);
   await page.locator('.seg label:has(input[value="credito"])').click();
