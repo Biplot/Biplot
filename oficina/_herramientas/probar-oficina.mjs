@@ -443,7 +443,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     await cierra(); await abre('hoy');
     // (lo que es una imagen se abre de frente, con la sala oscurecida detrás: se sigue viendo)
     const f = document.querySelector('#sala-frente'), fl = f.querySelector('.frente-lamina')?.getBoundingClientRect(), velo = f.querySelector('.frente-velo');
-    const va = velo ? getComputedStyle(velo).backgroundColor.match(/[\d.]+/g) : null, alfa = va && va.length === 4 ? +va[3] : 1;
+    const va = velo ? getComputedStyle(velo).backgroundColor.match(/[\\d.]+/g) : null, alfa = va && va.length === 4 ? +va[3] : 1;
     r.hoy = { frente: !f.hidden && f.getAttribute('role') === 'dialog' && f.getAttribute('aria-modal') === 'true' && t.hidden, vb: f.querySelector('.frente-marco svg')?.getAttribute('viewBox'),
       detras: !document.querySelector('#sala').hidden && alfa > 0.4 && alfa < 0.85, cabe: !!fl && fl.left >= 0 && fl.right <= innerWidth + 1 && fl.top >= 0,
       foco: document.activeElement?.id, exp: document.querySelector('.zona-sala[data-zona="hoy"]').getAttribute('aria-expanded'),
