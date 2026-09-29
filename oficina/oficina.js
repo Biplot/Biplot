@@ -1389,11 +1389,13 @@
       (m.texto ? '<p class="sp-txt">' + esc(m.texto) + '</p>' : '') + '<div class="sp-acciones">' + botonesPropia(PP.barra || ['disenar', 'recorrer', 'hablar']) + '</div>';
   }
   // Lo que puede traer además una tarjeta del museo: las diez fases con quién lleva cada una, una línea de tiempo y el fichero
-  function htmlFases() {
+  // Las diez fases del motor, con quién lleva cada una; con atlas, además Atlas, que no tiene una fase: ve las diez a la vez
+  function htmlFases(atlas) {
+    var A = atlas && PERSONAL.atlas;
     return '<ol class="tarjeta-fases">' + D.fases.map(function (f) {
       var nombres = f.quien.map(function (q) { return PERSONAL[q].nombre; }).join(' y ');
       return '<li><span class="cod">' + esc(f.id) + '</span><b>' + esc(f.nombre) + '</b><span class="quien" aria-label="' + esc(nombres) + '" role="img">' + f.quien.map(function (q) { return avatar(q); }).join('') + '</span></li>';
-    }).join('') + '</ol>';
+    }).join('') + (A ? '<li class="fase-360"><span class="cod">' + esc(A.placa) + '</span><b>' + esc(A.nombre) + ' ve las diez a la vez</b><span class="quien" aria-label="' + esc(A.nombre) + '" role="img">' + avatar('atlas') + '</span></li>' : '') + '</ol>';
   }
   function htmlHitos(h) {
     return '<ol class="tarjeta-fases tarjeta-hitos">' + h.map(function (x) { return '<li><span class="cod">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '<span>' + esc(x[2] || '') + '</span></b></li>'; }).join('') + '</ol>';
@@ -1411,7 +1413,7 @@
         '<figcaption>' + esc(piePantalla(pr, d.imagen)) + '</figcaption></figure>' : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
-      (d.fases ? htmlFases() : '') + (d.hitos ? htmlHitos(d.hitos) : '') + (d.fichero ? '<div class="tarjeta-fichero">' + htmlFichero('h4', true) + '</div>' : '') +
+      (d.fases ? htmlFases(d.atlas) : '') + (d.hitos ? htmlHitos(d.hitos) : '') + (d.fichero ? '<div class="tarjeta-fichero">' + htmlFichero('h4', true) + '</div>' : '') +
       (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
         esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') + '</div>';
   }
@@ -1560,7 +1562,7 @@
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
       (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
         esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') +
-      (d.fases ? htmlFases() : '') + (d.hitos ? '<div class="frente-lista">' + htmlHitos(d.hitos) + '</div>' : '') + '</div>' + img + '</div></div>';
+      (d.fases ? htmlFases(d.atlas) : '') + (d.hitos ? '<div class="frente-lista">' + htmlHitos(d.hitos) + '</div>' : '') + '</div>' + img + '</div></div>';
   }
   function abrirFrente(id, o) {
     o = o || {};

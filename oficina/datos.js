@@ -685,7 +685,8 @@
         /* Sala propia: la sala de ventas de BiPlot, como la de una inmobiliaria (maqueta, piloto, lista de precios y la
            promesa). Todo lo que dice sale del sitio: el diagnóstico desde $0, la respuesta en 48 horas hábiles, las diez
            fases, la medición a los 30, 60 y 90 días y el local y la sala de cada proyecto. Quienes la visitan son
-           ilustraciones sin nombre; Plotty guía el recorrido y termina en la mesa de Lupe. */
+           ilustraciones sin nombre; Plotty guía el recorrido y termina en la mesa de Lupe. Atlas, sobre la maqueta, ve todo
+           el panorama: no tiene una fase, ve las diez a la vez (atlas: true suma su fila bajo las diez fases). */
         salaPropia: {
           marca: { nombre: 'Tu proyecto aquí', sub: 'SALA DE VENTAS DE BIPLOT', texto: 'Mira cómo se vería tu local, cómo avanza tu proyecto y cuánto cuesta. La primera sesión es sin costo.' },
           colores: { fondo: '#FBFAF7', fondo2: '#EEF1F0', tinta: '#0E2A47', tinta2: '#2F3A46', oro: '#17C3B2', ceja: '#0B6F66', cejaBurbuja: '#0B6F66',
@@ -701,6 +702,7 @@
           burbujas: [
             { quien: 'plotty', nombre: 'Plotty, de BiPlot', rol: 'Plotty · Recepción', texto: '¡Hola! Este local espera un proyecto. ¿Te muestro cómo sería el tuyo?', biplot: true },
             { quien: 'lupe', nombre: 'Lupe, de BiPlot', rol: 'Lupe · Diagnóstico', texto: 'La primera sesión es sin costo. ¿Me cuentas cómo trabajan hoy?', biplot: true },
+            { quien: 'atlas', nombre: 'Atlas, de BiPlot', rol: 'Atlas · 360°', texto: 'Desde aquí arriba se ve todo: la calle entera y las diez fases a la vez.', biplot: true },
             { quien: 'vtElla', nombre: 'Una visitante frente a la maqueta', rol: 'Visita', texto: '¿Y el nuestro iría aquí, al lado de Rumbo?' },
             { quien: 'vtEl', nombre: 'Un visitante frente a la maqueta', rol: 'Visita', texto: 'Con nuestro logo en el techo.' },
             { quien: 'vtPiloto', nombre: 'Una visitante en el local piloto', rol: 'Visita', texto: '¡Así se vería el nuestro!' },
@@ -717,13 +719,13 @@
               texto: 'Trabajamos con pymes de servicios profesionales que sienten que su operación creció más rápido que sus procesos. Si hoy todo vive en planillas, en un cuaderno o en WhatsApp, llegaste al lugar correcto.',
               chips: ['En planillas', 'En WhatsApp y papel', 'En un sistema que no conversa con nada'], botones: [{ chat: true }] },
             maqueta: { nombre: 'La maqueta del barrio', ceja: 'La maqueta', titulo: 'Un local para cada proyecto',
-              texto: 'Así es la calle principal: un local por proyecto, cada uno con su marca en el techo y su sala adentro. El sitio libre, entre Rumbo y El Archivo, espera el próximo. Los proyectos que no se muestran con su propio dibujo van en la calle de su rubro.' },
+              texto: 'Así es la calle principal: un local por proyecto, cada uno con su marca en el techo y su sala adentro. El sitio libre, entre Rumbo y El Archivo, espera el próximo. Encima flota Atlas, que proyecta el mapa y ve todo el panorama. Los proyectos que no se muestran con su propio dibujo van en la calle de su rubro.' },
             piloto: { nombre: 'El local piloto', ceja: 'El local piloto', titulo: 'Así se vería el tuyo',
               texto: 'Tu nombre y tu logo en el techo, tus productos a la vista de quien pasa por el barrio y, adentro, tu sala con tus pantallas y un enlace para mostrarla a tus clientes. Sólo si quieres: si prefieres no aparecer, se muestra sólo tu rubro.',
               chips: ['Tu marca en el techo', 'Tu sala, con un enlace', 'biplot.cl/oficina/tu-empresa'] },
             avance: { nombre: 'Así avanza tu proyecto', ceja: 'Cómo trabajamos', titulo: 'Diez fases, un solo motor',
-              texto: 'Sin plantillas: el proceso real, primero. Tu proyecto pasa por cuatro etapas y diez fases, con alguien del equipo a cargo de cada una. Tú hablas con una persona; el motor hace el resto. Y tu local en la calle cambia con él: en diagnóstico, en obra y, al final, abierto.',
-              fases: true, botones: [{ url: '../#metodologia', texto: 'Ver cómo trabajamos' }] },
+              texto: 'Sin plantillas: el proceso real, primero. Cuatro etapas y diez fases, cada una con alguien del equipo a cargo, y Atlas, que las ve todas a la vez y marca dónde se pierden las horas. Tú hablas con una persona; el motor hace el resto, y tu local en la calle cambia con él.',
+              fases: true, atlas: true, botones: [{ url: '../#metodologia', texto: 'Ver cómo trabajamos' }] },
             promesa: { nombre: 'La promesa', ceja: 'La promesa', titulo: 'Lo que te prometemos, por escrito',
               texto: 'Te respondemos en menos de 48 horas hábiles, hablas siempre con una persona y, si no hay algo real que automatizar, te lo decimos de frente. A los 30, 60 y 90 días medimos contra tu línea base: si no bajó, se dice.',
               botones: [{ url: '../#faq', texto: 'Ver las preguntas frecuentes' }] },
@@ -740,9 +742,9 @@
           recorrido: [
             { zona: 'plotty', titulo: 'La entrada', texto: '¡Hola! Soy Plotty. Este local espera un proyecto: el tuyo. Te muestro cómo se trabaja con BiPlot.' },
             { zona: 'espera', titulo: 'La sala de espera', texto: 'Aquí esperan otras pymes: tres Excel, un cuaderno, WhatsApp. ¿Te suena?' },
-            { zona: 'maqueta', titulo: 'La maqueta', texto: 'Esta es la calle. Cada proyecto tiene su local, y este sitio libre puede ser el tuyo.' },
+            { zona: 'maqueta', titulo: 'La maqueta', texto: 'Esta es la calle. Atlas la mira desde arriba, con todo el panorama, y este sitio libre puede ser el tuyo.' },
             { zona: 'piloto', titulo: 'El local piloto', texto: 'Así se vería el tuyo: tu marca en el techo y tu sala con un enlace para tus clientes.' },
-            { zona: 'avance', titulo: 'Cómo avanza', texto: 'Cuatro etapas y diez fases, con alguien a cargo de cada una. Tu local cambia con ellas.' },
+            { zona: 'avance', titulo: 'Cómo avanza', texto: 'Cuatro etapas y diez fases, con alguien a cargo de cada una. Atlas las ve todas a la vez.' },
             { zona: 'promesa', titulo: 'La promesa', texto: 'Lo que te prometemos, por escrito. Si no bajó, se dice.' },
             { zona: 'precios', titulo: 'Los precios', texto: 'Precios claros: el diagnóstico parte en $0 y el proyecto se cotiza según su alcance.' },
             { zona: 'vecinos', titulo: 'Los vecinos', texto: 'Por la ventana, la calle: pasa a la sala de cada proyecto cuando quieras.' },

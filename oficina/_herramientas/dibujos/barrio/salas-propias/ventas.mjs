@@ -2,7 +2,7 @@
 // ventas de una inmobiliaria: la maqueta del barrio con el sitio libre, un local piloto armado adentro, la lista de
 // precios, cómo avanza un proyecto (y cómo cambia el local con él), la promesa por escrito, la ventana a los vecinos, la
 // sala de espera y, al fondo, la mesa de Lupe, donde se agenda el diagnóstico. Plotty recibe en la entrada y guía el
-// recorrido. Todo lo que dice sale del sitio y de datos.js: el diagnóstico desde $0, la respuesta en menos de 48 horas
+// recorrido; Atlas flota sobre la maqueta y proyecta el mapa: no tiene una fase, ve las diez a la vez. Todo lo que dice sale del sitio y de datos.js: el diagnóstico desde $0, la respuesta en menos de 48 horas
 // hábiles, las diez fases con alguien a cargo, la medición a los 30, 60 y 90 días y el local y la sala de cada proyecto.
 // El coral es sólo para «Agenda tu diagnóstico» (y el punto final del isotipo).
 import { montar, base, registrar, planoXen, silla, plantaAlta, txt, mono, PELO, Z, PIEL, EA, r1 } from './comun.mjs';
@@ -23,6 +23,10 @@ const TU_MARCA = '#8E6BB8';
 // El isotipo de BiPlot (la línea con su punto final coral), de 22 × 22
 const ISOTIPO = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><rect width="22" height="22" rx="5" fill="${AZUL}" stroke="${CIAN}" stroke-width="1.6"/>` +
   `<path d="M5 5V17H18" stroke="#3F6DA0" stroke-width="1.4" fill="none"/><circle cx="7" cy="14" r="1.8" fill="${CIAN}"/><circle cx="11" cy="11" r="1.8" fill="${CIAN}"/><circle cx="16.5" cy="6.5" r="2.2" fill="${CORAL}"/></g>`;
+// El orbe de Atlas (vidrio, anillos, un globo de líneas y su corazón de plasma), de radio r
+const ORBE = (x, y, r) => `<g transform="translate(${x} ${y})"><circle r="${r}" fill="rgba(127,216,207,.16)" stroke="${MENTA}" stroke-width="${r1(r * 0.09)}"/>` +
+  `<ellipse rx="${r}" ry="${r1(r * 0.36)}" fill="none" stroke="${MENTA}" stroke-width="${r1(r * 0.06)}" opacity=".8"/><ellipse rx="${r1(r * 0.42)}" ry="${r}" fill="none" stroke="${MENTA}" stroke-width="${r1(r * 0.06)}" opacity=".6"/>` +
+  `<ellipse rx="${r1(r * 1.35)}" ry="${r1(r * 0.3)}" fill="none" stroke="${CIAN}" stroke-width="${r1(r * 0.07)}" transform="rotate(-18)"/><circle r="${r1(r * 0.3)}" fill="${CIAN}"/><circle r="${r1(r * 0.14)}" fill="#DDF4F1"/></g>`;
 // Texto en varias líneas
 const lineas = (x, y, ls, fs, color, alto, f = txt, extra = '') => ls.map((l, i) => f(x, r1(y + i * alto), l, fs, color, extra)).join('');
 const visto = (x, y, s = 1) => `<path d="M${x} ${y}l${r1(4 * s)} ${r1(4 * s)}l${r1(8 * s)} ${r1(-9 * s)}" fill="none" stroke="${CIAN}" stroke-width="${r1(2.6 * s)}" stroke-linecap="round" stroke-linejoin="round"/>`;
@@ -62,7 +66,7 @@ const ETAPAS = [
   ['03', 'Construcción', 'E5 · E6', 'obra', ['Tus herramientas conectadas', 'y funcionando.']],
   ['04', 'Puesta en marcha', 'E7 · E8 · E9', 'abierto', ['La medición del día 30, 60 y 90,', 'contra tu línea base.']]
 ];
-const AVANCE_A = 1200, AVANCE_H = 400;
+const AVANCE_A = 1200, AVANCE_H = 452;
 const AVANCE = `<rect width="${AVANCE_A}" height="${AVANCE_H}" rx="14" fill="${AZUL}"/><rect x="10" y="10" width="${AVANCE_A - 20}" height="${AVANCE_H - 20}" rx="9" fill="none" stroke="rgba(127,216,207,.3)" stroke-width="1.5"/>` +
   mono(44, 58, 'ASÍ AVANZA TU PROYECTO', 22, MENTA, ' letter-spacing="3"') +
   txt(AVANCE_A - 44, 58, 'Cuatro etapas, diez fases, alguien a cargo de cada una', 19, GRIS, ' text-anchor="end" font-weight="500"') +
@@ -73,7 +77,11 @@ const AVANCE = `<rect width="${AVANCE_A}" height="${AVANCE_H}" rx="14" fill="${A
       txt(x, 160, nombre, 24, '#FFFFFF') + mono(x, 186, cod, 15, MENTA, ' letter-spacing="1"') +
       fachada(x, 200, estado) +
       mono(x, 334, 'ENTREGABLE', 12, MENTA, ' letter-spacing="2"') + lineas(x, 358, ent, 16.5, '#E6ECF2', 22, txt, ' font-weight="500"');
-  }).join('');
+  }).join('') +
+  // Atlas no tiene una fase: las ve todas a la vez, por encima de las cuatro etapas
+  `<rect x="44" y="392" width="${AVANCE_A - 88}" height="42" rx="21" fill="rgba(127,216,207,.1)" stroke="${MENTA}" stroke-width="1.6" stroke-dasharray="6 5"/>` +
+  ORBE(72, 413, 13) + mono(96, 419, 'ATLAS · 360°', 14, MENTA, ' letter-spacing="2"') +
+  txt(236, 419, 'No tiene una fase: ve las diez a la vez. Recorre tu proceso y marca dónde se pierden las horas.', 16.5, '#FFFFFF', ' font-weight="500"');
 
 // La lista de precios, la del sitio (1000 × 440)
 const PLANES = [
@@ -178,8 +186,8 @@ export function salaVentas() {
       txt(190, 138, 'TU PROYECTO AQUÍ', 34, '#5FBDB3', ' text-anchor="middle" letter-spacing="2"') + mono(190, 182, 'ESTE ESPACIO ESPERA EL PRÓXIMO', 15, '#5FBDB3', ' text-anchor="middle" letter-spacing="1.5"'), -54);
 
     // ── Así avanza tu proyecto: el mural de las cuatro etapas, con el local de la calle en cada una ──
-    L.planoY(0.7, 0.02, 2.44, 580, 193, enMuro(AVANCE, AVANCE_A, 580), -39);
-    zona('avance', { formas: [{ plano: [[0.7, 0.03, 0.5], [6.5, 0.03, 0.5], [6.5, 0.03, 2.44], [0.7, 0.03, 2.44]] }], lugar: [3.6, 0.1, 2.62], guia: [3.4, 2.3],
+    L.planoY(0.7, 0.02, 2.5, 580, 218, enMuro(AVANCE, AVANCE_A, 580), -39);
+    zona('avance', { formas: [{ plano: [[0.7, 0.03, 0.32], [6.5, 0.03, 0.32], [6.5, 0.03, 2.5], [0.7, 0.03, 2.5]] }], lugar: [3.6, 0.1, 2.66], guia: [3.4, 2.3],
       frente: { svg: AVANCE, ancho: AVANCE_A, alto: AVANCE_H, fondo: AZUL } });
 
     // ── La lista de precios, en el muro del fondo ──
@@ -238,6 +246,9 @@ export function salaVentas() {
       const [cx, cy] = L.P(x, 6.05, 1.02); L.add(km(x) + 0.101, `<circle cx="${r1(cx)}" cy="${r1(cy)}" r="6.5" fill="#168A86"/><circle cx="${r1(cx - 2.5)}" cy="${r1(cy - 2)}" r="4" fill="#1FA39E"/>`);
     }
     L.planoY(7.4, 6.404, 0.58, 200, 26, `<rect width="200" height="26" rx="4" fill="${AZUL}"/>` + mono(100, 17.6, 'LA CALLE PRINCIPAL', 11, MENTA, ' text-anchor="middle" letter-spacing="2"'), 8.4 + 6.4 + 0.1);
+    // Atlas flota sobre la maqueta y proyecta el mapa de la calle: ve todo el panorama
+    L.add(13.97, L.poly([[8.25, 4.95, 1.86], [6.3, 6.1, 0.84], [10.55, 6.1, 0.84], [10.55, 4.15, 0.84]], `class="haz-atlas" fill="rgba(127,216,207,.2)"`));
+    pj('atlas', 8.25, 4.95, 1.86, 'i', 2.1, 13.98);
     pj('vtEl', 7.25, 7.05, 0, 'd');
     pj('vtElla', 9.15, 7.15, 0, 'i');
     zona('maqueta', { formas: [{ piso: [[5.9, 3.5], [10.9, 3.5], [10.9, 6.5], [5.9, 6.5]], alto: 1.25 }], lugar: [8.4, 5.0, 1.75], guia: [10.9, 7.4] });

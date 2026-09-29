@@ -506,6 +506,8 @@ button { font: inherit; color: inherit; }
 .tarjeta-fases b span { display: block; font-weight: 400; font-size: 12.5px; color: var(--p-pie); }
 .tarjeta-fases .quien { flex: none; display: flex; }
 .tarjeta-fases .avatar { width: 30px; height: 32px; display: block; }
+/* Atlas, bajo las diez fases: las ve todas a la vez, en una fila entera, punteada */
+.tarjeta-fases .fase-360 { grid-column: 1 / -1; background: none; border: 1.5px dashed var(--p-oro, #17C3B2); }
 .tarjeta-hitos .cod { min-width: 50px; }
 .tarjeta-fichero { margin: 0 0 8px; }
 .tarjeta-fichero .archivo-busca { margin: 4px 0 6px; }
@@ -605,6 +607,7 @@ button { font: inherit; color: inherit; }
   .frente-texto .tarjeta-fases li { justify-content: center; gap: 6px; padding: 4px 6px; }
   .frente-texto .tarjeta-fases b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .frente-texto .tarjeta-fases .avatar + .avatar { margin-left: -9px; }
+  .frente-texto .tarjeta-fases .fase-360 b { position: static; width: auto; height: auto; overflow: visible; clip: auto; flex: none; }
 }
 /* La imagen angosta y el texto, lado a lado */
 @media (min-width: 900px) {
@@ -792,7 +795,7 @@ button { font: inherit; color: inherit; }
 .loc-b { animation: loc-b 8s steps(1) infinite; }
 @keyframes loc-a { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 @keyframes loc-b { 0%, 49% { opacity: 0; } 50%, 100% { opacity: 1; } }
-.quieto .loc-a, .quieto .loc-b, .quieto [class^="loc-"], .quieto [class*=" loc-"], .quieto .pj-cuerpo, .quieto .pj-flota, .quieto .chorro { animation: none; }
+.quieto .loc-a, .quieto .loc-b, .quieto [class^="loc-"], .quieto [class*=" loc-"], .quieto .pj-cuerpo, .quieto .pj-flota, .quieto .chorro, .quieto .haz-atlas { animation: none; }
 
 /* Pausa manual (botón) */
 .oficina-quieta .pj *, .oficina-quieta .pj, .oficina-quieta .capa-obj *, .oficina-quieta .capa-piso *, .oficina-quieta .capa-muros *, .oficina-quieta .barrio *, .oficina-quieta .sala-dibujo *, .oficina-quieta .pulso { animation-play-state: paused !important; }

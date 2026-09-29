@@ -4,7 +4,8 @@
  * exacto, lista para capturar (window.KIT_LISTO = true cuando cargaron las fuentes). La exporta
  * _herramientas/exportar-kit.mjs.
  * En redes el equipo va en ilustración (ilustraciones.js); el cabezón queda para la oficina y la credencial.
- * Las piezas «sala-<id>» muestran la sala de cada empresa (salas.js) y la de El Archivo, el museo de BiPlot: la vista previa
+ * Las piezas «sala-<id>» muestran la sala de cada empresa (salas.js), la de El Archivo, el museo de BiPlot, y la sala de
+ * ventas del local libre («sala-libre»): la vista previa
  * del enlace biplot.cl/oficina/<id> (1200 × 630) y, para Haru 360, también la publicación y la historia.
  * Las piezas «cara-<id>» (formato «cara», 160 × 160, fondo transparente) son la cara de cada integrante en su círculo:
  * las usa el sitio principal (assets/oficina/caras/), y las exporta exportar-kit.mjs --caras.
@@ -20,6 +21,9 @@
   // El Archivo también tiene su sala: el museo de BiPlot (no es un proyecto, pero su vista previa va igual)
   var A = D.salas.archivo;
   if (A && A.salaPropia) PROY.archivo = { id: 'archivo', nombre: A.nombre, rubro: A.sub, esencia: A.esencia, acento: '#7FD8CF' };
+  // Y el local libre de la calle principal, la sala de ventas de BiPlot
+  var V = PROY.libre;
+  if (V && V.salaPropia) PROY.libre = { id: 'libre', nombre: V.nombre, rubro: 'La sala de ventas de BiPlot', esencia: 'Mira cómo se vería tu local, cómo avanza tu proyecto y cuánto cuesta.', acento: V.acento };
   // Las salas con dibujo grande; cada una tiene su vista previa y Haru 360, además, publicación e historia
   var SALAS_KIT = window.Salas ? Object.keys(window.Salas.salas) : [];
   var FORMATOS_SALA = { haru: ['og', '4x5', '9x16'] };
@@ -134,7 +138,7 @@
   }
   function sala(id, f) {
     var p = PROY[id], url = 'biplot.cl/oficina/<b>' + id + '</b>';
-    var cab = '<div class="k-halo"></div><p class="k-eyebrow">' + (id === 'archivo' ? 'Pasa al museo' : 'Pasa a la sala') + '</p><h1 class="s-nombre">' + esc(p.nombre) + '</h1><p class="s-rubro">' + esc(p.rubro) + '</p>';
+    var cab = '<div class="k-halo"></div><p class="k-eyebrow">' + (id === 'archivo' ? 'Pasa al museo' : id === 'libre' ? 'Pasa a la sala de ventas' : 'Pasa a la sala') + '</p><h1 class="s-nombre">' + esc(p.nombre) + '</h1><p class="s-rubro">' + esc(p.rubro) + '</p>';
     if (f === 'og') return cab + '<p class="s-esencia">' + esc(p.esencia) + '</p><p class="s-url">' + url + '</p>' + dibujoSala(id, 's-escena') + '<footer class="s-pie">' + marca() + '</footer>';
     if (f === '9x16') return cab + dibujoSala(id, 's-escena') + '<p class="s-esencia">' + esc(p.esencia) + '</p>' +
       '<div class="s-sticker"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>biplot.cl/oficina/' + id + '</div>' + pie('Toca el enlace y pasa');
@@ -153,7 +157,8 @@
   }
   function montar(destino, pieza, f) {
     var tam = FORMATOS[f], div = document.createElement('div');
-    div.className = 'pieza f-' + f + ' p-' + pieza.replace(/^ficha-.*/, 'ficha').replace(/^sala-.*/, 'sala').replace(/^cara-.*/, 'cara') + (pieza.indexOf('ficha-') === 0 ? ' pj-fondo-' + pieza.slice(6) : '');
+    div.className = 'pieza f-' + f + ' p-' + pieza.replace(/^ficha-.*/, 'ficha').replace(/^sala-.*/, 'sala').replace(/^cara-.*/, 'cara') + (pieza.indexOf('ficha-') === 0 ? ' pj-fondo-' + pieza.slice(6) : '') +
+      (pieza.indexOf('sala-') === 0 && PROY[pieza.slice(5)].nombre.length > 12 ? ' nombre-largo' : '');
     if (pieza.indexOf('sala-') === 0) div.style.setProperty('--acento', PROY[pieza.slice(5)].acento);
     div.style.width = tam[0] + 'px'; div.style.height = tam[1] + 'px';
     div.innerHTML = contenido(pieza, f);

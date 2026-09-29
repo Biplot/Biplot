@@ -14,6 +14,8 @@
 // fases, la línea de tiempo y el cuadro de BiPlot HQ del museo, una pieza de cada sala, el diseñador de Nu Home con un
 // clic de verdad, la foto de una tarjeta y las pantallas del rincón de BiPlot) y el recorrido sigue detrás. Las vitrinas
 // del museo se abren en 3D, girando sobre su pedestal (se pausan y se giran a mano; con movimiento reducido, quietas).
+// La sala de ventas de BiPlot, en el local libre: se entra desde la calle, la lista de precios de frente con «Agenda tu
+// diagnóstico», las diez fases con Atlas, la ventana a los vecinos, la mesa de Lupe, Atlas que habla y el recorrido con Plotty.
 // Al final carga casos de prueba (sólo en el navegador de la prueba, no en datos.js) para revisar las calles por rubro,
 // sus techos, las plantillas y las fases. NAVEGADOR=<ruta> usa otro Chromium.
 //
@@ -551,6 +553,64 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(await js(`(async () => { const z = document.querySelector('.zona-sala[data-zona="fundos"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
       document.querySelector('#sala-frente [data-sala-ir="fundos"]').click(); await ${W(700)};
       return location.hash === '#fundos' && document.querySelector('#sala-nombre').textContent === 'Fundos 360' && document.body.classList.contains('en-sala-propia'); })()`), '«Entrar a su sala» pasa del museo a la sala de Fundos 360');
+  // La sala de ventas de BiPlot, en el local libre de la calle principal: se entra desde su vista previa en la calle, se
+  // recorre con Plotty (termina en la mesa de Lupe), Atlas ve el panorama sobre la maqueta y lo que es imagen se abre de frente
+  await abrir(w, h, movil, false, '');
+  await sleep(700);
+  const vt = await js(`(async () => { const PP = window.OFICINA_DATOS.proyectos.find(p => p.id === 'libre').salaPropia;
+    document.querySelector('#recorrer [data-id="libre"]').click(); await ${W(900)};
+    const r = { vista: document.querySelector('#panel-titulo')?.textContent, boton: document.querySelector('#panel [data-entrar="libre"]')?.textContent || '', chat: !!document.querySelector('#panel .chat') };
+    document.querySelector('#panel [data-entrar="libre"]').click(); await ${W(1500)};
+    const b = document.querySelector('#sala-barra');
+    const zonas = [...document.querySelectorAll('.zona-sala')].map(z => z.dataset.zona), quienes = [...document.querySelectorAll('.quien-sala')].map(q => q.dataset.quien);
+    Object.assign(r, { hash: location.hash, sala: document.body.classList.contains('en-sala-propia') && document.querySelector('#panel').hidden, nombre: document.querySelector('#sala-nombre').textContent,
+      barra: b.hidden ? '' : b.textContent, ant: document.querySelector('#sala-ant span')?.textContent, sig: document.querySelector('#sala-sig span')?.textContent,
+      faltan: Object.keys(PP.zonas).filter(z => !zonas.includes(z)).concat(PP.burbujas.map(x => x.quien).filter(q => !quienes.includes(q))), desborde: document.documentElement.scrollWidth > innerWidth });
+    const t = document.querySelector('#sala-tarjeta'), f = document.querySelector('#sala-frente');
+    const abre = async (id) => { const z = document.querySelector('.zona-sala[data-zona="' + id + '"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(350)}; };
+    const cierra = async () => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(150)}; };
+    // La lista de precios, de frente, con «Agenda tu diagnóstico» (el WhatsApp de BiPlot, desde la sala de ventas)
+    await abre('precios');
+    r.precios = { frente: !f.hidden && t.hidden, t: document.querySelector('#sala-frente-t')?.textContent, vb: f.querySelector('.frente-marco svg')?.getAttribute('viewBox'),
+      cta: decodeURIComponent(f.querySelector('a.bp-cta')?.getAttribute('href') || ''), sitio: f.querySelector('a.sp-btn[href="../#precios"]')?.target || '' };
+    await cierra();
+    // Cómo avanza tu proyecto: las diez fases y Atlas, que las ve todas a la vez
+    await abre('avance');
+    r.avance = { frente: !f.hidden, fases: f.querySelectorAll('.tarjeta-fases li').length, atlas: f.querySelector('.tarjeta-fases .fase-360')?.textContent || '' };
+    await cierra();
+    // La ventana a la calle: un botón por vecino, a su sala
+    await abre('vecinos');
+    r.vecinos = [...f.querySelectorAll('[data-sala-ir]')].map(x => x.getAttribute('data-sala-ir')).join();
+    await cierra();
+    // La mesa de Lupe: su tarjeta, con «Agenda tu diagnóstico» y «Conversar con Plotty»
+    await abre('diagnostico');
+    r.lupe = { tarjeta: !t.hidden && f.hidden, t: document.querySelector('#sala-tarjeta-t')?.textContent, cta: !!t.querySelector('a.bp-cta'), chat: !!t.querySelector('[data-abrir="chat:plotty"]') };
+    await cierra();
+    r.lupe.cierra = t.hidden && document.body.classList.contains('en-sala-propia');
+    // Atlas, sobre la maqueta, habla al tocarlo
+    const q = document.querySelector('.quien-sala[data-quien="atlas"]'); q.focus(); q.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(500)};
+    r.atlas = [...document.querySelectorAll('#sala-capa .burbuja')].map(x => x.textContent).join(' | ');
+    // Recorrer con Plotty: de la entrada a la sala de espera, y la última parada es la mesa de Lupe
+    const rec = () => ({ n: document.querySelector('[data-rec="n"]').textContent, t: document.querySelector('[data-rec="t"]').textContent, guia: document.querySelector('#sala-capa .burbuja.de-guia')?.textContent || '' });
+    b.querySelector('[data-recorrer]').click(); await ${W(1500)}; const p1 = rec();
+    document.querySelector('#sala-barra [data-rec="sig"]').click(); await ${W(1600)}; const p2 = rec();
+    for (let k = 2; k < PP.recorrido.length; k++) { document.querySelector('#sala-barra [data-rec="sig"]').click(); await ${W(500)}; }
+    const pn = rec();
+    await cierra();
+    r.rec = { p1, p2, pn, esperado: PP.recorrido.slice(0, 2).map(p => PP.textos.guia + p.texto), total: PP.recorrido.length, fin: !b.classList.contains('recorriendo') };
+    return r; })()`);
+  ok(vt.vista === 'Tu proyecto aquí' && vt.boton === 'Entrar a la sala de ventas' && vt.chat, 'en la calle, el local «Tu proyecto aquí» ofrece «Entrar a la sala de ventas» y sigue con la conversación con Plotty');
+  ok(vt.hash === '#libre' && vt.sala && vt.nombre === 'Tu proyecto aquí' && /SALA DE VENTAS DE BIPLOT/.test(vt.barra) && /Recorrer con Plotty/.test(vt.barra) && /Lista de precios/.test(vt.barra) && vt.ant === 'Rumbo' && vt.sig === 'El Archivo',
+    'oficina/#libre es la sala de ventas de BiPlot: su barra con «Recorrer con Plotty» y «Lista de precios», entre Rumbo y El Archivo');
+  ok(!vt.faltan.length && !vt.desborde, 'en la sala de ventas están todas sus zonas y toda su gente, Atlas incluido' + (vt.faltan.length ? ' (faltan: ' + vt.faltan.join(', ') + ')' : ''));
+  ok(vt.precios.frente && vt.precios.t === 'Precios claros, sin letra chica' && vt.precios.vb === '0 0 1000 470' && /^https:\/\/wa\.me\/\d+\?text=Hola BiPlot, vengo de la sala de ventas/.test(vt.precios.cta) && vt.precios.sitio === '_blank',
+    'la lista de precios se abre de frente, con «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y los precios del sitio');
+  ok(vt.avance.frente && vt.avance.fases === 11 && /Atlas ve las diez a la vez/.test(vt.avance.atlas), 'cómo avanza tu proyecto: las diez fases con quién las lleva, y Atlas, que las ve todas a la vez');
+  ok(vt.vecinos === 'nuhome,fundos,haru,eleven,rumbo', 'la ventana a la calle lleva a la sala de cada vecino (' + vt.vecinos + ')');
+  ok(vt.lupe.tarjeta && vt.lupe.t === 'La primera sesión es sin costo' && vt.lupe.cta && vt.lupe.chat && vt.lupe.cierra, 'la mesa de Lupe abre su tarjeta con «Agenda tu diagnóstico» y «Conversar con Plotty», y Escape la cierra');
+  ok(/Atlas · 360°/.test(vt.atlas) && /Desde aquí arriba se ve todo/.test(vt.atlas), 'Atlas, sobre la maqueta, dice que desde arriba se ve todo');
+  ok(vt.rec.p1.n === '1 de ' + vt.rec.total && vt.rec.p1.t === 'La entrada' && vt.rec.p2.t === 'La sala de espera' && vt.rec.p1.guia === vt.rec.esperado[0] && vt.rec.p2.guia === vt.rec.esperado[1] &&
+    vt.rec.pn.t === 'La mesa de Lupe' && vt.rec.fin, '«Recorrer con Plotty» va de la entrada a la sala de espera, Plotty habla en cada parada y termina en la mesa de Lupe');
   await abrir(w, h, movil, false, '#conversar');
   ok((await js("!!document.querySelector('#panel:not([hidden]) .chat') && document.querySelector('#svg-escena').classList.contains('oficina-abierta')")), 'oficina/#conversar entra y abre la conversación con Plotty');
   // La página para compartir de una sala lleva a la oficina, dentro de la sala
