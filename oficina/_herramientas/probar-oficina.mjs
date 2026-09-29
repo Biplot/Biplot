@@ -484,8 +484,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     'oficina/#archivo abre El Archivo, el museo de BiPlot: su barra con «Recorrer con Pepa» y «Todos los casos», y la sala vecina es Rumbo');
   ok(!ar.faltan.length && !ar.desborde, 'en el museo están todas sus piezas y toda su gente' + (ar.faltan.length ? ' (faltan: ' + ar.faltan.join(', ') + ')' : ''));
   ok(ar.papel.t === 'Antes de todo esto, había una libreta' && ar.papel.ceja === '1985 · El papel' && ar.papel.cap === '../plotline.html#ch0 _blank', 'la libreta abre su tarjeta de 1985 y lleva a su capítulo de «Seis décadas, la misma línea»');
-  ok(ar.hoy.frente && ar.hoy.vb === '0 0 1000 440' && ar.hoy.detras && ar.hoy.cabe && ar.hoy.foco === 'sala-frente-t' && ar.hoy.exp === 'true' && !ar.hoy.desborde,
-    'el mural de las diez fases se abre de frente y en grande, con la sala oscurecida detrás');
+  const hoyOk = ar.hoy.frente && ar.hoy.vb === '0 0 1000 440' && ar.hoy.detras && ar.hoy.cabe && ar.hoy.foco === 'sala-frente-t' && ar.hoy.exp === 'true' && !ar.hoy.desborde;
+  ok(hoyOk, 'el mural de las diez fases se abre de frente y en grande, con la sala oscurecida detrás' + (hoyOk ? '' : ' ' + JSON.stringify(ar.hoy)));
   ok(ar.hoy.fases === 10 && ar.hoy.caras >= 10 && ar.hoy.hq && ar.hoy.cierra, 'debajo, quién lleva cada fase y «Pasar a BiPlot HQ»; Escape lo cierra sin salir del museo');
   ok(ar.linea.t === 'Así creció BiPlot' && ar.linea.vb === '0 0 1280 290' && ar.linea.hitos === 8 && ar.linea.desliza === !!movil && !ar.linea.desborde,
     'la línea de tiempo se abre de frente con sus 8 fechas' + (movil ? ' y se desliza de lado' : ''));
