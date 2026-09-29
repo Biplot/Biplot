@@ -1,4 +1,4 @@
-// La sala de Nu Home como está hoy en la oficina (para comparar)
+// Una sala como está hoy en la oficina, para comparar: node antes.mjs <png> (SALA=fundos para otra; por defecto, nuhome)
 import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import { spawn } from 'node:child_process';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const perfil = fs.mkdtempSync(path.join(os.tmpdir(), 'antes_'));
@@ -12,7 +12,7 @@ const cdp = (method, params = {}) => new Promise((res) => { const id = ++seq; pe
 await cdp('Page.enable');
 await cdp('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 2, mobile: false });
 await cdp('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
-await cdp('Page.navigate', { url: (process.env.BASE || 'http://127.0.0.1:5480') + '/oficina/#nuhome' });
+await cdp('Page.navigate', { url: (process.env.BASE || 'http://127.0.0.1:5480') + '/oficina/#' + (process.env.SALA || 'nuhome') });
 await sleep(6000);
 const img = await cdp('Page.captureScreenshot', { format: 'png' });
 fs.writeFileSync(process.argv[2], Buffer.from(img.data, 'base64'));
