@@ -26,10 +26,10 @@
 <link rel="preload" href="assets/fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/cormorant-garamond-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/mulish.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="styles.css?v=20260929d">
-<script defer src="lib/manifest.js?v=20260929d"></script>
-<script defer src="lib/planos.js?v=20260929d"></script>
-<script defer src="main.js?v=20260929d"></script>
+<link rel="stylesheet" href="styles.css?v=20260929e">
+<script defer src="lib/manifest.js?v=20260929e"></script>
+<script defer src="lib/planos.js?v=20260929e"></script>
+<script defer src="main.js?v=20260929e"></script>
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -822,6 +822,7 @@
             <label><input type="radio" name="plazo" value="48"><span>48 m</span></label>
           </div>
         </div>
+        <a class="sim-peek" href="#sim-result" data-sim-peek aria-hidden="true" tabindex="-1"><span data-sim-peek-l>Saldo a la escritura</span><b data-sim-peek-v>$19.990.000</b><svg class="i" aria-hidden="true"><use href="#i-down"/></svg></a>
         <div class="sim-bar">
           <span class="label">Cómo se reparte tu compra</span>
           <div class="bar" aria-hidden="true"><span class="b-res" data-s-b="res"></span><span class="b-pie" data-s-b="pie"></span><span class="b-rest" data-s-b="rest"></span></div>
@@ -833,7 +834,7 @@
         </div>
       </div>
 
-      <div class="sim-result">
+      <div class="sim-result" id="sim-result">
         <p class="sr-only" aria-live="polite" data-sim-live></p>
         <p class="kicker">Tu plan referencial</p>
         <dl>

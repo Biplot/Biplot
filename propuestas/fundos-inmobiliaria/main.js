@@ -1463,6 +1463,7 @@
     if (!form) return;
     var fin = B.financiamiento || {};
     var simLive = $("[data-sim-live]"), simLiveT = 0;
+    var peekL = $("[data-sim-peek-l]"), peekV = $("[data-sim-peek-v]");
     var selP = $("[data-s-project]", form), price = $("[data-s-price]", form), priceOut = $("[data-s-price-out]", form);
     var pie = $("[data-s-pie]", form), pieOut = $("[data-s-pie-out]", form), plazosBox = $("[data-s-plazos]", form);
     var modeWrap = $("[data-s-mode-wrap]", form), creditEls = $$("[data-s-credit]", form);
@@ -1552,6 +1553,11 @@
         if (out.lRest) out.lRest.textContent = "Financiado en cuotas";
       }
       out.send.href = waHref(msg);
+      // Franja fija del celular: la cifra clave siempre a la vista mientras se mueven los controles
+      if (peekL) {
+        peekL.textContent = credito ? "Cuota mensual" : "Saldo a la escritura";
+        peekV.textContent = credito ? out.cuota.textContent : out.saldo.textContent;
+      }
       if (simLive) {
         window.clearTimeout(simLiveT);
         var txt = credito ? "Cuota estimada " + out.cuota.textContent.replace(" × ", " en ") + " meses" : "Saldo a la escritura " + out.saldo.textContent;

@@ -1851,3 +1851,32 @@ h2 em { text-wrap: balance; }
   .pl-cat b { font-size: .86rem; }
   .pl-cat small { font-size: .68rem; }
 }
+
+/* ---------------- Cotizador compacto: la cotización completa a la vista ---------------- */
+.sim-controls { gap: .95rem; padding: .3rem .2rem; }
+.sim-controls .field { gap: .4rem; }
+.sim-bar { padding-top: .8rem; gap: .5rem; }
+.sim-lot { margin-top: .1rem; }
+.sim-result { gap: .7rem; padding: clamp(1.1rem, 2vw, 1.5rem); }
+.sim-result dl div { padding-block: .5rem; }
+.sim-result .sim-big { padding-top: .6rem; }
+.sim-result .sim-big dd { font-size: clamp(1.7rem, 2.2vw, 1.95rem); }
+.sim-note { font-size: .8rem; line-height: 1.45; }
+.sim-legal { font-size: .7rem; }
+@media (hover: hover) and (pointer: fine) {
+  .sim .seg span { padding-block: .5rem; }
+  .sim select { min-height: 44px; padding-block: .55rem; }
+}
+/* Franja con la cifra clave (solo celular) */
+.sim-peek { display: none; }
+@media (max-width: 719px) {
+  .sim-peek {
+    position: sticky; z-index: 5; bottom: calc(80px + env(safe-area-inset-bottom));
+    display: flex; align-items: center; gap: .6rem; margin: .2rem -.2rem 0; padding: .65rem .9rem;
+    border-radius: var(--r-md); background: var(--g900); color: var(--cream-80); font-size: .82rem; font-weight: 700;
+    box-shadow: 0 12px 30px -12px rgba(0, 0, 0, .55);
+  }
+  .sim-peek b { margin-left: auto; font-size: 1.05rem; color: var(--gold); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sim-peek .i { width: 16px; height: 16px; color: var(--gold); flex: none; }
+  .sim { gap: .8rem; }
+}
