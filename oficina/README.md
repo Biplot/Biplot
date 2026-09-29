@@ -11,8 +11,8 @@ sus enlaces y el equipo que la hizo. Las mismas piezas sirven para Instagram y p
 - Enlaces directos: `/oficina/#oficina` (adentro), `/oficina/#lupe`, `/oficina/#haru` (la sala de Haru), `/oficina/#archivo`,
   `/oficina/#calle-salud`, `/oficina/#conversar`… (cualquier integrante, lugar, sala o calle). Lo de adentro abre la
   oficina solo.
-- Para compartir una sala: **biplot.cl/oficina/haru/** (y `fundos/`, `eleven/`, `nuhome/`, `rumbo/`): en un chat se ve su
-  imagen y al abrirlo se entra a la oficina, directo en esa sala.
+- Para compartir una sala: **biplot.cl/oficina/haru/** (y `fundos/`, `eleven/`, `nuhome/`, `rumbo/` y `archivo/`, el
+  museo): en un chat se ve su imagen y al abrirlo se entra a la oficina, directo en esa sala.
 - Kit para Instagram: `oficina/kit/` (galería) y `oficina/kit/png/` (los PNG).
 
 ## El equipo
@@ -70,7 +70,7 @@ se ve al abrirlo. En el **pasaje** está el directorio con las calles del barrio
 | Eleven 360 | El 11 de su sala y ELEVEN | La trotadora, las pesas y el torniquete; el instructor recorre | Su vista previa, con su sala dibujada |
 | Rumbo | La bandera de su sala y RUMBO | El camino del día 1 al 30; la corredora lo recorre | Su vista previa, con su sala dibujada |
 | Tu proyecto aquí | «Se arrienda · Tu proyecto aquí», punteado | El local disponible; una visita lo recorre | La conversación con Plotty |
-| El Archivo | Su carpeta de colores y EL ARCHIVO | Los estantes de carpetas; alguien busca un caso | La lista de todos los casos |
+| El Archivo | Su carpeta de colores y EL ARCHIVO | Los estantes de carpetas; alguien busca un caso | El museo dibujado, «Entrar al museo» y el fichero con todos los casos |
 
 Eleven 360 y Rumbo llevan la marca de su sala mientras no tengamos su logo oficial (va en `media/salas/` y en `LOGO`,
 en `barrio/barrio.mjs`).
@@ -145,11 +145,27 @@ Como en Nu Home, las frases, lo que dice quien guía el recorrido y los textos d
 `datos.js`) hasta que cada empresa los revise; la gente de las salas son ilustraciones sin nombre, y ninguna sala tiene
 todavía WhatsApp propio (sin él, no hay botón para escribirles; nunca va el de BiPlot en su lugar).
 
+**El Archivo, el museo de BiPlot.** El Archivo también tiene su sala propia (su dibujo en
+`barrio/salas-propias/archivo.mjs`; sus textos en `datos.js`, en `salas.archivo.salaPropia`). Se entra desde su panel en
+la calle («Entrar al museo»), con `#archivo`, desde la sala de Rumbo (es la última sala vecina) o con
+**biplot.cl/oficina/archivo/**. Es una sala de galería en orden: dos filas de vitrinas iguales, en las mismas columnas, y
+una sola línea en el piso («Seis décadas, la misma línea»), del mismo grosor todo el camino. Adelante, las épocas, de
+derecha a izquierda como se entra (1985 la libreta, 1990 la terminal, 1998 el software de caja, 2015 el portátil con sus
+tres palabras y hoy las diez fases de BiPlot HQ, sin vidrio); cada una lleva a su capítulo del sitio (`plotline.html#ch0`
+a `#ch4`). La línea parte color papel en el atril de la entrada y va tomando el color de cada época hasta volverse cian
+en hoy; da una sola vuelta, frente al primer plano de la oficina, y vuelve por la fila de atrás, con una pieza de cada
+desarrollo en el orden en que llegaron a biplot.cl (la escritura de Fundos 360, el QR de Haru 360, el módulo de Nu Home
+360, la huella de Eleven 360 y el elefante de Rumbo), cada una con su pantalla real y «Entrar a su sala». Termina en el
+punto coral del pedestal libre: tu turno, el único lugar con «Agenda tu diagnóstico». En los muros, la línea de tiempo de
+2026 (con las fechas del historial del sitio) y el fichero con todos los casos por rubro y su buscador (también en la
+barra: «Todos los casos»). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
+doce paradas, con cuatro visitas. Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
+
 **Cómo se arma una sala propia.** Todo lo de la empresa sale de su dibujo y de `datos.js`: una sala pasa a ser propia con
 `salaPropia` en su proyecto (sus colores, su letra, su marca, sus textos, quién habla, qué dice cada zona y el recorrido)
 y con sus zonas en el dibujo (`zona()` y `lugar()`): la de Nu Home en `barrio/salas-grandes.mjs` y las demás en
 `barrio/salas-propias/`, una por archivo, con sus piezas comunes (muros, pantallas, sillas, el kiosco de BiPlot) en
-`salas-propias/comun.mjs`.
+`salas-propias/comun.mjs`. La del museo no es de un proyecto: su `salaPropia` está en `salas.archivo`.
 
 **Cómo crece el barrio: una calle por rubro.** La calle principal queda con los proyectos que tienen sala dibujada a
 mano. Los demás casos van a la **calle de su rubro** (los mismos rubros de la primera pregunta de Plotty), que aparece
@@ -166,7 +182,8 @@ lotes y termina con un local que se arrienda. Nada de esto se dibuja a mano: esc
   inauguración con Faro y las tijeras, y en E9 la placa del día 90 junto a la puerta.
 - **Permiso**: con su nombre, sólo con su rubro (el techo dice, por ejemplo, «Clínica dental», con el dibujo de su
   rubro) o sólo en El Archivo.
-- **El Archivo** guarda todos los casos, por rubro y con buscador; el edificio sube un piso cada diez casos.
+- **El Archivo** guarda todos los casos, por rubro y con buscador (en su panel y en el fichero del museo); el edificio
+  sube un piso cada diez casos.
 - **Encontrar un caso**: el menú "Recorre la oficina" agrupa los locales por calle, con buscador y filtros (abiertos o
   en obra); el directorio del pasaje; y Plotty, que con la primera respuesta lleva la cámara a los casos del rubro.
 
@@ -189,9 +206,9 @@ sólo para su vitrina.
 | `locales.js` | *Generado.* Cada local por dentro, como se ve al abrirlo: los de la calle principal y el de un caso según su plantilla o su estado, con su gente y quien camina; se carga al abrir el primer local (o con el mouse encima de uno) |
 | `salas.js` | *Generado.* La sala grande de cada empresa, con su gente, quienes caminan y sus puntos (una sala propia, en vez de puntos, trae sus lugares, sus zonas y dónde está su gente); se carga (después de `locales.js`) al entrar a la primera sala o con la primera vista previa sin video |
 | `ilustraciones.js` | *Generado.* Las ilustraciones de ficha; se cargan recién al abrir la primera ficha |
-| `<sala>/index.html` | *Generado.* La página para compartir cada sala (`fundos/`, `haru/`, `eleven/`, `nuhome/`, `rumbo/`): su vista previa y el paso a la oficina |
+| `<sala>/index.html` | *Generado.* La página para compartir cada sala (`fundos/`, `haru/`, `eleven/`, `nuhome/`, `rumbo/` y `archivo/`, el museo): su vista previa y el paso a la oficina |
 | `kit/` | Galería y plantilla de las piezas de Instagram y de cada sala (`?pieza=sala-haru&formato=og`) |
-| `kit/png/` | Los PNG exportados (36 archivos) |
+| `kit/png/` | Los PNG exportados (37 archivos) |
 | `casos/` | Copias publicables de las demos y documentos de los casos de referencia del núcleo |
 | `media/` | El teaser de Nu Home 360 (horizontal, vertical y póster) y, en `media/salas/`, las pantallas reales de cada sala (de los videos de cada caso, con datos de ejemplo), sus recortes y los logos |
 | `_herramientas/` | Scripts internos y las fuentes de los dibujos. **No se publican en biplot.cl** (Jekyll ignora carpetas con `_`) |
@@ -228,7 +245,12 @@ camina sólo mientras se ve.
   (`colores`, `fuente`), su marca y la frase de su barra, el botón de su barra con su enlace (`disenar`: «Diseñar la
   mía», «Ver la carta»…), su WhatsApp (o `null`), quién habla y qué dice, qué cuenta cada zona (con sus medidas, una
   pantalla real, un enlace o sus botones), el recorrido y, si no es «Hecho con BiPlot», lo que dice su tarjeta de BiPlot
-  (`cejaBiplot`). Sus dibujos se generan sin redondear los planos (lo
+  (`cejaBiplot`). Los botones de una tarjeta pueden ser, además de `'disenar'`, `'recorrer'` y `'hablar'`, objetos que
+  llevan a otra parte: `{ sala }` a la sala de ese caso, `{ zona, texto }` a otra tarjeta, `{ hq: true }` a BiPlot HQ,
+  `{ url, texto }` a otra página, `{ chat: true }` a Plotty y, sólo en la sala de BiPlot (el museo), `{ cta: true }` a
+  «Agenda tu diagnóstico». Una tarjeta también puede traer las diez fases (`fases: true`), una línea de tiempo
+  (`hitos`), el fichero (`fichero: true`) o la pantalla de otro caso (`caso` e `imagen`); la barra puede llevar sus
+  propios botones (`barra`) y sus colores (`coloresBarra`). Sus dibujos se generan sin redondear los planos (lo
   pintado en muros y pisos no se tuerce) ni la escala de su gente; las demás salas, los locales y el barrio siguen con un
   decimal, como siempre (ahí lo pintado en un muro o en el piso se corre un poco: se ve al acercarse a sus bordes).
 - **Quien camina** (en un local o en una sala) va con `camina(id, ruta)` en vez de `pj(…)`: la ruta son paradas
@@ -262,6 +284,8 @@ se abre al tocarlo con su gente caminando y su vista previa, su sala con gente c
 la sala propia de Nu Home (sin números ni panel, su barra, sus zonas y sus tarjetas, la gente que habla, la cámara, el
 recorrido con una asesora, la tarjeta de BiPlot, las salas vecinas y el botón atrás), las de Fundos, Haru, Eleven y
 Rumbo (su barra con su letra, todas sus zonas y su gente, una tarjeta con lo real, su recorrido y el rincón de BiPlot),
+el museo de El Archivo (sus épocas con su capítulo, las diez fases, sus casos con su sala, el fichero, el pedestal libre
+y el recorrido con Pepa),
 chat de Plotty con la cámara en
 el rubro, vitrina,
 El Archivo, teclado, enlaces directos y las páginas para compartir, pausa, movimiento reducido, errores de consola y

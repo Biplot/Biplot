@@ -43,3 +43,25 @@ De dónde sale cada cosa:
 
 Las personas son ilustraciones sin nombre. Las frases de las burbujas y las tarjetas son de ejemplo hasta que cada
 cliente las apruebe.
+
+## El Archivo, el museo de BiPlot
+
+`sala-archivo/` es la propuesta con que El Archivo pasó a ser el museo de BiPlot (ya está en la oficina: su dibujo vive
+en `../dibujos/barrio/salas-propias/archivo.mjs` y `sala-archivo/sala.mjs` sólo lo reexporta, con sus acercamientos).
+Es una galería en orden: dos filas de vitrinas iguales en las mismas columnas y una sola línea en el piso, del mismo
+grosor. Adelante, las épocas (1985 la libreta, 1990 la terminal, 1998 el software de caja, 2015 el portátil con sus tres
+palabras y hoy el tablero de las diez fases, sin vidrio): la línea parte color papel en el atril de la entrada y va
+tomando el color de cada época hasta volverse cian en hoy. Da una sola vuelta, frente al primer plano de BiPlot HQ, y
+vuelve por la fila de atrás, con una pieza única de cada desarrollo (la escritura de Fundos 360, el QR de la mesa de Haru
+360, el módulo de Nu Home 360, la huella de Eleven 360 y el elefante de Rumbo), en el orden en que llegaron a biplot.cl,
+hasta el punto coral del pedestal libre. En los muros van la línea de tiempo de 2026 y el fichero con todos los casos
+por rubro. Lo cuida Pepa (Cosecha). `salaArchivo({ tono: 'dos' })` dibuja la línea sólo de papel a cian (para
+comparar).
+
+Las fechas son las del historial del sitio (cuándo llegó cada caso a biplot.cl), no las del inicio de cada proyecto.
+Usa Space Grotesk y Space Mono. Las maquetas (`mock.mjs`) quedan para probar ideas antes de pasarlas a `datos.js`.
+
+```bash
+SALIDA=/tmp/sala-archivo node oficina/_herramientas/propuestas/dibujar-sala.mjs archivo
+SALIDA=/tmp/sala-archivo node oficina/_herramientas/propuestas/sala-archivo/mock.mjs
+```
