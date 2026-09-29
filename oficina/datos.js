@@ -198,18 +198,14 @@
           whatsapp: null,
           burbujas: [
             { quien: 'pepa', nombre: 'Pepa, de BiPlot', rol: 'Pepa · Cosecha', texto: '¡Bienvenido al Archivo! Aquí guardamos lo que sirve dos veces. ¿Te acompaño?', biplot: true },
-            { quien: 'abuelo', nombre: 'Un visitante junto a la terminal', rol: 'Visita', texto: 'Yo trabajé con una de esas.' },
-            { quien: 'arJoven', nombre: 'Un visitante con su celular', rol: 'Visita', texto: 'Escalable, innovador y centrado en el cliente. Me suena.' },
+            { quien: 'abuelo', nombre: 'Un visitante junto a la libreta', rol: 'Visita', texto: 'Así llevaba yo las cuentas.' },
             { quien: 'arMira', nombre: 'Una visitante junto a la escritura', rol: 'Visita', texto: '¡La banderita del lote 25!' },
-            { quien: 'arLentes', nombre: 'Un visitante junto al módulo', rol: 'Visita', texto: 'Así se arma una casa: módulo por módulo.' },
-            { quien: 'nino', nombre: 'Un niño junto a los elefantes', rol: '', texto: '¡El elefante crece!' },
-            { quien: 'arFoto', nombre: 'Una visitante con su cámara', rol: 'Visita', texto: 'Una foto con el Sabio.' },
-            { quien: 'arBanco', nombre: 'Una visita en la banca', rol: 'Visita', texto: 'Anoto lo que me sirve para mi negocio.' },
-            { quien: 'estudiante', nombre: 'Quien recorre con su mochila', rol: 'Visita', texto: 'Del papel a la app, en la misma línea.' }
+            { quien: 'nino', nombre: 'Un niño junto al elefante', rol: '', texto: '¡El elefante tiene corona!' },
+            { quien: 'arFoto', nombre: 'Una visitante junto a las diez fases', rol: 'Visita', texto: 'Una foto de las diez fases, para el equipo.' }
           ],
           zonas: {
             recepcion: { nombre: 'La entrada', ceja: 'El Archivo · Museo de BiPlot', titulo: 'Seis décadas, la misma línea',
-              texto: 'La línea del piso parte a lápiz, como en 1985, y cambia de herramienta en cada época hasta llegar a BiPlot HQ. Después pasa por una pieza de cada desarrollo, en el orden en que llegaron, y termina en tu turno.',
+              texto: 'La línea del piso parte color papel, como en 1985, y va tomando el color de cada época hasta volverse cian en BiPlot HQ. Después vuelve por una pieza de cada desarrollo, en el orden en que llegaron, y termina en tu turno.',
               botones: ['recorrer', { zona: 'fichero', texto: 'Todos los casos' }] },
             papel: { nombre: 'La libreta', ceja: '1985 · El papel', titulo: 'Antes de todo esto, había una libreta',
               texto: 'Planillas a mano, un clip para no perder la hoja y una corrección en rojo sobre el número que no cuadraba. Así seguía operando, hasta hace muy poco, casi cualquier pyme de servicios: un cuaderno, WhatsApp, un Excel y la memoria de una sola persona sosteniendo el proceso completo.',
@@ -242,7 +238,7 @@
               chips: ['Propuesta'],
               botones: [{ sala: 'eleven', texto: 'Entrar a su sala' }] },
             rumbo: { nombre: 'El elefante', ceja: 'Rumbo · 25 sep 2026', titulo: '¿Cómo te comes un elefante?', caso: 'rumbo',
-              texto: 'Un bocado a la vez. En Rumbo, la app de BiPlot para ordenar lo personal, el elefante es la tarea más importante del día, y crece con tu constancia.',
+              texto: 'Un bocado a la vez. En Rumbo, la app de BiPlot para ordenar lo personal, el elefante es la tarea más importante del día, y crece con tu constancia. Aquí está en su última etapa: el Sabio, con su corona.',
               chips: ['Cría · Joven · Adulto · Sabio'],
               botones: [{ sala: 'rumbo', texto: 'Entrar a su sala' }] },
             tuproyecto: { nombre: 'Tu proyecto', ceja: 'Tu turno', titulo: 'Tu proceso es el próximo punto de esta línea',
@@ -251,9 +247,6 @@
             fichero: { nombre: 'El fichero', ceja: 'El fichero', titulo: 'Todos los casos tienen su carpeta',
               texto: 'Aquí está cada caso, también los que no muestran su nombre o ya terminaron. Pepa los ordena por rubro, y cuando llega un rubro nuevo se abre su calle.',
               fichero: true },
-            carpetas: { nombre: 'Una carpeta por caso', ceja: 'El fichero', titulo: 'Una carpeta por caso',
-              texto: 'Cada proyecto guarda aquí lo que se hizo y lo que se aprendió. Lo que sirve dos veces, Pepa lo guarda para el siguiente.',
-              botones: [{ zona: 'fichero', texto: 'Ver todos los casos' }] },
             plano: { nombre: 'El primer plano', ceja: 'BiPlot HQ · 25 sep 2026', titulo: 'El primer plano de la oficina',
               texto: 'Así se dibujó BiPlot HQ antes de abrir: una oficina donde cada fase del motor tiene su lugar y su gente.',
               botones: [{ hq: true, texto: 'Pasar a BiPlot HQ' }] },
@@ -264,7 +257,7 @@
                 ['28 sep', 'La visita de Plotty', 'en video'], ['29 sep', 'Una sala por empresa', 'cada una en su estilo']] }
           },
           recorrido: [
-            { zona: 'recepcion', titulo: 'La entrada', texto: '¡Bienvenido al Archivo! La línea del piso parte a lápiz. Te acompaño.' },
+            { zona: 'recepcion', titulo: 'La entrada', texto: '¡Bienvenido al Archivo! Sigue la línea del piso: parte color papel, como en 1985. Te acompaño.' },
             { zona: 'papel', titulo: '1985 · La libreta', texto: 'Antes de todo esto, había una libreta: planillas a mano y la memoria de una sola persona.' },
             { zona: 'terminal', titulo: '1990 · La terminal', texto: 'Después, el diagnóstico: leer el proceso real, paso a paso, antes de tocar nada.' },
             { zona: 'software', titulo: '1998 · El software', texto: 'Luego llegó el software de caja: una herramienta más que nadie aprendía a usar.' },
@@ -274,7 +267,7 @@
             { zona: 'haru', titulo: 'Haru 360', texto: 'En Haru se pide con el QR de la mesa, y la comanda llega a la cocina sin papel.' },
             { zona: 'nuhome', titulo: 'Nu Home 360', texto: 'Un módulo de Nu Home, a escala: así se diseña su casa.' },
             { zona: 'eleven', titulo: 'Eleven 360', texto: 'La huella de Eleven: nuestra propuesta trabaja antes y después de ella.' },
-            { zona: 'rumbo', titulo: 'Rumbo', texto: 'Y Rumbo, nuestra app: el elefante crece con tu constancia.' },
+            { zona: 'rumbo', titulo: 'Rumbo', texto: 'Y Rumbo, nuestra app: el elefante crece con tu constancia, hasta ser el Sabio.' },
             { zona: 'tuproyecto', titulo: 'Tu turno', texto: 'Este pedestal está libre. ¿Será tu proyecto la próxima pieza?' }
           ]
         } },

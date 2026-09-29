@@ -148,16 +148,18 @@ todavía WhatsApp propio (sin él, no hay botón para escribirles; nunca va el d
 **El Archivo, el museo de BiPlot.** El Archivo también tiene su sala propia (su dibujo en
 `barrio/salas-propias/archivo.mjs`; sus textos en `datos.js`, en `salas.archivo.salaPropia`). Se entra desde su panel en
 la calle («Entrar al museo»), con `#archivo`, desde la sala de Rumbo (es la última sala vecina) o con
-**biplot.cl/oficina/archivo/**. La línea de «Seis décadas, la misma línea» cruza el piso: parte a lápiz en la entrada y
-cambia de herramienta en cada época, con una pieza por época (1985 la libreta, 1990 la terminal, 1998 el software de
-caja, 2015 el portátil con sus tres palabras) hasta volverse cian en el tablero de las diez fases (hoy, BiPlot HQ). Cada
-época lleva a su capítulo del sitio (`plotline.html#ch0` a `#ch4`). Después pasa por una pieza de cada desarrollo, en el
-orden en que llegaron a biplot.cl (la escritura de Fundos 360, el QR de Haru 360, el módulo de Nu Home 360, la huella de
-Eleven 360 y el elefante de Rumbo), cada una con su pantalla real y «Entrar a su sala», y termina en el punto coral de un
-pedestal libre: tu turno, el único lugar con «Agenda tu diagnóstico». En los muros, el primer plano de la oficina, la
-línea de tiempo de 2026 (con las fechas del historial del sitio), el fichero con todos los casos por rubro y su buscador
-(también en la barra: «Todos los casos») y una carpeta por caso. Lo cuida Pepa, que guía el recorrido de doce paradas.
-Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
+**biplot.cl/oficina/archivo/**. Es una sala de galería en orden: dos filas de vitrinas iguales, en las mismas columnas, y
+una sola línea en el piso («Seis décadas, la misma línea»), del mismo grosor todo el camino. Adelante, las épocas, de
+derecha a izquierda como se entra (1985 la libreta, 1990 la terminal, 1998 el software de caja, 2015 el portátil con sus
+tres palabras y hoy las diez fases de BiPlot HQ, sin vidrio); cada una lleva a su capítulo del sitio (`plotline.html#ch0`
+a `#ch4`). La línea parte color papel en el atril de la entrada y va tomando el color de cada época hasta volverse cian
+en hoy; da una sola vuelta, frente al primer plano de la oficina, y vuelve por la fila de atrás, con una pieza de cada
+desarrollo en el orden en que llegaron a biplot.cl (la escritura de Fundos 360, el QR de Haru 360, el módulo de Nu Home
+360, la huella de Eleven 360 y el elefante de Rumbo), cada una con su pantalla real y «Entrar a su sala». Termina en el
+punto coral del pedestal libre: tu turno, el único lugar con «Agenda tu diagnóstico». En los muros, la línea de tiempo de
+2026 (con las fechas del historial del sitio) y el fichero con todos los casos por rubro y su buscador (también en la
+barra: «Todos los casos»). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
+doce paradas, con cuatro visitas. Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
 
 **Cómo se arma una sala propia.** Todo lo de la empresa sale de su dibujo y de `datos.js`: una sala pasa a ser propia con
 `salaPropia` en su proyecto (sus colores, su letra, su marca, sus textos, quién habla, qué dice cada zona y el recorrido)
