@@ -10,8 +10,9 @@
 // la cámara (rueda y teclado), el recorrido con una asesora, la tarjeta de BiPlot, las salas vecinas y el botón atrás.
 // El Archivo, el museo de BiPlot: sus épocas (del papel a hoy) con su capítulo, las diez fases, sus casos con su sala, el
 // fichero con su buscador, el pedestal libre y el recorrido con Pepa. La vista de frente: lo que es una imagen (un mural,
-// una pizarra, una pantalla) se abre derecho y en grande con la sala oscurecida detrás (las diez fases y la línea de tiempo
-// del museo, una pieza de cada sala, el diseñador de Nu Home con un clic de verdad) y el recorrido sigue detrás.
+// una pizarra, un cuadro, una pantalla) se abre derecho, en grande y completo, con la sala oscurecida detrás (las diez
+// fases, la línea de tiempo y el cuadro de BiPlot HQ del museo, una pieza de cada sala, el diseñador de Nu Home con un
+// clic de verdad, la foto de una tarjeta y las pantallas del rincón de BiPlot) y el recorrido sigue detrás.
 // Al final carga casos de prueba (sólo en el navegador de la prueba, no en datos.js) para revisar las calles por rubro,
 // sus techos, las plantillas y las fases. NAVEGADOR=<ruta> usa otro Chromium.
 //
@@ -106,10 +107,10 @@ const SALAS_PROPIAS = [
   { id: 'fundos', nombre: 'Fundos 360', barra: ['Fundos', 'INMOBILIARIA', 'Parcelas de 5.000 m²', 'Ver los proyectos', 'Recorrer con una ejecutiva'], letra: 'Cormorant Garamond',
     disenar: 'https://biplot.cl/propuestas/fundos-inmobiliaria/', zona: 'lote25', titulo: 'Lote 25', chips: '5.000 m² | $35.990.000 | Disponible',
     enlace: 'Verlo en el plano https://biplot.cl/propuestas/fundos-inmobiliaria/#lote-puerto-varas-25', paradas: 7, recorrido: ['La entrada', 'El mirador 360°'],
-    ceja: 'Hecho con BiPlot', chip: 'A la medida', pantallas: 7, frente: 'malalcahuello', frenteT: 'Malalcahuello' },
+    ceja: 'Hecho con BiPlot', chip: 'A la medida', pantallas: 7, frente: 'malalcahuello', frenteT: 'Malalcahuello', fotos: true },
   { id: 'haru', nombre: 'Haru 360', barra: ['Haru Isidora', 'SUSHI DE AUTOR · ARICA', 'Ver la carta', 'Recorrer con la anfitriona'], letra: 'Montserrat',
     disenar: 'https://haru-carta.vercel.app', zona: 'barra', titulo: 'Chinchorrero', chips: '$8.000 | Rolls de autor', enlace: 'Ver la carta https://haru-carta.vercel.app', paradas: 7, recorrido: ['La entrada', 'La barra de sushi'],
-    ceja: 'Hecho con BiPlot', chip: 'En implementación', pantallas: 7, frente: 'carta', frenteT: 'Rolls de la casa' },
+    ceja: 'Hecho con BiPlot', chip: 'En implementación', pantallas: 7, frente: 'carta', frenteT: 'Rolls de la casa', fotos: true },
   { id: 'eleven', nombre: 'Eleven 360', barra: ['Eleven Club', 'FITNESS AND BXO', 'Ver planes', 'Recorrer con un coach'], letra: 'Anton',
     disenar: 'https://eleven-360.vercel.app/#planes', zona: 'clases', titulo: 'Power Jump', chips: 'Martes y jueves · 19:30 | 60 min | Incluida en tu plan',
     enlace: 'Ver planes https://eleven-360.vercel.app/#planes', paradas: 8,
@@ -390,7 +391,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
       // Lo que es una imagen se abre de frente, en grande, y la × la cierra
       const fz = document.querySelector('.zona-sala[data-zona="${s.frente}"]'), f = document.querySelector('#sala-frente'); fz.focus(); fz.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
       const fl = f.querySelector('.frente-lamina')?.getBoundingClientRect();
-      r.fr = { abierta: !f.hidden && t.hidden, t: document.querySelector('#sala-frente-t')?.textContent, dib: !!f.querySelector('.frente-marco svg'), grande: !!fl && fl.width >= Math.min(innerWidth - 48, 600),
+      r.fr = { abierta: !f.hidden && t.hidden, t: document.querySelector('#sala-frente-t')?.textContent, dib: !!f.querySelector('.frente-marco svg'), grande: !!fl && fl.width >= Math.min(innerWidth * 0.8, 600),
         desborde: document.documentElement.scrollWidth > innerWidth };
       f.querySelector('.frente-cerrar').click(); await ${W(150)};
       r.fr.cierra = f.hidden && document.activeElement === fz && document.body.classList.contains('en-sala-propia');
@@ -403,7 +404,20 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
       const bz = document.querySelector('.zona-sala[data-zona="biplot"]'); bz.focus(); bz.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
       r.bp = { bp: t.classList.contains('bp') && !t.hidden, ceja: t.querySelector('.ceja')?.textContent, chip: t.querySelector('h3 .chip')?.textContent, tira: t.querySelectorAll('.tira-bp button').length,
         comparte: t.querySelector('.enlace-copia code')?.textContent, hq: !!t.querySelector('[data-hq]'), desborde: document.documentElement.scrollWidth > innerWidth };
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(120)}; return r; })()`);
+      // (una pantalla real del rincón se abre en grande y completa, con su pie)
+      const vp = t.querySelector('[data-ver-pantalla]');
+      if (vp) {
+        vp.click(); await ${W(300)};
+        const f2 = document.querySelector('#sala-frente'), im = f2.querySelector('.frente-marco img');
+        if (im && !(im.complete && im.naturalWidth)) await new Promise((listo) => { im.onload = im.onerror = listo; setTimeout(listo, 4000); });
+        const rr = im ? im.getBoundingClientRect() : null;
+        r.bp.grande = { abierta: !f2.hidden && t.hidden, bp: !!f2.querySelector('.frente-texto.bp'), carga: !!im && im.naturalWidth > 0,
+          entera: !!rr && Math.abs(rr.width / rr.height - im.naturalWidth / im.naturalHeight) < 0.02 && rr.left >= 0 && rr.right <= innerWidth + 1 && rr.width >= Math.min(innerWidth * 0.8, 600),
+          pie: /datos de ejemplo/.test(f2.querySelector('.frente-pie')?.textContent || '') };
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(150)};
+        r.bp.grande.cierra = f2.hidden && document.body.classList.contains('en-sala-propia');
+      } else if (!t.hidden) { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(120)}; }
+      return r; })()`);
     ok(r.sala && r.nombre === s.nombre && s.barra.every((x) => r.barra.includes(x)) && r.disenar === s.disenar + ' _blank' && !/Hablar|Escribir/.test(r.barra) && !r.wa && r.letra.includes(s.letra),
       `oficina/#${s.id} abre la sala propia de ${s.nombre}, con su barra en su letra (${s.letra}) y «${s.barra.at(-1)}»`);
     ok(!r.faltan.length && !r.desborde, `en la sala de ${s.nombre} están todas sus zonas y toda su gente` + (r.faltan.length ? ' (faltan: ' + r.faltan.join(', ') + ')' : ''));
@@ -414,6 +428,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
       r.rec.p1.guia === r.rec.esperado[0] && r.rec.p2.guia === r.rec.esperado[1] && r.rec.fin, `«${s.barra.at(-1)}» pasa de ${s.recorrido.join(' a ')}, y quien guía habla en cada parada`);
     ok(r.bp.bp && r.bp.ceja === s.ceja && r.bp.chip === s.chip && r.bp.tira === s.pantallas && r.bp.comparte === 'biplot.cl/oficina/' + s.id && r.bp.hq && !r.bp.desborde,
       `el rincón de BiPlot abre su tarjeta: «${r.bp.ceja}», ${s.nombre} «${r.bp.chip}» y ${r.bp.tira} pantallas`);
+    if (s.fotos) ok(r.bp.grande && r.bp.grande.abierta && r.bp.grande.bp && r.bp.grande.carga && r.bp.grande.entera && r.bp.grande.pie && r.bp.grande.cierra,
+      `su pantalla real se abre en grande y completa, con «datos de ejemplo», y Escape la cierra`);
   }
   // Desde la calle: el local de Nu Home, «Entrar a la sala» y el botón atrás del navegador
   await abrir(w, h, movil, false);
@@ -451,14 +467,27 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     await cierra();
     r.hoy.cierra = f.hidden && document.body.classList.contains('en-sala-propia') && location.hash === '#archivo' && document.activeElement?.getAttribute('data-zona') === 'hoy';
     await abre('linea');
-    const mc = f.querySelector('.frente-marco');
-    r.linea = { t: document.querySelector('#sala-frente-t')?.textContent, vb: f.querySelector('.frente-marco svg')?.getAttribute('viewBox'), hitos: f.querySelectorAll('.sr .tarjeta-hitos li').length,
-      desliza: !!mc && mc.scrollWidth > mc.clientWidth + 20, desborde: document.documentElement.scrollWidth > innerWidth };
-    await cierra(); await abre('fundos');
+    const mc = f.querySelector('.frente-marco'), lz = f.querySelector('.frente-lista'), sv = f.querySelector('.frente-marco svg')?.getBoundingClientRect();
+    r.linea = { t: document.querySelector('#sala-frente-t')?.textContent, vb: f.querySelector('.frente-marco svg')?.getAttribute('viewBox'), hitos: f.querySelectorAll('.frente-lista .tarjeta-hitos li').length,
+      lista: !!lz && getComputedStyle(lz).position === 'static' && lz.offsetHeight > 100, entera: !!sv && sv.left >= 0 && sv.right <= innerWidth + 1 && mc.scrollWidth <= mc.clientWidth + 1,
+      desborde: document.documentElement.scrollWidth > innerWidth };
+    await cierra();
+    // Lo que es una foto se ve completo: el cuadro de BiPlot HQ el día que abrió
+    const completa = async () => { const im = f.querySelector('.frente-marco img'); if (im && !(im.complete && im.naturalWidth)) await new Promise((listo) => { im.onload = im.onerror = listo; setTimeout(listo, 4000); });
+      const rr = im ? im.getBoundingClientRect() : null;
+      return { abierta: !f.hidden && t.hidden, img: im ? im.getAttribute('src') : '', carga: !!im && im.naturalWidth > 0, t: document.querySelector('#sala-frente-t')?.textContent, pie: f.querySelector('.frente-pie')?.textContent || '',
+        entera: !!rr && Math.abs(rr.width / rr.height - im.naturalWidth / im.naturalHeight) < 0.02 && rr.left >= 0 && rr.right <= innerWidth + 1 && rr.top >= 0 && rr.width >= Math.min(innerWidth * 0.8, 600),
+        hq: !!f.querySelector('[data-hq]'), sala: !!f.querySelector('[data-sala-ir]'), desborde: document.documentElement.scrollWidth > innerWidth }; };
+    await abre('apertura'); r.apertura = await completa(); await cierra();
+    await abre('fundos');
     const img = t.querySelector('.tarjeta-img img');
     if (img && !(img.complete && img.naturalWidth)) await new Promise((listo) => { img.onload = img.onerror = listo; setTimeout(listo, 4000); });
     r.fundos = { t: document.querySelector('#sala-tarjeta-t')?.textContent, img: img ? img.getAttribute('src') : '', carga: !!img && img.naturalWidth > 0, pie: t.querySelector('figcaption')?.textContent || '', sala: !!t.querySelector('[data-sala-ir="fundos"]'), hoja: t.classList.contains('hoja') };
+    // (su foto se toca y se abre en grande, completa, con los textos de la tarjeta)
+    t.querySelector('[data-ver-foto]').click(); await ${W(300)};
+    r.fundosFoto = await completa();
     await cierra();
+    r.fundosFoto.cierra = f.hidden && t.hidden && document.body.classList.contains('en-sala-propia') && location.hash === '#archivo';
     // El fichero, desde la barra: todos los casos por rubro, con su buscador
     b.querySelector('[data-zona-ir="fichero"]').click(); await ${W(300)};
     const n = t.querySelectorAll('.archivo-grupo li').length, i = t.querySelector('.archivo-busca input'); i.value = 'restaurante'; i.dispatchEvent(new Event('input', { bubbles: true })); await ${W(50)};
@@ -487,10 +516,14 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   const hoyOk = ar.hoy.frente && ar.hoy.vb === '0 0 1000 440' && ar.hoy.detras && ar.hoy.cabe && ar.hoy.foco === 'sala-frente-t' && ar.hoy.exp === 'true' && !ar.hoy.desborde;
   ok(hoyOk, 'el mural de las diez fases se abre de frente y en grande, con la sala oscurecida detrás' + (hoyOk ? '' : ' ' + JSON.stringify(ar.hoy)));
   ok(ar.hoy.fases === 10 && ar.hoy.caras >= 10 && ar.hoy.hq && ar.hoy.cierra, 'debajo, quién lleva cada fase y «Pasar a BiPlot HQ»; Escape lo cierra sin salir del museo');
-  ok(ar.linea.t === 'Así creció BiPlot' && ar.linea.vb === '0 0 1280 290' && ar.linea.hitos === 8 && ar.linea.desliza === !!movil && !ar.linea.desborde,
-    'la línea de tiempo se abre de frente con sus 8 fechas' + (movil ? ' y se desliza de lado' : ''));
+  ok(ar.linea.t === 'Así creció BiPlot' && ar.linea.vb === '0 0 1280 290' && ar.linea.hitos === 8 && ar.linea.lista === !!movil && ar.linea.entera && !ar.linea.desborde,
+    'la línea de tiempo se abre de frente y entera, con sus 8 fechas' + (movil ? ' también en texto, debajo' : ''));
+  ok(ar.apertura.abierta && /media\/salas\/archivo-hq-apertura\.webp$/.test(ar.apertura.img) && ar.apertura.carga && ar.apertura.entera && ar.apertura.t === 'Así abrió BiPlot HQ' &&
+    ar.apertura.pie === 'BiPlot HQ · 25 sep 2026' && ar.apertura.hq && !ar.apertura.desborde, 'el cuadro de BiPlot HQ el día que abrió se abre de frente y completo, con «Pasar a BiPlot HQ»');
   ok(ar.fundos.t === 'La escritura inscrita' && /media\/salas\/fundos-5-postventa\.webp$/.test(ar.fundos.img) && ar.fundos.carga && /^Fundos 360 · Postventa/.test(ar.fundos.pie) && ar.fundos.sala && ar.fundos.hoja === !!movil,
     'la escritura de Fundos 360 trae su pantalla real y «Entrar a su sala»');
+  ok(ar.fundosFoto.abierta && /media\/salas\/fundos-5-postventa\.webp$/.test(ar.fundosFoto.img) && ar.fundosFoto.carga && ar.fundosFoto.entera && ar.fundosFoto.t === 'La escritura inscrita' &&
+    /datos de ejemplo/.test(ar.fundosFoto.pie) && ar.fundosFoto.sala && !ar.fundosFoto.desborde && ar.fundosFoto.cierra, 'al tocar su pantalla real, se abre en grande y completa, con su tarjeta al lado, y Escape vuelve al museo');
   ok(ar.fichero.t === 'Todos los casos tienen su carpeta' && ar.fichero.n === 5 && ar.fichero.vis === 'Haru 360', 'el fichero, desde la barra, lista los 5 casos por rubro y los busca (' + ar.fichero.vis + ')');
   ok(/^https:\/\/wa\.me\/\d+\?text=/.test(ar.turno.cta) && ar.turno.chat, 'el pedestal libre lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
   ok(ar.rec.p1.n === '1 de 12' && ar.rec.p1.t === 'La entrada' && ar.rec.p2.t === '1985 · La libreta' && ar.rec.p1.guia === ar.rec.esperado[0] && ar.rec.p2.guia === ar.rec.esperado[1] && ar.rec.fin,

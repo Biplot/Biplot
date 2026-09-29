@@ -158,20 +158,23 @@ en hoy; da una sola vuelta, frente al primer plano de la oficina, y vuelve por l
 desarrollo en el orden en que llegaron a biplot.cl (la escritura de Fundos 360, el QR de Haru 360, el módulo de Nu Home
 360, la huella de Eleven 360 y el elefante de Rumbo), cada una con su pantalla real y «Entrar a su sala». Termina en el
 punto coral del pedestal libre: tu turno, el único lugar con «Agenda tu diagnóstico». En los muros, la línea de tiempo de
-2026 (con las fechas del historial del sitio) y el fichero con todos los casos por rubro y su buscador (también en la
-barra: «Todos los casos»). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
+2026 (con las fechas del historial del sitio), el fichero con todos los casos por rubro y su buscador (también en la
+barra: «Todos los casos») y, entre el fichero y el primer plano, un cuadro con BiPlot HQ el día que abrió (el 25 de
+septiembre, con una sala por proyecto adentro; en la imagen, el letrero de una mesa va en blanco). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
 doce paradas, con cuatro visitas. Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
 
 **La vista de frente.** En todas las salas propias, lo que es una imagen (un mural, una pizarra, un letrero, un paisaje,
-una pantalla) no abre una tarjeta al costado: se abre de frente, derecho y en grande, con la sala oscurecida detrás (se
-sigue viendo), y debajo (o al lado, si la imagen es angosta) va lo que cuenta su tarjeta, con sus botones. En el museo:
-el mural de las diez fases (el proceso completo, con quién lleva cada fase), la línea de tiempo de 2026 y el primer
-plano de BiPlot HQ; en Nu Home, las terminaciones y la pantalla real del diseñador; en Fundos, los tres paisajes del
-ventanal y el letrero del equipo; en Haru, la pizarra de los rolls; en Eleven, el horario y el team; en Rumbo, la rueda
-de la vida, los hábitos, las recompensas y la noche. Lo que tiene su propia explicación (un mueble, un rincón con su
-gente, una vitrina) sigue abriendo su tarjeta. Se cierra con la ×, con `Escape` o tocando lo oscuro, y el foco vuelve a
-lo que se tocó; abierta desde el recorrido («Ver más»), al cerrarla el recorrido sigue en la misma parada. Un letrero
-chico no se agranda más de 3,2 veces, y en celular la línea de tiempo se desliza de lado.
+un cuadro, una pantalla) no abre una tarjeta al costado: se abre de frente, derecho, en grande y completo, con la sala
+oscurecida detrás (se sigue viendo), y debajo (o al lado, si la imagen es angosta) va lo que cuenta su tarjeta, con sus
+botones. En el museo: el mural de las diez fases (el proceso completo, con quién lleva cada fase), la línea de tiempo de
+2026, el cuadro de BiPlot HQ el día que abrió y el primer plano; en Nu Home, las terminaciones y la pantalla real del
+diseñador; en Fundos, los tres paisajes del ventanal y el letrero del equipo; en Haru, la pizarra de los rolls; en
+Eleven, el horario y el team; en Rumbo, la rueda de la vida, los hábitos, las recompensas y la noche. Lo que tiene su
+propia explicación (un mueble, un rincón con su gente, una vitrina) sigue abriendo su tarjeta, y la foto que traiga (una
+pantalla real) se toca y se abre igual, en grande y completa, con su pie «datos de ejemplo»; también las pantallas del
+rincón de BiPlot. Se cierra con la ×, con `Escape` o tocando lo oscuro, y el foco vuelve a lo que se tocó; abierta desde
+el recorrido («Ver más»), al cerrarla el recorrido sigue en la misma parada. La imagen se ve siempre entera: un letrero
+chico no se agranda más de 3,2 veces y, en celular, la línea de tiempo trae además sus fechas en texto, debajo.
 
 **Cómo se arma una sala propia.** Todo lo de la empresa sale de su dibujo y de `datos.js`: una sala pasa a ser propia con
 `salaPropia` en su proyecto (sus colores, su letra, su marca, sus textos, quién habla, qué dice cada zona y el recorrido)
@@ -253,8 +256,9 @@ camina sólo mientras se ve.
   (`{ piso: [[x, y], …], alto }`, un mueble o un rincón con su gente) o planos (`{ plano: [[x, y, z], …] }`, una pantalla
   o un cuadro en el muro); `lugar` es donde va su nombre y `guia`, el punto del piso donde se para la asesora cuando el
   recorrido pasa por ahí. Si la zona es una imagen, lleva además `frente: { svg, ancho, alto }` (el dibujo derecho en su
-  tamaño, casi siempre el mismo que se pinta en el muro; o `img`, una pantalla real de `media/salas/`; y `fondo`, un color
-  detrás si el dibujo no trae el suyo): al tocarla se abre de frente en vez de su tarjeta, con los textos de su zona. `lugar('entrada', …)` marca dónde parte la cámara en celular. La gente que habla se nombra por
+  tamaño, casi siempre el mismo que se pinta en el muro; o `img`, una imagen de `media/salas/`, con su `alt` y su `pie`;
+  y `fondo`, un color detrás si el dibujo no trae el suyo): al tocarla se abre de frente en vez de su tarjeta, con los
+  textos de su zona. `lugar('entrada', …)` marca dónde parte la cámara en celular. La gente que habla se nombra por
   su id en el dibujo (`nhRecepcion`, `bucle`…). En `datos.js`, su proyecto lleva `salaPropia`: sus colores y su letra
   (`colores`, `fuente`), su marca y la frase de su barra, el botón de su barra con su enlace (`disenar`: «Diseñar la
   mía», «Ver la carta»…), su WhatsApp (o `null`), quién habla y qué dice, qué cuenta cada zona (con sus medidas, una
@@ -299,8 +303,9 @@ la sala propia de Nu Home (sin números ni panel, su barra, sus zonas y sus tarj
 recorrido con una asesora, la tarjeta de BiPlot, las salas vecinas y el botón atrás), las de Fundos, Haru, Eleven y
 Rumbo (su barra con su letra, todas sus zonas y su gente, una tarjeta con lo real, su recorrido y el rincón de BiPlot),
 el museo de El Archivo (sus épocas con su capítulo, las diez fases, sus casos con su sala, el fichero, el pedestal libre
-y el recorrido con Pepa), la vista de frente (las diez fases y la línea de tiempo del museo, una pieza de cada sala y la
-pantalla del diseñador de Nu Home con un clic de verdad, con la sala oscurecida detrás, y el recorrido que sigue detrás),
+y el recorrido con Pepa), la vista de frente (las diez fases, la línea de tiempo y el cuadro de BiPlot HQ del museo, una
+pieza de cada sala, la pantalla del diseñador de Nu Home con un clic de verdad, las fotos de las tarjetas y las pantallas
+del rincón de BiPlot, siempre completas, con la sala oscurecida detrás, y el recorrido que sigue detrás),
 chat de Plotty con la cámara en
 el rubro, vitrina,
 El Archivo, teclado, enlaces directos y las páginas para compartir, pausa, movimiento reducido, errores de consola y

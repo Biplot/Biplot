@@ -221,8 +221,8 @@ export function salaArchivo(o = {}) {
       mono(2, 78, 'MUSEO DE BIPLOT', 15, CIAN, ' letter-spacing="3"') + `<rect x="2" y="94" width="64" height="4" fill="${CIAN}"/>` +
       txt(2, 128, '«Lo que sirve dos veces', 15, TINTA, ' font-weight="500"') + txt(2, 148, 'se guarda.»', 15, TINTA, ' font-weight="500"') + mono(2, 168, 'PEPA · COSECHA', 10, GRIS, ' letter-spacing="1"'), -39);
 
-    // ── El muro de la izquierda: el fichero con todos los casos por rubro y, donde la línea da la vuelta, el primer plano
-    // de BiPlot HQ ──
+    // ── El muro de la izquierda: el fichero con todos los casos por rubro, BiPlot HQ el día que abrió y, donde la línea da
+    // la vuelta, el primer plano de la oficina ──
     L.caja(0.06, 1.1, 0, 0.64, 2.8, 1.18, ROBLE, 1.2);
     L.caja(0.04, 1.08, 1.18, 0.68, 2.84, 0.05, NOGAL, 1.25);
     planoXen(L, 0.701, 3.9, 1.12, 280, 108, `<rect width="280" height="108" fill="#B99A70"/>` +
@@ -232,6 +232,14 @@ export function salaArchivo(o = {}) {
     // Una ficha afuera, sobre el fichero
     L.caja(0.25, 2.3, 1.23, 0.3, 0.42, 0.012, { t: '#FBF6E9', l: '#E8DFC8', r: '#D8CDB2' }, 1.9);
     zona('fichero', { formas: [{ piso: [[0.06, 1.1], [0.72, 1.1], [0.72, 3.9], [0.06, 3.9]], alto: 1.25 }, { plano: [[0.03, 3.95, 1.55], [0.03, 1.05, 1.55], [0.03, 1.05, 2.05], [0.03, 3.95, 2.05]] }], lugar: [0.4, 2.5, 1.7], guia: [1.7, 3.2] });
+
+    // BiPlot HQ el día que abrió (25 sep): la imagen de entonces, con una sala por proyecto adentro, enmarcada; se abre de
+    // frente completa
+    const yh = 7.12;
+    L.planoX(yh, 2.4, 280, 177, `<rect width="280" height="177" fill="${AZUL}"/><image href="§M§archivo-hq-apertura.webp" x="6" y="6" width="268" height="165" preserveAspectRatio="xMidYMid meet"/>`, -38.8);
+    L.planoX(yh, 0.55, 280, 20, mono(0, 14, 'BIPLOT HQ, EL DÍA QUE ABRIÓ', 11, GRIS, ' letter-spacing="1.2"'), -38.5);
+    zona('apertura', { formas: [{ plano: [[0.03, yh, 0.63], [0.03, yh - 2.8, 0.63], [0.03, yh - 2.8, 2.4], [0.03, yh, 2.4]] }], lugar: [0.05, yh - 1.4, 2.6], guia: [2.1, yh - 1.4],
+      frente: { img: 'archivo-hq-apertura', ancho: 1225, alto: 753, alt: 'BiPlot HQ el 25 de septiembre de 2026, en isométrico: la recepción con Plotty, el muro del personal, la estantería del núcleo, el motor en la pared y una sala por proyecto (Nu Home 360, Fundos 360, Haru 360, Eleven 360 y Rumbo)', pie: 'BiPlot HQ · 25 sep 2026' } });
 
     const yp = (LF + LC) / 2 + 1.5;
     const PLANO_HQ = `<rect width="300" height="160" fill="#F8F6F1"/><rect x="10" y="10" width="280" height="140" fill="${AZUL2}"/>` +

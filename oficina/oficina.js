@@ -1387,11 +1387,16 @@
   function htmlHitos(h) {
     return '<ol class="tarjeta-fases tarjeta-hitos">' + h.map(function (x) { return '<li><span class="cod">' + esc(x[0]) + '</span><b>' + esc(x[1]) + '<span>' + esc(x[2] || '') + '</span></b></li>'; }).join('') + '</ol>';
   }
+  // Una foto que se abre en grande (y completa) al tocarla
+  var ICONO_VER = '<span class="ver-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></span>';
+  function botonFoto(src, alt, dato) {
+    return '<button type="button" class="ver-foto" ' + dato + ' aria-label="' + esc('Ver en grande: ' + alt) + '"><img src="' + esc(src) + '" alt="" width="1280" height="720">' + ICONO_VER + '</button>';
+  }
   function htmlTarjetaZona(d) {
     // La imagen es de la sala o, en el museo, del caso de esa pieza (con su nombre y su módulo)
     var pr = (d.caso && salaDe(d.caso)) || propia.pr, pin = d.imagen && (pr.pines || []).filter(function (p) { return p[3] === d.imagen; })[0];
     return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre) + '</p><h3 id="sala-tarjeta-t" tabindex="-1">' + esc(d.titulo) + '</h3>' +
-      (d.imagen ? '<figure class="tarjeta-img"><img src="' + MEDIOS + esc(d.imagen) + '.webp" alt="' + esc(pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : '')) + '" width="1280" height="720">' +
+      (d.imagen ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : ''), 'data-ver-foto') +
         '<figcaption>' + esc(pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo') + '</figcaption></figure>' : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
@@ -1425,7 +1430,7 @@
   // Una pantalla real de la tira de la tarjeta de BiPlot
   function elegirPantalla(i) {
     var pr = propia.pr, p = (pr.pines || [])[i], v = tarjeta.querySelector('.visor'); if (!p || !v) return;
-    v.innerHTML = (p[3] ? '<img src="' + MEDIOS + esc(p[3]) + '.webp" alt="' + esc(pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1]) + '" width="1280" height="720">' : '') +
+    v.innerHTML = (p[3] ? botonFoto(MEDIOS + p[3] + '.webp', pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1], 'data-ver-pantalla="' + i + '"') : '') +
       '<div class="visor-txt"><span class="mod">' + esc(nombreModulo(p[0])) + '</span><b>' + esc(p[1]) + '</b><span>' + esc(p[2]) + '</span></div>';
     tarjeta.querySelectorAll('[data-pantalla]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-pantalla') === i ? 'true' : 'false'); });
   }
@@ -1488,6 +1493,8 @@
   function accionSala(b, e) {
     if (b.hasAttribute('data-recorrer')) { e.preventDefault(); iniciarRecorrido(0); return; }
     if (b.hasAttribute('data-pantalla')) { elegirPantalla(+b.getAttribute('data-pantalla')); return; }
+    if (b.hasAttribute('data-ver-foto')) { e.preventDefault(); verFoto(propia.frente || propia.tarjeta); return; }
+    if (b.hasAttribute('data-ver-pantalla')) { e.preventDefault(); verPantalla(+b.getAttribute('data-ver-pantalla')); return; }
     if (b.hasAttribute('data-hq')) { e.preventDefault(); entrarOficina({ boton: $('#recorrer-toggle') }); return; }
     if (b.hasAttribute('data-sala-ir')) { e.preventDefault(); entrarSala(b.getAttribute('data-sala-ir'), { directo: true }); return; }
     if (b.hasAttribute('data-zona-ir')) { e.preventDefault(); abrirTarjeta(b.getAttribute('data-zona-ir'), { desde: b }); return; }
@@ -1510,42 +1517,54 @@
     var pin = img && (pr.pines || []).filter(function (p) { return p[3] === img; })[0];
     return pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : '');
   }
-  // (un cartel chico no se agranda más de 3,2 veces; lo muy apaisado y ancho, como la línea de tiempo, en celular se desliza de lado.
-  // Los botones van antes de la lista de fases, para que se vean sin bajar)
-  function htmlFrente(f, d) {
-    var an = f.ancho || 1280, al = f.alto || 720, prop = an / al, largo = prop > 3 && an >= 700, nombre = d.titulo || d.nombre || '';
-    var pr = (d.caso && salaDe(d.caso)) || propia.pr;
-    var dib = f.img ? '<img src="' + MEDIOS + esc(f.img) + '.webp" alt="' + esc(altPantalla(pr, f.img)) + '" width="' + an + '" height="' + al + '">'
+  // (la imagen va siempre completa: un cartel chico no se agranda más de 3,2 veces y lo muy apaisado, como la línea de tiempo,
+  // en celular trae además sus fechas en texto, debajo. Una pantalla real lleva su pie; los botones van antes de la lista de fases)
+  function htmlFrente(f, d, o) {
+    o = o || {};
+    var an = f.ancho || 1280, al = f.alto || 720, prop = an / al, nombre = d.titulo || d.nombre || '';
+    var pr = (d.caso && salaDe(d.caso)) || propia.pr, pin = f.img && (pr.pines || []).filter(function (x) { return x[3] === f.img; })[0];
+    var pie = f.pie || (pin ? pr.nombre + ' · ' + nombreModulo(pin[0]) + ' · datos de ejemplo' : '');
+    var dib = f.img ? '<img src="' + MEDIOS + esc(f.img) + '.webp" alt="' + esc(f.alt || altPantalla(pr, f.img)) + '" width="' + an + '" height="' + al + '">'
       : '<svg viewBox="0 0 ' + an + ' ' + al + '" role="img" aria-label="' + esc(d.nombre || nombre) + '">' + conMedios(f.svg) + '</svg>';
-    var img = d.imagen && d.imagen !== f.img ? '<figure class="tarjeta-img"><img src="' + MEDIOS + esc(d.imagen) + '.webp" alt="' + esc(altPantalla(pr, d.imagen)) + '" width="1280" height="720">' +
+    var img = d.imagen && d.imagen !== f.img ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', altPantalla(pr, d.imagen), 'data-ver-foto') +
       '<figcaption>' + esc(pr.nombre + ' · datos de ejemplo') + '</figcaption></figure>' : '';
     return '<div class="frente-velo" data-frente-cerrar></div>' + CERRAR_F +
-      '<div class="frente-caja' + (largo ? ' largo' : prop < 2 ? ' lado' : '') + '" style="--frente-prop:' + prop.toFixed(3) + ';--frente-max:' + Math.round(an * 3.2) + 'px' +
-      (largo ? ';--frente-alto-movil:' + Math.max(150, Math.min(Math.round(al * 0.85), 260)) + 'px' : '') + (f.fondo ? ';--frente-fondo:' + esc(f.fondo) : '') + '">' +
-      '<figure class="frente-lamina"><div class="frente-marco"' + (largo ? ' tabindex="0" role="region" aria-label="' + esc(nombre + ', se desliza de lado') + '"' : '') + '>' + dib + '</div>' +
-      (largo ? '<figcaption class="frente-desliza" aria-hidden="true">Desliza para verlo entero</figcaption>' : '') + '</figure>' +
-      '<div class="frente-texto' + (img ? ' con-img' : '') + '"><div class="frente-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre || '') + '</p><h3 id="sala-frente-t" tabindex="-1">' + esc(nombre) + '</h3>' +
+      '<div class="frente-caja' + (prop > 3 ? ' ancha' : prop < 2 ? ' lado' : '') + '" style="--frente-prop:' + prop.toFixed(3) + ';--frente-max:' + Math.round(an * 3.2) + 'px' +
+      (f.fondo ? ';--frente-fondo:' + esc(f.fondo) : '') + '">' +
+      '<figure class="frente-lamina"><div class="frente-marco">' + dib + '</div>' + (pie ? '<figcaption class="frente-pie">' + esc(pie) + '</figcaption>' : '') + '</figure>' +
+      '<div class="frente-texto' + (img ? ' con-img' : '') + (o.bp ? ' bp' : '') + '"><div class="frente-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre || '') + '</p><h3 id="sala-frente-t" tabindex="-1">' + esc(nombre) + '</h3>' +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
       (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
         esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') +
-      (d.fases ? htmlFases() : '') + (d.hitos ? '<div class="sr">' + htmlHitos(d.hitos) + '</div>' : '') + '</div>' + img + '</div></div>';
+      (d.fases ? htmlFases() : '') + (d.hitos ? '<div class="frente-lista">' + htmlHitos(d.hitos) + '</div>' : '') + '</div>' + img + '</div></div>';
   }
   function abrirFrente(id, o) {
     o = o || {};
-    var z = propia && propia.zonas[id]; if (!z || !z.z.frente) return;
+    var z = propia && propia.zonas[id], fr = o.frente || (z && z.z.frente); if (!z || !fr) return;
     // (el recorrido sigue detrás: al cerrarla se vuelve a la misma parada; si había una tarjeta, se cierra y el foco vuelve a lo que la abrió)
     var desde = o.desde || document.activeElement;
     if (propia.tarjeta) { if (propia.origen) desde = propia.origen; cerrarTarjeta(true); }
     if (propia.frente) marcarZona(propia.frente, false); else propia.origenFrente = desde;
     propia.frente = id; propia.frenteT = Date.now();
     callarSolas(); anillo(null);
-    frenteEl.innerHTML = htmlFrente(z.z.frente, z.d || {});
+    frenteEl.innerHTML = htmlFrente(fr, o.datos || z.d || {}, o);
     frenteEl.hidden = false;
     document.body.classList.add('con-frente');
     marcarZona(id, true); resaltarZona(id);
     requestAnimationFrame(function () { if (propia && propia.frente === id) frenteEl.classList.add('visible'); });
     var h = frenteEl.querySelector('#sala-frente-t'); if (h) h.focus({ preventScroll: true });
+  }
+  // La foto (pantalla real) de una tarjeta o de la vista de frente, en grande y completa, con los textos de su zona
+  function verFoto(id) {
+    var z = id && propia.zonas[id], d = z && z.d; if (!d || !d.imagen) return;
+    abrirFrente(id, { frente: { img: d.imagen, ancho: 1280, alto: 720 } });
+  }
+  // Una pantalla del rincón de BiPlot, en grande: su módulo, lo que muestra y para qué
+  function verPantalla(i) {
+    var pr = propia.pr, p = (pr.pines || [])[i]; if (!p || !p[3] || !propia.tarjeta) return;
+    abrirFrente(propia.tarjeta, { frente: { img: p[3], ancho: 1280, alto: 720, alt: pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1] },
+      datos: { ceja: pr.nombre + ' · ' + nombreModulo(p[0]), titulo: p[1], texto: p[2] }, bp: true });
   }
   function cerrarFrente(sinFoco) {
     if (!propia || !propia.frente) return false;
@@ -1566,6 +1585,7 @@
     if (e.detail && Date.now() - propia.frenteT < 350) { e.preventDefault(); return; }
     if (e.target.closest('[data-frente-cerrar]')) { cerrarFrente(); return; }
     var b = e.target.closest('button, a'); if (!b) return;
+    if (b.hasAttribute('data-ver-foto')) { verFoto(propia.frente); return; }
     // Lo que lleva a otra parte de la oficina cierra antes la vista de frente (lo que se abre en otra pestaña la deja)
     if (b.tagName === 'A' && b.target === '_blank') return;
     var o = propia.origenFrente;
