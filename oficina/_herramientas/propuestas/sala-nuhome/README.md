@@ -6,7 +6,7 @@ el recorrido con una asesora y la barra de Nu Home) a `oficina.js`, en lugar de 
 
 - `sala.mjs`: la sala (20 × 14 baldosas) con el mismo motor de las salas grandes. Tiene el taller detrás del vidrio, el
   muro de la marca y el ventanal, el salón y la entrega, las terminaciones, la asesoría con la mesa de maqueta, la casa
-  piloto con terraza y pérgola, los modelos en maqueta, la recepción y el rincón de BiPlot. No lleva alfileres:
+  piloto con terraza y pérgola, los modelos en maqueta, la recepción y el rincón de BiPlot con Bucle. No lleva alfileres:
   `lugar(id, x, y, z)` marca dónde van las burbujas y las tarjetas.
 - `dibujar.mjs`: saca la foto de la sala entera y de cada zona (`--solo entera,taller,…`).
 - `mock.mjs`: muestra la sala dentro de la oficina en tres momentos: al entrar (`?e=a`), al tocar la casa piloto (`?e=b`)

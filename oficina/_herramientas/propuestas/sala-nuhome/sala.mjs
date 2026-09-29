@@ -362,7 +362,7 @@ export function salaNuhome() {
     L.caja(8.62, 12.88, 1.06, 0.06, 0.05, 0.08, { t: TINTA, l: TINTA, r: '#000' }, 8.6 + 12.9 + 0.6);
     L.caja(8.26, 12.9, 1.13, 0.78, 0.05, 0.47, { t: TINTA, l: TINTA, r: '#000' }, 8.6 + 12.9 + 0.62);
     L.planoY(8.28, 12.952, 1.58, 74, 43, `<rect width="74" height="43" rx="2" fill="${TINTA}"/><image href="§X§oficina/media/nuhome-360-h.jpg" x="2.5" y="2.5" width="69" height="38" preserveAspectRatio="xMidYMid slice"/><circle cx="37" cy="21.5" r="8" fill="rgba(11,23,38,.7)"/><path d="M34.4 17.3V25.7L41.2 21.5Z" fill="#FFFFFF"/>`, 8.6 + 12.95 + 0.63);
-    pj('faro', 9.7, 12.95, 0, 'i');
+    pj('bucle', 9.7, 12.95, 0, 'i');
     lugar('biplot', 8.6, 12.9, 1.5);
 
     return { id: 'nuhome', ancho: W, fondo: D };
