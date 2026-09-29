@@ -1,7 +1,7 @@
-// Exporta el elefante de Rumbo (Biplot/rumbo, js/elefante.js) como SVG fijo para la sala propuesta
+// Exporta el elefante de Rumbo (Biplot/rumbo, js/elefante.js) como SVG fijo para su sala en la oficina
 import fs from 'node:fs'; import vm from 'node:vm';
-// Uso: node exportar-elefantes.mjs <carpeta del repo rumbo>
-const code = fs.readFileSync((process.argv[2] || '../../../../../rumbo') + '/js/elefante.js', 'utf8');
+// Uso: node exportar-elefantes.mjs <carpeta del repo rumbo> (rehace elefantes.mjs, junto a este archivo)
+const code = fs.readFileSync((process.argv[2] || '../rumbo') + '/js/elefante.js', 'utf8');
 const ctx = { STATE: { gamif: { xp: 5000, equipped: {}, owned: [], badges: [] }, ritual: { dias: {} }, vida: {} }, window: {}, document: {} };
 vm.createContext(ctx);
 vm.runInContext(code + '\n;this.elefanteSVG = elefanteSVG;', ctx);
