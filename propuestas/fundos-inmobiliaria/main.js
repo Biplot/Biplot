@@ -569,12 +569,16 @@
       var H = W * b[3] / b[2];
       if (isSmall()) H = clamp(H * 1.5, 260, Math.min(window.innerHeight * 0.6, 460));
       else {
-        // Chips de precio + plano completo caben juntos en la pantalla, bajo la barra de navegación
+        // Toda la herramienta (proyectos, filtros, chips, plano y leyenda) cabe en la pantalla bajo la
+        // barra de navegación; el plano nunca pasa de 560 px de alto para no comerse la página.
         var navH = Math.min(navBottom() || 66, 70), catsH = cats && !cats.hidden ? cats.offsetHeight : 0;
-        H = Math.min(H, Math.max(280, window.innerHeight - navH - catsH - 28));
+        var above = cats ? Math.max(0, cats.getBoundingClientRect().top - root.getBoundingClientRect().top) : 0;
+        var legH = legend && !legend.hidden ? legend.offsetHeight : 0;
+        H = Math.min(H, clamp(window.innerHeight - navH - above - catsH - legH - 24, 380, 560));
       }
       if (!reset && Z.W === W && Z.H) H = Z.H;    // la barra del navegador móvil cambia innerHeight: la altura no salta
       canvas.style.height = Math.round(H) + "px";
+      if (stage) root.style.setProperty("--stage-h", stage.offsetHeight + "px");
       Z.W = W; Z.H = H;
       var a = W / H;
       if (b[2] / b[3] > a) { Z.fitW = b[2]; Z.fitH = b[2] / a; } else { Z.fitH = b[3]; Z.fitW = b[3] * a; }
@@ -1417,16 +1421,17 @@
       var y = window.scrollY + root.getBoundingClientRect().top - navBottom() - 8;
       window.scrollTo({ top: y, behavior: reduced ? "auto" : "smooth" });
     }
+    // Los enlaces a #plano llevan directo a la herramienta (el plano completo queda a la vista)
     document.addEventListener("click", function (e) {
-      if (desktop.matches || e.defaultPrevented) return;
+      if (e.defaultPrevented) return;
       var a = e.target.closest && e.target.closest('a[href="#plano"]');
-      if (!a || a.hasAttribute("data-open-project") || a.closest(".nav, .menu")) return;
+      if (!a || a.hasAttribute("data-open-project")) return;
       e.preventDefault();
       landPlan();
     });
 
     /* ---- API para otros módulos ---- */
-    Plan.land = function () { if (desktop.matches) scrollToEl($("#plano")); else landPlan(); };
+    Plan.land = landPlan;
     Plan.show = function (id) { if (id !== S.id || !built) setProject(id); };
     Plan.current = function () { return S.id; };
     Plan.apply = function (o) {
