@@ -1830,3 +1830,12 @@ h2 em { text-wrap: balance; }
   .seller-card img, .seller-more .i { transition: none; }
 }
 .sd-list .i { color: var(--gold-ink); }
+
+.sd-text { display: grid; gap: .7rem; }
+.sd-text.is-own p:first-child { font-family: var(--serif); font-size: clamp(1.2rem, 1.8vw, 1.4rem); line-height: 1.3; color: var(--g900); }
+@media (min-width: 720px) { .sd-body { max-height: min(720px, calc(100dvh - 24px)); overflow-y: auto; } .sdialog[open] { overflow: hidden; } }
+
+/* Video de portada dentro del marco de la foto: los degradados de .hero-photo lo cubren igual */
+.hero-photo .hero-video { z-index: 0; object-position: 50% 40%; }
+.hero-photo::after { z-index: 1; }
+.hero.has-video .hero-photo img { opacity: 0; transition: opacity 1.4s var(--ease-soft); }
