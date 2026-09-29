@@ -527,8 +527,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     await cierra();
     r.rec = { p1, p2, enHoy, iHoy, esperado: PP.recorrido.slice(0, 2).map(p => PP.textos.guia + p.texto), fin: !b.classList.contains('recorriendo') };
     return r; })()`);
-  ok(ar.sala && ar.nombre === 'El Archivo' && /MUSEO DE BIPLOT/.test(ar.barra) && /Recorrer con Pepa/.test(ar.barra) && /Todos los casos/.test(ar.barra) && ar.ant === 'Rumbo' && !ar.sig,
-    'oficina/#archivo abre El Archivo, el museo de BiPlot: su barra con «Recorrer con Pepa» y «Todos los casos», y la sala vecina es Rumbo');
+  ok(ar.sala && ar.nombre === 'El Archivo' && /MUSEO DE BIPLOT/.test(ar.barra) && /Recorrer con Pepa/.test(ar.barra) && /Todos los casos/.test(ar.barra) && ar.ant === 'Tu proyecto aquí' && !ar.sig,
+    'oficina/#archivo abre El Archivo, el museo de BiPlot: su barra con «Recorrer con Pepa» y «Todos los casos», y la sala vecina es la sala de ventas');
   ok(!ar.faltan.length && !ar.desborde, 'en el museo están todas sus piezas y toda su gente' + (ar.faltan.length ? ' (faltan: ' + ar.faltan.join(', ') + ')' : ''));
   ok(ar.papel.t === 'Antes de todo esto, había una libreta' && ar.papel.ceja === '1985 · El papel' && ar.papel.cap === '../plotline.html#ch0 _blank' && ar.papel.tres,
     'la vitrina de la libreta se abre en 3D, con su texto de 1985 y su capítulo de «Seis décadas, la misma línea»');
