@@ -55,7 +55,7 @@
 
     // Video de portada (sin sonido, en bucle). Ocupa el marco de la foto del equipo, que queda de respaldo.
     // mp4/webm: versión horizontal o cuadrada; mp4Movil/webmMovil: versión vertical para celular (opcional).
-    videoPortada: { mp4: "", webm: "", poster: "", mp4Movil: "", webmMovil: "", posterMovil: "" },
+    videoPortada: { mp4: "assets/video/portada.mp4", webm: "assets/video/portada.webm", poster: "", mp4Movil: "assets/video/portada-movil.mp4", webmMovil: "assets/video/portada-movil.webm", posterMovil: "" },
 
     // Monto de reserva por lote (dato de Fundos 360°)
     reserva: 1000000,
