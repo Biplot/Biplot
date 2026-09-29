@@ -567,6 +567,17 @@ button { font: inherit; color: inherit; }
 .frente-lamina { flex: none; margin: 0; width: min(100%, calc(50vh * var(--frente-prop)), var(--frente-max, 100%)); }
 .frente-marco { border-radius: 14px; overflow: hidden; background: var(--frente-fondo, transparent); box-shadow: 0 28px 70px rgba(0, 0, 0, .5); }
 .frente-marco > svg, .frente-marco > img { display: block; width: 100%; height: auto; aspect-ratio: var(--frente-prop); }
+/* Una vitrina en 3D, girando sobre su pedestal: un foco sobre el muro oscuro del museo y sus botones */
+.v3d-marco { background: radial-gradient(ellipse 72% 62% at 50% 40%, #21476E 0%, #132F4C 55%, #0B1D31 100%); }
+.v3d { cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.v3d.arrastrando { cursor: grabbing; }
+.v3d-mandos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.v3d-mandos button { min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; padding: 0 14px; border: 1.5px solid rgba(242, 244, 247, .3); border-radius: 99px;
+  background: rgba(10, 27, 46, .88); color: #F2F4F7; font: 600 14px/1 var(--bp-f-display); cursor: pointer; }
+.v3d-mandos button[data-v3d="izq"], .v3d-mandos button[data-v3d="der"] { padding: 0; width: 44px; }
+.v3d-mandos button:hover { border-color: var(--bp-acento); }
+.v3d-mandos svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.v3d-ayuda { font: 500 12.5px/1.3 var(--bp-f-texto); color: #D5DEE8; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
 .frente-pie { margin-top: 8px; font: 500 12.5px/1.35 var(--bp-f-texto); color: #D5DEE8; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
 /* (las fechas de la línea de tiempo, en texto: para lectores de pantalla y, en celular, a la vista) */
 .frente-lista { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -599,6 +610,7 @@ button { font: inherit; color: inherit; }
 @media (min-width: 900px) {
   .frente-caja.lado { flex-direction: row; align-items: center; justify-content: center; gap: 22px; }
   .frente-caja.lado .frente-lamina { width: min(calc(100% - 382px), calc((100vh - 120px) * var(--frente-prop)), var(--frente-max, 100%)); }
+  .frente-caja.lado.con-mandos .frente-lamina { width: min(calc(100% - 382px), calc((100vh - 186px) * var(--frente-prop)), var(--frente-max, 100%)); }
   .frente-caja.lado .frente-texto { width: 360px; flex-direction: column; }
 }
 @media (max-width: 899px) {

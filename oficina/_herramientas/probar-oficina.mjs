@@ -12,7 +12,8 @@
 // fichero con su buscador, el pedestal libre y el recorrido con Pepa. La vista de frente: lo que es una imagen (un mural,
 // una pizarra, un cuadro, una pantalla) se abre derecho, en grande y completo, con la sala oscurecida detrás (las diez
 // fases, la línea de tiempo y el cuadro de BiPlot HQ del museo, una pieza de cada sala, el diseñador de Nu Home con un
-// clic de verdad, la foto de una tarjeta y las pantallas del rincón de BiPlot) y el recorrido sigue detrás.
+// clic de verdad, la foto de una tarjeta y las pantallas del rincón de BiPlot) y el recorrido sigue detrás. Las vitrinas
+// del museo se abren en 3D, girando sobre su pedestal (se pausan y se giran a mano; con movimiento reducido, quietas).
 // Al final carga casos de prueba (sólo en el navegador de la prueba, no en datos.js) para revisar las calles por rubro,
 // sus techos, las plantillas y las fases. NAVEGADOR=<ruta> usa otro Chromium.
 //
@@ -455,7 +456,9 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     const t = document.querySelector('#sala-tarjeta'), abre = async (id) => { const z = document.querySelector('.zona-sala[data-zona="' + id + '"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)}; };
     const cierra = async () => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(150)}; };
     await abre('papel');
-    r.papel = { t: document.querySelector('#sala-tarjeta-t')?.textContent, ceja: t.querySelector('.ceja')?.textContent, cap: [...t.querySelectorAll('a.sp-btn')].map(a => a.getAttribute('href') + ' ' + a.target).join() };
+    const fr = document.querySelector('#sala-frente');
+    r.papel = { t: document.querySelector('#sala-frente-t')?.textContent, ceja: fr.querySelector('.frente-texto .ceja')?.textContent, cap: [...fr.querySelectorAll('a.sp-btn')].map(a => a.getAttribute('href') + ' ' + a.target).join(),
+      tres: !!fr.querySelector('.v3d') && t.hidden };
     await cierra(); await abre('hoy');
     // (lo que es una imagen se abre de frente, con la sala oscurecida detrás: se sigue viendo)
     const f = document.querySelector('#sala-frente'), fl = f.querySelector('.frente-lamina')?.getBoundingClientRect(), velo = f.querySelector('.frente-velo');
@@ -480,11 +483,12 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
         hq: !!f.querySelector('[data-hq]'), sala: !!f.querySelector('[data-sala-ir]'), desborde: document.documentElement.scrollWidth > innerWidth }; };
     await abre('apertura'); r.apertura = await completa(); await cierra();
     await abre('fundos');
-    const img = t.querySelector('.tarjeta-img img');
+    const img = f.querySelector('.frente-texto .tarjeta-img img');
     if (img && !(img.complete && img.naturalWidth)) await new Promise((listo) => { img.onload = img.onerror = listo; setTimeout(listo, 4000); });
-    r.fundos = { t: document.querySelector('#sala-tarjeta-t')?.textContent, img: img ? img.getAttribute('src') : '', carga: !!img && img.naturalWidth > 0, pie: t.querySelector('figcaption')?.textContent || '', sala: !!t.querySelector('[data-sala-ir="fundos"]'), hoja: t.classList.contains('hoja') };
+    r.fundos = { t: document.querySelector('#sala-frente-t')?.textContent, img: img ? img.getAttribute('src') : '', carga: !!img && img.naturalWidth > 0, pie: f.querySelector('.frente-texto figcaption')?.textContent || '', sala: !!f.querySelector('[data-sala-ir="fundos"]'),
+      tres: !!f.querySelector('.v3d') };
     // (su foto se toca y se abre en grande, completa, con los textos de la tarjeta)
-    t.querySelector('[data-ver-foto]').click(); await ${W(300)};
+    f.querySelector('.frente-texto [data-ver-foto]').click(); await ${W(300)};
     r.fundosFoto = await completa();
     await cierra();
     r.fundosFoto.cierra = f.hidden && t.hidden && document.body.classList.contains('en-sala-propia') && location.hash === '#archivo';
@@ -493,8 +497,20 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     const n = t.querySelectorAll('.archivo-grupo li').length, i = t.querySelector('.archivo-busca input'); i.value = 'restaurante'; i.dispatchEvent(new Event('input', { bubbles: true })); await ${W(50)};
     r.fichero = { t: document.querySelector('#sala-tarjeta-t')?.textContent, n, vis: [...t.querySelectorAll('.archivo-grupo:not([hidden]) li:not([hidden]) b')].map(x => x.textContent).join() };
     await cierra(); await abre('tuproyecto');
-    r.turno = { cta: t.querySelector('a.bp-cta')?.getAttribute('href') || '', chat: !!t.querySelector('[data-abrir="chat:plotty"]') };
+    r.turno = { cta: f.querySelector('a.bp-cta')?.getAttribute('href') || '', chat: !!f.querySelector('[data-abrir="chat:plotty"]'), tres: !!f.querySelector('.v3d') };
     await cierra();
+    // La terminal, en 3D: gira sola sobre su pedestal; la pausa la detiene y los botones la giran, sin cerrar la vista
+    await abre('terminal');
+    const cara = () => { const p = [...f.querySelectorAll('.v3d-capa polygon')].find((e) => e.style.display !== 'none'); return p ? p.getAttribute('points') : ''; };
+    const tv = f.querySelector('.v3d'), pausa = f.querySelector('[data-v3d="pausa"]');
+    const g0 = cara(); await ${W(500)}; const g1 = cara();
+    pausa.click(); await ${W(60)}; const q0 = cara(); await ${W(500)}; const q1 = cara();
+    f.querySelector('[data-v3d="der"]').click(); await ${W(60)}; const q2 = cara();
+    r.v3d = { svg: !!tv && tv.getAttribute('role') === 'img', caras: tv ? [...tv.querySelectorAll('.v3d-capa > *')].filter((e) => e.style.display !== 'none').length : 0, texto: document.querySelector('#sala-frente-t')?.textContent,
+      gira: g0 !== g1, pausa: q0 === q1 && pausa.getAttribute('aria-pressed') === 'true' && pausa.textContent === 'Seguir girando', aMano: q2 !== q1, abierta: !f.hidden,
+      cabe: (() => { const b = tv.getBoundingClientRect(); return b.left >= 0 && b.right <= innerWidth + 1 && b.top >= 0 && b.width >= Math.min(innerWidth * 0.8, 300); })(), desborde: document.documentElement.scrollWidth > innerWidth };
+    await cierra();
+    r.v3d.cierra = f.hidden && document.body.classList.contains('en-sala-propia');
     // Recorrer con Pepa
     const rec = () => ({ n: document.querySelector('[data-rec="n"]').textContent, t: document.querySelector('[data-rec="t"]').textContent, guia: document.querySelector('#sala-capa .burbuja.de-guia')?.textContent || '' });
     b.querySelector('[data-recorrer]').click(); await ${W(1500)}; const p1 = rec();
@@ -512,7 +528,10 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(ar.sala && ar.nombre === 'El Archivo' && /MUSEO DE BIPLOT/.test(ar.barra) && /Recorrer con Pepa/.test(ar.barra) && /Todos los casos/.test(ar.barra) && ar.ant === 'Rumbo' && !ar.sig,
     'oficina/#archivo abre El Archivo, el museo de BiPlot: su barra con «Recorrer con Pepa» y «Todos los casos», y la sala vecina es Rumbo');
   ok(!ar.faltan.length && !ar.desborde, 'en el museo están todas sus piezas y toda su gente' + (ar.faltan.length ? ' (faltan: ' + ar.faltan.join(', ') + ')' : ''));
-  ok(ar.papel.t === 'Antes de todo esto, había una libreta' && ar.papel.ceja === '1985 · El papel' && ar.papel.cap === '../plotline.html#ch0 _blank', 'la libreta abre su tarjeta de 1985 y lleva a su capítulo de «Seis décadas, la misma línea»');
+  ok(ar.papel.t === 'Antes de todo esto, había una libreta' && ar.papel.ceja === '1985 · El papel' && ar.papel.cap === '../plotline.html#ch0 _blank' && ar.papel.tres,
+    'la vitrina de la libreta se abre en 3D, con su texto de 1985 y su capítulo de «Seis décadas, la misma línea»');
+  ok(ar.v3d.svg && ar.v3d.caras >= 15 && ar.v3d.texto === 'Todo cambio serio empieza por leer el proceso real' && ar.v3d.gira && ar.v3d.pausa && ar.v3d.aMano && ar.v3d.abierta && ar.v3d.cabe && !ar.v3d.desborde && ar.v3d.cierra,
+    'la terminal gira en 3D sobre su pedestal: la pausa la detiene, los botones la giran y Escape la cierra');
   const hoyOk = ar.hoy.frente && ar.hoy.vb === '0 0 1000 440' && ar.hoy.detras && ar.hoy.cabe && ar.hoy.foco === 'sala-frente-t' && ar.hoy.exp === 'true' && !ar.hoy.desborde;
   ok(hoyOk, 'el mural de las diez fases se abre de frente y en grande, con la sala oscurecida detrás' + (hoyOk ? '' : ' ' + JSON.stringify(ar.hoy)));
   ok(ar.hoy.fases === 10 && ar.hoy.caras >= 10 && ar.hoy.hq && ar.hoy.cierra, 'debajo, quién lleva cada fase y «Pasar a BiPlot HQ»; Escape lo cierra sin salir del museo');
@@ -520,17 +539,17 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     'la línea de tiempo se abre de frente y entera, con sus 8 fechas' + (movil ? ' también en texto, debajo' : ''));
   ok(ar.apertura.abierta && /media\/salas\/archivo-hq-apertura\.webp$/.test(ar.apertura.img) && ar.apertura.carga && ar.apertura.entera && ar.apertura.t === 'Así abrió BiPlot HQ' &&
     ar.apertura.pie === 'BiPlot HQ · 25 sep 2026' && ar.apertura.hq && !ar.apertura.desborde, 'el cuadro de BiPlot HQ el día que abrió se abre de frente y completo, con «Pasar a BiPlot HQ»');
-  ok(ar.fundos.t === 'La escritura inscrita' && /media\/salas\/fundos-5-postventa\.webp$/.test(ar.fundos.img) && ar.fundos.carga && /^Fundos 360 · Postventa/.test(ar.fundos.pie) && ar.fundos.sala && ar.fundos.hoja === !!movil,
-    'la escritura de Fundos 360 trae su pantalla real y «Entrar a su sala»');
+  ok(ar.fundos.t === 'La escritura inscrita' && /media\/salas\/fundos-5-postventa\.webp$/.test(ar.fundos.img) && ar.fundos.carga && /^Fundos 360 · Postventa/.test(ar.fundos.pie) && ar.fundos.sala && ar.fundos.tres,
+    'la escritura de Fundos 360 gira en 3D, con su pantalla real y «Entrar a su sala»');
   ok(ar.fundosFoto.abierta && /media\/salas\/fundos-5-postventa\.webp$/.test(ar.fundosFoto.img) && ar.fundosFoto.carga && ar.fundosFoto.entera && ar.fundosFoto.t === 'La escritura inscrita' &&
     /datos de ejemplo/.test(ar.fundosFoto.pie) && ar.fundosFoto.sala && !ar.fundosFoto.desborde && ar.fundosFoto.cierra, 'al tocar su pantalla real, se abre en grande y completa, con su tarjeta al lado, y Escape vuelve al museo');
   ok(ar.fichero.t === 'Todos los casos tienen su carpeta' && ar.fichero.n === 5 && ar.fichero.vis === 'Haru 360', 'el fichero, desde la barra, lista los 5 casos por rubro y los busca (' + ar.fichero.vis + ')');
-  ok(/^https:\/\/wa\.me\/\d+\?text=/.test(ar.turno.cta) && ar.turno.chat, 'el pedestal libre lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
+  ok(/^https:\/\/wa\.me\/\d+\?text=/.test(ar.turno.cta) && ar.turno.chat && ar.turno.tres, 'el pedestal libre gira en 3D y lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
   ok(ar.rec.p1.n === '1 de 12' && ar.rec.p1.t === 'La entrada' && ar.rec.p2.t === '1985 · La libreta' && ar.rec.p1.guia === ar.rec.esperado[0] && ar.rec.p2.guia === ar.rec.esperado[1] && ar.rec.fin,
     '«Recorrer con Pepa» va de la entrada a la libreta, Pepa habla en cada parada y Escape lo termina');
   ok(ar.rec.enHoy.frente && ar.rec.enHoy.n === (ar.rec.iHoy + 1) + ' de 12' && ar.rec.enHoy.sigue, '«Ver más» en la parada de las diez fases las abre de frente, y al cerrarla el recorrido sigue en la misma parada');
   ok(await js(`(async () => { const z = document.querySelector('.zona-sala[data-zona="fundos"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
-      document.querySelector('#sala-tarjeta [data-sala-ir="fundos"]').click(); await ${W(700)};
+      document.querySelector('#sala-frente [data-sala-ir="fundos"]').click(); await ${W(700)};
       return location.hash === '#fundos' && document.querySelector('#sala-nombre').textContent === 'Fundos 360' && document.body.classList.contains('en-sala-propia'); })()`), '«Entrar a su sala» pasa del museo a la sala de Fundos 360');
   await abrir(w, h, movil, false, '#conversar');
   ok((await js("!!document.querySelector('#panel:not([hidden]) .chat') && document.querySelector('#svg-escena').classList.contains('oficina-abierta')")), 'oficina/#conversar entra y abre la conversación con Plotty');
@@ -625,6 +644,16 @@ await sleep(600);
   ok(rq.solas === 0 && rq.elegida, 'en la sala de Nu Home nadie habla solo, pero al elegir a alguien se ve su frase');
   ok(rq.salta && rq.paso === '2 de 7', 'y el recorrido con una asesora pasa de parada en parada sin animación');
   ok(consola.length === 0, 'sin errores de consola' + (consola.length ? ': ' + [...new Set(consola)].join(' | ') : ''));
+}
+// El Archivo, quieto: la vitrina en 3D no gira sola (su botón ofrece «Seguir girando»), pero se gira a mano
+await abrir(1440, 900, false, true, '#archivo');
+await sleep(600);
+{
+  const vq = await js(`(async () => { const z = document.querySelector('.zona-sala[data-zona="eleven"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(200)};
+    const f = document.querySelector('#sala-frente'), cara = () => { const p = [...f.querySelectorAll('.v3d-capa polygon')].find((e) => e.style.display !== 'none'); return p ? p.getAttribute('points') : ''; };
+    const a = cara(); await ${W(600)}; const b = cara(); f.querySelector('[data-v3d="izq"]').click(); await ${W(60)};
+    return { quieta: !!a && a === b, boton: f.querySelector('[data-v3d="pausa"]')?.textContent, aMano: cara() !== b }; })()`);
+  ok(vq.quieta && vq.boton === 'Seguir girando' && vq.aMano, 'en El Archivo, la vitrina en 3D no gira sola, pero se gira a mano');
 }
 
 console.log('\nRecursos con error: ' + (recursos.length ? [...new Set(recursos)].join(', ') : 'ninguno'));

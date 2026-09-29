@@ -10,6 +10,7 @@
 // textos (tarjetas, burbujas y recorrido) están en datos.js (salas.archivo.salaPropia).
 import { montar, base, registrar, planoXen, plantaAlta, txt, mono, PELO, Z, PIEL, EA, r1 } from './comun.mjs';
 import { ETAPAS } from './elefantes.mjs';
+import { grabador, marco3d } from './vitrina3d.mjs';
 
 const AZUL = '#0E2A47', AZUL2 = '#12375E', CIAN = '#17C3B2', CIAN2 = '#7FD8CF', TINTA = '#13202E', GRIS = '#5B6776', CORAL = '#FF6B4A';
 const MURO = '#F1EEE8', MURO2 = '#E4E0D8';
@@ -38,11 +39,14 @@ registrar({
 
 // La luz de cada pieza, en el piso: una mancha tibia que se apaga hacia los bordes
 const LUZ = `<defs><radialGradient id="ar-luz"><stop offset="0" stop-color="#FFF1CF" stop-opacity=".30"/><stop offset=".55" stop-color="#FFF1CF" stop-opacity=".12"/><stop offset="1" stop-color="#FFF1CF" stop-opacity="0"/></radialGradient></defs>`;
+const ESPERA3D = `<defs><radialGradient id="ar-espera3d"><stop offset="0" stop-color="#7FD8CF" stop-opacity=".6"/><stop offset="1" stop-color="#7FD8CF" stop-opacity="0"/></radialGradient></defs>`;
 const luz = (L, x, y, r = 1.1) => L.piso(x - r, y - r, `<circle cx="${r * 100}" cy="${r * 100}" r="${r * 100}" fill="url(#ar-luz)"/>`, -30, 0.012);
 
 // Contenido 2D sobre un plano cualquiera (una hoja inclinada, la pantalla de un portátil): o es la esquina de arriba a la
-// izquierda y u, v los lados (en baldosas) que corresponden al ancho a y al alto h del dibujo
-function plano(L, o, u, v, a, h, svg, k) {
+// izquierda y u, v los lados (en baldosas) que corresponden al ancho a y al alto h del dibujo; dorso, el color de su revés
+// cuando la vitrina gira (vitrina3d.mjs)
+function plano(L, o, u, v, a, h, svg, k, dorso) {
+  if (L.tres) return L.plano(o, u, v, a, h, svg, dorso);
   const p0 = L.P(...o), pu = L.P(o[0] + u[0], o[1] + u[1], o[2] + u[2]), pv = L.P(o[0] + v[0], o[1] + v[1], o[2] + v[2]);
   L.E.marca(...o); L.E.marca(o[0] + u[0] + v[0], o[1] + u[1] + v[1], o[2] + u[2] + v[2]);
   const m = [(pu[0] - p0[0]) / a, (pu[1] - p0[1]) / a, (pv[0] - p0[0]) / h, (pv[1] - p0[1]) / h].map((n) => n.toFixed(4));
@@ -50,8 +54,8 @@ function plano(L, o, u, v, a, h, svg, k) {
 }
 
 // Una vitrina: pedestal blanco con su cédula al frente, la pieza encima y el vidrio alrededor (la cara de atrás antes
-// de la pieza y la de adelante después). pieza(z) dibuja lo que va encima (z = h). Todas iguales; hoy y el pedestal
-// libre van sin vidrio (o.vidrio = false).
+// de la pieza y la de adelante después). pieza(z, L) dibuja lo que va encima (z = h), en la sala o en la vitrina en 3D.
+// Todas iguales; hoy y el pedestal libre van sin vidrio (o.vidrio = false).
 function vitrina(L, x, y, cedula, pieza, o = {}) {
   const s = 0.86, h = 0.98, hv = 0.7, x0 = x - s / 2, y0 = y - s / 2, x1 = x + s / 2, y1 = y + s / 2, k = x + y, zv = h + hv;
   const vidrio = o.vidrio !== false;
@@ -67,7 +71,7 @@ function vitrina(L, x, y, cedula, pieza, o = {}) {
     vid([[x0, y0, h], [x1, y0, h], [x1, y0, zv], [x0, y0, zv]], k - 0.3, '.10');
     vid([[x0, y0, h], [x0, y1, h], [x0, y1, zv], [x0, y0, zv]], k - 0.3, '.08');
   }
-  if (pieza) pieza(h);
+  if (pieza) pieza(h, L);
   if (vidrio) {
     vid([[x0, y1, h], [x1, y1, h], [x1, y1, zv], [x0, y1, zv]], k + 0.6, '.12');
     vid([[x1, y0, h], [x1, y1, h], [x1, y1, zv], [x1, y0, zv]], k + 0.6, '.10');
@@ -79,6 +83,7 @@ function vitrina(L, x, y, cedula, pieza, o = {}) {
 
 // El elefante de Rumbo parado en (x, y, z), de alto h (su dibujo va de pie, como la gente)
 const elefante = (L, svg, x, y, z, h, k) => {
+  if (L.tres) return L.figura(svg, x, y, z, h, 128, 222);
   const [px, py] = L.P(x, y, z), s = h * 39 / 222;
   L.E.marca(x, y, z); L.E.marca(x, y, z + h);
   L.add(k, `<g transform="translate(${r1(px - 128 * s)} ${r1(py - 222 * s)}) scale(${s.toFixed(4)})">${svg}</g>`);
@@ -200,7 +205,13 @@ export function salaArchivo(o = {}) {
     L.piso(0, 0, lineaDelPiso(o.tono), -29.5, 0.01);
 
     // Cada vitrina se toca entera; la guía se para adelante, a su izquierda. Lo que es una imagen (la pantalla de hoy, la
-    // línea de tiempo, el primer plano) se abre de frente
+    // línea de tiempo, el primer plano) se abre de frente; una vitrina con su pieza, en 3D, girando sobre su pedestal
+    const expo = (x, y, cedula, fn, o = {}) => {
+      vitrina(L, x, y, cedula, fn, o);
+      const R = grabador(x, y); vitrina(R, x, y, cedula, fn, o);
+      const m = marco3d(R.modelo, 0.98 + 0.7);
+      return { modelo: { ...R.modelo, vb: m.vb, defs: LUZ + ESPERA3D }, ancho: m.ancho, alto: m.alto };
+    };
     const pieza = (id, x, y, alto = 1.75, frente) => zona(id, { formas: [{ piso: [[x - 0.5, y - 0.5], [x + 0.5, y - 0.5], [x + 0.5, y + 0.5], [x - 0.5, y + 0.5]], alto }], lugar: [x, y, alto + 0.25],
       guia: [r1(x - 0.95), r1(y + 0.7)], ...(frente ? { frente } : {}) });
 
@@ -254,27 +265,27 @@ export function salaArchivo(o = {}) {
 
     // ── Adelante, las épocas: la misma línea, contada con herramientas distintas ──
     // 1985 · El papel: la libreta abierta sobre su atril, con el lápiz al lado
-    vitrina(L, COL[4], FRENTE, ['1985 · EL PAPEL', 'La libreta'], (h) => {
+    const vPapel = expo(COL[4], FRENTE, ['1985 · EL PAPEL', 'La libreta'], (h, L) => {
       const x = COL[4], y = FRENTE;
       L.caja(x - 0.3, y - 0.14, h, 0.6, 0.34, 0.05, ROBLE, x + y);
-      plano(L, [x - 0.28, y - 0.12, h + 0.38], [0.56, 0, 0], [0, 0.24, -0.3], 56, 37, LIBRETA, x + y + 0.05);
+      plano(L, [x - 0.28, y - 0.12, h + 0.38], [0.56, 0, 0], [0, 0.24, -0.3], 56, 37, LIBRETA, x + y + 0.05, '#8C6A4A');
       L.linea([[x - 0.22, y + 0.2, h + 0.06], [x + 0.14, y + 0.15, h + 0.06]], '#E0B341', 2.4, x + y + 0.1);
       L.linea([[x + 0.14, y + 0.15, h + 0.06], [x + 0.19, y + 0.14, h + 0.06]], EPOCA.lapiz, 1.6, x + y + 0.11);
     });
-    pieza('papel', COL[4], FRENTE);
+    pieza('papel', COL[4], FRENTE, 1.75, vPapel);
     pj('abuelo', COL[4] + 0.95, FRENTE - 0.25, 0, 'i');
 
     // 1990 · El diagnóstico: la terminal, leyendo el proceso paso a paso
-    vitrina(L, COL[3], FRENTE, ['1990 · EL DIAGNÓSTICO', 'La terminal'], (h) => {
+    const vTerminal = expo(COL[3], FRENTE, ['1990 · EL DIAGNÓSTICO', 'La terminal'], (h, L) => {
       const x = COL[3], y = FRENTE - 0.05;
       L.caja(x - 0.2, y - 0.2, h, 0.4, 0.34, 0.3, BEIGE, x + y + 0.1);
       L.planoY(x - 0.16, y + 0.141, h + 0.27, 32, 22, TERMINAL, x + y + 0.12);
       L.caja(x - 0.18, y + 0.2, h, 0.36, 0.13, 0.03, BEIGE, x + y + 0.2);
     });
-    pieza('terminal', COL[3], FRENTE);
+    pieza('terminal', COL[3], FRENTE, 1.75, vTerminal);
 
     // 1998 · El enredo: el monitor con ventanas encima de ventanas y la caja del software, con sus cuatro CD
-    vitrina(L, COL[2], FRENTE, ['1998 · EL ENREDO', 'El software'], (h) => {
+    const vSoftware = expo(COL[2], FRENTE, ['1998 · EL ENREDO', 'El software'], (h, L) => {
       const x = COL[2], y = FRENTE;
       L.caja(x - 0.3, y - 0.2, h, 0.36, 0.36, 0.33, BEIGE, x + y);
       L.planoY(x - 0.27, y + 0.161, h + 0.3, 30, 24, ENREDO, x + y + 0.05);
@@ -282,19 +293,19 @@ export function salaArchivo(o = {}) {
       L.caja(x + 0.12, y - 0.02, h, 0.15, 0.06, 0.27, { t: '#7A3A9E', l: '#5B2A86', r: '#4A2170' }, x + y + 0.12);
       L.planoY(x + 0.12, y + 0.041, h + 0.27, 15, 27, CAJA_SOFTWARE, x + y + 0.13);
     });
-    pieza('software', COL[2], FRENTE);
+    pieza('software', COL[2], FRENTE, 1.75, vSoftware);
 
     // 2015 · El genérico: un portátil con la misma plantilla de siempre
-    vitrina(L, COL[1], FRENTE, ['2015 · EL GENÉRICO', 'Tres palabras'], (h) => {
+    const vGenerico = expo(COL[1], FRENTE, ['2015 · EL GENÉRICO', 'Tres palabras'], (h, L) => {
       const x = COL[1], y = FRENTE;
       L.caja(x - 0.25, y - 0.08, h, 0.5, 0.32, 0.018, { t: '#D9DEE5', l: '#BFC6CF', r: '#A9B1BB' }, x + y + 0.02);
       L.planoY(x - 0.2, y + 0.241, h + 0.018, 40, 1, `<rect width="40" height="1" fill="#8F97A1"/>`, x + y + 0.03);
-      plano(L, [x - 0.25, y - 0.12, h + 0.33], [0.5, 0, 0], [0, 0.05, -0.315], 48, 31, SAAS, x + y + 0.04);
+      plano(L, [x - 0.25, y - 0.12, h + 0.33], [0.5, 0, 0], [0, 0.05, -0.315], 48, 31, SAAS, x + y + 0.04, '#A9B1BB');
     });
-    pieza('generico', COL[1], FRENTE);
+    pieza('generico', COL[1], FRENTE, 1.75, vGenerico);
 
     // Hoy · BiPlot HQ: la misma línea, ahora con alguien a cargo de cada tramo. Sin vidrio: sigue abierta
-    vitrina(L, COL[0], FRENTE, ['HOY · BIPLOT HQ', 'Diez fases'], (h) => {
+    vitrina(L, COL[0], FRENTE, ['HOY · BIPLOT HQ', 'Diez fases'], (h, L) => {
       const x = COL[0], y = FRENTE, k = x + y;
       L.caja(x - 0.05, y - 0.07, h, 0.1, 0.08, 0.14, MARINO, k + 0.05);
       L.caja(x - 0.42, y - 0.07, h + 0.12, 0.84, 0.06, 0.42, MARINO, k + 0.1);
@@ -305,34 +316,34 @@ export function salaArchivo(o = {}) {
 
     // ── Atrás, lo que construimos: una pieza de cada desarrollo, en el orden en que llegaron ──
     // Fundos 360: la escritura inscrita a nombre del comprador y la banderita del lote 25
-    vitrina(L, COL[0], FONDO, ['FUNDOS 360 · 10 SEP', 'La escritura'], (h) => {
+    const vFundos = expo(COL[0], FONDO, ['FUNDOS 360 · 10 SEP', 'La escritura'], (h, L) => {
       const x = COL[0], y = FONDO;
       L.caja(x - 0.26, y - 0.06, h, 0.36, 0.1, 0.03, ROBLE, x + y);
       L.planoY(x - 0.24, y + 0.041, h + 0.46, 32, 43, `<rect width="32" height="43" fill="#FBF6E9" stroke="#D8CDB2" stroke-width=".8"/>` + mono(4, 7, 'ESCRITURA', 4.2, '#0F1F16') +
         [11, 14, 17, 20, 23, 26].map((yy) => `<rect x="4" y="${yy}" width="${yy === 26 ? 14 : 24}" height="1.1" fill="#B9AE98"/>`).join('') +
-        `<circle cx="23" cy="35" r="6" fill="none" stroke="#9E2B25" stroke-width="1.3"/><circle cx="23" cy="35" r="4.3" fill="none" stroke="#9E2B25" stroke-width=".6"/>` + mono(19, 36.2, 'INSCRITA', 1.9, '#9E2B25'), x + y + 0.05);
+        `<circle cx="23" cy="35" r="6" fill="none" stroke="#9E2B25" stroke-width="1.3"/><circle cx="23" cy="35" r="4.3" fill="none" stroke="#9E2B25" stroke-width=".6"/>` + mono(19, 36.2, 'INSCRITA', 1.9, '#9E2B25'), x + y + 0.05, '#EFE8D8');
       L.caja(x + 0.08, y - 0.02, h, 0.26, 0.24, 0.06, { t: '#5E8A4E', l: '#4E7440', r: '#3F6034' }, x + y + 0.1);
       L.linea([[x + 0.2, y + 0.1, h + 0.06], [x + 0.2, y + 0.1, h + 0.5]], '#3A2E22', 1.4, x + y + 0.15);
-      L.planoY(x + 0.2, y + 0.101, h + 0.5, 20, 13, `<path d="M0 0H20L15 6.5L20 13H0Z" fill="#D8B982" stroke="#0F1F16" stroke-width="1"/>` + txt(3, 9.5, '25', 7.5, '#0F1F16'), x + y + 0.16);
+      L.planoY(x + 0.2, y + 0.101, h + 0.5, 20, 13, `<path d="M0 0H20L15 6.5L20 13H0Z" fill="#D8B982" stroke="#0F1F16" stroke-width="1"/>` + txt(3, 9.5, '25', 7.5, '#0F1F16'), x + y + 0.16, '#C9A66C');
     });
-    pieza('fundos', COL[0], FONDO);
+    pieza('fundos', COL[0], FONDO, 1.75, vFundos);
     pj('arMira', COL[0] + 0.95, FONDO - 0.25, 0, 'i');
 
     // Haru 360: el QR de la mesa (se pide desde la mesa y la comanda llega a la cocina sin papel)
-    vitrina(L, COL[1], FONDO, ['HARU 360 · 15 SEP', 'El QR de la mesa'], (h) => {
+    const vHaru = expo(COL[1], FONDO, ['HARU 360 · 15 SEP', 'El QR de la mesa'], (h, L) => {
       const x = COL[1], y = FONDO;
       L.caja(x - 0.3, y - 0.22, h, 0.6, 0.44, 0.05, { t: '#C9A27A', l: '#A8845E', r: '#8C6D4A' }, x + y);
       L.caja(x - 0.13, y - 0.04, h + 0.05, 0.22, 0.05, 0.02, { t: '#E6ECEF', l: '#C9D3D8', r: '#B3BFC6' }, x + y + 0.05);
       const qr = Array.from({ length: 36 }, (_, i) => ((i * 7 + (i >> 2)) % 3 === 0 ? `<rect x="${4 + (i % 6) * 2.4}" y="${7 + Math.floor(i / 6) * 2.4}" width="2.2" height="2.2" fill="#15120F"/>` : '')).join('');
       L.planoY(x - 0.12, y - 0.005, h + 0.33, 20, 26, `<rect width="20" height="26" rx="1.5" fill="#FFFFFF" stroke="#C9D3D8" stroke-width=".8"/>` + mono(3, 5, 'CARTA', 3.4, '#E0482F') + qr +
-        `<rect x="4" y="7" width="5" height="5" fill="none" stroke="#15120F" stroke-width="1.1"/><rect x="11.4" y="7" width="5" height="5" fill="none" stroke="#15120F" stroke-width="1.1"/><rect x="4" y="14.4" width="5" height="5" fill="none" stroke="#15120F" stroke-width="1.1"/>`, x + y + 0.06);
+        `<rect x="4" y="7" width="5" height="5" fill="none" stroke="#15120F" stroke-width="1.1"/><rect x="11.4" y="7" width="5" height="5" fill="none" stroke="#15120F" stroke-width="1.1"/><rect x="4" y="14.4" width="5" height="5" fill="none" stroke="#15120F" stroke-width="1.1"/>`, x + y + 0.06, '#EEF1F3');
       L.cil(x + 0.17, y + 0.08, h + 0.05, 0.11, 0.015, '#FFFFFF', '#E6E1D8', x + y + 0.12);
       for (const [dx, dy] of [[0.13, 0.05], [0.2, 0.1]]) { L.cil(x + dx, y + dy, h + 0.065, 0.035, 0.035, '#F3EDE1', '#1F3A28', x + y + 0.13 + dx * 0.01); }
     });
-    pieza('haru', COL[1], FONDO);
+    pieza('haru', COL[1], FONDO, 1.75, vHaru);
 
     // Nu Home 360: el módulo de 6 m, a escala, sobre su terreno (así se diseña la casa en su diseñador)
-    vitrina(L, COL[2], FONDO, ['NU HOME 360 · 25 SEP', 'El módulo'], (h) => {
+    const vNuhome = expo(COL[2], FONDO, ['NU HOME 360 · 25 SEP', 'El módulo'], (h, L) => {
       const x = COL[2], y = FONDO;
       L.caja(x - 0.34, y - 0.28, h, 0.68, 0.56, 0.05, { t: '#8FAE78', l: '#789A62', r: '#658653' }, x + y);
       L.caja(x - 0.26, y - 0.1, h + 0.05, 0.36, 0.16, 0.15, { t: '#2B2724', l: '#1C1917', r: '#141110' }, x + y + 0.08);
@@ -342,10 +353,10 @@ export function salaArchivo(o = {}) {
       L.caja(x + 0.09, y - 0.11, h + 0.2, 0.16, 0.18, 0.01, { t: '#A27F55', l: '#8C6A4A', r: '#735538' }, x + y + 0.13);
       L.cil(x - 0.22, y + 0.18, h + 0.05, 0.05, 0.1, '#3E7A4E', '#2F6440', x + y + 0.14);
     });
-    pieza('nuhome', COL[2], FONDO);
+    pieza('nuhome', COL[2], FONDO, 1.75, vNuhome);
 
     // Eleven 360: la huella (la propuesta no la reemplaza: trabaja antes y después de ella)
-    vitrina(L, COL[3], FONDO, ['ELEVEN 360 · 25 SEP', 'La huella'], (h) => {
+    const vEleven = expo(COL[3], FONDO, ['ELEVEN 360 · 25 SEP', 'La huella'], (h, L) => {
       const x = COL[3], y = FONDO;
       L.caja(x - 0.2, y - 0.14, h, 0.4, 0.28, 0.04, { t: '#1A1A1A', l: '#111111', r: '#0B0B0B' }, x + y);
       L.caja(x - 0.11, y - 0.05, h + 0.04, 0.22, 0.1, 0.36, { t: '#2A2A2A', l: '#1A1A1A', r: '#101010' }, x + y + 0.05);
@@ -355,18 +366,19 @@ export function salaArchivo(o = {}) {
         `<circle cx="9" cy="23" r="1.3" fill="#37D67A"/>`, x + y + 0.06);
       L.caja(x - 0.2, y + 0.08, h + 0.04, 0.4, 0.06, 0.012, { t: '#FF6600', l: '#CC5200', r: '#A84300' }, x + y + 0.07);
     });
-    pieza('eleven', COL[3], FONDO);
+    pieza('eleven', COL[3], FONDO, 1.75, vEleven);
 
     // Rumbo: el elefante en su última etapa, el Sabio, con su corona
-    vitrina(L, COL[4], FONDO, ['RUMBO · 25 SEP', 'El elefante'], (h) => elefante(L, ETAPAS[3], COL[4], FONDO + 0.05, h, 0.62, COL[4] + FONDO + 0.1));
-    pieza('rumbo', COL[4], FONDO);
+    const vRumbo = expo(COL[4], FONDO, ['RUMBO · 25 SEP', 'El elefante'], (h, L) => elefante(L, ETAPAS[3], COL[4], FONDO + 0.05, h, 0.62, COL[4] + FONDO + 0.1));
+    pieza('rumbo', COL[4], FONDO, 1.75, vRumbo);
     pj('nino', COL[4] + 0.95, FONDO - 0.2, 0, 'i', EA * 0.72);
 
     // Tu turno: el pedestal libre, sin vidrio, con una luz que lo espera; la línea termina en su punto coral
-    vitrina(L, COL[5], FONDO, ['TU TURNO', 'Tu proyecto'], null, { vidrio: false });
+    const vTurno = expo(COL[5], FONDO, ['TU TURNO', 'Tu proyecto'], (h, L) => { if (L.tres) L.piso(COL[5] - 0.34, FONDO - 0.34, `<circle cx="34" cy="34" r="34" fill="url(#ar-espera3d)"/>`, 0, h + 0.004); }, { vidrio: false });
     { const [cx, cy] = L.P(COL[5], FONDO, 0.98); L.add(COL[5] + FONDO + 0.3, `<defs><radialGradient id="ar-espera"><stop offset="0" stop-color="#7FD8CF" stop-opacity=".55"/><stop offset="1" stop-color="#7FD8CF" stop-opacity="0"/></radialGradient></defs><ellipse cx="${r1(cx)}" cy="${r1(cy)}" rx="26" ry="13" fill="url(#ar-espera)"/>`); }
     zona('tuproyecto', { formas: [{ piso: [[COL[5] - 0.5, FONDO - 0.5], [COL[5] + 0.5, FONDO - 0.5], [COL[5] + 0.5, FONDO + 0.5], [COL[5] - 0.5, FONDO + 0.5]], alto: 1.3 },
-      { piso: [[COL[5] - 0.35, LC - 0.25], [COL[5] + 0.35, LC - 0.25], [COL[5] + 0.35, LC + 0.25], [COL[5] - 0.35, LC + 0.25]], alto: 0.05 }], lugar: [COL[5], FONDO, 1.5], guia: [r1(COL[5] - 0.95), r1(FONDO + 0.7)] });
+      { piso: [[COL[5] - 0.35, LC - 0.25], [COL[5] + 0.35, LC - 0.25], [COL[5] + 0.35, LC + 0.25], [COL[5] - 0.35, LC + 0.25]], alto: 0.05 }], lugar: [COL[5], FONDO, 1.5], guia: [r1(COL[5] - 0.95), r1(FONDO + 0.7)],
+      frente: vTurno });
 
     // ── La entrada: el atril donde parte la línea, con el libro de visitas ──
     const ka = 19.25 + LF + 0.3;

@@ -163,6 +163,12 @@ barra: «Todos los casos») y, entre el fichero y el primer plano, un cuadro con
 septiembre, con una sala por proyecto adentro; en la imagen, el letrero de una mesa va en blanco). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
 doce paradas, con cuatro visitas. Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
 
+**Las vitrinas, en 3D.** Al tocar una vitrina del museo (cada época, cada desarrollo y el pedestal libre) se abre en
+grande y en 3D, sobre la sala oscurecida: su pedestal con su cédula, su vidrio y la pieza del centro van girando, una
+vuelta cada 20 segundos, con su texto al lado (su capítulo, su pantalla real, «Entrar a su sala»). Al abrirse se ve igual
+que en la sala y desde ahí gira. Se pausa con «Pausar el giro», se gira a mano con sus flechas o arrastrándola, y con
+«reducir movimiento» (o la oficina en pausa) queda quieta. Las diez fases de hoy siguen abriéndose de frente.
+
 **La vista de frente.** En todas las salas propias, lo que es una imagen (un mural, una pizarra, un letrero, un paisaje,
 un cuadro, una pantalla) no abre una tarjeta al costado: se abre de frente, derecho, en grande y completo, con la sala
 oscurecida detrás (se sigue viendo), y debajo (o al lado, si la imagen es angosta) va lo que cuenta su tarjeta, con sus
@@ -170,7 +176,7 @@ botones. En el museo: el mural de las diez fases (el proceso completo, con quié
 2026, el cuadro de BiPlot HQ el día que abrió y el primer plano; en Nu Home, las terminaciones y la pantalla real del
 diseñador; en Fundos, los tres paisajes del ventanal y el letrero del equipo; en Haru, la pizarra de los rolls; en
 Eleven, el horario y el team; en Rumbo, la rueda de la vida, los hábitos, las recompensas y la noche. Lo que tiene su
-propia explicación (un mueble, un rincón con su gente, una vitrina) sigue abriendo su tarjeta, y la foto que traiga (una
+propia explicación (un mueble, un rincón con su gente) sigue abriendo su tarjeta (las vitrinas del museo, en 3D), y la foto que traiga (una
 pantalla real) se toca y se abre igual, en grande y completa, con su pie «datos de ejemplo»; también las pantallas del
 rincón de BiPlot. Se cierra con la ×, con `Escape` o tocando lo oscuro, y el foco vuelve a lo que se tocó; abierta desde
 el recorrido («Ver más»), al cerrarla el recorrido sigue en la misma parada. La imagen se ve siempre entera: un letrero
@@ -258,7 +264,11 @@ camina sólo mientras se ve.
   recorrido pasa por ahí. Si la zona es una imagen, lleva además `frente: { svg, ancho, alto }` (el dibujo derecho en su
   tamaño, casi siempre el mismo que se pinta en el muro; o `img`, una imagen de `media/salas/`, con su `alt` y su `pie`;
   y `fondo`, un color detrás si el dibujo no trae el suyo): al tocarla se abre de frente en vez de su tarjeta, con los
-  textos de su zona. `lugar('entrada', …)` marca dónde parte la cámara en celular. La gente que habla se nombra por
+  textos de su zona. Una vitrina del museo lleva en `frente` su modelo 3D (`{ modelo, ancho, alto }`): `vitrina3d.mjs`
+  graba lo que dibuja la vitrina (con las mismas llamadas de la sala: `caja`, `cil`, `planoY`, `piso`, `linea`, los
+  vidrios y, en `archivo.mjs`, `plano` con el color de su revés y la figura del elefante) con el centro del pedestal en el
+  origen, y `oficina/vitrina3d.js` la hace girar: la rota, la proyecta con la misma isométrica, ordena sus caras de atrás
+  hacia adelante (lo dibujado sobre una cara va justo después de ella) y sombrea cada cara según hacia dónde mira. `lugar('entrada', …)` marca dónde parte la cámara en celular. La gente que habla se nombra por
   su id en el dibujo (`nhRecepcion`, `bucle`…). En `datos.js`, su proyecto lleva `salaPropia`: sus colores y su letra
   (`colores`, `fuente`), su marca y la frase de su barra, el botón de su barra con su enlace (`disenar`: «Diseñar la
   mía», «Ver la carta»…), su WhatsApp (o `null`), quién habla y qué dice, qué cuenta cada zona (con sus medidas, una
@@ -305,7 +315,8 @@ Rumbo (su barra con su letra, todas sus zonas y su gente, una tarjeta con lo rea
 el museo de El Archivo (sus épocas con su capítulo, las diez fases, sus casos con su sala, el fichero, el pedestal libre
 y el recorrido con Pepa), la vista de frente (las diez fases, la línea de tiempo y el cuadro de BiPlot HQ del museo, una
 pieza de cada sala, la pantalla del diseñador de Nu Home con un clic de verdad, las fotos de las tarjetas y las pantallas
-del rincón de BiPlot, siempre completas, con la sala oscurecida detrás, y el recorrido que sigue detrás),
+del rincón de BiPlot, siempre completas, con la sala oscurecida detrás, y el recorrido que sigue detrás), las vitrinas en
+3D (giran solas, se pausan y se giran a mano; con movimiento reducido, quietas),
 chat de Plotty con la cámara en
 el rubro, vitrina,
 El Archivo, teclado, enlaces directos y las páginas para compartir, pausa, movimiento reducido, errores de consola y
@@ -331,7 +342,8 @@ y cada persona que habla es un botón con su nombre (con Tab, la zona se ilumina
 persona muestra su frase), las frases se anuncian a lectores de pantalla (sin repetir las que ya dijeron), la tarjeta
 recibe el foco al abrirse y lo devuelve al cerrarse, y los botones miden al menos 44 px. La vista de frente es un
 diálogo: recibe el foco, lo mantiene adentro mientras está abierta y lo devuelve al cerrarse; su dibujo lleva su nombre y,
-la línea de tiempo, sus fechas para lectores de pantalla. El chat de Plotty son botones, con los mensajes anunciados a lectores de pantalla. Con "reducir movimiento"
+la línea de tiempo, sus fechas para lectores de pantalla. Una vitrina en 3D es una imagen con su nombre; su giro se
+pausa con un botón (y con «reducir movimiento» parte quieta) y se gira con dos botones, sin necesidad de arrastrar. El chat de Plotty son botones, con los mensajes anunciados a lectores de pantalla. Con "reducir movimiento"
 todo queda quieto y la cámara salta sin animación (los locales se abren igual, con su gente quieta en su lugar);
 además hay un botón para pausar, que también detiene a la gente de los locales y de las salas.
 

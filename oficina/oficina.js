@@ -1051,7 +1051,7 @@
     var pr = salaDe(id), PP = pr.salaPropia, svgS = salaCaja.querySelector('.sala-svg');
     var vb = S.vb.split(' ').map(Number);
     propia = { id: id, pr: pr, P: PP, S: S, svg: svgS, vb: vb, cam: { x: vb[0] + vb[2] / 2, y: vb[1] + vb[3] / 2, z: 1 }, zonas: {}, hablan: [],
-      burbujas: [], tarjeta: null, frente: null, origenFrente: null, origen: null, volver: null, aMano: false, recorrido: null, resalte: null, anillo: null, sobre: '', vuelo: null, latido: 0, turno: 0, reloj: null };
+      burbujas: [], tarjeta: null, frente: null, origenFrente: null, giro: null, origen: null, volver: null, aMano: false, recorrido: null, resalte: null, anillo: null, sobre: '', vuelo: null, latido: 0, turno: 0, reloj: null };
     dichas = {};
     // Los colores y la letra de la empresa (lo que no trae, queda como en oficina.css); la barra puede llevar los suyos
     var f = PP.fuente || {};
@@ -1397,7 +1397,7 @@
     var pr = (d.caso && salaDe(d.caso)) || propia.pr, pin = d.imagen && (pr.pines || []).filter(function (p) { return p[3] === d.imagen; })[0];
     return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre) + '</p><h3 id="sala-tarjeta-t" tabindex="-1">' + esc(d.titulo) + '</h3>' +
       (d.imagen ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : ''), 'data-ver-foto') +
-        '<figcaption>' + esc(pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo') + '</figcaption></figure>' : '') +
+        '<figcaption>' + esc(piePantalla(pr, d.imagen)) + '</figcaption></figure>' : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
       (d.fases ? htmlFases() : '') + (d.hitos ? htmlHitos(d.hitos) : '') + (d.fichero ? '<div class="tarjeta-fichero">' + htmlFichero('h4', true) + '</div>' : '') +
@@ -1517,21 +1517,33 @@
     var pin = img && (pr.pines || []).filter(function (p) { return p[3] === img; })[0];
     return pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : '');
   }
+  // (su pie: de qué sala y de qué módulo es, con datos de ejemplo)
+  function piePantalla(pr, img) {
+    var pin = img && (pr.pines || []).filter(function (p) { return p[3] === img; })[0];
+    return pr.nombre + (pin ? ' · ' + nombreModulo(pin[0]) : '') + ' · datos de ejemplo';
+  }
   // (la imagen va siempre completa: un cartel chico no se agranda más de 3,2 veces y lo muy apaisado, como la línea de tiempo,
   // en celular trae además sus fechas en texto, debajo. Una pantalla real lleva su pie; los botones van antes de la lista de fases)
+  // Los botones de la vitrina en 3D: girarla a un lado o al otro y pausar su giro (también se arrastra)
+  var MANDOS_3D = '<div class="v3d-mandos"><button type="button" data-v3d="izq" aria-label="Girar a la izquierda"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7H4V2"/><path d="M4.5 7A8 8 0 1 1 4 13"/></svg></button>' +
+    '<button type="button" data-v3d="pausa" aria-pressed="false">Pausar el giro</button>' +
+    '<button type="button" data-v3d="der" aria-label="Girar a la derecha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 7h5V2"/><path d="M19.5 7A8 8 0 1 0 20 13"/></svg></button>' +
+    '<span class="v3d-ayuda" aria-hidden="true">o arrástrala para girarla</span></div>';
   function htmlFrente(f, d, o) {
     o = o || {};
     var an = f.ancho || 1280, al = f.alto || 720, prop = an / al, nombre = d.titulo || d.nombre || '';
     var pr = (d.caso && salaDe(d.caso)) || propia.pr, pin = f.img && (pr.pines || []).filter(function (x) { return x[3] === f.img; })[0];
     var pie = f.pie || (pin ? pr.nombre + ' · ' + nombreModulo(pin[0]) + ' · datos de ejemplo' : '');
-    var dib = f.img ? '<img src="' + MEDIOS + esc(f.img) + '.webp" alt="' + esc(f.alt || altPantalla(pr, f.img)) + '" width="' + an + '" height="' + al + '">'
+    var dib = f.modelo ? '<svg class="v3d" viewBox="' + f.modelo.vb.join(' ') + '" role="img" aria-label="' + esc((d.nombre || nombre) + ', en su vitrina, girando') + '"></svg>'
+      : f.img ? '<img src="' + MEDIOS + esc(f.img) + '.webp" alt="' + esc(f.alt || altPantalla(pr, f.img)) + '" width="' + an + '" height="' + al + '">'
       : '<svg viewBox="0 0 ' + an + ' ' + al + '" role="img" aria-label="' + esc(d.nombre || nombre) + '">' + conMedios(f.svg) + '</svg>';
     var img = d.imagen && d.imagen !== f.img ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', altPantalla(pr, d.imagen), 'data-ver-foto') +
-      '<figcaption>' + esc(pr.nombre + ' · datos de ejemplo') + '</figcaption></figure>' : '';
+      '<figcaption>' + esc(piePantalla(pr, d.imagen)) + '</figcaption></figure>' : '';
     return '<div class="frente-velo" data-frente-cerrar></div>' + CERRAR_F +
-      '<div class="frente-caja' + (prop > 3 ? ' ancha' : prop < 2 ? ' lado' : '') + '" style="--frente-prop:' + prop.toFixed(3) + ';--frente-max:' + Math.round(an * 3.2) + 'px' +
+      '<div class="frente-caja' + (prop > 3 ? ' ancha' : prop < 2 ? ' lado' : '') + (f.modelo ? ' con-mandos' : '') + '" style="--frente-prop:' + prop.toFixed(3) + ';--frente-max:' + Math.round(an * 3.2) + 'px' +
       (f.fondo ? ';--frente-fondo:' + esc(f.fondo) : '') + '">' +
-      '<figure class="frente-lamina"><div class="frente-marco">' + dib + '</div>' + (pie ? '<figcaption class="frente-pie">' + esc(pie) + '</figcaption>' : '') + '</figure>' +
+      '<figure class="frente-lamina"><div class="frente-marco' + (f.modelo ? ' v3d-marco' : '') + '">' + dib + '</div>' + (pie ? '<figcaption class="frente-pie">' + esc(pie) + '</figcaption>' : '') +
+      (f.modelo ? MANDOS_3D : '') + '</figure>' +
       '<div class="frente-texto' + (img ? ' con-img' : '') + (o.bp ? ' bp' : '') + '"><div class="frente-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre || '') + '</p><h3 id="sala-frente-t" tabindex="-1">' + esc(nombre) + '</h3>' +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
@@ -1548,7 +1560,12 @@
     if (propia.frente) marcarZona(propia.frente, false); else propia.origenFrente = desde;
     propia.frente = id; propia.frenteT = Date.now();
     callarSolas(); anillo(null);
+    if (propia.giro) { propia.giro.detener(); propia.giro = null; }
     frenteEl.innerHTML = htmlFrente(fr, o.datos || z.d || {}, o);
+    if (fr.modelo && window.Vitrina3D) {
+      propia.giro = window.Vitrina3D.montar(frenteEl.querySelector('.v3d'), fr.modelo, { quieta: reducido || quieta(), medios: conMedios });
+      if (propia.giro.pausada()) marcarGiro(true);
+    }
     frenteEl.hidden = false;
     document.body.classList.add('con-frente');
     marcarZona(id, true); resaltarZona(id);
@@ -1566,9 +1583,15 @@
     abrirFrente(propia.tarjeta, { frente: { img: p[3], ancho: 1280, alto: 720, alt: pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1] },
       datos: { ceja: pr.nombre + ' · ' + nombreModulo(p[0]), titulo: p[1], texto: p[2] }, bp: true });
   }
+  // El botón de pausa dice lo que hará
+  function marcarGiro(pausado) {
+    var b = frenteEl.querySelector('[data-v3d="pausa"]'); if (!b) return;
+    b.setAttribute('aria-pressed', pausado ? 'true' : 'false'); b.textContent = pausado ? 'Seguir girando' : 'Pausar el giro';
+  }
   function cerrarFrente(sinFoco) {
     if (!propia || !propia.frente) return false;
     var id = propia.frente, o = propia.origenFrente;
+    if (propia.giro) { propia.giro.detener(); propia.giro = null; }
     propia.frente = null; propia.origenFrente = null;
     frenteEl.hidden = true; frenteEl.classList.remove('visible'); frenteEl.innerHTML = '';
     document.body.classList.remove('con-frente');
@@ -1586,6 +1609,11 @@
     if (e.target.closest('[data-frente-cerrar]')) { cerrarFrente(); return; }
     var b = e.target.closest('button, a'); if (!b) return;
     if (b.hasAttribute('data-ver-foto')) { verFoto(propia.frente); return; }
+    if (b.hasAttribute('data-v3d')) {
+      var g = propia.giro, a = b.getAttribute('data-v3d'); if (!g) return;
+      if (a === 'pausa') { g.pausar(!g.pausada()); marcarGiro(g.pausada()); } else g.girar(a === 'izq' ? -Math.PI / 6 : Math.PI / 6);
+      return;
+    }
     // Lo que lleva a otra parte de la oficina cierra antes la vista de frente (lo que se abre en otra pestaña la deja)
     if (b.tagName === 'A' && b.target === '_blank') return;
     var o = propia.origenFrente;
