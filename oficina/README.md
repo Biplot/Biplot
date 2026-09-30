@@ -17,9 +17,11 @@ sus enlaces y el equipo que la hizo. Las mismas piezas sirven para Instagram y p
 
 ## El equipo
 
-Diez integrantes, cada uno con placa, y dos mascotas. En la oficina son cabezones en vector, con el mismo trazo de la
+Once integrantes, cada uno con placa, y dos mascotas. En la oficina son cabezones en vector, con el mismo trazo de la
 escena; en las fichas y en redes, ilustraciones con tinta y color plano. Coral no aparece en ningún dibujo: sigue
-reservado para "Agenda tu diagnóstico".
+reservado para "Agenda tu diagnóstico". Aby y Felipe, la dupla de PRENSA, son las dos caras reales de la oficina y
+tienen además un vestuario de gala para contenido y redes: su cabezón en `_herramientas/dibujos/cabezones/` y su
+ilustración en `ilustraciones.js` (`aby-elegante` y `felipe-elegante`).
 
 | Integrante | Nombre | Rol | Placa | Dónde está | Frase |
 |---|---|---|---|---|---|
@@ -33,6 +35,7 @@ reservado para "Agenda tu diagnóstico".
 | **Faro** | Fausto Torres | Puesta en marcha | E7 | El tubo a producción | «No termina cuando se publica. Termina cuando se usa.» |
 | **Pepa** | Josefa Huerta | Cosecha | E9 | Estantería del núcleo | «Lo que sirve dos veces se guarda. Lo demás, se bota.» |
 | **Aby** | | La corresponsal | PRENSA | El set | «¿The Engine existe? Yo tampoco lo sé.» |
+| **Felipe** (Rodman) | | El rostro | PRENSA | El set, con Aby | «Pásala, que yo la cuento.» |
 | **Atlas** | | Mascota de The Architect | 360° | Sobre la mesa de dos | «Desde aquí arriba se ve todo.» |
 | **Plotty** | | Recepción | E0 | Recepción | «Tres preguntas. Prometo que no es un formulario.» |
 
@@ -49,7 +52,7 @@ con renglones, la corrección en rojo, la línea a mano, el timbre y el clip: ah
 Tamandúa; el tubo "A producción" de Faro; la sala de diagnóstico con el motor en la pizarra; la estantería del núcleo
 (Pepa, los cuatro casos de referencia, el Recetario y "Seis décadas"); el café con el reloj en hora de Chile; y al fondo
 la **Sala de planos y máquinas** (The Architect y The Engine frente a frente en la mesa de dos, Atlas proyectando el
-mapa y el tubo del plano que baja a los racks), **el set** donde graba Aby, el **laboratorio de métricas** y la **sala de
+mapa y el tubo del plano que baja a los racks), **el set** donde graban Aby y Felipe, el **laboratorio de métricas** y la **sala de
 reuniones**. La **Puerta 404** es una caja cerrada: nunca se abre.
 
 **La calle principal.** Por delante de la oficina: un local por proyecto con sala dibujada a mano (Nu Home 360,
@@ -376,9 +379,9 @@ Catorce piezas en publicación (1080 × 1350) e historia (1080 × 1920), más la
 | La oficina | `oficina-4x5.png`, `oficina-9x16.png` | Pasa a la oficina: el equipo trabajando y una sala por empresa. biplot.cl/oficina |
 | La sala de Haru 360 | `sala-haru-4x5.png`, `sala-haru-9x16.png` | Pasa a la sala de Haru 360: lo que construimos, con sus pantallas reales. biplot.cl/oficina/haru |
 | Vista previa de cada sala | `sala-<id>-og.png` | (La usan las páginas `oficina/<id>/` al compartir el enlace) |
-| El equipo | `elenco-4x5.png`, `elenco-9x16.png` | Diez integrantes, uno por parte del trabajo. Los reconoces por su placa. |
+| El equipo | `elenco-4x5.png`, `elenco-9x16.png` | Once integrantes, uno por parte del trabajo. Los reconoces por su placa. |
 | ¿Quién hace qué? | `motor-4x5.png`, `motor-9x16.png` | Diez fases, un solo motor. |
-| ¿Quién es real? | `quien-4x5.png`, `quien-9x16.png` | Aby dice que ella. Los demás no contestan. |
+| ¿Quién es real? | `quien-4x5.png`, `quien-9x16.png` | Aby y Felipe dicen que ellos. Los demás no contestan. |
 | Fichas | `ficha-<id>-4x5.png`, `ficha-<id>-9x16.png` | Una por integrante: su frase, sus tres rasgos (en `datos.js`) y biplot.cl/oficina |
 
 Se regeneran con `node oficina/_herramientas/exportar-kit.mjs` (todas) o `--solo ficha-lupe,oficina,sala-haru`. Con
@@ -386,7 +389,7 @@ Se regeneran con `node oficina/_herramientas/exportar-kit.mjs` (todas) o `--solo
 previa de Haru, su sala, la calle al volver, la oficina por dentro y una ficha).
 
 **Las caras del sitio.** `node oficina/_herramientas/exportar-kit.mjs --caras` deja en `assets/oficina/caras/` la cara
-de cada integrante que lleva una fase del motor (Plotty y el equipo, sin Aby), en WebP de 160 × 160 con el círculo y el
+de cada integrante que lleva una fase del motor (Plotty y el equipo, sin Aby ni Felipe), en WebP de 160 × 160 con el círculo y el
 fondo transparente (la pieza `cara-<id>` del kit). El sitio principal las usa en «Cómo trabajamos» y en BiPlot HQ.
 
 **Carruseles de marca.** Las piezas de varias láminas viven en `_herramientas/instagram/`: una página por pieza, donde

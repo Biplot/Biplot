@@ -80,7 +80,7 @@ async function abrir(w, h, movil, reducir, hash) {
   const listo = new Promise((r) => { cargada = r; setTimeout(r, 15000); });
   await cdp('Page.navigate', { url: url + (hash || '') });
   await listo; cargada = null;
-  for (let i = 0; i < 60; i++) { try { if (await js("document.documentElement.classList.contains('lista') && document.querySelectorAll('.actor').length === 12 && document.documentElement.classList.contains('navegado')")) break; } catch { /* navegando */ } await sleep(250); }
+  for (let i = 0; i < 60; i++) { try { if (await js("document.documentElement.classList.contains('lista') && document.querySelectorAll('.actor').length === 13 && document.documentElement.classList.contains('navegado')")) break; } catch { /* navegando */ } await sleep(250); }
   await sleep(700);
 }
 const W = (ms) => `new Promise(r => setTimeout(r, ${ms}))`;
@@ -130,8 +130,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   await js("try{localStorage.clear()}catch(e){}; true"); await abrir(w, h, movil, false);
   ok(await js("!document.querySelector('#intro').hidden"), 'la bienvenida aparece en la primera visita');
   ok(await js('document.documentElement.scrollWidth <= innerWidth'), 'sin desborde horizontal');
-  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 30"), 'el menú lista 10 integrantes, 2 mascotas, 10 lugares de la oficina y 8 del barrio (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
-  ok(await js("document.querySelectorAll('.actor').length === 12"), 'los 10 integrantes y las 2 mascotas están en la escena');
+  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 31"), 'el menú lista 11 integrantes, 2 mascotas, 10 lugares de la oficina y 8 del barrio (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
+  ok(await js("document.querySelectorAll('.actor').length === 13"), 'los 11 integrantes y las 2 mascotas están en la escena');
   ok(await js("document.querySelectorAll('.barrio-atras .local[data-local]').length === 7 && document.querySelectorAll('.caminante').length === 2"), 'la calle principal tiene sus 7 locales cerrados y 2 personas caminando por la vereda');
   ok(await js("[...document.querySelectorAll('.barrio-atras image')].map(i => i.getAttribute('href')).sort().join() === 'media/salas/logo-fundos.webp,media/salas/logo-haru.webp,media/salas/logo-nuhome.webp'"), 'los techos de Fundos, Haru y Nu Home llevan su logo real');
   ok(await js("!document.querySelector('.barrio').innerHTML.includes('§') && !document.querySelector('.hq-cerrada').innerHTML.includes('§')"), 'no queda ninguna marca §…§ sin reemplazar en el barrio');
@@ -263,6 +263,17 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(await js("document.querySelector('#svg-escena').classList.contains('oficina-abierta') && document.querySelector('#panel').hidden"), 'oficina/#oficina entra a la oficina');
   await abrir(w, h, movil, false, '#lupe');
   ok((await js("document.querySelector('#panel-titulo')?.textContent")) === 'Lupe' && await js("document.querySelector('#svg-escena').classList.contains('oficina-abierta')"), 'oficina/#lupe entra a la oficina y abre la ficha de Lupe');
+  // Felipe, la otra cara real: sin apellido, su apodo va solo; graba con Aby en el set
+  await abrir(w, h, movil, false, '#felipe');
+  const fe = await js(`(async () => { for (let i = 0; i < 30 && !document.querySelector('#panel .ficha-ilus'); i++) await ${W(100)};
+    const r = { titulo: document.querySelector('#panel-titulo')?.textContent, apodo: document.querySelector('#panel .completo')?.textContent,
+      etiqueta: document.querySelector('#panel .bp-etiqueta')?.textContent, ilus: !!document.querySelector('#panel .ficha-ilus'),
+      set: [...document.querySelectorAll('#panel a[data-abrir="zona:set"]')].length };
+    document.querySelector('#panel a[data-abrir="zona:set"]')?.click(); await ${W(600)};
+    r.dupla = [...document.querySelectorAll('#panel .equipo a')].map(a => a.dataset.abrir).join();
+    return r; })()`);
+  ok(fe.titulo === 'Felipe' && fe.apodo === 'Le dicen Rodman' && fe.etiqueta === 'El rostro · PRENSA' && fe.ilus && fe.set === 1 && fe.dupla === 'actor:aby,actor:felipe',
+    'oficina/#felipe abre su ficha (le dicen Rodman, El rostro · PRENSA, su ilustración) y el set muestra a la dupla: Aby y Felipe' + (fe.dupla === 'actor:aby,actor:felipe' ? '' : ' ' + JSON.stringify(fe)));
   // La sala propia de Nu Home: sin números ni panel, con su barra, sus zonas, su gente que habla, su recorrido y BiPlot en su rincón
   await abrir(w, h, movil, false, '#nuhome');
   await sleep(900);

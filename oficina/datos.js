@@ -107,11 +107,20 @@
       {
         id: 'aby', nombre: 'Aby', genero: 'f', rol: 'La corresponsal', placa: 'PRENSA', fases: [],
         vive: 'set', lema: 'La que pregunta lo que todos se preguntan.',
-        resumen: 'La única cara real de la oficina. Graba en el mundo real y entra a la oficina dibujada con su pase de prensa. Pregunta lo que la gente se pregunta y casi nunca recibe una respuesta clara.',
+        resumen: 'Una de las dos caras reales de la oficina. Graba en el mundo real y entra a la oficina dibujada con su pase de prensa. Pregunta lo que la gente se pregunta y casi nunca recibe una respuesta clara.',
         rasgos: ['Siempre anda grabando.', 'Pregunta lo que nadie se atreve a preguntar.', 'Tampoco sabe quién es real. O eso dice.'],
         frase: '¿The Engine existe? Yo tampoco lo sé.',
         look: 'Ondas largas color miel, aros dorados, bomber azul con el parche de Plotty, polera «REC» y el celular con aro de luz.',
         ahora: ['Grabando en el set.', 'Preguntándole a Kilo qué rompió hoy.', 'Buscando a The Engine con la cámara encendida.']
+      },
+      {
+        id: 'felipe', nombre: 'Felipe', alias: 'Rodman', genero: 'm', rol: 'El rostro', placa: 'PRENSA', fases: [],
+        vive: 'set', lema: 'El que da la cara.',
+        resumen: 'La otra cara real de la oficina. Graba con Aby y cuenta lo que hace el equipo como si fuera un partido: quién pasó la pelota, quién la metió y cuánto falta para el final.',
+        rasgos: ['Siempre anda con una pelota de básquetbol.', 'Edita con Tyler, the Creator de fondo.', 'Le dicen Rodman por el pelo. No por los rebotes. O eso dice.'],
+        frase: 'Pásala, que yo la cuento.',
+        look: 'Pelo al ras en zigzag rojo y negro con las puntas amarillas, chaqueta de trabajo negra con una flor en la solapa, cadena dorada, pantalón ancho gris con manchas y la pelota girando en el índice.',
+        ahora: ['Grabando con Aby en el set.', 'Haciendo girar la pelota en el dedo.', 'Poniendo a Tyler mientras edita.']
       }
     ],
 
@@ -163,9 +172,9 @@
         titulo: 'Uno dibuja, el otro construye',
         texto: 'La Sala de planos y la Sala de máquinas son una sola, con el vidrio abierto al medio. La mesa de dos cruza de un lado al otro: el plano en una punta, la tablet en la otra. Atlas proyecta el mapa sobre la mesa y, cuando el plano está listo, baja por el tubo a las máquinas.',
         puntos: [['El plano', 'tu proceso dibujado en vivo, y te lo llevas'], ['Las máquinas', 'las automatizaciones que corren solas, de noche y en feriado'], ['«Del plano a la máquina»', 'una vez al mes, un caso contado a dos voces']] },
-      set: { nombre: 'El set', sub: 'Aby graba aquí', etiqueta: 'El set',
-        titulo: 'Donde graba Aby',
-        texto: 'Aro de luz, cámara y la pared de la marca. Aby entra a la oficina con su pase de prensa y le pregunta al equipo lo que todos se preguntan.' },
+      set: { nombre: 'El set', sub: 'Aby y Felipe graban aquí', etiqueta: 'El set',
+        titulo: 'Donde graban Aby y Felipe',
+        texto: 'Aro de luz, cámara y la pared de la marca. Aby y Felipe entran a la oficina con su pase de prensa: ella le pregunta al equipo lo que todos se preguntan y él lo cuenta como si fuera un partido.' },
       laboratorio: { nombre: 'Laboratorio de métricas', sub: 'Celda y Lupe · E8', etiqueta: 'Laboratorio de métricas · E8',
         titulo: 'Antes y después, sin adornos',
         texto: 'Aquí se mide si funcionó. A los 30, 60 y 90 días, Lupe y Celda comparan contra la línea base del diagnóstico: horas al mes, errores y tiempos de respuesta.',
@@ -277,9 +286,9 @@
       estanteria: { nombre: 'Estantería del núcleo', sub: 'Pepa · E9', etiqueta: 'Estantería del núcleo · E9',
         titulo: 'Lo que ya sabemos hacer',
         texto: 'Aquí Pepa guarda lo que sirvió en un proyecto y le sirve al siguiente. Por eso cada sistema nuevo parte con ventaja.' },
-      muro: { nombre: 'Muro del equipo', sub: 'Los diez, con su placa', etiqueta: 'Muro del equipo',
+      muro: { nombre: 'Muro del equipo', sub: 'Los once, con su placa', etiqueta: 'Muro del equipo',
         titulo: 'El equipo',
-        texto: 'Diez integrantes, uno por parte del trabajo. Los reconoces por su placa: la fase del motor que llevan.' },
+        texto: 'Once integrantes, uno por parte del trabajo. Los reconoces por su placa: la fase del motor que llevan, o PRENSA, la de Aby y Felipe.' },
       'puerta-404': { nombre: 'Puerta 404', sub: 'No se abre', etiqueta: 'Puerta 404',
         titulo: 'Esta puerta no se abre',
         texto: 'Nadie dice qué hay detrás. Si alguien lo sabe, tampoco lo va a decir.',

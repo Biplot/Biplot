@@ -23,7 +23,7 @@ const salida = path.join(raiz, 'oficina', 'kit', 'png');
 const arg = (n, d) => { const i = process.argv.indexOf('--' + n); return i > -1 ? process.argv[i + 1] : d; };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const IDS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'aby'];
+const IDS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'aby', 'felipe'];
 const PIEZAS = IDS.map((id) => 'ficha-' + id).concat(['oficina', 'elenco', 'motor', 'quien']);
 const FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630], cara: [160, 160] };
 // La sala de cada empresa, el museo de El Archivo y la sala de ventas del local libre: vista previa del enlace
@@ -34,9 +34,9 @@ for (const p of PIEZAS) for (const f of ['4x5', '9x16']) trabajos.push([p, f]);
 trabajos.push(['oficina', 'og']);
 for (const id of SALAS) for (const f of FORMATOS_SALA[id] || ['og']) trabajos.push(['sala-' + id, f]);
 if (arg('solo')) { const s = arg('solo').split(','); trabajos = trabajos.filter(([p]) => s.includes(p)); }
-// Las caras del sitio: quienes llevan alguna fase del motor (Plotty y el equipo; Aby, la corresponsal, no lleva ninguna)
+// Las caras del sitio: quienes llevan alguna fase del motor (Plotty y el equipo; Aby y Felipe, la dupla de PRENSA, no llevan ninguna)
 const CARAS = process.argv.includes('--caras');
-if (CARAS) trabajos = ['plotty'].concat(IDS.filter((id) => id !== 'aby')).map((id) => ['cara-' + id, 'cara']);
+if (CARAS) trabajos = ['plotty'].concat(IDS.filter((id) => id !== 'aby' && id !== 'felipe')).map((id) => ['cara-' + id, 'cara']);
 
 // Servidor estático mínimo
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml',
