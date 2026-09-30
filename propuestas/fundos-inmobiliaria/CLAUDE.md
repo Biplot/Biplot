@@ -29,6 +29,11 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
 - `lib/planos.js` **generado, no editar a mano**: por proyecto `viewBox`, `contorno`, `calles` (servidumbres),
   `agua`, opcional `caminoPrincipal`, y `lotes[n] = {d, l, r}` (path SVG, punto de etiqueta, radio libre). Lotes y
   servidumbres forman una cobertura continua (bordes compartidos, sin huecos ni traslapes).
+- `entorno.html` **boceto** del mapa "Descubre tu entorno" de Fundos Puerto Varas (página aparte, sin enlazar desde
+  `index.html`): imagen satelital del cliente (`assets/entorno/mapa-puerto-varas.webp`, 931 × 728) georreferenciada
+  con las cumbres del Osorno, Calbuco y Puntiagudo y la marca del proyecto (-41.3700833, -72.8781389); los lugares
+  (`x`, `y` en píxeles de esa imagen), textos del folleto y distancias están en el script de la página. Si llega una
+  imagen de mayor resolución, recalibrar los `x`, `y`. Fotos recortadas del folleto: reemplazar por las originales.
 - `assets/img` fotos y logos (WebP) · `assets/video` saludo del equipo (MP4 H.264 + WebM de respaldo + portada) ·
   `assets/fonts` Cormorant Garamond y Mulish autoalojadas.
 
