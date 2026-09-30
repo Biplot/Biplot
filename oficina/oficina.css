@@ -693,6 +693,7 @@ button { font: inherit; color: inherit; }
 .pj-celda .pj-ojo { animation-delay: -1.2s; } .pj-grilla .pj-ojo { animation-delay: -2.4s; } .pj-engine .pj-ojo { animation-delay: -3.6s; }
 .pj-bucle .pj-ojo { animation-delay: -3.1s; animation-duration: 6.4s; } .pj-tamandua .pj-ojo { animation-delay: -.6s; }
 .pj-faro .pj-ojo { animation-delay: -4s; } .pj-pepa .pj-ojo { animation-delay: -1.8s; animation-duration: 4.6s; } .pj-aby .pj-ojo { animation-delay: -2.9s; }
+.pj-felipe .pj-ojo { animation-delay: -.9s; animation-duration: 5.8s; }
 .pj-plotty .pj-flota { animation-delay: -1.4s; animation-duration: 2.6s; }
 @keyframes pj-respira { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.012, .986); } }
 @keyframes pj-parpadeo { 0%, 93%, 100% { transform: scaleY(1); } 95.5% { transform: scaleY(.08); } }

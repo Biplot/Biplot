@@ -46,7 +46,7 @@ const kb = (s) => (Buffer.byteLength(s) / 1024).toFixed(0) + ' KB';
 // En la escena, 1 unidad de personaje = 4 unidades de dibujo: pies en (0, 0) y entre 200 y 260 de alto,
 // igual que el elenco anterior (la escena lo usa a 0,34 y la credencial a ~0,45).
 const ESCALA = 4;
-const IDS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'aby', 'atlas', 'plotty'];
+const IDS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'aby', 'felipe', 'atlas', 'plotty'];
 const MASCOTAS = ['atlas', 'plotty'];
 const sprite = {}, alto = {}, ancho = {};
 for (const id of IDS) {
@@ -95,7 +95,7 @@ const elenco = CABECERA('elenco') + `/*
   function placaTarjeta(p, retrato, op) {
     var masc = MASCOTAS.indexOf(p.id) > -1, alto = ALTO[p.id] || 220, ancho = ANCHO[p.id] || 110;
     var k = Math.min(masc ? 0.9 : 0.46, (masc ? 96 : 104) / alto, 84 / ancho);
-    var arriba = { aby: 'PRENSA', atlas: 'MASCOTA', plotty: 'MASCOTA' }[p.id] || 'EQUIPO';
+    var arriba = { aby: 'PRENSA', felipe: 'PRENSA', atlas: 'MASCOTA', plotty: 'MASCOTA' }[p.id] || 'EQUIPO';
     var nombre = p.nombre, largo = nombre.length > 9;
     return '<g class="placa-grande">' +
       '<rect x="0" y="0" width="300" height="190" rx="16" fill="' + C.niebla + '"/>' +
@@ -147,13 +147,17 @@ for (const id of personas) {
 const ab = await import('./ilustracion/aby.mjs');
 ILUS.aby = { vb: '0 0 300 520', svg: prefijar(redondear(ab.abyUrbana()), 'il-aby') };
 ILUS['aby-elegante'] = { vb: '0 0 300 520', svg: prefijar(redondear(ab.abyElegante()), 'il-abye') };
+const fe = await import('./ilustracion/felipe.mjs');
+ILUS.felipe = { vb: '0 0 300 520', svg: prefijar(redondear(fe.felipe()), 'il-felipe') };
+ILUS['felipe-elegante'] = { vb: '0 0 300 520', svg: prefijar(redondear(fe.felipeElegante()), 'il-felipee') };
 const at = await import('./ilustracion/atlas.mjs');
 const pl = await import('./ilustracion/plotty.mjs');
 ILUS.atlas = { vb: '0 0 300 320', svg: redondear(at.atlas('mira', 'il-at')) };
 ILUS.plotty = { vb: '0 0 300 320', svg: redondear(pl.plotty('hola', 'il-pl')) };
 // Recorte de la cabeza de cada ilustración (viewBox), para los avatares del kit
 const CABEZA = { bucle: '90 14 124 124', lupe: '88 106 124 124', celda: '86 22 128 128', grilla: '88 30 124 124', tamandua: '84 36 124 124', faro: '80 38 140 140', pepa: '86 120 128 128',
-  architect: '86 18 128 128', engine: '86 36 128 128', aby: '84 46 132 132', 'aby-elegante': '84 46 132 132', plotty: '66 20 168 168', atlas: '70 78 160 160' };
+  architect: '86 18 128 128', engine: '86 36 128 128', aby: '84 46 132 132', 'aby-elegante': '84 46 132 132',
+  felipe: '88 38 128 128', 'felipe-elegante': '88 38 128 128', plotty: '66 20 168 168', atlas: '70 78 160 160' };
 for (const id of Object.keys(ILUS)) ILUS[id].cabeza = CABEZA[id];
 const ilus = CABECERA('ilustraciones') + `/*
  * La ilustración de cada integrante (tinta con peso y color plano), para las fichas de la oficina y el kit.

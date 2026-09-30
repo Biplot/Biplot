@@ -88,10 +88,9 @@
   /* ── El equipo completo ── */
   function elenco(f) {
     var alto = f === '9x16';
-    var filas = alto
-      ? [['lupe', 'architect', 'celda', 'engine'], ['grilla', 'bucle', 'tamandua'], ['faro', 'pepa', 'aby']]
-      : [['lupe', 'architect', 'celda', 'engine', 'grilla'], ['bucle', 'tamandua', 'faro', 'pepa', 'aby']];
-    var k = alto ? 0.47 : 0.6, dy = alto ? 290 : 380, y0 = 0, paso = alto ? 250 : 206, s = '';
+    // Once, en tres filas: la última termina con la dupla de PRENSA
+    var filas = [['lupe', 'architect', 'celda', 'engine'], ['grilla', 'bucle', 'tamandua', 'faro'], ['pepa', 'aby', 'felipe']];
+    var k = alto ? 0.47 : 0.45, dy = alto ? 290 : 272, y0 = 0, paso = alto ? 250 : 240, s = '';
     filas.forEach(function (fila, i) {
       fila.forEach(function (id, j) {
         var p = PERSONAL[id], cx = (j - (fila.length - 1) / 2) * paso, y = y0 + i * dy;
@@ -103,7 +102,7 @@
     });
     var h = y0 + filas.length * dy;
     return '<div class="k-halo"></div><p class="k-eyebrow">La oficina</p><h1 class="k-titulo">El equipo</h1>' +
-      '<p class="k-bajada">Diez integrantes, uno por parte del trabajo. Los reconoces por su placa.</p>' +
+      '<p class="k-bajada">Once integrantes, uno por parte del trabajo. Los reconoces por su placa.</p>' +
       '<svg class="k-grupo" viewBox="-540 -10 1080 ' + (h + 10) + '" aria-hidden="true">' + s + '</svg>' +
       pie(alto ? 'Conócelos en <b>biplot.cl/oficina</b>' : null);
   }
@@ -123,9 +122,9 @@
   function quien(f) {
     var ids = E.ids;
     return '<div class="k-halo"></div><p class="k-eyebrow">La oficina</p><h1 class="k-titulo">¿Quién es real?</h1>' +
-      '<p class="k-bajada">Aby dice que ella. Los demás no contestan.</p>' +
+      '<p class="k-bajada">Aby y Felipe dicen que ellos. Los demás no contestan.</p>' +
       '<ul class="k-caras">' + ids.map(function (id) {
-        return '<li' + (id === 'aby' ? ' class="aby"' : '') + '><span class="k-cara">' + ilustracion(id, '', true) + '</span><b>' + esc(PERSONAL[id].nombre) + '</b></li>';
+        return '<li' + (id === 'aby' || id === 'felipe' ? ' class="real"' : '') + '><span class="k-cara">' + ilustracion(id, '', true) + '</span><b>' + esc(PERSONAL[id].nombre) + '</b></li>';
       }).join('') + '</ul>' +
       '<p class="k-cierre">Pasa a la oficina y decide tú. <span>Nadie lo confirma. Nadie lo desmiente.</span></p>' +
       pie(f === '9x16' ? 'Averígualo en <b>biplot.cl/oficina</b>' : null);

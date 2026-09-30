@@ -551,7 +551,7 @@
     // la placa va después de la mesa en el orden de dibujo: está más cerca, sobre el vidrio del frente
     obj(10.6, 4.7, placa(6.2, 4.62, 360, 'PLANOS Y MÁQUINAS', [C.cian, NARANJO]));
 
-    /* ── El set: donde graba Aby ── */
+    /* ── El set: donde graban Aby y Felipe ── */
     muros += enPlano(planoY(12.3, 0, 2.2), '<rect x="0" y="0" width="340" height="176" rx="6" fill="' + C.a800 + '" stroke="#2A5A88" stroke-width="4"/>' +
       (function () { var s = ''; for (var yy = 18; yy < 170; yy += 26) for (var xx = 18; xx < 330; xx += 26) s += '<circle cx="' + xx + '" cy="' + yy + '" r="1.6" fill="#2A5A88"/>'; return s; })() +
       '<g transform="translate(118 30) scale(.9)">' + E.isotipo + '</g>' +
@@ -565,7 +565,7 @@
       [[-12, 5], [12, 5], [0, 9]].forEach(function (d) { s += '<line x1="' + r1(b[0]) + '" y1="' + r1(b[1] - 10) + '" x2="' + r1(b[0] + d[0]) + '" y2="' + r1(b[1] + d[1]) + '" stroke="' + C.a300 + '" stroke-width="2"/>'; });
       s += '<circle cx="' + r1(t[0]) + '" cy="' + r1(t[1] - 4) + '" r="34" fill="url(#halo-cian)"/><ellipse cx="' + r1(t[0]) + '" cy="' + r1(t[1] - 4) + '" rx="12" ry="16" fill="none" stroke="' + C.niebla + '" stroke-width="5"/>';
       obj(15.2, 2.3, s);
-      // Cámara en su trípode, mirando a Aby
+      // Cámara en su trípode, mirando a Aby y Felipe
       var c = P(14.9, 3.5, 1.05), cb = P(14.9, 3.5, 0);
       obj(14.9, 3.5, [[-11, 6], [9, 7], [-1, 11]].map(function (d) { return '<line x1="' + r1(c[0]) + '" y1="' + r1(c[1]) + '" x2="' + r1(cb[0] + d[0]) + '" y2="' + r1(cb[1] + d[1]) + '" stroke="' + C.a300 + '" stroke-width="2"/>'; }).join('') +
         caja(14.72, 3.38, 1.05, 0.36, 0.24, 0.22, { t: '#3A424E', l: '#2A3038', r: '#1E232A' }) + (function () { var q = P(14.8, 3.45, 1.3); return '<circle class="rec" cx="' + r1(q[0]) + '" cy="' + r1(q[1]) + '" r="2.6" fill="#E0524A"/>'; })());
@@ -801,7 +801,7 @@
     var zonas = [
       { id: 'recepcion', nombre: 'Recepción', caja: [18.0, 14.6, 24, 20, 2.6], foco: [20.8, 16.6, 1.0], zoom: 1.7 },
       { id: 'vitrina', nombre: 'La vitrina', caja: [16.2, 13.3, 18.4, 14.2, 2.4], foco: [17.3, 13.8, 1.2], zoom: 2.2 },
-      { id: 'muro', nombre: 'Muro del equipo', caja: [6.6, 15.8, 14.6, 16.5, 2.0], foco: [10.6, 16.2, 1.0], zoom: 1.9 },
+      { id: 'muro', nombre: 'Muro del equipo', caja: [6.6, 15.8, 15.4, 16.5, 2.0], foco: [11.0, 16.2, 1.0], zoom: 1.9 },
       { id: 'diagnostico', nombre: 'Sala de diagnóstico', caja: [0, 10.8, 5.4, 15.6, 2.2], foco: [2.7, 13.2, 0.8], zoom: 1.9 },
       { id: 'estanteria', nombre: 'Estantería del núcleo', caja: [0, 4.7, 4.6, 10.6, 2.6], foco: [1.8, 7.7, 1.2], zoom: 1.8 },
       { id: 'puerta-404', nombre: 'Puerta 404', caja: [0, 15.6, 5.4, 20, 2.3], foco: [3.2, 17.8, 1.0], zoom: 1.9 },
@@ -869,10 +869,10 @@
     /* ── Actores ── */
     var POS = {
       lupe: [18.2, 15.1], architect: [7.1, 1.5], celda: [10.4, 8.1], engine: [8.9, 1.5], grilla: [15.4, 8.1], bucle: [10.45, 12.05],
-      tamandua: [15.4, 12.05], faro: [22.9, 10.3], pepa: [1.95, 6.3], aby: [13.8, 2.5], atlas: [6.3, 2.45], plotty: [20.4, 15.25]
+      tamandua: [15.4, 12.05], faro: [22.9, 10.3], pepa: [1.95, 6.3], aby: [13.8, 2.5], felipe: [13.35, 1.55], atlas: [6.3, 2.45], plotty: [20.4, 15.25]
     };
     // Hacia dónde mira cada uno al partir (true: a la derecha)
-    var MIRA = { lupe: false, architect: true, celda: true, engine: false, grilla: true, bucle: true, tamandua: true, faro: false, pepa: true, aby: true, atlas: true, plotty: false };
+    var MIRA = { lupe: false, architect: true, celda: true, engine: false, grilla: true, bucle: true, tamandua: true, faro: false, pepa: true, aby: true, felipe: true, atlas: true, plotty: false };
     var RUTAS = {
       lupe: [[18.2, 15.1, 9], [18.0, 17.0], [6.3, 17.0], [6.3, 13.1], [4.5, 13.1, 7], [6.3, 13.1], [6.3, 17.0], [18.0, 17.0]],
       celda: [[10.4, 8.1, 12], [11.0, 6.3], [17.9, 6.3], [18.0, 3.35, 7], [17.9, 6.3], [11.0, 6.3]],

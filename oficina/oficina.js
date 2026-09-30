@@ -592,7 +592,8 @@
       '<svg class="ficha-placa" viewBox="0 0 300 190" aria-hidden="true">' + E.placaTarjeta(p, true, { isoSimple: true }).replace(/class="pj pj-/g, 'class="pj pj-retrato pj-') + '</svg></div>' +
       '<p class="bp-etiqueta">' + esc(p.rol) + (p.fases.length ? ' · ' + p.fases.join(' · ') : ' · ' + esc(p.placa)) + '</p>' +
       '<h2 id="panel-titulo" tabindex="-1">' + esc(p.nombre) + '</h2>' +
-      (p.completo ? '<p class="completo">' + esc(p.completo) + (p.alias ? ' · le dicen ' + esc(p.alias) : '') + '</p>' : '') +
+      // Sin apellido, el apodo va solo (Felipe: «Le dicen Rodman»)
+      (p.completo ? '<p class="completo">' + esc(p.completo) + (p.alias ? ' · le dicen ' + esc(p.alias) : '') + '</p>' : p.alias ? '<p class="completo">Le dicen ' + esc(p.alias) + '</p>' : '') +
       '<p class="lema">' + esc(p.lema) + '</p>' +
       '<p class="ahora"><span class="pulso" aria-hidden="true"></span>Ahora: ' + esc(ahora) + '</p>' +
       (id === 'plotty' ? '<div class="acciones">' + botonChat('Responder las tres preguntas') + '</div>' : '') +
@@ -769,7 +770,7 @@
         '<p class="nota">En las reuniones te atiende una persona del equipo, con su nombre y su rol.</p>';
     }
     if (id === 'planos') return vistaSala('planos') + cab() + puntos() + chipsEquipo(['architect', 'engine', 'atlas']);
-    if (id === 'set') return vistaSala('set') + cab() + chipsEquipo(['aby']);
+    if (id === 'set') return vistaSala('set') + cab() + chipsEquipo(['aby', 'felipe']);
     if (id === 'laboratorio') return vistaSala('laboratorio') + cab() + puntos() + chipsEquipo(['celda', 'lupe']);
     if (id === 'reuniones') return vistaSala('reuniones') + cab() + '<div class="acciones">' + botonChat('Agendar con Plotty') + '</div>';
     if (id === 'pasaje') return vistaSala('pasaje') + cab() + htmlDirectorio();
@@ -1927,7 +1928,7 @@
     ['actor', 'faro', 'Faro · Puesta en marcha', 'Sube cada entrega a producción y enseña a usarla.'],
     ['zona', 'laboratorio', 'Laboratorio de métricas', 'A los 30, 60 y 90 días se mide contra la línea base. Si no bajó, se dice.'],
     ['zona', 'estanteria', 'Estantería del núcleo', 'Pepa guarda aquí lo que sirve para el próximo. También están los casos de referencia.'],
-    ['zona', 'set', 'El set', 'Aquí graba Aby, la corresponsal. La única cara real de la oficina.'],
+    ['zona', 'set', 'El set', 'Aquí graban Aby, la corresponsal, y Felipe, el rostro. Las dos caras reales de la oficina.'],
     ['zona', 'pasaje', 'El pasaje', 'Por aquí se sale a la calle: un local por proyecto, con su nombre y su logo en el techo. Toca uno para abrirlo, ver qué hicimos y entrar a su sala.'],
     ['zona', 'nuhome', 'Nu Home 360', 'Casas modulares: del primer contacto a la entrega, en una sola plataforma.'],
     ['zona', 'fundos', 'Fundos 360', 'Venta de parcelas: el terreno sobre la mesa y el ciclo de venta completo.'],

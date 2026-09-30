@@ -1,6 +1,6 @@
 import { C, forma, plana, mancha, linea, tubo, credencialAncha, suelo } from './tinta.mjs';
 
-// Aby · La corresponsal (community manager). La única cara real de BiPlot HQ.
+// Aby · La corresponsal (community manager). Una de las dos caras reales de BiPlot HQ; la otra es Felipe.
 // Rasgos: ondas largas con balayage (raíz castaña, largos miel), sonrisa amplia,
 // ojos cafés almendrados, cejas arqueadas, aros dorados. Dos vestuarios: elegante y urbano.
 
