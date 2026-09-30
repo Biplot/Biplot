@@ -1969,3 +1969,24 @@ html:not(.js) .tc-tabs { display: none; }
   /* el detalle del lote acompaña al plano con el mismo alto */
   .plan:not(.is-wide) .lot-panel { max-height: min(calc(100vh - var(--nav-h) - 2rem), var(--stage-h, 100vh)); }
 }
+
+/* Chips de precio: versión corta en el celular y el tablet no se usa ("3 disponibles") */
+.pl-cat .pl-ds { display: none; }
+/* Computador: chips de precio en una sola fila (precio arriba; precio lista y disponibles abajo),
+   así el plano sube en la pantalla */
+@media (min-width: 960px) and (hover: hover) and (pointer: fine) {
+  .plan-cats, .pl-cats { flex-wrap: nowrap; }
+  .plan-cats { overflow-x: auto; gap: .6rem; padding: .45rem .7rem; }
+  .plan-cats .pl-title { padding: .3rem .5rem; font-size: .66rem; line-height: 1.1; max-width: 5.6em; white-space: normal; text-align: center; }
+  .pl-cat { display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto auto; column-gap: .35rem; row-gap: .05rem; align-items: center;
+    min-height: 40px; padding: .28rem .8rem .28rem .5rem; border-radius: 14px; text-align: left; }
+  .pl-cat .sw { grid-row: 1 / span 2; margin-right: .1rem; }
+  .pl-cat .pl-price { display: contents; }
+  .pl-cat b { grid-column: 2 / span 2; grid-row: 1; font-size: .88rem; line-height: 1.1; }
+  .pl-cat s { grid-column: 2; grid-row: 2; font-size: .64rem; line-height: 1.1; }
+  .pl-cat small { grid-column: 3; grid-row: 2; font-size: .64rem; line-height: 1.1; }
+  .pl-cat:not(:has(s)) small { grid-column: 2 / span 2; }
+  .pl-cat .pl-dl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .pl-cat .pl-ds { display: inline; }
+  .pl-cat:disabled small { padding: 0; background: none; font-size: .6rem; }
+}

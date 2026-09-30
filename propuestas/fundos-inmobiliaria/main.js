@@ -443,7 +443,7 @@
       var c = cats[k], n = disp.filter(function (l) { return l.cat === k; }).length;
       h.push('<button type="button" class="pl-cat" data-cat="' + k + '" aria-pressed="false"' + (n ? "" : " disabled") + ' style="--c:' + c.color + '">' +
         '<i class="sw" aria-hidden="true"></i><span class="pl-price">' + (c.lista ? '<s><span class="sr-only">Antes </span>' + clp(c.lista) + "</s> " : "") + "<b>" + clp(c.precio) + "</b></span>" +
-        "<small>" + (n ? n + (n === 1 ? " disponible" : " disponibles") : "Agotado") + "</small></button>");
+        "<small>" + (n ? n + '<span class="pl-dl">' + (n === 1 ? " disponible" : " disponibles") + '</span><span class="pl-ds" aria-hidden="true"> disp.</span>' : "Agotado") + "</small></button>");
     });
     h.push("</div>");
     return h.join("");
@@ -570,11 +570,12 @@
       if (isSmall()) H = clamp(H * 1.5, 260, Math.min(window.innerHeight * 0.6, 460));
       else {
         // Toda la herramienta (proyectos, filtros, chips, plano y leyenda) cabe en la pantalla bajo la
-        // barra de navegación; el plano nunca pasa de 480 px de alto para no comerse la página.
+        // barra de navegación; el plano nunca pasa de 480 px ni
+        // de casi la mitad del alto de la ventana, para no comerse la página.
         var navH = Math.min(navBottom() || 66, 70), catsH = cats && !cats.hidden ? cats.offsetHeight : 0;
         var above = cats ? Math.max(0, cats.getBoundingClientRect().top - root.getBoundingClientRect().top) : 0;
         var legH = legend && !legend.hidden ? legend.offsetHeight : 0;
-        H = Math.min(H, clamp(window.innerHeight - navH - above - catsH - legH - 24, 380, 480));
+        H = Math.min(H, clamp(Math.min(window.innerHeight - navH - above - catsH - legH - 24, window.innerHeight * .47), 380, 480));
       }
       if (!reset && Z.W === W && Z.H) H = Z.H;    // la barra del navegador móvil cambia innerHeight: la altura no salta
       canvas.style.height = Math.round(H) + "px";
