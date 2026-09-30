@@ -34,6 +34,9 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
   con las cumbres del Osorno, Calbuco y Puntiagudo y la marca del proyecto (-41.3700833, -72.8781389); los lugares
   (`x`, `y` en píxeles de esa imagen), textos del folleto y distancias están en el script de la página. Si llega una
   imagen de mayor resolución, recalibrar los `x`, `y`. Fotos recortadas del folleto: reemplazar por las originales.
+  Las rutas por camino (`RUTAS`: path en píxeles, km y minutos) se calcularon una vez con el servidor público de
+  OSRM (`router.project-osrm.org`, datos © OpenStreetMap, crédito visible en el mapa) desde Camino El Encanto; el
+  Calbuco (sin camino a la cumbre) y Parque Vivo Alerces (sin ubicación confirmada) van en línea recta.
 - `assets/img` fotos y logos (WebP) · `assets/video` saludo del equipo (MP4 H.264 + WebM de respaldo + portada) ·
   `assets/fonts` Cormorant Garamond y Mulish autoalojadas.
 
