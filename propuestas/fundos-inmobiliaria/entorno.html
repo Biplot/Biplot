@@ -149,6 +149,39 @@ a { color: inherit; }
 .r-arr { position: absolute; z-index: 11; transform: translate(-50%, -100%) scale(var(--ik, 1)) translateY(-14px); transform-origin: 50% 100%; padding: .2rem .5rem; border-radius: 5px; background: rgba(10, 20, 14, .9); color: var(--cream-80); font: 700 .7rem/1.3 var(--sans); white-space: nowrap; pointer-events: none; }
 .r-arr.below { transform: translate(-50%, 0) scale(var(--ik, 1)) translateY(14px); transform-origin: 50% 0; }
 .r-arr b { color: var(--gold-2); font-weight: 800; }
+/* Video del lugar: botón bajo la píldora al terminar la ruta y ventana flotante */
+.v-btn { position: absolute; z-index: 12; transform: translate(-50%, 0) scale(var(--ik, 1)) translateY(24px); transform-origin: 50% 0; display: inline-flex; align-items: center; gap: .45rem; min-height: 36px; padding: .25rem .85rem .25rem .3rem; border-radius: 999px; background: rgba(10, 20, 14, .95); border: 1px solid var(--gold); color: var(--n050); font: 800 .74rem/1.2 var(--sans); white-space: nowrap; box-shadow: 0 8px 20px rgba(0, 0, 0, .55); opacity: 0; transition: opacity .35s, background-color .2s; }
+.v-btn.up { transform: translate(-50%, -100%) scale(var(--ik, 1)) translateY(-24px); transform-origin: 50% 100%; }
+.v-btn.is-in { opacity: 1; }
+.v-btn[hidden] { display: none; }
+.v-btn.is-off2 { visibility: hidden; }
+.v-btn .i { width: 28px; height: 28px; padding: 7px 6px 7px 8px; border-radius: 50%; background: var(--gold); color: var(--g900); }
+.v-btn small { font-weight: 700; color: var(--cream-55); }
+.v-btn:hover { background: var(--g800); }
+.v-btn.is-in::before { content: ""; position: absolute; left: .3rem; top: 50%; width: 28px; height: 28px; margin-top: -14px; border-radius: 50%; box-shadow: 0 0 0 0 rgba(200, 161, 101, .7); animation: v-pulso 1.6s ease-out 2; pointer-events: none; }
+@keyframes v-pulso { to { box-shadow: 0 0 0 12px rgba(200, 161, 101, 0); } }
+.vp-fondo { position: fixed; inset: 0; z-index: 60; background: rgba(4, 9, 6, .6); opacity: 0; transition: opacity .25s; }
+.vp-fondo.is-in { opacity: 1; }
+.vp { position: fixed; z-index: 61; display: flex; flex-direction: column; overflow: hidden; border-radius: 16px; background: var(--g900); border: 1px solid rgba(200, 161, 101, .45); box-shadow: 0 24px 60px rgba(0, 0, 0, .65); opacity: 0; transform: translateY(10px) scale(.97); transition: opacity .25s var(--ease-out), transform .3s var(--ease-out); }
+.vp.is-in { opacity: 1; transform: none; }
+.vp[hidden], .vp-fondo[hidden] { display: none; }
+.vp-bar { display: flex; align-items: center; gap: .6rem; min-height: 48px; padding: 0 .4rem 0 1rem; }
+.vp-t { flex: 1; min-width: 0; margin: 0; font: 600 1.15rem/1.2 var(--serif); color: var(--n050); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vp-t small { margin-left: .5rem; font: 800 .66rem/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--gold-2); }
+.vp-x { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; color: var(--n050); }
+.vp-x:hover { background: rgba(247, 245, 240, .1); }
+.vp-v { position: relative; background: #000; }
+.vp video { display: block; width: 100%; height: 100%; background: #000; }
+.vp-end { position: absolute; inset: 0; display: grid; place-content: center; gap: .6rem; background: rgba(4, 9, 6, .55); }
+.vp-end[hidden] { display: none; }
+.vp-end .btn { padding: .7rem 1.1rem; gap: .45rem; }
+.place-t strong .place-v { display: inline-flex; vertical-align: -1px; margin-left: .4rem; color: var(--gold-2); }
+.place-v .i { width: 13px; height: 13px; }
+.card-play { position: absolute; inset: 0; z-index: 1; display: grid; place-items: end start; padding: 0 1.3rem 14px; }
+.card-play > span { display: inline-flex; align-items: center; gap: .5rem; padding: .3rem .95rem .3rem .3rem; border-radius: 999px; background: rgba(10, 20, 14, .82); border: 1px solid var(--gold); color: var(--n050); font: 800 .8rem/1 var(--sans); box-shadow: 0 10px 26px rgba(0, 0, 0, .5); transition: transform .2s var(--ease-out); }
+.card-play .i { width: 34px; height: 34px; padding: 9px 8px 9px 10px; border-radius: 50%; background: var(--gold); color: var(--g900); }
+.card-play:hover > span, .card-play:focus-visible > span { transform: scale(1.05); }
+.card-media > .poster { width: 100%; height: 100%; object-fit: cover; }
 
 /* Controles del mapa */
 .map-ui { position: absolute; z-index: 12; }
@@ -325,6 +358,8 @@ a { color: inherit; }
   .legend .credit a { display: inline-block; padding-block: 14px; margin-block: -14px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .vp, .vp-fondo { transition: none; }
+  .v-btn.is-in::before { animation: none; }
   .pin.home::before { animation: none; }
   .pin-c, .world img.detail, .star path { transition: none; }
 }
@@ -442,8 +477,14 @@ a { color: inherit; }
   </footer>
 </main>
 
-<script src="lib/manifest.js?v=20261001d"></script>
-<script src="lib/entorno-datos.js?v=20261001d"></script>
+<div class="vp-fondo" data-vp-fondo hidden></div>
+<div class="vp" data-vp role="dialog" aria-labelledby="vp-t" hidden>
+  <div class="vp-bar"><p class="vp-t" id="vp-t"></p><button type="button" class="vp-x" data-vp-x aria-label="Cerrar video"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+  <div class="vp-v"><video playsinline controls preload="none"></video>
+    <div class="vp-end" data-vp-end hidden><button type="button" class="btn btn-gold" data-vp-again><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Volver a ver</button></div></div>
+</div>
+<script src="lib/manifest.js?v=20261001f"></script>
+<script src="lib/entorno-datos.js?v=20261001f"></script>
 <script>
 (function () {
   "use strict";
@@ -555,6 +596,7 @@ a { color: inherit; }
   var homePin = pinEl(P, true);
   L.forEach(function (p) { p.el = pinEl(p); });
   var tagEl = document.createElement("span"); tagEl.className = "r-tag num"; tagEl.hidden = true; tagEl.setAttribute("aria-hidden", "true"); pinsBox.appendChild(tagEl);
+  var vBtn = document.createElement("button"); vBtn.type = "button"; vBtn.className = "v-btn"; vBtn.hidden = true; pinsBox.appendChild(vBtn);
   var arrEl = document.createElement("span"); arrEl.className = "r-arr"; arrEl.hidden = true; arrEl.setAttribute("aria-hidden", "true"); pinsBox.appendChild(arrEl);
 
   /* ---------- Filtros ---------- */
@@ -601,7 +643,7 @@ a { color: inherit; }
       var li = document.createElement("li");
       var meta = (CAT[p.cat] || {}).nombre + " · " + (p.ruta ? km(p.ruta.km) : (p.sinCamino ? "sin camino a la cumbre" : "sin camino directo"));
       li.innerHTML = '<button type="button" class="place" aria-current="false" style="--c:' + color(p) + '">' +
-        '<span class="place-ic">' + icon(p.icono) + '</span><span class="place-t"><strong>' + esc(p.nombre) + "</strong><span>" + esc(meta) + "</span></span>" +
+        '<span class="place-ic">' + icon(p.icono) + '</span><span class="place-t"><strong>' + esc(p.nombre) + (p.video ? '<span class="place-v" title="Con video">' + icon("play") + '<span class="sr-only">, con video</span></span>' : "") + "</strong><span>" + esc(meta) + "</span></span>" +
         '<span class="place-m num">' + (p.ruta ? esc(mins(p.ruta.min)) + "<small>en auto</small>" : "≈ " + esc(km(p.recta)) + "<small>en línea recta</small>") + "</span></button>";
       var bt = li.firstChild;
       bt.addEventListener("click", function () { stopTour(); select(p.id, { scroll: true, refocus: focusIn("h2") }); });
@@ -783,6 +825,12 @@ a { color: inherit; }
     //    los pines atenuados que queden debajo se esconden
     var key = sel ? cover.concat([rect(sel.el.querySelector(".pin-c")), rect(homePin.querySelector(".pin-c"))]) : [];
     var routeLbl = [];
+    if (sel && !vBtn.hidden) {
+      vBtn.classList.remove("up", "is-off2");
+      var vr = rect(vBtn);
+      if (out(vr) || hit(vr, null, cover)) { vBtn.classList.add("up"); vr = rect(vBtn); }
+      if (out(vr) || hit(vr, null, cover)) vBtn.classList.add("is-off2"); else { routeLbl.push(vr); key.push(vr); }
+    }
     if (sel && !tagEl.hidden) {
       var len = sel.len || 0, spots = [.6, .45, .75, .35, .85], placed = false;
       for (var i = 0; i < spots.length && !placed && len; i++) {
@@ -838,7 +886,7 @@ a { color: inherit; }
   function showHint(t) { hint.textContent = t; hint.classList.add("is-on"); clearTimeout(hintT); hintT = setTimeout(function () { hint.classList.remove("is-on"); }, 1600); }
   function mpos(e) { var r = rect(map); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
   map.addEventListener("pointerdown", function (e) {
-    if (e.target.closest(".map-ui, .tour-btn, .peek")) return;
+    if (e.target.closest(".map-ui, .tour-btn, .peek, .v-btn")) return;
     cancelAnimationFrame(raf); world.classList.remove("is-moving");
     ptrs[e.pointerId] = mpos(e);
     if (Object.keys(ptrs).length === 1) { moved = false; downAt = ptrs[e.pointerId]; }
@@ -879,7 +927,7 @@ a { color: inherit; }
     var p = mpos(e); zoomAt(p.x, p.y, Math.exp(-e.deltaY * (e.deltaMode ? .05 : .0022)));
   }, { passive: false });
   map.addEventListener("dblclick", function (e) {
-    if (e.target.closest(".pin, .map-ui, .tour-btn, .peek")) return;
+    if (e.target.closest(".pin, .map-ui, .tour-btn, .peek, .v-btn")) return;
     stopTour(); var p = mpos(e); flyTo(zoomTarget(p.x, p.y, 2), 450);
   });
   map.addEventListener("focus", function () { if (map.matches(":focus-visible")) showHint("Flechas: mover · + −: acercar · 0: toda la zona"); });
@@ -899,7 +947,7 @@ a { color: inherit; }
   map.addEventListener("scroll", function () { map.scrollLeft = 0; map.scrollTop = 0; });
   pinsBox.addEventListener("keydown", function (e) {
     var keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1, Home: "first", End: "last" };
-    if (!(e.key in keys)) return;
+    if (!(e.key in keys) || e.target === vBtn) return;
     e.preventDefault(); e.stopPropagation();
     var vis = orden.filter(visible), i = S.sel ? vis.indexOf(byId[S.sel]) : -1, n = vis.length, k = keys[e.key];
     var nx = k === "first" ? vis[0] : k === "last" ? vis[n - 1] : i < 0 ? (k > 0 ? vis[0] : vis[n - 1]) : vis[(i + k + n) % n];
@@ -932,7 +980,7 @@ a { color: inherit; }
     clearTimeout(drawT); cancelAnimationFrame(dotRaf);
     [rCas, rLine, rEnd, rDot, rHalo].forEach(function (el) { el.classList.add("is-off"); });
     [rLine, rCas].forEach(function (el) { el.style.transition = "none"; el.style.strokeDasharray = ""; el.style.strokeDashoffset = ""; });
-    tagEl.hidden = true; arrEl.hidden = true;
+    tagEl.hidden = true; arrEl.hidden = true; vBtn.hidden = true; vBtn.classList.remove("is-in");
   }
   function drawRoute(p) {
     hideRoute();
@@ -952,7 +1000,16 @@ a { color: inherit; }
       arrEl.hidden = !(p.llegada && farEnd);
       queueLabels();
     }
-    if (!p.ruta || reduced) { labelsOn(); return; }
+    // Al terminar la animación, si el lugar tiene video, aparece "Ver video" bajo la píldora
+    function videoOn() {
+      if (!p.video || S.sel !== p.id) return;
+      vBtn.style.left = p.x + "px"; vBtn.style.top = p.y + "px";
+      vBtn.innerHTML = icon("play") + "Ver video <small>" + Math.round(p.video.dur) + " s</small>";
+      vBtn.setAttribute("aria-label", "Ver video de " + p.nombre);
+      vBtn.hidden = false; queueLabels();
+      requestAnimationFrame(function () { vBtn.classList.add("is-in"); });
+    }
+    if (!p.ruta || reduced) { labelsOn(); videoOn(); return; }
     var dur = Math.max(700, Math.min(1500, len * 1.6));
     [rLine, rCas].forEach(function (el) { el.style.strokeDasharray = len + " " + len; el.style.strokeDashoffset = len; });
     rLine.getBoundingClientRect();
@@ -967,7 +1024,7 @@ a { color: inherit; }
         var u = Math.min(1, (now - t0) / T), e = 1 - Math.pow(1 - u, 2), q = rLine.getPointAtLength(len * e);
         rDot.setAttribute("cx", q.x); rDot.setAttribute("cy", q.y); rHalo.setAttribute("cx", q.x); rHalo.setAttribute("cy", q.y);
         rDot.setAttribute("r", 4.5 / V.k); rHalo.setAttribute("r", 10 / V.k);
-        if (u < 1) dotRaf = requestAnimationFrame(mv); else { rDot.classList.add("is-off"); rHalo.classList.add("is-off"); }
+        if (u < 1) dotRaf = requestAnimationFrame(mv); else { rDot.classList.add("is-off"); rHalo.classList.add("is-off"); videoOn(); }
       })(t0);
     }, dur + 30);
   }
@@ -1011,7 +1068,10 @@ a { color: inherit; }
   function renderCard(p) {
     card.dataset.mode = "";
     var c = CAT[p.cat] || {};
-    var media = p.foto
+    var media = p.video
+      ? '<img class="poster" src="' + esc(p.video.poster) + '" alt="" width="' + p.video.w + '" height="' + p.video.h + '" decoding="async">' +
+        '<button type="button" class="card-play" data-video aria-label="Ver video de ' + esc(p.nombre) + '"><span>' + icon("play") + "Ver video</span></button>"
+      : p.foto
       ? '<img src="' + esc(p.foto.src) + '" alt="' + esc(p.foto.alt || p.nombre) + '" width="' + (p.foto.w || 1200) + '" height="' + (p.foto.h || 675) + '" decoding="async"><span class="card-credit">' +
         (p.foto.url ? '<a href="' + esc(p.foto.url) + '" target="_blank" rel="noopener">' + esc(p.foto.credito) + "</a>" : esc(p.foto.credito)) +
         (p.foto.licUrl ? ' · <a href="' + esc(p.foto.licUrl) + '" target="_blank" rel="noopener">' + esc(p.foto.licencia) + "</a>" : "") + "</span>"
@@ -1044,6 +1104,7 @@ a { color: inherit; }
   card.addEventListener("click", function (e) {
     var g = e.target.closest("[data-go]");
     if (g) { stopTour(); select(g.dataset.go, { refocus: focusIn("h2") }); return; }
+    if (e.target.closest("[data-video]")) { openVideo(byId[S.sel], e.target.closest("[data-video]")); return; }
     if (e.target.closest("[data-close]")) { stopTour(); select(null, { fly: "keep", refocus: focusIn("h2") }); return; }
     var b = e.target.closest("[data-step]"); if (!b) return;
     stopTour();
@@ -1058,6 +1119,7 @@ a { color: inherit; }
 
   function select(id, o) {
     o = o || {};
+    if (!vp.hidden) closeVideo(true);
     if (!o.refocus && card.contains(document.activeElement)) o.refocus = focusIn("h2");
     var p = id ? byId[id] : null;
     if (p && !visible(p)) setFilter("todo");   // un enlace o el resumen pueden pedir un lugar filtrado
@@ -1132,12 +1194,71 @@ a { color: inherit; }
   window.addEventListener("scroll", function () { if (touring && Math.abs(scrollY - tourY) > 120) stopTour(); }, { passive: true });
 
   document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !vp.hidden) { e.preventDefault(); closeVideo(); return; }
     if (e.key !== "Escape" || !S.sel) return;
     var inCard = card.contains(document.activeElement), inPins = pinsBox.contains(document.activeElement);
     stopTour(); select(null, { fly: "keep", refocus: inCard ? focusIn("h2") : null });
     if (inPins) homePin.focus({ preventScroll: true });
   });
+  /* ---------- Ventana flotante del video ---------- */
+  var vp = $("[data-vp]"), vpFondo = $("[data-vp-fondo]"), vpVid = $("video", vp), vpEnd = $("[data-vp-end]"), vpOpener = null, vpT = 0;
+  function placeVideo() {
+    if (vp.hidden) return;
+    var ar = vpVid.dataset.ar ? Number(vpVid.dataset.ar) : 16 / 9, bar = 48, l, r, t, b;
+    if (wide.matches) {
+      // Entre el panel y la ficha si cabe; si no, entre el panel y los controles (sobre la ficha)
+      var mr = rect(map), pr = rect(panel), cr = rect(card), zr = rect(zoomUi);
+      l = pr.right + 16; r = cr.left - 16 - l >= 460 ? cr.left - 16 : zr.left - 16;
+      t = Math.max(mr.top, 0) + 16; b = Math.min(mr.bottom, innerHeight) - 16;
+    } else { l = 12; r = innerWidth - 12; t = 12; b = innerHeight - 12; }
+    var w = Math.min(r - l, 760, (b - t - bar) * ar), h = w / ar + bar;
+    vp.style.width = Math.round(w) + "px";
+    vp.style.left = Math.round(l + (r - l - w) / 2) + "px";
+    vp.style.top = Math.round(t + (b - t - h) / 2) + "px";
+    $(".vp-v", vp).style.height = Math.round(w / ar) + "px";
+  }
+  function openVideo(p, opener) {
+    if (!p || !p.video) return;
+    stopTour(); clearTimeout(vpT);
+    var v = p.video;
+    vpOpener = opener || null;
+    $("#vp-t").innerHTML = esc(v.titulo || p.nombre) + (p.ruta ? "<small>" + esc(mins(p.ruta.min)) + " en auto</small>" : "");
+    vp.setAttribute("aria-label", "Video: " + (v.titulo || p.nombre));
+    vp.setAttribute("aria-modal", wide.matches ? "false" : "true");
+    vpVid.dataset.ar = v.w / v.h;
+    vpVid.poster = v.poster;
+    vpVid.innerHTML = '<source src="' + esc(v.mp4) + '" type="video/mp4; codecs=&quot;avc1.640028, mp4a.40.2&quot;"><source src="' + esc(v.webm) + '" type="video/webm">';
+    vpVid.load();
+    vpEnd.hidden = true;
+    vp.hidden = false; vpFondo.hidden = wide.matches;
+    placeVideo();
+    requestAnimationFrame(function () { vp.classList.add("is-in"); vpFondo.classList.add("is-in"); });
+    var pl = vpVid.play(); if (pl && pl.catch) pl.catch(function () { /* el usuario puede darle play */ });
+    $("[data-vp-x]").focus({ preventScroll: true });
+  }
+  function closeVideo(quiet) {
+    if (vp.hidden) return;
+    vpVid.pause();
+    vp.classList.remove("is-in"); vpFondo.classList.remove("is-in");
+    var done = function () { vp.hidden = true; vpFondo.hidden = true; vpVid.removeAttribute("poster"); vpVid.innerHTML = ""; vpVid.load(); };
+    if (reduced) done(); else vpT = setTimeout(done, 260);
+    if (!quiet && vpOpener && document.contains(vpOpener) && !vpOpener.hidden) vpOpener.focus({ preventScroll: true });
+    vpOpener = null;
+  }
+  vBtn.addEventListener("click", function () { if (!moved) openVideo(byId[S.sel], vBtn); });
+  $("[data-vp-x]").addEventListener("click", function () { closeVideo(); });
+  vpFondo.addEventListener("click", function () { closeVideo(); });
+  vpVid.addEventListener("ended", function () { vpEnd.hidden = false; $("[data-vp-again]").focus({ preventScroll: true }); });
+  $("[data-vp-again]").addEventListener("click", function () { vpEnd.hidden = true; vpVid.currentTime = 0; vpVid.play(); });
+  vp.addEventListener("keydown", function (e) {
+    if (e.key !== "Tab" || wide.matches) return;   // en celular la ventana es modal: el foco no sale de ella
+    var f = [].filter.call(vp.querySelectorAll("button, video"), function (el) { return !el.closest("[hidden]"); });
+    var a = f[0], z = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); }
+    else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); }
+  });
   function onResize() {
+    placeVideo();
     if (wide.matches) setPeek(null);
     apply();
     if (S.sel) flyTo(viewForPlace(byId[S.sel]), 0, queueLabels);

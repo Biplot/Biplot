@@ -8,6 +8,8 @@ Pasos (cada uno se puede saltar si ya está hecho; los resultados quedan en cach
   --teselas   descarga el mosaico Sentinel-2 cloudless 2016 de EOX (CC BY 4.0) y arma las capas WebP
   --locales   igual que --teselas, pero desde imágenes ya descargadas (GetMap WMS de EOX en EPSG:3857, ver
               "original" en lugares.json): recorta cada capa de su bbox, la lleva a su tamaño y ajusta el color
+  --videos    convierte los videos del cliente ("video.original" en lugares.json, en tools/entorno/videos/) a
+              MP4 H.264 + WebM VP9 de 1280 px (~2,5 Mb/s), a la mitad de cuadros, con audio, y una portada WebP
   --fotos     descarga las fotos de Wikimedia Commons (miniatura 1280 px) y las deja en assets/entorno/fotos/
   --rutas     calcula las rutas por camino con OSRM (router.project-osrm.org, datos © OpenStreetMap)
 Sin opciones solo regenera lib/entorno-datos.js con lo que haya en caché.
@@ -185,6 +187,55 @@ def locales(cfg):
     guardar("imagen-cache.json", {"w": w, "h": h, "capas": capas})
 
 
+# ---------------------------------------------------------------- videos del cliente
+def videos(cfg):
+    import subprocess
+    try:
+        import imageio_ffmpeg
+        ff = imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        sys.exit("Falta ffmpeg: pip install imageio-ffmpeg")
+    meta = leer("videos-cache.json", {})
+    dest = os.path.join(RAIZ, "assets/entorno/videos")
+    os.makedirs(dest, exist_ok=True)
+    for l in cfg["lugares"]:
+        v = l.get("video")
+        if not v:
+            continue
+        orig = os.path.join(AQUI, v["original"])
+        base = os.path.join(dest, l["id"])
+        if not os.path.exists(orig):
+            print("  sin original (se usa lo ya convertido):", v["original"]) if l["id"] in meta else print("  ¡falta!", v["original"])
+            continue
+        info = subprocess.run([ff, "-hide_banner", "-i", orig], capture_output=True, text=True).stderr
+        import re
+        m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", info)
+        dur = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
+        fps = float(re.search(r"([\d.]+) fps", info).group(1))
+        r = "30000/1001" if fps > 55 else ("25" if fps > 45 else "%g" % fps)
+        audio = "Audio:" in info and not v.get("sinAudio")
+        vf = "fps=%s,scale=1280:-2:flags=lanczos,format=yuv420p" % r
+        a_mp4 = ["-c:a", "aac", "-b:a", "128k"] if audio else ["-an"]
+        a_webm = ["-c:a", "libopus", "-b:a", "96k"] if audio else ["-an"]
+        print("  video", l["id"], "%.1f s" % dur)
+        subprocess.run([ff, "-v", "error", "-y", "-i", orig, "-vf", vf, "-c:v", "libx264", "-profile:v", "high", "-preset", "slow",
+                        "-crf", "25", "-maxrate", "2800k", "-bufsize", "5600k", "-movflags", "+faststart"] + a_mp4 + [base + ".mp4"], check=True)
+        subprocess.run([ff, "-v", "error", "-y", "-i", orig, "-vf", vf, "-c:v", "libvpx-vp9", "-crf", "36", "-b:v", "2400k", "-row-mt", "1",
+                        "-deadline", "good", "-cpu-used", "2"] + a_webm + [base + ".webm"], check=True)
+        t = v.get("portadaSeg", round(dur * 0.5, 2))
+        subprocess.run([ff, "-v", "error", "-y", "-ss", str(t), "-i", orig, "-frames:v", "1", "-vf", "scale=1280:-2:flags=lanczos",
+                        base + "-portada.png"], check=True)
+        from PIL import Image
+        im = Image.open(base + "-portada.png")
+        im.save(base + ".webp", "WEBP", quality=78, method=6)
+        os.remove(base + "-portada.png")
+        meta[l["id"]] = {"mp4": "assets/entorno/videos/%s.mp4" % l["id"], "webm": "assets/entorno/videos/%s.webm" % l["id"],
+                         "poster": "assets/entorno/videos/%s.webp" % l["id"], "w": im.width, "h": im.height,
+                         "dur": round(dur, 1), "audio": audio}
+        print("   ->", ", ".join("%s %d KB" % (e, os.path.getsize(base + "." + e) // 1024) for e in ("mp4", "webm", "webp")))
+    guardar("videos-cache.json", meta)
+
+
 # ---------------------------------------------------------------- fotos de Wikimedia Commons
 def fotos(cfg):
     from PIL import Image
@@ -296,12 +347,15 @@ def construir(cfg):
 
     rc = leer("rutas-cache.json", {})
     fc = leer("fotos-cache.json", {})
+    vc = leer("videos-cache.json", {})
     o = cfg["proyecto"]
     proyecto = dict(o)
     proyecto["x"], proyecto["y"] = px(o["lat"], o["lon"])
     salida = []
     for l in cfg["lugares"]:
-        d = {k: v for k, v in l.items() if k not in ("foto",)}
+        d = {k: v for k, v in l.items() if k not in ("foto", "video")}
+        if l.get("video") and vc.get(l["id"]):
+            d["video"] = dict(vc[l["id"]], titulo=l["video"].get("titulo", l["nombre"]))
         d["x"], d["y"] = px(l["lat"], l["lon"])
         d["recta"] = round(haversine((o["lat"], o["lon"]), (l["lat"], l["lon"])), 1)
         if l.get("destino"):
@@ -364,6 +418,8 @@ if __name__ == "__main__":
         teselas(cfg)
     if "--locales" in sys.argv:
         locales(cfg)
+    if "--videos" in sys.argv:
+        videos(cfg)
     if "--fotos" in sys.argv:
         fotos(cfg)
     if "--rutas" in sys.argv:
