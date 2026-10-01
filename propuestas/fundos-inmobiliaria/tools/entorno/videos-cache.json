@@ -61,5 +61,14 @@
   "h": 720,
   "dur": 5.4,
   "audio": true
+ },
+ "pvaras": {
+  "mp4": "assets/entorno/videos/pvaras.mp4",
+  "webm": "assets/entorno/videos/pvaras.webm",
+  "poster": "assets/entorno/videos/pvaras.webp",
+  "w": 1280,
+  "h": 720,
+  "dur": 6.2,
+  "audio": true
  }
 }
