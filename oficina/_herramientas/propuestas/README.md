@@ -91,6 +91,6 @@ código, en el primer commit de Biplot/biplot#35.
 Se eligió la mini tele, que ya está en la oficina: una tele chiquita con el canal en vivo, siempre a la vista, que se
 prende en el canal que muestra (el README de la oficina cuenta cómo funciona). La otra opción era un botón «Prender la
 tele» en la barra de arriba (en el celular, junto a los controles). Las dos se probaron sobre la oficina con un
-interruptor (`?tele=a` y `?tele=b`) que quedó fuera del código, en el primer commit de este cambio. Con ellas llegaron
+interruptor (`?tele=a` y `?tele=b`) que quedó fuera del código, en el primer commit de Biplot/biplot#39. Con ellas llegaron
 el orden nuevo de los canales (primero BiPlot, después los casos y al final el estreno) y «Prender la tele» como primer
 botón de BiPlot.TV.
