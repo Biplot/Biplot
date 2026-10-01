@@ -1783,6 +1783,7 @@
       f.actions.innerHTML = '<a class="btn btn-dark" href="#plano" data-act="plano">Ver lotes disponibles' + arrow + '</a><a class="btn btn-line" href="#visita" data-act="visita">Agendar una visita</a>';
       if (p.video) f.actions.insertAdjacentHTML("beforeend", '<button class="btn btn-line" type="button" data-act="video"><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Ver video</button>');
       if (p.tour) f.actions.insertAdjacentHTML("beforeend", '<a class="btn btn-line" href="#recorrido" data-act="tour"><svg class="i" aria-hidden="true"><use href="#i-360"/></svg>Recorrido 360°</a>');
+      if (p.entorno) f.actions.insertAdjacentHTML("beforeend", '<a class="btn btn-line" href="' + esc(p.entorno) + '"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg>Descubre el entorno</a>');
       $$("[data-act]", f.actions).forEach(function (a) {
         a.addEventListener("click", function (e) {
           var act = a.getAttribute("data-act");

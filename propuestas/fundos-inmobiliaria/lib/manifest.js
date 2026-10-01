@@ -155,12 +155,15 @@
         estado: "venta",
         region: "Los Lagos",
         zona: "Entre mar y lago",
-        resumen: "Fundos de Puerto Varas: bosque nativo atravesado por un estero, con camino principal y caminos interiores. Puerto Montt y el aeropuerto a unos 20 km.",
+        resumen: "Fundos de Puerto Varas: bosque nativo atravesado por un estero, con camino principal y caminos interiores. A 25 min de Puerto Montt y de Puerto Varas.",
         descripcion: "Fundos de Puerto Varas, entre mar y lago. Un predio de bosque nativo atravesado por un estero, con acceso por camino principal y caminos interiores a cada parcela. Vida de sur, cerca de la ciudad.",
         destacados: ["Estero dentro del predio", "Bosque nativo", "Acceso por camino principal", "Plano y antecedentes legales a la vista"],
-        cercanias: [["Puerto Montt", "20 km"], ["Aeropuerto El Tepual", "20 km"], ["Frutillar", "32 km"]],
-        cercaniasNota: "Distancias aproximadas desde Puerto Varas.",
-        mapa: "https://www.google.com/maps/search/?api=1&query=Puerto+Varas%2C+Los+Lagos%2C+Chile",
+        // Por camino desde la parcela (OSRM/OpenStreetMap, ver tools/entorno/lugares.json); tiempos sin tráfico
+        cercanias: [["Alerce", "5 km · 8 min"], ["Puerto Montt", "16 km · 25 min"], ["Puerto Varas", "18 km · 25 min"], ["Aeropuerto El Tepual", "37 km · 45 min"]],
+        cercaniasNota: "Por camino desde la parcela, en auto y sin tráfico.",
+        mapa: "https://www.google.com/maps/search/?api=1&query=-41.3700833,-72.8781389",
+        // Mapa interactivo del entorno (página aparte)
+        entorno: "entorno.html",
         // Recorrido virtual 360° (se incrusta en la sección #recorrido)
         tour: "https://6aab0a2a79cbb906fe66b800--tourspuertovaras.netlify.app/",
         // Video del proyecto (opcional): enlace de YouTube o Vimeo, o un archivo en assets/video/.
