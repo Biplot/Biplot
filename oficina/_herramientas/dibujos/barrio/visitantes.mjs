@@ -284,6 +284,12 @@ function objetoAdelante(f, obj, o) {
     case 'llave': f.tubo('M27 31.4L30.4 35.4', '#B9C8D8', 0.8); f.forma('M29.6 35.2A1.4 1.4 0 1 0 31.8 36.6L30.8 35.8Z', '#B9C8D8', { w: 0.35 }); break;
     case 'camara': f.forma(rr(22.4, 17.8, 5.2, 3.6, 0.5), '#1C1C1E'); f.forma(elipse(25.8, 19.6, 1.3, 1.3), '#35679A', { w: 0.35 }); f.mancha(rr(22.8, 17, 1.6, 1, 0.3), '#1C1C1E'); break;
     case 'taza': f.forma(rr(22, 29.6, 2.6, 2.8, 0.4), '#F2F4F7'); f.tubo('M24.6 30.4Q25.8 30.6 25.6 31.6', '#F2F4F7', 0.4); break;
+    // El balde de cabritas, a rayas, con las cabritas asomando
+    case 'cabritas':
+      f.forma('M20.4 27.6H26L25.2 33.6H21.2Z', '#F2F4F7', { w: 0.45 });
+      f.linea('M22.1 27.8L22.5 33.4M23.2 27.8V33.4M24.3 27.8L23.9 33.4', 0.7, '#17C3B2');
+      for (const [x, y, r] of [[21.2, 27.2, 1.2], [22.6, 26.6, 1.3], [24, 26.8, 1.25], [25.2, 27.3, 1.1], [23.3, 27.5, 1]]) f.forma(elipse(x, y, r, r * 0.9), '#FFF3C4', { w: 0.35 });
+      break;
     case 'guitarra':
       f.forma('M6.8 38.6Q4.4 35 7.4 32.6Q8.8 31.4 10.4 32.4Q12.4 30.2 14.8 31.6Q17.4 33.4 15.6 36.4Q14.4 38.2 12.6 38.4Q10 41.4 6.8 38.6Z', '#C9824E');
       f.mancha(elipse(11.4, 35.4, 1.3, 1.2), T);
