@@ -694,8 +694,10 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   // La tele de BiPlot.TV: todo «Ver con sonido» se ve en ella, con su control remoto (en el celular, la barra de abajo), toda
   // la programación y el último canal, «Tu proyecto». Se prueba la tele, no el video: donde el navegador no trae H.264 (la
   // nube) los videos no cargan, así que el final de un video se simula
-  await abrir(w, h, movil, false, '#tv');
-  await sleep(700);
+  // (se carga la página de nuevo y se entra al canal por su enlace: ir a #tv estando en #tv no recarga la página)
+  const alCanal = `(async () => { location.hash = '#tv'; for (let i = 0; i < 60 && !document.querySelector('.zona-sala[data-zona="estreno"]'); i++) await ${W(200)}; await ${W(700)}; return true; })()`;
+  await abrir(w, h, movil, false, '');
+  await js(alCanal);
   const te = await js(`(async () => {
     const PP = window.OFICINA_DATOS.salas.tv.salaPropia, Z = PP.zonas, P = {};
     window.OFICINA_DATOS.proyectos.forEach((p) => { P[p.id] = p; });
@@ -773,8 +775,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     '«Prender la tele», en la cartelera, vuelve al canal donde quedaste (03), con «Seguimos donde quedaste»');
   // Con movimiento reducido, sin estática ni la cuenta animada
   if (w === 1440) {
-    await abrir(w, h, movil, true, '#tv');
-    await sleep(500);
+    await abrir(w, h, movil, true, '');
+    await js(alCanal);
     const rm = await js(`(async () => {
       const z = document.querySelector('.zona-sala[data-zona="estreno"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(500)};
       document.querySelector('#sala-tarjeta [data-grande]').click(); await ${W(300)};
