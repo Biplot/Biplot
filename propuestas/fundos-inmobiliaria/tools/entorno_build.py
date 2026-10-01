@@ -6,6 +6,8 @@ que trae ese mismo archivo. Salida: lib/entorno-datos.js con todo en píxeles de
 
 Pasos (cada uno se puede saltar si ya está hecho; los resultados quedan en caché en tools/entorno/):
   --teselas   descarga el mosaico Sentinel-2 cloudless 2016 de EOX (CC BY 4.0) y arma las capas WebP
+  --locales   igual que --teselas, pero desde imágenes ya descargadas (GetMap WMS de EOX en EPSG:3857, ver
+              "original" en lugares.json): recorta cada capa de su bbox, la lleva a su tamaño y ajusta el color
   --fotos     descarga las fotos de Wikimedia Commons (miniatura 1280 px) y las deja en assets/entorno/fotos/
   --rutas     calcula las rutas por camino con OSRM (router.project-osrm.org, datos © OpenStreetMap)
 Sin opciones solo regenera lib/entorno-datos.js con lo que haya en caché.
@@ -105,6 +107,81 @@ def teselas(cfg):
     for c in im.get("capas", []):
         cw, ch = mosaico(c["bbox"], c["zoom"], c["src"], c.get("calidad", 70))
         capas.append({"src": c["src"], "bbox": c["bbox"], "zoom": c["zoom"], "w": cw, "h": ch, "desde": c.get("desde", 1.6)})
+    guardar("imagen-cache.json", {"w": w, "h": h, "capas": capas})
+
+
+# ---------------------------------------------------------------- imágenes descargadas a mano → capas WebP
+_LUT = {}
+
+
+def color(img, ref):
+    """Ajuste para la interfaz oscura, igual para todas las capas (si no, se notan los bordes): niveles por canal
+    al 0,4 % y contraste medidos en la imagen de referencia, un poco más de brillo y de saturación."""
+    from PIL import Image, ImageEnhance
+    if ref not in _LUT:
+        base = Image.open(os.path.join(AQUI, ref)).convert("RGB")
+        lut, medias = [], []
+        for h in (base.histogram()[i * 256:(i + 1) * 256] for i in range(3)):
+            n, acc, lo, hi = sum(h), 0, 0, 255
+            for v in range(256):
+                acc += h[v]
+                if acc > n * 0.004:
+                    lo = v
+                    break
+            acc = 0
+            for v in range(255, -1, -1):
+                acc += h[v]
+                if acc > n * 0.004:
+                    hi = v
+                    break
+            medias.append(sum(v * c for v, c in enumerate(h)) / n)
+            lut.append((lo, max(hi, lo + 1)))
+        m = 255 * (sum((mm - lo) / (hi - lo) for mm, (lo, hi) in zip(medias, lut)) / 3) ** 0.86
+        tabla = []
+        for lo, hi in lut:
+            for v in range(256):
+                t = 255 * min(1, max(0, (v - lo) / (hi - lo))) ** 0.86
+                tabla.append(max(0, min(255, round(m + 1.06 * (t - m)))))
+        _LUT[ref] = tabla
+    return ImageEnhance.Color(img.point(_LUT[ref])).enhance(1.12)
+
+
+def recorte(orig, bbox, z, salida, calidad, ancho_max=None, ref=None):
+    """orig = {"archivo", "bbox"}: imagen lineal en Web Mercator. Recorta bbox; tamaño = el del zoom z o el nativo."""
+    from PIL import Image
+    img = Image.open(os.path.join(AQUI, orig["archivo"])).convert("RGB")
+    ob = orig["bbox"]
+    nx0, ny0 = merc(ob[3], ob[0], 20)
+    nx1, ny1 = merc(ob[1], ob[2], 20)
+    sx, sy = img.width / (nx1 - nx0), img.height / (ny1 - ny0)
+    x0, y0 = merc(bbox[3], bbox[0], 20)
+    x1, y1 = merc(bbox[1], bbox[2], 20)
+    caja = ((x0 - nx0) * sx, (y0 - ny0) * sy, (x1 - nx0) * sx, (y1 - ny0) * sy)
+    if caja[0] < -1 or caja[1] < -1 or caja[2] > img.width + 1 or caja[3] > img.height + 1:
+        sys.exit("El bbox %s se sale de %s" % (bbox, orig["archivo"]))
+    w, h = caja[2] - caja[0], caja[3] - caja[1]
+    if z is not None:
+        zx0, zy0 = merc(bbox[3], bbox[0], z)
+        zx1, zy1 = merc(bbox[1], bbox[2], z)
+        w, h = zx1 - zx0, zy1 - zy0
+    if ancho_max and w > ancho_max:
+        w, h = ancho_max, h * ancho_max / w
+    out = img.resize((round(w), round(h)), Image.LANCZOS, box=caja)
+    out = color(out, ref or orig["archivo"])
+    out.save(os.path.join(RAIZ, salida), "WEBP", quality=calidad, method=6)
+    print("  ->", salida, out.size, os.path.getsize(os.path.join(RAIZ, salida)) // 1024, "KB")
+    return out.size
+
+
+def locales(cfg):
+    im = cfg["imagen"]
+    origs = im["originales"]
+    ref = origs[im["original"]]["archivo"]
+    w, h = recorte(origs[im["original"]], im["bbox"], im["zoom"], im["src"], im.get("calidad", 72), ref=ref)
+    capas = []
+    for c in im.get("capas", []):
+        cw, ch = recorte(origs[c["original"]], c["bbox"], c.get("zoom"), c["src"], c.get("calidad", 70), c.get("anchoMax"), ref)
+        capas.append({"src": c["src"], "bbox": c["bbox"], "zoom": c.get("zoom"), "w": cw, "h": ch, "desde": c.get("desde", 1.6)})
     guardar("imagen-cache.json", {"w": w, "h": h, "capas": capas})
 
 
@@ -285,6 +362,8 @@ if __name__ == "__main__":
     cfg = leer("lugares.json")
     if "--teselas" in sys.argv:
         teselas(cfg)
+    if "--locales" in sys.argv:
+        locales(cfg)
     if "--fotos" in sys.argv:
         fotos(cfg)
     if "--rutas" in sys.argv:

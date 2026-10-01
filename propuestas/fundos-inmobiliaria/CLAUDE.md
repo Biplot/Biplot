@@ -34,12 +34,13 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
   (único lugar a editar: lugares, textos, fotos, categorías, créditos, método). El script proyecta lat/lon a píxeles
   de la imagen, calcula las rutas por camino con OSRM (`router.project-osrm.org`, datos © OpenStreetMap; caché en
   `tools/entorno/rutas-cache.json`) y, cuando hay red, baja el mosaico Sentinel-2 y las fotos de Wikimedia Commons.
-  Uso: `python3 tools/entorno_build.py [--rutas] [--teselas] [--fotos]`; sin opciones solo regenera con la caché.
-  - Imagen: hoy es la captura del folleto (Google Earth, `modo: "afin"` calibrado con las cumbres y la marca del
-    proyecto). **Las Geo Guidelines de Google no permiten usarla en sitios comerciales**: reemplazarla por Sentinel-2
-    cloudless **2016** de EOX (CC BY 4.0; las ediciones posteriores son no comerciales). La configuración ya está en
-    `imagen_sentinel` de `lugares.json`; requiere permitir `tiles.maps.eox.at` en la red del entorno (el cambio de
-    red recién aplica tras reiniciar el contenedor).
+  Uso: `python3 tools/entorno_build.py [--rutas] [--locales | --teselas] [--fotos]`; sin opciones solo regenera con la caché.
+  - Imagen: Sentinel-2 cloudless **2016** de EOX (CC BY 4.0, uso comercial con crédito; las ediciones posteriores
+    son no comerciales). **No usar Google Earth** (la captura del folleto): sus Geo Guidelines no lo permiten en sitios
+    comerciales. Como la red del entorno bloquea `tiles.maps.eox.at`, el usuario bajó dos GetMap WMS en EPSG:3857
+    (`tools/entorno/originales/`, bbox y parámetros en `imagen.originales` de `lugares.json`) y `--locales` arma las
+    capas: base z11, capa z12 desde `desde: 1.5` y detalle nativo (~9 m/px) alrededor de la parcela desde 2.4, con un
+    mismo ajuste de color para todas (si no, se notan los bordes). Con red, `--teselas` hace lo mismo desde las teselas.
   - Fotos: títulos de Wikimedia Commons en `foto.commons`; `--fotos` las baja (1200 px) con autor y licencia para el
     crédito (requiere `commons.wikimedia.org` y `upload.wikimedia.org`). Sin foto, la ficha usa un recorte del satelital.
   - Coordenadas verificadas con al menos dos fuentes (Sernageomin, Conaf, EFE, municipio, Wikipedia, OSM). "Parque

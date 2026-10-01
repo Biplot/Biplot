@@ -1,37 +1,84 @@
 {
  "imagen": {
-  "_nota": "modo afin = captura del folleto (Google Earth; reemplazar por Sentinel-2 cuando se pueda descargar). modo mercator = mosaico EOX.",
-  "modo": "afin",
-  "src": "assets/entorno/mapa-puerto-varas.webp",
-  "w": 931,
-  "h": 728,
-  "mpp": 120.8,
-  "zoomMax": 4,
-  "afin": {
-   "lat_ref": 41.25,
-   "px": [
-    8.43321925,
-    0.370258004,
-    50212.337105
-   ],
-   "py": [
-    0.386368628,
-    8.12421334,
-    -34415.144869
-   ]
-  },
+  "_nota": "Sentinel-2 cloudless 2016 de EOX (CC BY 4.0), descargado a mano con GetMap WMS en EPSG:3857 (layers=s2cloudless_3857; bbox en metros = los de 'originales'). Regenerar: python3 tools/entorno_build.py --locales (o --teselas si la red permite tiles.maps.eox.at).",
+  "modo": "mercator",
+  "src": "assets/entorno/sat-z11.webp",
+  "zoom": 11,
+  "bbox": [
+   -73.3,
+   -41.7,
+   -72.15,
+   -40.9
+  ],
+  "calidad": 74,
+  "zoomMax": 5,
+  "capas": [
+   {
+    "src": "assets/entorno/sat-z12.webp",
+    "zoom": 12,
+    "bbox": [
+     -73.1,
+     -41.55,
+     -72.35,
+     -41.05
+    ],
+    "calidad": 70,
+    "desde": 1.5,
+    "original": "base"
+   },
+   {
+    "src": "assets/entorno/sat-detalle.webp",
+    "zoom": null,
+    "bbox": [
+     -73.05,
+     -41.52,
+     -72.8,
+     -41.28
+    ],
+    "calidad": 68,
+    "desde": 2.4,
+    "original": "detalle"
+   }
+  ],
   "creditoCorto": [
    {
     "texto": "Rutas © OpenStreetMap",
     "url": "https://www.openstreetmap.org/copyright"
    },
    {
-    "texto": "Imagen © Google (provisoria)"
+    "texto": "Imagen: Sentinel-2 cloudless 2016 de EOX",
+    "url": "https://s2maps.eu"
    }
   ],
   "credito": {
-   "texto": "Imagen satelital provisoria: Google Earth, tomada del folleto de Fundos Puerto Varas. Se reemplazará por Sentinel-2 cloudless 2016 (EOX, CC BY 4.0), porque las condiciones de Google no permiten este uso comercial."
-  }
+   "texto": "Imagen satelital: Sentinel-2 cloudless - s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017), CC BY 4.0; color ajustado",
+   "url": "https://s2maps.eu",
+   "enlace": "s2maps.eu",
+   "licUrl": "https://creativecommons.org/licenses/by/4.0/"
+  },
+  "originales": {
+   "base": {
+    "archivo": "entorno/originales/sentinel-base.jpg",
+    "bbox": [
+     -73.3,
+     -41.7,
+     -72.15,
+     -40.9
+    ],
+    "wms": "bbox=-8159719,-5116146,-8031701,-4997603&width=4000&height=3704"
+   },
+   "detalle": {
+    "archivo": "entorno/originales/sentinel-detalle.jpg",
+    "bbox": [
+     -73.05,
+     -41.52,
+     -72.8,
+     -41.28
+    ],
+    "wms": "bbox=-8131889,-5089347,-8104059,-5053730&width=2400&height=3072"
+   }
+  },
+  "original": "base"
  },
  "creditos": [
   {
@@ -547,61 +594,5 @@
    "texto": "Centro comercial frente a la costanera de Puerto Montt, con tiendas, farmacias y servicios.",
    "revisar": true
   }
- ],
- "imagen_sentinel": {
-  "_nota": "Para pasar a la imagen Sentinel-2 cloudless 2016 (CC BY 4.0): copiar este bloque a 'imagen', cambiar creditoCorto y el crédito de imagen, y correr: python3 tools/entorno_build.py --teselas --fotos",
-  "modo": "mercator",
-  "src": "assets/entorno/sat-z11.webp",
-  "zoom": 11,
-  "bbox": [
-   -73.3,
-   -41.7,
-   -72.15,
-   -40.9
-  ],
-  "calidad": 74,
-  "zoomMax": 5,
-  "capas": [
-   {
-    "src": "assets/entorno/sat-z12.webp",
-    "zoom": 12,
-    "bbox": [
-     -73.1,
-     -41.55,
-     -72.35,
-     -41.05
-    ],
-    "calidad": 70,
-    "desde": 1.5
-   },
-   {
-    "src": "assets/entorno/sat-z13.webp",
-    "zoom": 13,
-    "bbox": [
-     -73.05,
-     -41.52,
-     -72.8,
-     -41.28
-    ],
-    "calidad": 68,
-    "desde": 2.4
-   }
-  ],
-  "creditoCorto": [
-   {
-    "texto": "Rutas © OpenStreetMap",
-    "url": "https://www.openstreetmap.org/copyright"
-   },
-   {
-    "texto": "Imagen: Sentinel-2 cloudless 2016 de EOX",
-    "url": "https://s2maps.eu"
-   }
-  ],
-  "credito": {
-   "texto": "Imagen satelital: Sentinel-2 cloudless - s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017), CC BY 4.0; color ajustado",
-   "url": "https://s2maps.eu",
-   "enlace": "s2maps.eu",
-   "licUrl": "https://creativecommons.org/licenses/by/4.0/"
-  }
- }
+ ]
 }
