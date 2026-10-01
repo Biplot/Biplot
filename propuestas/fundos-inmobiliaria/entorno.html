@@ -174,6 +174,8 @@ a { color: inherit; }
 .vp video { display: block; width: 100%; height: 100%; background: #000; }
 .vp-end { position: absolute; inset: 0; display: grid; place-content: center; gap: .6rem; background: rgba(4, 9, 6, .55); }
 .vp-end[hidden] { display: none; }
+.vp-snd { position: absolute; z-index: 2; left: 50%; top: 14px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: .45rem; min-height: 40px; padding: 0 1rem 0 .8rem; border-radius: 999px; background: var(--gold); color: var(--g900); font-size: .8rem; font-weight: 800; box-shadow: 0 8px 20px rgba(0, 0, 0, .5); }
+.vp-snd[hidden] { display: none; }
 .vp-end .btn { padding: .7rem 1.1rem; gap: .45rem; }
 .place-t strong .place-v { display: inline-flex; vertical-align: -1px; margin-left: .4rem; color: var(--gold-2); }
 .place-v .i { width: 13px; height: 13px; }
@@ -426,21 +428,6 @@ a { color: inherit; }
 }
 .t-btn .i { padding: 6px; }
 
-/* ---------- Método y créditos ---------- */
-.wrap { width: min(1320px, 100% - 2 * var(--gutter)); margin-inline: auto; }
-.method { padding-block: clamp(2rem, 5vw, 3.5rem); border-top: 1px solid var(--line); }
-.method-in { display: grid; gap: 1.5rem 3rem; }
-@media (min-width: 900px) { .method-in { grid-template-columns: 1fr 1.3fr; } }
-.method h2 { margin-top: .5rem; font: 500 clamp(1.8rem, 3.5vw, 2.4rem)/1.05 var(--serif); }
-.method h2 em { font-style: italic; color: var(--gold); }
-.method ul { list-style: none; display: grid; gap: .45rem; }
-.method li { position: relative; padding-left: 1rem; color: var(--cream-70); font-size: .86rem; line-height: 1.6; }
-.method li::before { content: ""; position: absolute; left: 0; top: .6em; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
-.credits { padding-block: 1.4rem 2.4rem; border-top: 1px solid var(--line); color: var(--cream-55); font-size: .74rem; line-height: 1.6; }
-.credits h2 { font: 800 .66rem/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--cream-70); margin-bottom: .6rem; }
-.credits ul { list-style: none; display: grid; gap: .2rem; }
-.credits a { color: var(--cream-70); }
-
 @media (pointer: coarse) {
   .fchip { min-height: 44px; }
   .legend .credit a { display: inline-block; padding-block: 14px; margin-block: -14px; }
@@ -488,6 +475,7 @@ a { color: inherit; }
   <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 10v10h16V10M3 10l2-6h14l2 6H3zM10 20v-5h4v5"/></symbol>
   <symbol id="i-fuel" viewBox="0 0 24 24"><path d="M4 20V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v15M3 20h12M4 10h10M14 8l3 2v7a1.5 1.5 0 0 0 3 0V9l-2-2"/></symbol>
   <symbol id="i-school" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5L2 9zM6 11v5c3 2 9 2 12 0v-5"/></symbol>
+  <symbol id="i-snd" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
   <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
   <symbol id="i-360" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3.5 9h17M3.5 15h17"/></symbol>
   <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
@@ -549,7 +537,7 @@ a { color: inherit; }
       <button type="button" class="peek" data-peek hidden></button>
       <p class="hint" data-hint aria-hidden="true"></p>
       <p class="sr-only" id="pins-help">Flechas: lugar anterior o siguiente. Inicio y Fin: primero y último. Escape: volver a la parcela.</p>
-      <p class="sr-only" id="map-help">Con el mapa enfocado, las flechas lo mueven, más y menos acercan o alejan y 0 muestra toda la zona. En los lugares del mapa, las flechas pasan de uno a otro. La lista de lugares tiene la misma información.</p>
+      <p class="sr-only" id="map-help">Con el mapa enfocado, las flechas lo mueven, más y menos acercan o alejan y 0 muestra toda la zona. La rueda del mouse acerca y aleja. En los lugares del mapa, las flechas pasan de uno a otro. La lista de lugares tiene la misma información.</p>
     </div>
 
     <article class="card" data-card aria-labelledby="card-title"></article>
@@ -570,32 +558,17 @@ a { color: inherit; }
     <p class="sr-only" aria-live="polite" data-live></p>
   </section>
 
-  <section class="method" aria-labelledby="method-title">
-    <div class="wrap method-in">
-      <div>
-        <p class="kicker">Cómo lo calculamos</p>
-        <h2 id="method-title">Cifras con <em>método</em></h2>
-      </div>
-      <ul data-method></ul>
-    </div>
-  </section>
-
-  <footer class="credits">
-    <div class="wrap">
-      <h2>Fuentes y créditos</h2>
-      <ul data-credits></ul>
-    </div>
-  </footer>
 </main>
 
 <div class="vp-fondo" data-vp-fondo hidden></div>
 <div class="vp" data-vp role="dialog" aria-labelledby="vp-t" hidden>
   <div class="vp-bar"><p class="vp-t" id="vp-t"></p><button type="button" class="vp-x" data-vp-x aria-label="Cerrar video"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button></div>
   <div class="vp-v"><video playsinline controls preload="none"></video>
+    <button type="button" class="vp-snd" data-vp-snd hidden><svg class="i" aria-hidden="true"><use href="#i-snd"/></svg>Activar sonido</button>
     <div class="vp-end" data-vp-end hidden><button type="button" class="btn btn-gold" data-vp-again><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Volver a ver</button></div></div>
 </div>
-<script src="lib/manifest.js?v=20261002a"></script>
-<script src="lib/entorno-datos.js?v=20261002a"></script>
+<script src="lib/manifest.js?v=20261002b"></script>
+<script src="lib/entorno-datos.js?v=20261002b"></script>
 <script>
 (function () {
   "use strict";
@@ -798,11 +771,6 @@ a { color: inherit; }
     queueLabels();
   }
 
-  $("[data-method]").innerHTML = (D.metodo || []).map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
-  $("[data-credits]").innerHTML = (D.creditos || []).map(function (c) {
-    return "<li>" + esc(c.texto) + (c.url ? ' · <a href="' + esc(c.url) + '" target="_blank" rel="noopener">' + esc(c.enlace || "ver") + "</a>" : "") +
-      (c.licUrl ? ' · <a href="' + esc(c.licUrl) + '" target="_blank" rel="noopener">licencia</a>' : "") + "</li>";
-  }).join("");
 
   /* ---------- Vista: escala, límites y encuadre ---------- */
   function vw() { return map.clientWidth || 1; }
@@ -1060,7 +1028,7 @@ a { color: inherit; }
   });
   map.addEventListener("touchmove", function (e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
   map.addEventListener("wheel", function (e) {
-    if (!(e.ctrlKey || e.metaKey)) { showHint("Para acercar, mantén Ctrl (⌘ en Mac) y usa la rueda"); return; }
+    if (!wide.matches && !(e.ctrlKey || e.metaKey)) { showHint("Para acercar, mantén Ctrl (⌘ en Mac) y usa la rueda"); return; }
     e.preventDefault(); cancelAnimationFrame(raf); stopTour();
     world.classList.add("is-moving"); clearTimeout(wheelT); wheelT = setTimeout(function () { world.classList.remove("is-moving"); queueLabels(); }, 160);
     var p = mpos(e); zoomAt(p.x, p.y, Math.exp(-e.deltaY * (e.deltaMode ? .05 : .0022)));
@@ -1147,6 +1115,8 @@ a { color: inherit; }
       vBtn.setAttribute("aria-label", "Ver video de " + p.nombre);
       vBtn.hidden = false; queueLabels();
       requestAnimationFrame(function () { vBtn.classList.add("is-in"); });
+      // La primera vez que se llega a cada lugar, el video se abre solo al terminar la ruta; después, con el botón
+      if (!visto[p.id] && !touring && !reduced) { visto[p.id] = 1; guardarVistos(); openVideo(p, vBtn, true); }
     }
     if (!p.ruta || reduced) { labelsOn(); videoOn(); return; }
     var dur = Math.max(700, Math.min(1500, len * 1.6));
@@ -1453,6 +1423,9 @@ a { color: inherit; }
   });
 
   /* ---------- Ventana flotante del video ---------- */
+  var visto = {};
+  try { visto = JSON.parse(sessionStorage.getItem("entorno-videos") || "{}") || {}; } catch (x) { visto = {}; }
+  function guardarVistos() { try { sessionStorage.setItem("entorno-videos", JSON.stringify(visto)); } catch (x) { /* sin almacenamiento */ } }
   var vp = $("[data-vp]"), vpFondo = $("[data-vp-fondo]"), vpVid = $("video", vp), vpEnd = $("[data-vp-end]"), vpOpener = null, vpT = 0;
   function placeVideo() {
     if (vp.hidden) return;
@@ -1469,7 +1442,7 @@ a { color: inherit; }
     vp.style.top = Math.round(t + (b - t - h) / 2) + "px";
     $(".vp-v", vp).style.height = Math.round(w / ar) + "px";
   }
-  function openVideo(p, opener) {
+  function openVideo(p, opener, auto) {
     if (!p || !p.video) return;
     stopTour(); clearTimeout(vpT);
     var v = p.video;
@@ -1481,12 +1454,18 @@ a { color: inherit; }
     vpVid.poster = v.poster;
     vpVid.innerHTML = '<source src="' + esc(v.mp4) + '" type="video/mp4; codecs=&quot;avc1.640028, mp4a.40.2&quot;"><source src="' + esc(v.webm) + '" type="video/webm">';
     vpVid.load();
-    vpEnd.hidden = true;
+    vpEnd.hidden = true; vpSnd.hidden = true; vpVid.muted = false;
     vp.hidden = false; vpFondo.hidden = wide.matches;
     placeVideo();
     requestAnimationFrame(function () { vp.classList.add("is-in"); vpFondo.classList.add("is-in"); });
-    var pl = vpVid.play(); if (pl && pl.catch) pl.catch(function () { /* el usuario puede darle play */ });
-    $("[data-vp-x]").focus({ preventScroll: true });
+    // Si el navegador no deja partir con sonido (apertura automática), parte en silencio con "Activar sonido"
+    var pl = vpVid.play();
+    if (pl && pl.catch) pl.catch(function () {
+      if (vp.hidden) return;
+      vpVid.muted = true; vpSnd.hidden = false;
+      vpVid.play().catch(function () { vpSnd.hidden = true; });
+    });
+    if (!auto || !wide.matches) $("[data-vp-x]").focus({ preventScroll: true });
   }
   function closeVideo(quiet) {
     if (vp.hidden) return;
@@ -1501,6 +1480,9 @@ a { color: inherit; }
   tBtn.addEventListener("click", function () { if (!moved) openT360(tBtn); });
   $("[data-vp-x]").addEventListener("click", function () { closeVideo(); });
   vpFondo.addEventListener("click", function () { closeVideo(); });
+  var vpSnd = $("[data-vp-snd]");
+  vpSnd.addEventListener("click", function () { vpVid.muted = false; vpSnd.hidden = true; vpVid.play(); });
+  vpVid.addEventListener("volumechange", function () { if (!vpVid.muted) vpSnd.hidden = true; });
   vpVid.addEventListener("ended", function () { vpEnd.hidden = false; $("[data-vp-again]").focus({ preventScroll: true }); });
   $("[data-vp-again]").addEventListener("click", function () { vpEnd.hidden = true; vpVid.currentTime = 0; vpVid.play(); });
   vp.addEventListener("keydown", function (e) {
