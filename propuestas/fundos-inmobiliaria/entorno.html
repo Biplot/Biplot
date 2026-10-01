@@ -442,8 +442,8 @@ a { color: inherit; }
   </footer>
 </main>
 
-<script src="lib/manifest.js?v=20261001c"></script>
-<script src="lib/entorno-datos.js?v=20261001c"></script>
+<script src="lib/manifest.js?v=20261001d"></script>
+<script src="lib/entorno-datos.js?v=20261001d"></script>
 <script>
 (function () {
   "use strict";
@@ -664,12 +664,15 @@ a { color: inherit; }
     sTxt.textContent = m >= 1000 ? m / 1000 + " km" : m + " m";
   }
   // Área libre del mapa (sin panel, ficha ni controles), en píxeles del mapa
+  var mapTop = null;
   function free() {
     var fh = foot.offsetHeight + 24;
     if (wide.matches) return { l: panel.offsetWidth + 18 + 40, r: vw() - card.offsetWidth - 80 - 30, t: 76, b: vh() - fh - 10 };
     // En celular cuenta solo la parte del mapa que se ve en pantalla y, con un lugar elegido, deja sitio al aviso "Ver ficha"
-    var seen = innerHeight - rect(map).top - (S.sel ? 66 : 10);
-    return { l: 22, r: vw() - 70, t: 70, b: Math.max(190, Math.min(vh() - fh - 6, seen)) };
+    //    (si el mapa va a subir a la pantalla, se cuenta desde su posición final; si casi no se ve, el mapa entero)
+    var top = mapTop != null ? mapTop : rect(map).top, b = vh() - fh - 6;
+    var seen = innerHeight - top - (S.sel ? 66 : 10);
+    return { l: 22, r: vw() - 70, t: 70, b: seen >= 190 ? Math.min(b, seen) : b };
   }
   function viewFor(b, maxK, extra, ey) {
     var f = free(), e = extra || 0; ey = ey || 0;
@@ -716,6 +719,9 @@ a { color: inherit; }
     var t = viewFor(routeBox(p), p.zoomMax ? kMin() * p.zoomMax : null, Math.min(half, 90), 20);
     var f = free(), sx = t.tx + p.x * t.k;
     if (sx - half < f.l) t.tx += f.l - (sx - half); else if (sx + half > f.r) t.tx -= sx + half - f.r;
+    // Si la ruta no cabe entera, manda la píldora: nunca bajo los controles de arriba ni del pie
+    var py = t.ty + p.y * t.k;
+    if (py - 20 < f.t) t.ty += f.t - (py - 20); else if (py + 20 > f.b) t.ty -= py + 20 - f.b;
     if (!wide.matches && 2 * half > f.r - f.l) {
       var zb = zoomUi.offsetTop + zoomUi.offsetHeight + 24, sy = t.ty + p.y * t.k;
       if (sy < zb) t.ty += zb - sy;
@@ -1076,9 +1082,12 @@ a { color: inherit; }
     }
     swap(function () { renderCard(p); }, o.refocus);
     live.textContent = p.nombre + ": " + (p.ruta ? minsLargo(p.ruta.min) + " en auto, " + km(p.ruta.km) + " por camino." : "a unos " + km(p.recta) + " en línea recta.");
+    var bajar = o.scroll && !wide.matches;
+    if (bajar) mapTop = parseFloat(getComputedStyle(map).scrollMarginTop) || 0;
     flyTo(viewForPlace(p), o.ms == null ? 1000 : o.ms, queueLabels);
+    mapTop = null;
     drawRoute(p);
-    if (o.scroll && !wide.matches) map.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    if (bajar) map.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
     setPeek(o.peek || touring ? p : null);
   }
 
