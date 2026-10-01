@@ -868,7 +868,13 @@ a { color: inherit; }
       var zb = zoomUi.offsetTop + zoomUi.offsetHeight + 24, sy = t.ty + p.y * t.k;
       if (sy < zb) t.ty += zb - sy;
     }
-    return clampTo(t);
+    // Si el borde de la imagen no deja correr la vista y la píldora queda bajo el pie o los controles, se acerca un poco
+    var c = clampTo(t), cy = c.ty + p.y * c.k;
+    if ((cy + 20 > f.b || cy - 20 < f.t) && c.k < kMax()) {
+      var k2 = Math.min(kMax(), c.k * 1.35), cx = c.tx + p.x * c.k;
+      c = clampTo({ k: k2, tx: cx - p.x * k2, ty: (f.t + f.b) / 2 - p.y * k2 });
+    }
+    return c;
   }
 
   /* ---------- Rótulos sin choques ---------- */
