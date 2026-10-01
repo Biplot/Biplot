@@ -129,9 +129,10 @@ def fotos(cfg):
         ii = pag["imageinfo"][0]
         em = ii.get("extmetadata", {})
         def val(k):
+            import html
             import re
             v = em.get(k, {}).get("value", "")
-            return re.sub(r"<[^>]+>", "", v).strip()
+            return html.unescape(re.sub(r"<[^>]+>", "", v)).strip()
         url = ii.get("thumburl") or ii["url"]
         dest = "assets/entorno/fotos/%s.webp" % l["id"]
         im = Image.open(io.BytesIO(bajar(url))).convert("RGB")
@@ -243,24 +244,33 @@ def construir(cfg):
             if m:
                 lic = m["licencia"]
                 d["foto"] = {"src": m["src"], "w": m["w"], "h": m["h"], "alt": f.get("alt", l["nombre"]), "url": m["pagina"],
-                             "credito": "Foto: %s · %s" % (m["autor"], lic)}
+                             "credito": "Foto: %s" % (m["autor"] or "autor desconocido"), "licencia": lic, "licUrl": m.get("licenciaUrl", "")}
             elif f.get("src"):
                 d["foto"] = {k: f[k] for k in ("src", "w", "h", "alt", "credito", "url") if k in f}
         salida.append(d)
 
     creditos = list(cfg.get("creditos", []))
+    if im.get("credito"):
+        creditos.insert(0, im["credito"])
     for l in cfg["lugares"]:
         m = fc.get(l["id"])
         if m:
-            creditos.append({"texto": "%s: foto de %s, %s, vía Wikimedia Commons" % (l["nombre"], m["autor"], m["licencia"]),
-                             "url": m["pagina"], "enlace": "ver original"})
+            creditos.append({"texto": "%s: foto de %s, %s, vía Wikimedia Commons (recortada)" % (l["nombre"], m["autor"] or "autor desconocido", m["licencia"]),
+                             "url": m["pagina"], "enlace": "ver original", "licUrl": m.get("licenciaUrl", "")})
+    ids = {l["id"] for l in cfg["lugares"]}
+    for r in cfg.get("resumen", []):
+        if r not in ids:
+            print("  AVISO: el resumen pide un lugar que no existe:", r)
+    pend = [l["id"] for l in cfg["lugares"] if l.get("revisar")]
+    if pend:
+        print("  AVISO: textos por aprobar con el cliente:", ", ".join(pend))
     paisaje = []
     for s in cfg.get("paisaje", []):
         x, y = px(s["lat"], s["lon"])
         paisaje.append({"nombre": s["nombre"], "x": x, "y": y, "tam": s.get("tam", "")})
     datos = {
         "imagen": {"src": im["src"], "w": ic["w"], "h": ic["h"], "mpp": round(mpp, 3), "zoomMax": im.get("zoomMax", 6), "capas": capas},
-        "creditoCorto": cfg["creditoCorto"], "creditos": creditos, "metodo": cfg.get("metodo", []), "categorias": cfg["categorias"],
+        "creditoCorto": im.get("creditoCorto", cfg.get("creditoCorto", [])), "creditos": creditos, "metodo": cfg.get("metodo", []), "categorias": cfg["categorias"],
         "anillos": cfg.get("anillos", []), "dato": cfg.get("dato"), "resumen": cfg.get("resumen", []), "paisaje": paisaje,
         "proyecto": proyecto, "lugares": salida,
     }

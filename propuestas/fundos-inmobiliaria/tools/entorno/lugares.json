@@ -19,9 +19,20 @@
     8.12421334,
     -34415.144869
    ]
+  },
+  "creditoCorto": [
+   {
+    "texto": "Rutas © OpenStreetMap",
+    "url": "https://www.openstreetmap.org/copyright"
+   },
+   {
+    "texto": "Imagen © Google (provisoria)"
+   }
+  ],
+  "credito": {
+   "texto": "Imagen satelital provisoria: Google Earth, tomada del folleto de Fundos Puerto Varas. Se reemplazará por Sentinel-2 cloudless 2016 (EOX, CC BY 4.0), porque las condiciones de Google no permiten este uso comercial."
   }
  },
- "creditoCorto": "Rutas © OpenStreetMap · Imagen: material del folleto",
  "creditos": [
   {
    "texto": "Rutas, distancias y tiempos: OSRM (Project OSRM) sobre datos © colaboradores de OpenStreetMap, licencia ODbL",
@@ -29,10 +40,7 @@
    "enlace": "openstreetmap.org/copyright"
   },
   {
-   "texto": "Imagen satelital provisoria: captura incluida en el folleto de Fundos Puerto Varas"
-  },
-  {
-   "texto": "Textos de los lugares: folleto de Fundos Puerto Varas; datos de apoyo verificados en fuentes públicas (Sernageomin, Conaf, EFE, Municipalidad de Puerto Montt, Wikipedia)"
+   "texto": "Textos: folleto de Fundos Puerto Varas y BiPlot, con datos de fuentes públicas (Sernageomin, Conaf, EFE, Municipalidad de Puerto Montt, Wikipedia y OpenStreetMap)"
   }
  ],
  "metodo": [
@@ -53,7 +61,7 @@
    "icono": "ciudad"
   },
   "servicios": {
-   "nombre": "Servicios y conexión",
+   "nombre": "Servicios",
    "color": "#D3A58F",
    "icono": "tren"
   }
@@ -73,7 +81,7 @@
   "titulo": "Dato curioso",
   "icono": "tren",
   "lugar": "estacion_alerce",
-  "texto": "A {min} de tu parcela está la estación Alerce del tren Llanquihue–Puerto Montt (EFE), reabierta en 2025: puedes recorrer desde Llanquihue hasta Puerto Montt sin tomar el auto."
+  "texto": "A {min} en auto de tu parcela está la estación Alerce del tren Llanquihue–Puerto Montt (EFE): desde ahí llegas en tren a Puerto Montt, Puerto Varas o Llanquihue."
  },
  "paisaje": [
   {
@@ -146,7 +154,6 @@
   {
    "id": "parque",
    "nombre": "Parque y Vivero Alerce",
-   "corto": "Parque Vivero Alerce",
    "cat": "naturaleza",
    "icono": "parque",
    "lat": -41.393003,
@@ -160,7 +167,8 @@
    "destinoTxt": "hasta la entrada",
    "sub": "Bosque y vivero de especies nativas",
    "texto": "Un espacio natural ubicado en Alerce, ideal para disfrutar de áreas verdes, caminar, descansar y conectar con la naturaleza sin alejarse de la ciudad.",
-   "nota": "Parque municipal administrado por la Delegación de Alerce; revisa horarios antes de ir."
+   "nota": "Parque municipal administrado por la Delegación de Alerce; revisa horarios antes de ir.",
+   "revisar": true
   },
   {
    "id": "pvaras",
@@ -204,7 +212,7 @@
      "Hospitales"
     ]
    ],
-   "texto": "Una de las ciudades más encantadoras del sur de Chile, a orillas del Lago Llanquihue y con una vista privilegiada al Volcán Osorno. Disfruta de su gastronomía, naturaleza, actividades náuticas y su tradicional arquitectura. Un destino para disfrutar en cada estación del año.",
+   "texto": "Una de las ciudades más encantadoras del sur de Chile, a orillas del lago Llanquihue y con una vista privilegiada al volcán Osorno. Disfruta de su gastronomía, naturaleza, actividades náuticas y su tradicional arquitectura. Un destino para disfrutar en cada estación del año.",
    "foto": {
     "commons": "File:Puerto Varas sunrise lago Llanquihue 1030897.jpg",
     "alt": "Amanecer en Puerto Varas frente al lago Llanquihue"
@@ -226,7 +234,7 @@
    "destinoTxt": "hasta la costanera de Puerto Varas",
    "llegada": "Costanera de Puerto Varas",
    "sub": "Segundo lago más grande de Chile",
-   "texto": "Disfruta de sus aguas navegando, practicando kayak, pesca y deportes náuticos, rodeado de paisajes únicos y vistas privilegiadas al Volcán Osorno.",
+   "texto": "Disfruta de sus aguas navegando, practicando kayak, pesca y deportes náuticos, rodeado de paisajes únicos y vistas privilegiadas al volcán Osorno.",
    "foto": {
     "commons": "File:Volcán Osorno y lago Llanquihue desde el sector Los Riscos.jpg",
     "alt": "Volcán Osorno sobre el lago Llanquihue"
@@ -300,8 +308,9 @@
    ],
    "destinoTxt": "hasta la costanera de Puerto Montt",
    "llegada": "Costanera de Puerto Montt",
-   "sub": "Seno de Reloncaví",
-   "texto": "El Océano Pacífico ofrece la posibilidad de disfrutar de playas, pesca, navegación y paisajes costeros únicos."
+   "sub": "Seno de Reloncaví · costanera de Puerto Montt",
+   "texto": "El océano Pacífico ofrece la posibilidad de disfrutar de playas, pesca, navegación y paisajes costeros únicos.",
+   "sinRotulo": true
   },
   {
    "id": "osorno",
@@ -316,10 +325,10 @@
     -41.127903,
     -72.529722
    ],
-   "destinoTxt": "hasta el centro de ski",
-   "llegada": "Centro de Ski y Montaña",
-   "sub": "2.652 m · ski y montaña todo el año",
-   "texto": "Un ícono del sur de Chile donde puedes disfrutar de esquí, snowboard, trekking y senderismo, rodeado de paisajes cordilleranos y vistas privilegiadas al Lago Llanquihue.",
+   "destinoTxt": "hasta el centro de esquí",
+   "llegada": "Centro de Ski & Montaña",
+   "sub": "2.652 m · esquí en invierno, montaña todo el año",
+   "texto": "Un ícono del sur de Chile donde puedes disfrutar de esquí, snowboard, trekking y senderismo, rodeado de paisajes cordilleranos y vistas privilegiadas al lago Llanquihue.",
    "nota": "En invierno se exigen cadenas en el camino al volcán.",
    "foto": {
     "commons": "File:Vulkan Osorno, Puerto Varas, Chile (10986368703).jpg",
@@ -343,12 +352,13 @@
    "destinoTxt": "hasta el acceso del parque",
    "llegada": "Sector Saltos (Conaf)",
    "sub": "Parque Nacional Vicente Pérez Rosales",
-   "texto": "Un imperdible del sur de Chile, donde puedes recorrer senderos, contemplar las impresionantes cascadas y disfrutar de vistas únicas del Río Petrohué, el Lago Todos los Santos y el Volcán Osorno.",
+   "texto": "Un imperdible del sur de Chile, donde puedes recorrer senderos, contemplar las impresionantes cascadas y disfrutar de vistas únicas del río Petrohué, el lago Todos los Santos y el volcán Osorno.",
    "nota": "Entrada pagada (Conaf): se compra en pasesparques.cl o en el lugar.",
    "foto": {
     "commons": "File:Osorno Volcano and Petrohué Waterfalls.jpg",
     "alt": "Saltos del Petrohué con el volcán Osorno al fondo"
-   }
+   },
+   "revisar": true
   },
   {
    "id": "calbuco",
@@ -361,11 +371,12 @@
    "prioridad": 1,
    "sub": "2.003 m · se ve desde toda la zona",
    "sinCamino": "No hay camino a la cumbre: se disfruta desde los miradores de la zona",
-   "texto": "Uno de los volcanes más emblemáticos de la Región de Los Lagos, ubicado entre Puerto Montt y Puerto Varas. Su imponente silueta forma parte del paisaje de la zona y ofrece un entorno privilegiado para disfrutar de naturaleza, trekking y paisajes cordilleranos.",
+   "texto": "Uno de los volcanes más activos y emblemáticos de la Región de Los Lagos, al oriente de Puerto Varas y Puerto Montt, entre el lago Llanquihue y el lago Chapo. Su silueta nevada domina el paisaje de toda la zona y ofrece un entorno privilegiado para la naturaleza, el trekking y los paisajes cordilleranos.",
    "foto": {
     "commons": "File:Volcán Calbuco y Puerto Montt.jpg",
     "alt": "Volcán Calbuco visto desde Puerto Montt"
-   }
+   },
+   "revisar": true
   },
   {
    "id": "estacion_alerce",
@@ -383,7 +394,7 @@
    ],
    "destinoTxt": "hasta la estación",
    "sub": "Tren Llanquihue–Puerto Montt (EFE)",
-   "texto": "Estación del tren Llanquihue–Puerto Montt de EFE, reabierta en abril de 2025. Conecta Alerce con Puerto Montt, Puerto Varas y Llanquihue.",
+   "texto": "Estación del tren Llanquihue–Puerto Montt de EFE, en Alerce Histórico. Conecta con Puerto Montt, Puerto Varas y Llanquihue.",
    "revisar": true
   },
   {
@@ -424,7 +435,7 @@
    ],
    "destinoTxt": "hasta el Teatro del Lago",
    "sub": "Teatro del Lago · costanera",
-   "texto": "Ciudad de herencia colona alemana a orillas del lago Llanquihue, conocida por el Teatro del Lago, su costanera y la vista a los volcanes.",
+   "texto": "Ciudad fundada por colonos alemanes a orillas del lago Llanquihue, conocida por el Teatro del Lago, su costanera y las vistas abiertas a los volcanes.",
    "revisar": true,
    "foto": {
     "commons": "File:Frutillar-Theatro-del-Lago-1030906-PSD.jpg",
@@ -447,7 +458,7 @@
    ],
    "destinoTxt": "hasta el embarcadero de Petrohué",
    "sub": "Embarcadero de Petrohué",
-   "texto": "Lago cordillerano del Parque Nacional Vicente Pérez Rosales, el primero de Chile. Desde el embarcadero de Petrohué salen navegaciones con vista al Osorno y al Puntiagudo.",
+   "texto": "Lago cordillerano del Parque Nacional Vicente Pérez Rosales, el más antiguo de Chile (1926). Desde el embarcadero de Petrohué salen navegaciones con vista a los volcanes Osorno y Puntiagudo.",
    "revisar": true,
    "foto": {
     "commons": "File:Lago Todos los Santos, X Región de Los Lagos, Chile.jpg",
@@ -519,7 +530,7 @@
   {
    "id": "mall",
    "nombre": "Mall Paseo Costanera",
-   "corto": "Mall Costanera",
+   "corto": "Paseo Costanera",
    "cat": "servicios",
    "icono": "compras",
    "lat": -41.4727,
@@ -575,11 +586,21 @@
     "desde": 2.4
    }
   ],
-  "creditoCorto": "Imagen: Sentinel-2 cloudless 2016 by EOX · Rutas © OpenStreetMap",
+  "creditoCorto": [
+   {
+    "texto": "Rutas © OpenStreetMap",
+    "url": "https://www.openstreetmap.org/copyright"
+   },
+   {
+    "texto": "Imagen: Sentinel-2 cloudless 2016 de EOX",
+    "url": "https://s2maps.eu"
+   }
+  ],
   "credito": {
-   "texto": "Imagen satelital: Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017), licencia CC BY 4.0; color ajustado",
+   "texto": "Imagen satelital: Sentinel-2 cloudless - s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017), CC BY 4.0; color ajustado",
    "url": "https://s2maps.eu",
-   "enlace": "s2maps.eu"
+   "enlace": "s2maps.eu",
+   "licUrl": "https://creativecommons.org/licenses/by/4.0/"
   }
  }
 }
