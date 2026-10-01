@@ -48,13 +48,19 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
     ya convertido. En el mapa, al terminar la animación de la ruta aparece "Ver video" bajo la píldora (`vBtn`,
     ubicado en `labels()`); la ficha muestra la portada con botón; la ventana flotante (`openVideo`) va entre el panel
     y la ficha en computador y es modal con fondo en celular; Escape la cierra y al final ofrece "Volver a ver".
+    La primera vez que se llega a cada lugar (por sesión, `sessionStorage` "entorno-videos") el video se abre solo
+    al terminar la ruta; después, con el botón. No se abre solo en "Recorrer el entorno" ni con movimiento reducido.
+    Si el navegador no deja partir con sonido, parte en silencio con "Activar sonido" (`[data-vp-snd]`).
   - Fotos: títulos de Wikimedia Commons en `foto.commons`; `--fotos` las baja (1200 px) con autor y licencia para el
     crédito (requiere `commons.wikimedia.org` y `upload.wikimedia.org`). Sin foto, la ficha usa un recorte del satelital.
   - Coordenadas verificadas con al menos dos fuentes (Sernageomin, Conaf, EFE, municipio, Wikipedia, OSM). "Parque
     Vivo Alerces" del folleto es el **Parque y Vivero Alerce** (así dice el letrero en el video del cliente). Textos de lugares que
     no están en el folleto llevan `"revisar": true` en `lugares.json`.
   - Interfaz: estrella de rutas tenues desde el proyecto, lista agrupada por tiempo, ficha con resumen inicial,
-    enlaces directos `entorno.html#pvaras`, modo "Recorrer el entorno", zoom con Ctrl+rueda, pellizco y teclado.
+    enlaces directos `entorno.html#pvaras`, modo "Recorrer el entorno", zoom con la rueda (en computador sin Ctrl:
+    la página no tiene más contenido bajo el mapa; bajo 1100 px pide Ctrl), pellizco y teclado. El cliente pidió
+    quitar las secciones "Cifras con método" y "Fuentes y créditos": el crédito obligatorio (OpenStreetMap y
+    Sentinel-2, CC BY 4.0) queda en el pie del mapa; `metodo` y `creditos` siguen en los datos.
     Los rótulos se ubican sin choques en `labels()` (interfaz, píldora, trazo de la ruta y pines; lo que no cabe se
     esconde). La píldora del lugar elegido se abre hacia el lado libre y, si no cabe, pierde el tiempo (`is-short`).
     En celular un dedo en vertical desplaza la página (no el mapa) y el aviso "Ver ficha" queda en la parte visible.
