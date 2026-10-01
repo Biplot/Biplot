@@ -32,9 +32,9 @@ export const ISO_TV = (s) => `<g transform="scale(${(s / 100).toFixed(3)})">` +
 // La marca: «BiPlot» y «.TV» en cian
 const MARCA = (x, y, fs, extra = '') => txt(x, y, `BiPlot<tspan fill="${CIAN}">.TV</tspan>`, fs, NIEBLA, extra);
 
-// La programación: un monitor por video en el muro de pantallas, en el orden en que se leen (arriba los de BiPlot; abajo,
-// los casos). El estreno va en la pantalla grande del cine. [zona, rótulo, duración]
-export const MURO_TV = [['equipo', 'BIPLOT HQ', '1:25'], ['visita', 'LA VISITA', '1:19'], ['teaser', 'BIPLOT', '0:30'],
+// La programación: un monitor por video en el muro de pantallas, en el orden en que se leen y en el de los canales de la
+// tele (arriba los de BiPlot; abajo, los casos). El estreno va en la pantalla grande del cine. [zona, rótulo, duración]
+export const MURO_TV = [['teaser', 'BIPLOT', '0:30'], ['equipo', 'BIPLOT HQ', '1:25'], ['visita', 'LA VISITA', '1:19'],
   ['fundos', 'FUNDOS 360°', '0:45'], ['haru', 'HARU 360', '0:45'], ['nuhome', 'NU HOME 360', '0:46']];
 
 // ───────── Quienes están en el canal (ilustraciones sin nombre) ─────────
@@ -118,7 +118,7 @@ const CARTELERA = `<rect width="250" height="128" rx="6" fill="${NOCHE}"/>` +
     .map(([x, y]) => `<circle cx="${r1(x)}" cy="${r1(y)}" r="2.8" fill="${LUZ}"/>`).join('') +
   `<rect x="13" y="13" width="224" height="102" rx="3" fill="#FBFAF7"/><rect x="13" y="13" width="224" height="25" rx="3" fill="${AZUL}"/>` + MARCA(125, 31.5, 15, ' text-anchor="middle"') +
   mono(125, 54, 'HOY · ESTRENO', 8.6, CEJA, ' text-anchor="middle" letter-spacing="1.2"') + txt(125, 74, 'UN BOCADO A LA VEZ', 16.5, AZUL, ' text-anchor="middle"') +
-  `<path d="M40 83H210" stroke="#DCE2E7" stroke-width="1.2"/>` + mono(125, 96, 'BIPLOT HQ · LA VISITA · BIPLOT', 7.6, AZUL, ' text-anchor="middle"') +
+  `<path d="M40 83H210" stroke="#DCE2E7" stroke-width="1.2"/>` + mono(125, 96, 'BIPLOT · BIPLOT HQ · LA VISITA', 7.6, AZUL, ' text-anchor="middle"') +
   mono(125, 108, 'FUNDOS 360° · HARU 360 · NU HOME 360', 7.6, AZUL, ' text-anchor="middle"');
 
 // ───────── La pantalla del centro, como en la NBA ─────────

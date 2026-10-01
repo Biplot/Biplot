@@ -20,7 +20,9 @@
 // programación; adentro, la cartelera, el estreno con su video, la pantalla del centro de frente (como en la NBA, con sus
 // seis repeticiones), el camarín con «Agenda tu diagnóstico» y el recorrido con Felipe (con movimiento reducido, quieta).
 // La tele de BiPlot.TV, donde se ve todo «Ver con sonido»: su control remoto (en el celular, la barra y deslizar), los canales
-// con ↑ y los números, la guía, «A continuación» con Felipe, lo visto, el canal 08 «Tu proyecto», «Prender la tele» y Escape.
+// con ↑ y los números, la guía, «A continuación» con Felipe, lo visto, el canal 08 «Tu proyecto», «Prender la tele» (en la
+// barra del canal y en la cartelera) y Escape. La mini tele, siempre a la vista: cambia de canal sola (con movimiento
+// reducido, quieta), no tapa nada y se prende en el canal que muestra.
 // Al final carga casos de prueba (sólo en el navegador de la prueba, no en datos.js) para revisar las calles por rubro,
 // sus techos, las plantillas y las fases. NAVEGADOR=<ruta> usa otro Chromium.
 //
@@ -644,7 +646,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     const b = document.querySelector('#sala-barra'), dib = document.querySelector('#sala-dibujo');
     const zonas = [...document.querySelectorAll('.zona-sala')].map(z => z.dataset.zona), quienes = [...document.querySelectorAll('.quien-sala')].map(q => q.dataset.quien);
     Object.assign(r, { hash: location.hash, sala: document.body.classList.contains('en-sala-propia') && document.querySelector('#panel').hidden, nombre: document.querySelector('#sala-nombre').textContent,
-      barra: b.hidden ? '' : b.textContent, ant: document.querySelector('#sala-ant span')?.textContent, sig: document.querySelector('#sala-sig').hidden,
+      barra: b.hidden ? '' : b.textContent, primero: b.querySelector('.sp-acciones button')?.textContent || '', ant: document.querySelector('#sala-ant span')?.textContent, sig: document.querySelector('#sala-sig').hidden,
       faltan: Object.keys(PP.zonas).filter(z => !zonas.includes(z)).concat(PP.burbujas.map(x => x.quien).filter(q => !quienes.includes(q))), desborde: document.documentElement.scrollWidth > innerWidth,
       repes: dib.querySelectorAll('.loc-repe').length, cinta: dib.querySelectorAll('.loc-led').length, marcas: dib.innerHTML.includes('§') });
     const t = document.querySelector('#sala-tarjeta'), f = document.querySelector('#sala-frente');
@@ -676,18 +678,27 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     const p4 = rec();
     await cierra();
     r.rec = { p1, p4, esperado: [PP.recorrido[0], PP.recorrido[3]].map(p => PP.textos.guia + p.texto), fin: !b.classList.contains('recorriendo') };
+    // «Prender la tele», el primer botón de la barra: la prende en el 01 y, al apagarla, el foco vuelve al botón
+    const tele = document.querySelector('#tele'), pb = b.querySelector('[data-tele-prender]');
+    pb.click(); await ${W(500)};
+    r.barraTele = { on: !tele.hidden, n: tele.querySelector('.tele-osd [data-t="n"]').textContent, nombre: tele.querySelector('.tele-osd [data-t="nombre"]').textContent };
+    document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })); await ${W(300)};
+    Object.assign(r.barraTele, { off: tele.hidden, foco: document.activeElement === pb });
     return r; })()`);
   ok(tvr.menu === 'Ver BiPlot.TV, el canal' && tvr.vista === 'El canal de BiPlot' && tvr.entrar === 'Entrar al canal' && tvr.programas === 7,
     'el botón «Ver BiPlot.TV, el canal» abre su vista previa, con «Entrar al canal» y los 7 videos de su programación (' + tvr.programas + ')');
-  ok(tvr.hash === '#tv' && tvr.sala && tvr.nombre === 'BiPlot.TV' && /EL CANAL DE BIPLOT/.test(tvr.barra) && /Recorrer con Felipe/.test(tvr.barra) && /Toda la programación/.test(tvr.barra) && tvr.ant === 'El Archivo' && tvr.sig,
-    'oficina/#tv es BiPlot.TV: su barra con «Recorrer con Felipe» y «Toda la programación», y la sala vecina es El Archivo');
+  ok(tvr.hash === '#tv' && tvr.sala && tvr.nombre === 'BiPlot.TV' && /EL CANAL DE BIPLOT/.test(tvr.barra) && tvr.primero === 'Prender la tele' && /Recorrer con Felipe/.test(tvr.barra) &&
+    !/Toda la programación/.test(tvr.barra) && tvr.ant === 'El Archivo' && tvr.sig,
+    'oficina/#tv es BiPlot.TV: su barra parte con «Prender la tele», después «Recorrer con Felipe», y la sala vecina es El Archivo');
+  ok(tvr.barraTele.on && tvr.barraTele.n === '01' && tvr.barraTele.nombre === 'BiPlot en 30 segundos' && tvr.barraTele.off && tvr.barraTele.foco,
+    '«Prender la tele», en la barra del canal, la prende en el 01 (BiPlot en 30 segundos) y, al apagarla, el foco vuelve al botón');
   ok(!tvr.faltan.length && !tvr.desborde && !tvr.marcas, 'en el canal están todas sus zonas y toda su gente, sin marcas §…§' + (tvr.faltan.length ? ' (faltan: ' + tvr.faltan.join(', ') + ')' : ''));
   ok(tvr.repes === 6 && tvr.cinta === 2, 'la pantalla del centro pasa sus 6 repeticiones y sus dos anillos llevan la cinta que corre');
   ok(tvr.cartelera.t === 'Toda la programación' && tvr.cartelera.n === 7 && tvr.estreno.t === '¿Cómo te comes un elefante?' && /media\/tv\/un-bocado-a-la-vez-h\.mp4$/.test(tvr.estreno.video) &&
     /media\/tv\/un-bocado-a-la-vez-h\.mp4$/.test(tvr.estreno.h) && /media\/tv\/un-bocado-a-la-vez-v\.mp4$/.test(tvr.estreno.v), 'la cartelera lista los 7 videos y el estreno abre su tarjeta con su video, en horizontal y en vertical');
   ok(tvr.marcador.frente && tvr.marcador.t === 'Las mejores jugadas, al centro de la cancha' && tvr.marcador.vb === '0 0 1280 720' && tvr.marcador.repes === 6 &&
-    tvr.marcador.botones === 'Ver el estreno | Toda la programación' && !tvr.marcador.marcas && !tvr.marcador.desborde && tvr.marcador.cierra,
-    'la pantalla del centro se abre de frente: el marcador, sus 6 repeticiones, «Ver el estreno» y «Toda la programación»; Escape la cierra');
+    tvr.marcador.botones === 'Prender la tele | Toda la programación' && !tvr.marcador.marcas && !tvr.marcador.desborde && tvr.marcador.cierra,
+    'la pantalla del centro se abre de frente: el marcador, sus 6 repeticiones, «Prender la tele» y «Toda la programación»; Escape la cierra');
   ok(/^https:\/\/wa\.me\/\d+\?text=/.test(tvr.camarin.cta) && tvr.camarin.chat, 'el camarín lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
   ok(tvr.rec.p1.n === '1 de 12' && tvr.rec.p1.t === 'La cartelera' && tvr.rec.p4.n === '4 de 12' && tvr.rec.p4.t === 'La pantalla del centro' &&
     tvr.rec.p1.guia === tvr.rec.esperado[0] && tvr.rec.p4.guia === tvr.rec.esperado[1] && tvr.rec.fin, '«Recorrer con Felipe» va de la cartelera a la pantalla del centro (4 de 12), Felipe habla en cada parada y Escape lo termina');
@@ -705,7 +716,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     const tele = document.querySelector('#tele'), src = () => tele.querySelector('.tele-video')?.getAttribute('src') || '';
     const visible = (s) => [...tele.querySelectorAll(s)].filter((x) => x.offsetParent !== null);
     const tecla = async (k) => { (document.activeElement || document.body).dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true })); await ${W(650)}; };
-    const vert = ${movil}, r = { lightbox: !!document.querySelector('#lightbox'), esperado: canales.map((c) => vert ? c.v : c.h) };
+    const vert = ${movil}, r = { lightbox: !!document.querySelector('#lightbox'), esperado: canales.map((c) => vert ? c.v : c.h), orden: Z.cartelera.programas.join(' ') };
     // Todo «Ver con sonido» de la oficina (los casos y el teaser de la recepción) está en la programación
     r.fuera = window.OFICINA_DATOS.proyectos.filter((p) => p.media).map((p) => p.media.h).concat(['../assets/casos/teaser-biplot-h.mp4']).filter((h) => !canales.some((c) => c.h === h));
     // El estreno: su tarjeta y «Ver con sonido»
@@ -715,13 +726,15 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
       nombre: tele.querySelector('.tele-osd [data-t="nombre"]').textContent, teclas: tele.querySelectorAll('.tele-tecla[data-canal]').length, filas: tele.querySelectorAll('.tele-fila').length,
       control: visible('.tele-control').length, mando: visible('.tele-mando').length, botones: visible('[data-t="botones"] .bp-btn').map((b) => b.textContent).join(' | '),
       desborde: document.documentElement.scrollWidth > innerWidth };
-    // En el celular, deslizar hacia arriba sube de canal y hacia abajo lo baja
+    // En el celular, deslizar hacia arriba sube de canal (del estreno, el 07, al 08, «Tu proyecto») y hacia abajo lo baja
     if (vert) {
       const p = tele.querySelector('.tele-pantalla'), t = (y) => new Touch({ identifier: 1, target: p, clientX: 180, clientY: y });
       const desliza = async (a, b) => { p.dispatchEvent(new TouchEvent('touchstart', { touches: [t(a)], changedTouches: [t(a)], bubbles: true })); p.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(b)], bubbles: true })); await ${W(650)}; return src(); };
-      r.desliza = [await desliza(600, 300), await desliza(300, 600)];
+      await desliza(600, 300); const sube = tele.querySelector('.tele-osd [data-t="n"]').textContent + (tele.querySelector('.tele-carta').hidden ? '' : ' carta');
+      r.desliza = [sube, await desliza(300, 600)];
     }
-    // Canal siguiente (↑), un número (5) y la guía (con las flechas)
+    // Un número (1), el canal siguiente (↑), otro número (5) y la guía (con las flechas)
+    await tecla('1'); r.uno = { src: src(), n: tele.querySelector('.tele-osd [data-t="n"]').textContent };
     await tecla('ArrowUp'); r.sube = { src: src(), anuncio: tele.querySelector('[data-t="anuncio"]').textContent };
     await tecla('5'); r.cinco = src();
     visible('[aria-expanded]')[0].click(); await ${W(300)};
@@ -734,7 +747,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     tele.querySelector('.tele-video').dispatchEvent(new Event('ended')); await ${W(200)};
     const s = tele.querySelector('.tele-sigue');
     r.sigue = { visible: !s.hidden, nombre: s.querySelector('[data-s="nombre"]').textContent, relato: s.querySelector('[data-s="relato"]').textContent,
-      esperado: (PP.recorrido.find((p) => p.zona === 'nuhome') || {}).texto, visto: JSON.parse(localStorage.getItem('oficina-tv-vistos') || '[]').includes('haru'),
+      esperado: (PP.recorrido.find((p) => p.zona === 'estreno') || {}).texto, visto: JSON.parse(localStorage.getItem('oficina-tv-vistos') || '[]').includes('nuhome'),
       marca: tele.querySelector('.tele-fila[data-canal="5"]').classList.contains('visto') };
     if (${w === 1440}) await ${W(5600)}; else { s.querySelector('[data-tele="ya"]').click(); await ${W(650)}; }
     r.sigue.solo = src();
@@ -758,21 +771,62 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     return r; })()`);
   ok(!te.lightbox && !te.fuera.length, 'el video solo ya no está: todo «Ver con sonido» de la oficina (los casos y el teaser de la recepción) está en la programación de la tele' +
     (te.fuera.length ? ' (fuera: ' + te.fuera.join(', ') + ')' : ''));
-  ok(te.abre.visible && te.abre.modal === 'true' && te.abre.src === te.esperado[0] && te.abre.foco && te.abre.n === '01' && te.abre.nombre === 'Un bocado a la vez' && te.abre.teclas === 8 &&
+  ok(te.orden === 'teaser equipo visita fundos haru nuhome estreno', 'los canales van en orden: BiPlot (en 30 segundos, la oficina y la visita de Plotty), los tres casos y al final el estreno (' + te.orden + ')');
+  ok(te.abre.visible && te.abre.modal === 'true' && te.abre.src === te.esperado[6] && te.abre.foco && te.abre.n === '07' && te.abre.nombre === 'Un bocado a la vez' && te.abre.teclas === 8 &&
     te.abre.filas === 8 && (movil ? te.abre.mando === 1 && te.abre.control === 0 : te.abre.control === 1 && te.abre.mando === 0) &&
     /^Descargar Rumbo.* \| Entrar a la sala de Rumbo$/.test(te.abre.botones) && !te.abre.desborde,
-    '«Ver con sonido» del estreno prende la tele en el canal 01, ' + (movil ? 'en vertical y con la barra abajo' : 'con su control remoto') + ', sus 8 canales y los botones del video (' + te.abre.botones + ')');
-  if (movil) ok(te.desliza && te.desliza[0] === te.esperado[1] && te.desliza[1] === te.esperado[0], 'en el celular, deslizar hacia arriba sube de canal y hacia abajo lo baja');
-  ok(te.sube.src === te.esperado[1] && te.sube.anuncio === 'Canal 02: Pasa, la oficina está abierta' && te.cinco === te.esperado[4], '↑ sube al canal 02 (y lo anuncia) y la tecla 5 pone Fundos 360');
+    '«Ver con sonido» del estreno prende la tele en su canal, el 07, ' + (movil ? 'en vertical y con la barra abajo' : 'con su control remoto') + ', sus 8 canales y los botones del video (' + te.abre.botones + ')');
+  if (movil) ok(te.desliza && te.desliza[0] === '08 carta' && te.desliza[1] === te.esperado[6], 'en el celular, deslizar hacia arriba sube de canal (al 08, «Tu proyecto») y hacia abajo lo baja (al estreno)');
+  ok(te.uno.src === te.esperado[0] && te.uno.n === '01' && te.sube.src === te.esperado[1] && te.sube.anuncio === 'Canal 02: Pasa, la oficina está abierta' && te.cinco === te.esperado[4],
+    'la tecla 1 pone BiPlot en 30 segundos, ↑ sube al canal 02 (y lo anuncia) y la tecla 5 pone Haru 360');
   ok(te.guia.abierta && te.guia.foco === '4' && te.guia.baja === '5' && te.guia.src === te.esperado[5] && te.guia.cerrada && te.guia.vuelve,
-    'la guía se abre en el canal que está al aire, se recorre con las flechas y, al elegir Haru 360, se cierra y el foco vuelve a su botón');
-  ok(te.sigue.visible && te.sigue.nombre === 'Nu Home 360' && te.sigue.relato === te.sigue.esperado && te.sigue.visto && te.sigue.marca && te.sigue.solo === te.esperado[6],
-    'al terminar Haru 360 queda visto y aparece «A continuación: Nu Home 360», con la frase de Felipe; ' + (w === 1440 ? 'a los cinco segundos pasa solo' : '«Ver ahora» lo pone'));
+    'la guía se abre en el canal que está al aire, se recorre con las flechas y, al elegir Nu Home 360, se cierra y el foco vuelve a su botón');
+  ok(te.sigue.visible && te.sigue.nombre === 'Un bocado a la vez' && te.sigue.relato === te.sigue.esperado && te.sigue.visto && te.sigue.marca && te.sigue.solo === te.esperado[6],
+    'al terminar Nu Home 360 queda visto y aparece «A continuación: Un bocado a la vez», con la frase de Felipe; ' + (w === 1440 ? 'a los cinco segundos pasa solo' : '«Ver ahora» lo pone'));
   ok(te.tu.carta && te.tu.cta.length === 1 && /^https:\/\/wa\.me\/\d+\?text=Hola%20BiPlot%2C%20vi%20BiPlot\.TV%20en%20la%20oficina/.test(te.tu.cta[0]) && te.tu.botones === 0 &&
     te.tu.titulo === 'Este canal todavía no sale al aire', 'el canal 08 es «Tu proyecto»: la carta de ajuste, con un solo «Agenda tu diagnóstico» (el WhatsApp de BiPlot)');
   ok(te.cierra.apagada && te.cierra.sala && te.cierra.foco && te.cierra.hash === '#tv', 'Escape apaga la tele: la sala y la tarjeta del estreno siguen ahí y el foco vuelve a «Ver con sonido»');
   ok(te.prender.boton === 'Prender la tele' && te.prender.src === te.esperado[2] && /Seguimos donde quedaste, en el 0:30/.test(te.prender.retoma),
     '«Prender la tele», en la cartelera, vuelve al canal donde quedaste (03), con «Seguimos donde quedaste»');
+  // La mini tele: siempre a la vista, sin tapar nada (en la calle y en el canal); cambia de canal sola, se prende en el
+  // canal que muestra y, al apagar la tele, queda en el canal que se estaba viendo, con el foco de vuelta
+  await abrir(w, h, movil, false, '');
+  const mt = await js(`(async () => {
+    const m = document.querySelector('#mini-tele'), tele = document.querySelector('#tele');
+    const caja = (e) => e && e.offsetParent !== null ? e.getBoundingClientRect() : null;
+    const cruza = (a, b) => !!(a && b && a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1);
+    const arriba = document.querySelector('.barra').getBoundingClientRect().bottom;
+    const dentro = (a) => !!a && a.left >= 0 && a.top >= arriba && a.right <= innerWidth && a.bottom <= innerHeight;
+    const choques = (a, sels) => sels.filter((s) => [...document.querySelectorAll(s)].some((e) => cruza(a, caja(e))));
+    const n = () => m.querySelector('.mini-tele-n').textContent, osd = () => tele.querySelector('.tele-osd [data-t="n"]').textContent;
+    const tecla = async (k) => { document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true })); await ${W(650)}; };
+    const rm = caja(m);
+    const r = { calle: { visible: !!rm, dentro: dentro(rm), choques: choques(rm, ['#controles button', '#recorrer-toggle', '#intro', '.guia']), imagenes: m.querySelectorAll('.mini-tele-pantalla img').length,
+      n: n(), etiqueta: m.getAttribute('aria-label') } };
+    // Cambia de canal sola: cada 4,5 segundos (se espera una vez, en 1440)
+    if (${w === 1440}) { await ${W(4900)}; r.cambia = n(); }
+    // Al tocarla, la tele se prende en el canal que muestra, y la mini se esconde mientras tanto
+    const antes = n(); m.click(); await ${W(500)};
+    r.prende = { on: !tele.hidden, antes, n: osd(), oculta: m.offsetParent === null };
+    await tecla('ArrowUp'); const ahora = osd();
+    await tecla('Escape');
+    r.apaga = { off: tele.hidden, ahora, n: n(), foco: document.activeElement === m, visible: m.offsetParent !== null };
+    // En el canal: a la vista, sin tapar la barra, los controles ni los botones de arriba; las tarjetas no llegan a taparla
+    location.hash = '#tv'; for (let i = 0; i < 60 && !document.querySelector('.zona-sala[data-zona="camarin"]'); i++) await ${W(200)}; await ${W(900)};
+    const rs = caja(m);
+    r.sala = { visible: !!rs, dentro: dentro(rs), choques: choques(rs, ['#controles button', '#sala-barra', '.sala-vecinos', '.sala-volver']) };
+    const z = document.querySelector('.zona-sala[data-zona="camarin"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(500)};
+    const t = document.querySelector('#sala-tarjeta');
+    r.sala.tarjeta = !t.hidden; r.sala.tapa = cruza(caja(m), caja(t));
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(200)};
+    return r; })()`);
+  ok(mt.calle.visible && mt.calle.dentro && !mt.calle.choques.length && mt.calle.imagenes === 7 && mt.calle.n === '01' && mt.calle.etiqueta === 'Prender la tele de BiPlot.TV',
+    'la mini tele está a la vista en la calle, en el canal 01, con los 7 videos y sin tapar los controles, el menú ni la bienvenida' + (mt.calle.choques.length ? ' (tapa: ' + mt.calle.choques.join(', ') + ')' : ''));
+  if (w === 1440) ok(mt.cambia === '02', 'la mini tele cambia de canal sola: a los 4,5 segundos pasa al 02 (' + mt.cambia + ')');
+  ok(mt.prende.on && mt.prende.n === mt.prende.antes && mt.prende.oculta, 'al tocar la mini tele, la tele se prende en el canal que mostraba (' + mt.prende.antes + ') y la mini se esconde');
+  ok(mt.apaga.off && mt.apaga.n === mt.apaga.ahora && mt.apaga.foco && mt.apaga.visible, 'al apagar la tele, la mini queda en el canal que se estaba viendo (' + mt.apaga.ahora + ') y el foco vuelve a ella');
+  ok(mt.sala.visible && mt.sala.dentro && !mt.sala.choques.length && mt.sala.tarjeta && !mt.sala.tapa,
+    'en el canal la mini tele sigue a la vista, sin tapar la barra, los controles ni los botones, y la tarjeta del camarín no la tapa' + (mt.sala.choques.length ? ' (tapa: ' + mt.sala.choques.join(', ') + ')' : ''));
   // Con movimiento reducido, sin estática ni la cuenta animada
   if (w === 1440) {
     await abrir(w, h, movil, true, '');
@@ -781,14 +835,20 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
       const z = document.querySelector('.zona-sala[data-zona="estreno"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(500)};
       document.querySelector('#sala-tarjeta [data-grande]').click(); await ${W(300)};
       const tele = document.querySelector('#tele'), v = tele.querySelector('.tele-video');
+      document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: '1', bubbles: true }));
       document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
       const r = { estatica: tele.classList.contains('cambiando'), src: v.getAttribute('src') };
       v.dispatchEvent(new Event('ended')); await ${W(100)};
       r.anillo = tele.querySelector('.tele-sigue').classList.contains('corre');
       document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
       localStorage.removeItem('oficina-tv-punto'); localStorage.removeItem('oficina-tv-vistos');
+      // La mini tele se queda quieta en su canal
+      const m = document.querySelector('#mini-tele'), n0 = m.querySelector('.mini-tele-n').textContent;
+      await ${W(4900)};
+      r.mini = { visible: m.offsetParent !== null, igual: m.querySelector('.mini-tele-n').textContent === n0, estatica: m.classList.contains('zapea') };
       return r; })()`);
     ok(!rm.estatica && /media\/tv\/teaser-equipo-h\.mp4$/.test(rm.src) && !rm.anillo, 'con movimiento reducido, la tele cambia de canal sin estática y la cuenta de «A continuación» no se anima');
+    ok(rm.mini.visible && rm.mini.igual && !rm.mini.estatica, 'con movimiento reducido, la mini tele se queda quieta en su canal');
   }
   await abrir(w, h, movil, false, '#conversar');
   ok((await js("!!document.querySelector('#panel:not([hidden]) .chat') && document.querySelector('#svg-escena').classList.contains('oficina-abierta')")), 'oficina/#conversar entra y abre la conversación con Plotty');
