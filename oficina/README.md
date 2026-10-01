@@ -84,7 +84,8 @@ quién trabajó y el botón **Entrar a la sala**: la cámara entra y se abre su 
 la primera vez). Las cinco salas de la calle principal son **salas propias**: al entrar se está en el lugar de la
 empresa (su sala de ventas, su restaurante, su club, su día), en sus colores y con su letra, sin números ni panel. Lo que
 se toca se ilumina con su nombre y abre su tarjeta; su gente habla sola en burbujas; abajo va su barra, con su marca, su
-frase, su botón y un recorrido con alguien de la empresa; y en un rincón chico está BiPlot, cuya tarjeta trae todo lo que
+frase, su botón y un recorrido con alguien de la empresa (si sus botones no caben en una línea, como en una pantalla
+mediana con el menú abierto, bajan a una segunda); y en un rincón chico está BiPlot, cuya tarjeta trae todo lo que
 traía el panel: lo que construimos (con las pantallas reales, de los videos de cada caso, con datos de ejemplo), lo que
 resolvimos, el video, los enlaces, el equipo que lo hizo, los resultados (día 30, 60 y 90: pendientes hasta que se midan
 y el cliente lo autorice) y el enlace para compartirla. En cada sala dos personas caminan entre los muebles, y una es
@@ -199,24 +200,29 @@ de televisión con su sala de estreno:
 - **El camarín**, que espera al próximo invitado: la silla de director dice «Tu proyecto» y aquí está el único coral de
   la sala, «Agenda tu diagnóstico».
 - En el muro, **«Así se hace un capítulo»** (guion y look, animación y música, al aire; se abre de frente) y el **muro de
-  pantallas**, un monitor por video, con su consola.
+  pantallas**, un monitor por video, en el orden de los canales de la tele, con su consola.
 - En la entrada, **la cartelera** (abre toda la programación, con «Prender la tele») y el carro de las cabritas.
 - Al medio, colgando sobre la cancha como en la NBA, **la pantalla del centro**. En una cara pasan las repeticiones (el
   estreno, la visita de Plotty, BiPlot en 30 segundos y los tres casos 360, 3,5 segundos cada una: `.loc-repe`, en
   `oficina.css`, turna seis) y en la otra va el marcador: BiPlot.TV de local con los videos del canal, el reloj con lo que
   dura el estreno y, de visita, «Tu proyecto», que todavía no entra a la cancha. Los anillos de luces llevan una cinta que
   corre (`.loc-led`), la panza lleva la marca y el reloj de posesión, y en el piso está el círculo central. Al tocarla se
-  abre de frente: el marcador en grande y las seis repeticiones. Con «reducir movimiento» queda quieta en el estreno.
+  abre de frente: el marcador en grande y las seis repeticiones, con «Prender la tele». Con «reducir movimiento» queda
+  quieta en el estreno.
 
-Cada pantalla abre su tarjeta con su video, sin sonido; «Ver con sonido» prende la tele del canal (más abajo). Felipe
-guía el recorrido de doce paradas, contado como un partido de básquetbol. Las frases de Aby y Felipe son de ejemplo hasta
+Cada pantalla abre su tarjeta con su video, sin sonido; «Ver con sonido» prende la tele del canal (más abajo). La barra
+del canal parte con «Prender la tele» y después «Recorrer con Felipe»: Felipe guía el recorrido de doce paradas, contado
+como un partido de básquetbol. Las frases de Aby y Felipe son de ejemplo hasta
 que ellos las aprueben; el público, el operador y las visitas son ilustraciones sin nombre.
 
-**La programación** son siete videos: «Un bocado a la vez» (el capítulo de Rumbo, el estreno), «Pasa, la oficina está
-abierta» (el teaser del equipo), la visita de Plotty, BiPlot en 30 segundos y Fundos, Haru y Nu Home 360. Los dos
-primeros están en `media/tv/` en versión web (16:9 y 9:16, con sus pósters), junto a la miniatura de cada pantalla
-(`pantalla-<id>.webp`); los demás, donde ya estaban. Los capítulos de clientes se suman cuando cada cliente apruebe
-mostrarlos.
+**La programación** son siete videos, en este orden: BiPlot en 30 segundos, «Pasa, la oficina está abierta» (el teaser
+del equipo), la visita de Plotty, Fundos, Haru y Nu Home 360 y, al final, «Un bocado a la vez» (el capítulo de Rumbo, el
+estreno). Primero BiPlot (quiénes somos, el equipo y cómo trabajamos), después los casos y al final los capítulos, el más
+nuevo justo antes de «Tu proyecto»: así la tele cuenta una historia de corrido, y el «A continuación» de Felipe calza
+(después de Nu Home anuncia el estreno, y después del estreno viene «El próximo capítulo puede ser el tuyo»). El estreno
+y el teaser del equipo están en `media/tv/` en versión web (16:9 y 9:16, con sus pósters), junto a la miniatura de cada
+pantalla (`pantalla-<id>.webp`); los demás, donde ya estaban. Los capítulos de clientes se suman cuando cada cliente
+apruebe mostrarlos.
 
 **La tele de BiPlot.TV.** Todo «Ver con sonido» de la oficina (en las tarjetas y la vista previa del canal, en la
 recepción de BiPlot HQ y en el rincón de BiPlot de cada sala) se ve en la tele del canal, con toda la programación a mano.
@@ -230,12 +236,23 @@ aquí» lo detiene. El último canal, el 08, es «Tu proyecto», que todavía no
 colores de la marca con «Agenda tu diagnóstico», el único coral de la tele. Cada video lleva los botones de su tarjeta
 (su sala, «Descargar Rumbo», BiPlot HQ o Plotty), en el borde de la tele o sobre la barra. La tele marca lo visto (en el
 control y en la guía) y, si se cerró a la mitad, la próxima vez sigue desde ahí («Seguimos donde quedaste», con «Desde el
-principio»); lo visto y dónde quedó se guardan sólo en ese navegador. «Prender la tele», en la cartelera y en la vista
-previa del canal, la prende en el último canal que se vio. Con «reducir movimiento» (o la oficina en pausa) el cambio es
-directo, sin estática. Sus textos salen de `datos.js`: los canales son los `programas` de la cartelera, en ese orden; el
+principio»); lo visto y dónde quedó se guardan sólo en ese navegador. «Prender la tele» (el primer botón de la barra del
+canal, en la pantalla del centro, en la cartelera y en la vista previa del canal) la prende en el último canal que se vio,
+o en el 01. Con «reducir movimiento» (o la oficina en pausa) el cambio es directo, sin estática. Sus textos salen de `datos.js`: los canales son los `programas` de la cartelera, en ese orden; el
 último, su `cierre`; y las frases, las del `recorrido`. El código está en `oficina.js` («La tele de BiPlot.TV») y sus
 estilos en `oficina.css` (`.tele`). Se eligió entre tres (el control remoto, una sala de control y unas historias como
 las de Instagram); la maqueta de las tres quedó en el historial (`_herramientas/propuestas/README.md`).
+
+**La mini tele.** Para que la tele no se pierda, una tele chiquita con sus antenas está siempre a la vista, en toda la
+oficina (en la calle, en BiPlot HQ y en cada sala): en el computador va sobre los controles de la cámara, con «Prender
+la tele» abajo (en una pantalla baja, más chica), y en el celular, más chica, en la fila de los controles. Pasa el canal
+en vivo y sin sonido, con las miniaturas de la programación: cada 4,5 segundos cambia de canal, con un golpe de estática
+y el número arriba, como la tele grande; con «reducir movimiento» o la oficina en pausa queda quieta. Al tocarla, la
+tele se prende en el canal que muestra, y al apagarla la mini queda en el canal que se estaba viendo. Se esconde
+mientras la tele está prendida y cuando una tarjeta sube desde abajo en el celular; en el computador, las tarjetas de
+una sala no llegan bajo ella. Sus canales son los mismos de la tele (sin «Tu proyecto»). El código está en `oficina.js`
+(«La mini tele») y sus estilos en `oficina.css` (`.mini-tele`). Se eligió entre dos (un botón «Prender la tele» arriba y
+la mini tele); la maqueta de las dos quedó en el historial (`_herramientas/propuestas/README.md`).
 
 **Las vitrinas, en 3D.** Al tocar una vitrina del museo (cada época, cada desarrollo y el pedestal libre) se abre en
 grande y en 3D, sobre la sala oscurecida: su pedestal con su cédula, su vidrio y la pieza del centro van girando, una
@@ -293,7 +310,7 @@ sólo para su vitrina.
 
 | Archivo | Qué es |
 |---|---|
-| `index.html` | La página: barra de marca, escena, «Salir a la calle», la sala de cada empresa, menú "Recorre la oficina", controles, bienvenida, recorrido guiado, panel y la tele de BiPlot.TV |
+| `index.html` | La página: barra de marca, escena, «Salir a la calle», la sala de cada empresa, menú "Recorre la oficina", la mini tele, controles, bienvenida, recorrido guiado, panel y la tele de BiPlot.TV |
 | `datos.js` | **Lo único que hay que tocar para cambiar textos y sumar casos**: equipo, mascotas, fases, lugares, proyectos (con los puntos de cada sala, o su `salaPropia`), calles del barrio, casos de referencia, vitrina y Plotty |
 | `escena.js` | La oficina isométrica y su barrio: arma la calle principal, las calles por rubro (con el techo de cada caso) y El Archivo desde `datos.js`; la oficina cerrada que se abre, los locales que se abren al tocarlos, zonas, vitrina, los recorridos del equipo y la gente que camina (por la vereda, dentro de un local abierto y en las salas) |
 | `oficina.js` | Interfaz: cámara (arrastrar, rueda, pellizco, teclado), entrar y salir de la oficina, menú con el barrio y su buscador, el local abierto con su vista previa, la sala de cada empresa, El Archivo, recorrido guiado, paneles, chat, videos (la tele de BiPlot.TV) y enlaces directos |
@@ -374,14 +391,16 @@ camina sólo mientras se ve.
 - **Videos de las salas**: Fundos y Haru usan los teasers del sitio (`assets/casos/`); el de Nu Home vive en `oficina/media/`,
   comprimido con `ffmpeg -crf 28 -preset slow -movflags +faststart` y con el póster en el segundo 10.
 - **El estreno de BiPlot.TV**: el capítulo nuevo va en `datos.js` (la zona `estreno` de `salas.tv.salaPropia`, con su
-  video en `media/tv/`, y primero en los `programas` de la cartelera) y su pantalla en `media/tv/pantalla-estreno.webp`.
+  video en `media/tv/`, y al final de los `programas` de la cartelera, justo antes de «Tu proyecto») y su pantalla en
+  `media/tv/pantalla-estreno.webp`.
   Su nombre y lo que dura también van en los dibujos: la marquesina del edificio (`barrio.mjs`) y la cartelera, la franja
   del set, los anillos, la primera repetición y el reloj del marcador (`salas-propias/tv.mjs`). Después se regenera.
 - **Un video nuevo en BiPlot.TV**: su zona en `salas.tv.salaPropia` (nombre, ceja, `duracion`, `pantalla`, su `video`
   con sus dos formatos y su póster, y sus botones), su miniatura en `media/tv/pantalla-<id>.webp`, su frase de Felipe en
-  el `recorrido`, su monitor en el muro de pantallas (`salas-propias/tv.mjs`, y se regenera) y su id en los `programas`
-  de la cartelera, donde quiera que salga. La tele lo suma sola como un canal más: lo numera, lo pone en el control y en
-  la guía, y «Tu proyecto» sigue al final.
+  el `recorrido`, su monitor en el muro de pantallas (`salas-propias/tv.mjs`, en el mismo orden, y se regenera) y su id
+  en los `programas` de la cartelera, donde le toque: primero BiPlot, después los casos y al final los capítulos, el más
+  nuevo justo antes de «Tu proyecto». La tele lo suma sola como un canal más: lo numera, lo pone en el control, en la
+  guía y en la mini tele, y «Tu proyecto» sigue al final.
 - **Casos de referencia**: si cambian en su fuente, correr `node oficina/_herramientas/sincronizar-casos.mjs`. Son
   negocios ilustrativos, no clientes: viven en la estantería, no en la calle.
 
@@ -407,7 +426,9 @@ los vecinos, la mesa de Lupe, Atlas que habla y el recorrido con Plotty), BiPlot
 plaza, su botón en el menú, la cartelera, el estreno con su video, la pantalla del centro de frente, el camarín y el
 recorrido con Felipe; con movimiento reducido, quieta), la tele de BiPlot.TV (todo «Ver con sonido»: su control remoto o
 su barra, los canales con ↑, con los números, con la guía y deslizando, «A continuación» con Felipe, lo visto, el canal 08
-con «Agenda tu diagnóstico», «Prender la tele» con «Seguimos donde quedaste», Escape y movimiento reducido),
+con «Agenda tu diagnóstico», «Prender la tele» en la barra del canal y con «Seguimos donde quedaste», Escape y
+movimiento reducido), la mini tele (a la vista sin tapar nada, en la calle y en el canal; cambia de canal sola, se prende
+en el canal que muestra y queda en el que se vio; con movimiento reducido, quieta),
 chat de Plotty con la cámara en
 el rubro, vitrina,
 El Archivo, teclado, enlaces directos y las páginas para compartir, pausa, movimiento reducido, errores de consola y
@@ -436,7 +457,9 @@ diálogo: recibe el foco, lo mantiene adentro mientras está abierta y lo devuel
 la línea de tiempo, sus fechas para lectores de pantalla. La tele de BiPlot.TV también es un diálogo: recibe el foco, lo
 mantiene adentro y lo devuelve al apagarse, anuncia cada canal a lectores de pantalla y se maneja entera con teclado (↑ ↓
 cambian de canal, los números van directo, ← → retroceden y adelantan 10 segundos, Espacio pausa, M silencia, F pone la
-pantalla completa, las flechas recorren la guía y Escape la cierra o apaga la tele). Una vitrina en 3D es una imagen con su nombre; su giro se
+pantalla completa, las flechas recorren la guía y Escape la cierra o apaga la tele). La mini tele es un botón («Prender
+la tele de BiPlot.TV»): lo que muestra es decorativo, su cambio de canal se detiene con «reducir movimiento» o la pausa,
+y al apagar la tele el foco vuelve a ella. Una vitrina en 3D es una imagen con su nombre; su giro se
 pausa con un botón (y con «reducir movimiento» parte quieta) y se gira con dos botones, sin necesidad de arrastrar. El chat de Plotty son botones, con los mensajes anunciados a lectores de pantalla. Con "reducir movimiento"
 todo queda quieto y la cámara salta sin animación (los locales se abren igual, con su gente quieta en su lugar);
 además hay un botón para pausar, que también detiene a la gente de los locales y de las salas.

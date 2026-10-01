@@ -331,7 +331,6 @@
   $('#controles').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     var r = rect(), acc = b.getAttribute('data-accion');
-    if (acc === 'tele') { abrirTele(null, b); return; }
     // En una sala propia, los mismos botones mueven su cámara
     if (propia && acc !== 'pausa') { propia.aMano = true; if (acc === 'todo') verSalaEntera(600); else zoomSalaCentro(acc === 'acercar' ? 1.35 : 0.74); return; }
     if (acc === 'acercar') zoomEn(r.left + r.width / 2, r.top + r.height / 2, 1.35);
@@ -1190,11 +1189,12 @@
     var t = tamSala(), abajo = barraSala.hidden ? 16 : t.h - barraSala.offsetTop + 14;
     return { x0: 12, y0: 70, x1: t.w - 12, y1: Math.max(140, t.h - abajo) };
   }
-  // Hasta dónde llega una tarjeta por la derecha: en escritorio, hasta los controles de la cámara
+  // Hasta dónde llega una tarjeta por la derecha: en escritorio, hasta los controles de la cámara y la mini tele
   function derSala() {
     var t = tamSala(); if (window.innerWidth < 900) return t.w - 16;
-    var rc = $('#controles').getBoundingClientRect(), rk = salaCaja.getBoundingClientRect();
-    return rc.width ? Math.min(t.w - 16, rc.left - rk.left - 12) : t.w - 76;
+    var rc = $('#controles').getBoundingClientRect(), rk = salaCaja.getBoundingClientRect(), rm = mini && !mini.hidden ? mini.getBoundingClientRect() : null;
+    var izq = rc.width ? rc.left : 0; if (rm && rm.width) izq = izq ? Math.min(izq, rm.left) : rm.left;
+    return izq ? Math.min(t.w - 16, izq - rk.left - 12) : t.w - 76;
   }
   function ajusteSala() { var l = libreSala(), vb = propia.vb; return Math.min((l.x1 - l.x0) / vb[2], (l.y1 - l.y0) / vb[3]); }
   function limitesSala() { var a = ajusteSala(); return [a * 0.8, Math.max(2.4, a * 6)]; }
@@ -1759,7 +1759,9 @@
     var b = e.target.closest('button'); if (!b || !propia) return;
     if (b.hasAttribute('data-recorrer')) { iniciarRecorrido(0); return; }
     if (b.hasAttribute('data-zona-ir')) { abrirTarjeta(b.getAttribute('data-zona-ir'), { desde: b }); return; }
-    var a = b.getAttribute('data-rec'); if (!a || !propia.recorrido) return;
+    // Los demás botones de la barra (prender la tele, pasar a BiPlot HQ, otra sala…) hacen lo mismo que en una tarjeta
+    var a = b.getAttribute('data-rec'); if (!a) { accionSala(b, e); return; }
+    if (!propia.recorrido) return;
     var i = propia.recorrido.i, R = propia.P.recorrido;
     if (a === 'ant') pasoRecorrido(i - 1);
     else if (a === 'sig') { if (i >= R.length - 1) terminarRecorrido(); else pasoRecorrido(i + 1); }
@@ -2137,6 +2139,7 @@
     repV.pause(); repV.removeAttribute('src'); repV.load();
     if (document.fullscreenElement && tele.contains(document.fullscreenElement)) document.exitFullscreen().catch(function () {});
     tele.hidden = true; rep.abierta = false; document.body.classList.remove('tele-prendida');
+    if (!c.tu && mini && !mini.hidden) miniEn(rep.i);
     rep.fondo.forEach(function (v) { if (document.contains(v)) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } });
     rep.fondo = [];
     if (!sinFoco && rep.desde && document.contains(rep.desde)) rep.desde.focus({ preventScroll: true });
@@ -2305,39 +2308,46 @@
     var f = Array.prototype.filter.call(tele.querySelectorAll('[data-foco]'), function (x) { return x.offsetParent !== null; })[0]; if (f) f.focus({ preventScroll: true });
   });
 
-  // Dónde está la tele: siempre a mano, en toda la oficina. (Prototipo de dos formas, para elegir: ?tele=a, un botón,
-  // arriba en el computador y junto a los controles en el celular; ?tele=b, la mini tele: una tele chiquita con el canal
-  // en vivo, sin sonido, que cambia de canal sola y se prende en el canal que muestra)
-  var HALLA = (/[?&]tele=([ab])/.exec(location.search) || [0, 'b'])[1];
-  document.documentElement.classList.add('halla-' + HALLA);
-  var mini = $('#mini-tele'), miniK = 0;
+  /* ── La mini tele: BiPlot.TV siempre a la vista ── */
+  // Una tele chiquita, con sus antenas, en toda la oficina (en la calle, en BiPlot HQ y en cada sala): pasa el canal en
+  // vivo y sin sonido, y cada 4,5 segundos cambia de canal con su golpe de estática y el número arriba, como la tele
+  // grande (quieta con movimiento reducido o la oficina en pausa). Al tocarla, la tele se prende en el canal que muestra;
+  // al apagarla, la mini queda en el canal que se estaba viendo. En el computador va sobre los controles de la cámara; en
+  // el celular, en la fila de los controles.
+  var mini = $('#mini-tele'), miniK = 0, MINI_ZAP = 4500;
   function construirMini() {
     if (!mini || !CANAL) return;
     var C = canalesTele().filter(function (c) { return !c.tu; }), punto = leerJson('tv-punto');
+    if (!C.length) return;
     C.forEach(function (c, k) { if (punto && punto.id === c.id) miniK = k; });
     mini.querySelector('.mini-tele-pantalla').insertAdjacentHTML('afterbegin', C.map(function (c, k) {
-      return '<img src="' + esc(c.mini) + '" alt="" width="160" height="90" loading="lazy" data-canal="' + esc(c.h) + '"' + (k === miniK ? ' class="ver"' : '') + '>';
+      return '<img src="' + esc(c.mini) + '" alt="" width="160" height="90" data-canal="' + esc(c.id) + '"' + (k === miniK ? ' class="ver"' : '') + '>';
     }).join(''));
     mini.querySelector('.mini-tele-n').textContent = dosCifras(miniK + 1);
-    mini.addEventListener('click', function () { var v = mini.querySelector('.mini-tele-pantalla img.ver'); abrirTele(v ? v.getAttribute('data-canal') : null, mini); });
-    setTimeout(zapMini, 4500);
+    mini.hidden = false;
+    mini.addEventListener('click', function () {
+      var v = mini.querySelector('.mini-tele-pantalla img.ver'), c = v && canalPorId(v.getAttribute('data-canal'));
+      abrirTele(c ? c.h : null, mini);
+    });
+    setTimeout(zapMini, MINI_ZAP);
   }
-  // Cada 4,5 segundos, un golpe de estática y el canal que sigue (quieta con movimiento reducido o la oficina en pausa)
+  function canalPorId(id) { if (!CANALES) construirTele(); return CANALES.filter(function (c) { return c.id === id; })[0]; }
+  // El canal k de la mini (del 0), sin estática
+  function miniEn(k) {
+    var im = mini.querySelectorAll('.mini-tele-pantalla img'); if (!im.length) return;
+    miniK = (k % im.length + im.length) % im.length;
+    Array.prototype.forEach.call(im, function (x, j) { x.classList.toggle('ver', j === miniK); });
+    mini.querySelector('.mini-tele-n').textContent = dosCifras(miniK + 1);
+  }
   function zapMini() {
-    setTimeout(zapMini, 4500);
+    setTimeout(zapMini, MINI_ZAP);
     if (document.hidden || rep.abierta || quieta() || !mini.offsetParent) return;
-    var im = mini.querySelectorAll('.mini-tele-pantalla img'); if (im.length < 2) return;
-    miniK = (miniK + 1) % im.length;
     mini.querySelector('.mini-tele-nieve').style.backgroundImage = 'url(' + nieveTele() + ')';
     mini.classList.add('zapea');
-    setTimeout(function () {
-      Array.prototype.forEach.call(im, function (x, k) { x.classList.toggle('ver', k === miniK); });
-      mini.querySelector('.mini-tele-n').textContent = dosCifras(miniK + 1);
-    }, 150);
+    setTimeout(function () { miniEn(miniK + 1); }, 150);
     setTimeout(function () { mini.classList.remove('zapea'); }, 330);
   }
   construirMini();
-  $('#barra-tele').addEventListener('click', function () { abrirTele(null, this); });
 
   /* ── Recorrido guiado: lo guía Atlas, que ve todo desde arriba ── */
   var GUIA = [
