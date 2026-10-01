@@ -29,14 +29,24 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
 - `lib/planos.js` **generado, no editar a mano**: por proyecto `viewBox`, `contorno`, `calles` (servidumbres),
   `agua`, opcional `caminoPrincipal`, y `lotes[n] = {d, l, r}` (path SVG, punto de etiqueta, radio libre). Lotes y
   servidumbres forman una cobertura continua (bordes compartidos, sin huecos ni traslapes).
-- `entorno.html` **boceto** del mapa "Descubre tu entorno" de Fundos Puerto Varas (página aparte, sin enlazar desde
-  `index.html`): imagen satelital del cliente (`assets/entorno/mapa-puerto-varas.webp`, 931 × 728) georreferenciada
-  con las cumbres del Osorno, Calbuco y Puntiagudo y la marca del proyecto (-41.3700833, -72.8781389); los lugares
-  (`x`, `y` en píxeles de esa imagen), textos del folleto y distancias están en el script de la página. Si llega una
-  imagen de mayor resolución, recalibrar los `x`, `y`. Fotos recortadas del folleto: reemplazar por las originales.
-  Las rutas por camino (`RUTAS`: path en píxeles, km y minutos) se calcularon una vez con el servidor público de
-  OSRM (`router.project-osrm.org`, datos © OpenStreetMap, crédito visible en el mapa) desde Camino El Encanto; el
-  Calbuco (sin camino a la cumbre) y Parque Vivo Alerces (sin ubicación confirmada) van en línea recta.
+- `entorno.html` mapa "Descubre tu entorno" de Fundos Puerto Varas (página aparte; sin build ni dependencias).
+  Datos **generados** en `lib/entorno-datos.js` por `tools/entorno_build.py` a partir de `tools/entorno/lugares.json`
+  (único lugar a editar: lugares, textos, fotos, categorías, créditos, método). El script proyecta lat/lon a píxeles
+  de la imagen, calcula las rutas por camino con OSRM (`router.project-osrm.org`, datos © OpenStreetMap; caché en
+  `tools/entorno/rutas-cache.json`) y, cuando hay red, baja el mosaico Sentinel-2 y las fotos de Wikimedia Commons.
+  Uso: `python3 tools/entorno_build.py [--rutas] [--teselas] [--fotos]`; sin opciones solo regenera con la caché.
+  - Imagen: hoy es la captura del folleto (Google Earth, `modo: "afin"` calibrado con las cumbres y la marca del
+    proyecto). **Las Geo Guidelines de Google no permiten usarla en sitios comerciales**: reemplazarla por Sentinel-2
+    cloudless **2016** de EOX (CC BY 4.0; las ediciones posteriores son no comerciales). La configuración ya está en
+    `imagen_sentinel` de `lugares.json`; requiere permitir `tiles.maps.eox.at` en la red del entorno (el cambio de
+    red recién aplica tras reiniciar el contenedor).
+  - Fotos: títulos de Wikimedia Commons en `foto.commons`; `--fotos` las baja (1200 px) con autor y licencia para el
+    crédito (requiere `commons.wikimedia.org` y `upload.wikimedia.org`). Sin foto, la ficha usa un recorte del satelital.
+  - Coordenadas verificadas con al menos dos fuentes (Sernageomin, Conaf, EFE, municipio, Wikipedia, OSM). "Parque
+    Vivo Alerces" del folleto es el **Parque y Vivero Alerce** (confirmar nombre con el cliente). Textos de lugares que
+    no están en el folleto llevan `"revisar": true` en `lugares.json`.
+  - Interfaz: estrella de rutas tenues desde el proyecto, lista agrupada por tiempo, ficha con resumen inicial,
+    enlaces directos `entorno.html#pvaras`, modo "Recorrer el entorno", zoom con Ctrl+rueda, pellizco y teclado.
 - `assets/img` fotos y logos (WebP) · `assets/video` saludo del equipo (MP4 H.264 + WebM de respaldo + portada) ·
   `assets/fonts` Cormorant Garamond y Mulish autoalojadas.
 
