@@ -83,6 +83,13 @@
     <div class="recorrer-cuerpo" id="recorrer-cuerpo" tabindex="-1"></div>
   </nav>
 
+  <!-- La mini tele: BiPlot.TV en vivo y sin sonido, siempre a la vista; al tocarla se prende la tele del canal en el canal que
+       muestra (oficina.js, «La mini tele») -->
+  <button type="button" class="mini-tele" id="mini-tele" aria-label="Prender la tele de BiPlot.TV" hidden>
+    <svg class="mini-tele-antena" viewBox="0 0 48 18" aria-hidden="true"><path d="M24 17L11 5M24 17L37 5"/><circle cx="11" cy="4.5" r="3.4"/><circle cx="37" cy="4.5" r="3.4"/></svg>
+    <span class="mini-tele-caja" aria-hidden="true"><span class="mini-tele-pantalla"><span class="mini-tele-nieve"></span><span class="mini-tele-n">01</span></span>
+      <span class="mini-tele-pie"><span class="mini-tele-led"></span>Prender la tele</span></span>
+  </button>
   <div class="controles" id="controles" role="toolbar" aria-label="Vista de la oficina">
     <button type="button" data-accion="acercar" aria-label="Acercar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
     <button type="button" data-accion="alejar" aria-label="Alejar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>

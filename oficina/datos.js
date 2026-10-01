@@ -303,7 +303,7 @@
             boton: '#17C3B2', botonTinta: '#062B27', botonPunto: '#062B27' },
           fuente: { familia: "'Space Grotesk', 'DejaVu Sans', sans-serif", peso: 700, espacio: '-.01em', titulo: '25px', sub: "700 10.5px/1.4 'Space Mono', monospace" },
           textos: { recorrer: 'Recorrer con Felipe', recorrido: 'Recorrido con Felipe', guia: 'Felipe · El rostro' },
-          barra: ['recorrer', { zona: 'cartelera', texto: 'Toda la programación' }],
+          barra: [{ tele: true, texto: 'Prender la tele' }, 'recorrer'],
           guia: 'felipe',
           whatsapp: null,
           burbujas: [
@@ -318,8 +318,10 @@
           zonas: {
             cartelera: { nombre: 'La cartelera', ceja: 'BiPlot.TV · Programación', titulo: 'Toda la programación',
               texto: 'Siete videos, y cada uno sale en horizontal y en vertical. Toca uno para verlo con sonido, o prende la tele y cambia de canal. Vienen más capítulos.',
-              // Los canales de la tele, en este orden (del 01 en adelante); un video nuevo es una línea más aquí
-              programas: ['estreno', 'equipo', 'visita', 'teaser', 'fundos', 'haru', 'nuhome'],
+              // Los canales de la tele, en este orden (del 01 en adelante): primero BiPlot (quiénes somos, la oficina y la
+              // visita de Plotty), después los casos y al final los capítulos, el más nuevo justo antes de «Tu proyecto».
+              // Un video nuevo es una línea más aquí
+              programas: ['teaser', 'equipo', 'visita', 'fundos', 'haru', 'nuhome', 'estreno'],
               // El último canal de la tele, después de la programación: tu proyecto, que todavía no sale al aire
               cierre: { nombre: 'Tu proyecto', ceja: 'Próximamente', titulo: 'Este canal todavía no sale al aire',
                 texto: 'Los capítulos cuentan cómo trabaja BiPlot, caso por caso. El próximo puede ser el tuyo: todo empieza con un diagnóstico, y la primera sesión es sin costo.',
@@ -363,7 +365,7 @@
               botones: [{ hq: true, texto: 'Pasar a BiPlot HQ' }] },
             marcador: { nombre: 'La pantalla del centro', ceja: 'BiPlot.TV · Como en la NBA', titulo: 'Las mejores jugadas, al centro de la cancha',
               texto: 'Cuelga sobre el medio del estudio, como en la NBA: cuatro pantallas, los anillos de luces y el marcador. Pasa las repeticiones del canal, una tras otra. En el marcador, BiPlot.TV juega de local; la visita es tu proyecto, que todavía no entra a la cancha.',
-              botones: [{ zona: 'estreno', texto: 'Ver el estreno' }, { zona: 'cartelera', texto: 'Toda la programación' }] },
+              botones: [{ tele: true, texto: 'Prender la tele' }, { zona: 'cartelera', texto: 'Toda la programación' }] },
             guion: { nombre: 'Así se hace un capítulo', ceja: 'BiPlot.TV · El guion', titulo: 'Tres pasos, y cada uno se aprueba',
               texto: 'Primero, el guion y el look: la historia compás por compás, el elenco y seis cuadros clave. Después, la animación con su música, cuadro a cuadro, dibujada y compuesta por código. Al final, los dos formatos: horizontal para la web y LinkedIn, vertical para Reels, TikTok y estados.' },
             camarin: { nombre: 'El camarín', ceja: 'Tu turno', titulo: 'El próximo capítulo puede ser el tuyo',
@@ -376,9 +378,9 @@
             { zona: 'set', titulo: 'El set', texto: 'Aquí grabamos con Aby. Ella pregunta, yo relato.' },
             { zona: 'marcador', titulo: 'La pantalla del centro', texto: '¡Miren arriba! Las mejores jugadas del canal, una tras otra. De local, BiPlot.TV; de visita, tu proyecto.' },
             { zona: 'guion', titulo: 'Así se hace un capítulo', texto: 'Un capítulo se juega en tres tiempos: guion y look, animación con su música, y al aire.' },
+            { zona: 'teaser', titulo: 'BiPlot en 30 segundos', texto: 'De las planillas al sistema en treinta segundos. Contraataque.' },
             { zona: 'equipo', titulo: 'El equipo', texto: 'El equipo completo, uno por uno, cada cual con su frase. La alineación titular.' },
             { zona: 'visita', titulo: 'La visita de Plotty', texto: 'Plotty recorre la oficina y sale a la calle. Una asistencia de cancha completa.' },
-            { zona: 'teaser', titulo: 'BiPlot en 30 segundos', texto: 'De las planillas al sistema en treinta segundos. Contraataque.' },
             { zona: 'fundos', titulo: 'Fundos 360', texto: 'Fundos: del primer llamado a la escritura, sin perder la pelota.' },
             { zona: 'haru', titulo: 'Haru 360', texto: 'Haru: cada mesa en tiempo real y la comanda en la cocina, sin papel.' },
             { zona: 'nuhome', titulo: 'Nu Home 360', texto: 'Nu Home: de la maqueta a la llave, en una sola jugada.' },
