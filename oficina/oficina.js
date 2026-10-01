@@ -508,9 +508,10 @@
   }
   $('#panel-cerrar').addEventListener('click', cerrarPanel);
   document.addEventListener('keydown', function (e) {
+    // Con la tele prendida, el teclado es sólo de ella (también si el foco quedó afuera)
+    if (rep.abierta) { if (!tele.contains(e.target)) teclaTele(e); return; }
     if (e.key !== 'Escape') return;
     if (window.innerWidth < 900 && !menu.classList.contains('cerrado')) { alternarMenu(false); $('#recorrer-toggle').focus(); return; }
-    if ($('#lightbox') && !$('#lightbox').hidden) { cerrarLightbox(); return; }
     // En una sala propia, Escape cierra primero la tarjeta (o el recorrido); después, sale a la calle
     if (enSala) { if (propia && escapePropia()) return; salirSala(); return; }
     if (!panel.hidden) cerrarPanel();
@@ -523,7 +524,9 @@
     var en = e.target.closest('[data-entrar]');
     if (en) { e.preventDefault(); entrarSala(en.getAttribute('data-entrar'), { boton: invocador }); return; }
     var g = e.target.closest('[data-grande]');
-    if (g) { e.preventDefault(); abrirLightbox(g.getAttribute('data-grande'), g.getAttribute('data-grande-v')); return; }
+    if (g) { e.preventDefault(); abrirTele(g.getAttribute('data-grande'), g); return; }
+    var pt = e.target.closest('[data-tele-prender]');
+    if (pt) { e.preventDefault(); abrirTele(null, pt); return; }
     var ru = e.target.closest('[data-rubro]');
     if (ru) { e.preventDefault(); verRubro(ru.getAttribute('data-rubro'), true); return; }
     var pi = e.target.closest('[data-pin]');
@@ -659,13 +662,15 @@
       htmlFichero(MUSEO ? 'h4' : 'h3', false) +
       '<p class="nota">Los casos de referencia del núcleo (negocios ilustrativos, no clientes) están en la estantería.</p>' + chipsEquipo(['pepa']);
   }
-  // BiPlot.TV desde la calle: el canal por dentro, el botón para entrar y la programación, que se ve directo con sonido
+  // BiPlot.TV desde la calle: el canal por dentro, el botón para entrar, la tele (se prende ahí mismo) y la programación,
+  // que se ve directo con sonido
   function htmlTv() {
     var S = SALAS.tv;
     return '<div class="media media-sala vista-sala" data-vista-sala="tv" role="img" aria-label="BiPlot.TV por dentro: el canal de BiPlot"></div>' +
       '<p class="bp-etiqueta">' + esc(S.etiqueta) + '</p><h2 id="panel-titulo" tabindex="-1">' + esc(S.titulo) + '</h2><p>' + esc(S.texto) + '</p>' +
-      '<div class="acciones entrar-sala"><button type="button" class="bp-btn primario" data-entrar="tv"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Entrar al canal</button></div>' +
-      '<h3>La programación</h3>' + htmlProgramas(programasTv(), false) + '<p class="nota">Cada video sale en horizontal y en vertical: se ve el que calza con tu pantalla.</p>' + chipsEquipo(['aby', 'felipe']);
+      '<div class="acciones entrar-sala"><button type="button" class="bp-btn primario" data-entrar="tv"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Entrar al canal</button>' +
+      '<button type="button" class="bp-btn" data-tele-prender="1"><span class="ico" aria-hidden="true">' + icono('tv') + '</span>Prender la tele</button></div>' +
+      '<h3>La programación</h3>' + htmlProgramas(programasTv(), false) + '<p class="nota">Cada video se abre en la tele del canal, con toda la programación: se cambia de canal sin salir. Sale en horizontal o en vertical, según tu pantalla.</p>' + chipsEquipo(['aby', 'felipe']);
   }
   // La programación de BiPlot.TV, en el orden de su cartelera: cada video con su pantalla, de qué es, su nombre y cuánto
   // dura. En la calle se ve directo con sonido; en el canal, cada uno abre su tarjeta (con el video y lo que cuenta)
@@ -1406,13 +1411,14 @@
   // Los botones de la empresa (negro y dorado): diseñar (el cotizador), recorrer con una asesora y, si hay WhatsApp de la
   // empresa, hablar con una asesora. Nunca el WhatsApp de BiPlot en la sala de una empresa: sólo en la de BiPlot (el museo),
   // con { cta: true }. Los que son objetos llevan a otra parte: { sala } a la sala de ese caso, { zona } a otra tarjeta de la
-  // sala, { hq } a BiPlot HQ, { url } a otra página (en otra pestaña) y { chat } a la conversación con Plotty.
+  // sala, { hq } a BiPlot HQ, { url } a otra página (en otra pestaña), { chat } a la conversación con Plotty y { tele }
+  // prende la tele de BiPlot.TV.
   function botonesPropia(lista) {
-    var PP = propia.P, h = '';
+    var PP = propia.P, h = '', conTele = lista.some(function (b) { return b && b.tele; });
     lista.forEach(function (b) {
       if (b === 'disenar' && PP.disenar) h += '<a class="sp-btn negro" href="' + esc(PP.disenar.url) + '" target="_blank" rel="noopener">' + esc(PP.disenar.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>';
-      // (sin cotizador, como en el museo, el recorrido es el botón principal)
-      if (b === 'recorrer' && (PP.recorrido || []).length) h += '<button type="button" class="sp-btn ' + (PP.disenar ? 'borde' : 'negro') + '" data-recorrer="1">' + esc(textoPropia('recorrer', 'Recorrer con una asesora')) + '</button>';
+      // (sin cotizador ni tele, como en el museo, el recorrido es el botón principal)
+      if (b === 'recorrer' && (PP.recorrido || []).length) h += '<button type="button" class="sp-btn ' + (PP.disenar || conTele ? 'borde' : 'negro') + '" data-recorrer="1">' + esc(textoPropia('recorrer', 'Recorrer con una asesora')) + '</button>';
       if (b === 'hablar' && PP.whatsapp) h += '<a class="sp-btn borde" href="' + esc(whatsappPropia()) + '" target="_blank" rel="noopener">' + esc(textoPropia('hablar', 'Hablar con una asesora')) + '<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>';
       if (!b || typeof b !== 'object') return;
       if (b.sala && salaDe(b.sala)) h += '<button type="button" class="sp-btn negro" data-sala-ir="' + esc(b.sala) + '">' + esc(b.texto || 'Entrar a su sala') + '</button>';
@@ -1421,6 +1427,7 @@
       if (b.url) h += '<a class="sp-btn borde" href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(b.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>';
       if (b.cta) h += '<a class="bp-cta" href="' + esc(whatsapp(esVentas(propia.id) ? 'Hola BiPlot, vengo de la sala de ventas de la oficina y quiero agendar un diagnóstico.' : 'Hola BiPlot, vi ' + propia.pr.nombre + ' en la oficina y quiero agendar un diagnóstico.')) + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>';
       if (b.chat) h += '<button type="button" class="sp-btn borde" data-abrir="chat:plotty">' + esc(b.texto || 'Conversar con Plotty') + '</button>';
+      if (b.tele) h += '<button type="button" class="sp-btn negro" data-tele-prender="1">' + esc(b.texto || 'Prender la tele') + '</button>';
     });
     return h;
   }
@@ -1557,7 +1564,8 @@
     if (b.hasAttribute('data-sala-ir')) { e.preventDefault(); entrarSala(b.getAttribute('data-sala-ir'), { directo: true }); return; }
     if (b.hasAttribute('data-zona-ir')) { e.preventDefault(); abrirTarjeta(b.getAttribute('data-zona-ir'), { desde: b }); return; }
     if (b.hasAttribute('data-abrir')) { e.preventDefault(); var v = b.getAttribute('data-abrir').split(':'); abrir({ tipo: v[0], id: v[1] }, false, $('#recorrer-toggle')); return; }
-    if (b.hasAttribute('data-grande')) { e.preventDefault(); abrirLightbox(b.getAttribute('data-grande'), b.getAttribute('data-grande-v'), b); return; }
+    if (b.hasAttribute('data-grande')) { e.preventDefault(); abrirTele(b.getAttribute('data-grande'), b); return; }
+    if (b.hasAttribute('data-tele-prender')) { e.preventDefault(); abrirTele(null, b); return; }
     if (b.classList.contains('copiar')) { copiar(b); return; }
     if (b.classList.contains('compartir')) compartir(b);
   }
@@ -1682,7 +1690,7 @@
   // Mientras está abierta, el foco se queda en ella (también si un clic en la imagen lo soltó)
   frenteEl.addEventListener('mousedown', function (e) { if (propia && propia.frente && Date.now() - propia.frenteT < 350) e.preventDefault(); });
   document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Tab' || !propia || !propia.frente) return;
+    if (e.key !== 'Tab' || !propia || !propia.frente || rep.abierta) return;
     var f = Array.prototype.slice.call(frenteEl.querySelectorAll('button, a[href], [tabindex="0"]')).filter(function (x) { return x.offsetParent !== null; });
     if (!f.length) return;
     var i = f.indexOf(document.activeElement);
@@ -1690,7 +1698,8 @@
     else if (!e.shiftKey && (i === f.length - 1 || i < 0)) { e.preventDefault(); f[0].focus(); }
   });
   document.addEventListener('focusin', function (e) {
-    if (propia && propia.frente && !frenteEl.contains(e.target)) { var h = frenteEl.querySelector('#sala-frente-t'); if (h) h.focus({ preventScroll: true }); }
+    // (la tele, si se prende desde la vista de frente, queda encima y se lleva el foco)
+    if (propia && propia.frente && !rep.abierta && !frenteEl.contains(e.target)) { var h = frenteEl.querySelector('#sala-frente-t'); if (h) h.focus({ preventScroll: true }); }
   });
 
   // ── «Recorrer con una asesora»: la cámara va zona por zona y la asesora se para al lado de cada una ──
@@ -1944,20 +1953,356 @@
     if (auto) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } else v.setAttribute('controls', '');
   }
   function detenerMedios(caja) { var v = (caja || panelCuerpo).querySelector('video'); if (v) { v.pause(); v.removeAttribute('src'); v.load(); } }
-  var lightbox = $('#lightbox'), lbVideo = $('#lightbox video'), lbDesde = null;
-  function abrirLightbox(h, v, desde) {
-    lbDesde = desde || null;
-    lbVideo.src = (v && window.innerHeight > window.innerWidth) ? v : h;
-    lightbox.hidden = false; lbVideo.muted = false;
-    var pr = lbVideo.play(); if (pr && pr.catch) pr.catch(function () {});
-    $('#lightbox-cerrar').focus();
+
+  /* ── La tele de BiPlot.TV: todo «Ver con sonido» de la oficina se ve aquí ── */
+  // Se prende en el video que se tocó, con toda la programación a mano (la cartelera de BiPlot.TV, en datos.js): se cambia
+  // de canal con CH ▲▼, con los números o con la guía, y en el celular deslizando. Entre canal y canal, un golpe de
+  // estática con el número del que entra (con movimiento reducido o la oficina en pausa, el corte es directo). Al terminar,
+  // Felipe anuncia el siguiente con su frase del recorrido y a los cinco segundos pasa solo. Marca lo visto, retoma donde
+  // quedaste y termina en el último canal, «Tu proyecto» (el cierre de la cartelera), con «Agenda tu diagnóstico».
+  // En el computador es un televisor con su control remoto; en el celular (y en una tablet parada), la pantalla entera con
+  // una barra abajo, y el video en vertical si el celular está parado.
+  var tele = $('#tele'), CANALES = null, repV = null, nieve = null;
+  var rep = { i: 0, abierta: false, desde: null, sigue: null, osd: null, cambio: null, pintado: -1, vert: false, fondo: [], vistos: [] };
+  var TELE_CEL = window.matchMedia('(max-width: 699px), (max-height: 560px), (orientation: portrait) and (max-width: 1024px)');
+  var IT = {
+    pausa: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"/></svg>',
+    sonido: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    mudo: '<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    cerrar: '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    arriba: '<svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    abajo: '<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    izq: '<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    der: '<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    visto: '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    apagar: '<svg viewBox="0 0 24 24"><path d="M12 3.5v8M7.2 6.6a7.2 7.2 0 1 0 9.6 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    guia: '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>'
+  };
+  function dosCifras(n) { return (n < 10 ? '0' : '') + n; }
+  function minutos(s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + dosCifras(s % 60); }
+  function leerJson(k) { try { return JSON.parse(leer(k) || 'null'); } catch (e) { return null; } }
+  function guardarJson(k, v) { guardar(k, JSON.stringify(v)); }
+  // Los canales: la programación, en el orden de la cartelera, con lo que dice Felipe de cada video en su recorrido; al
+  // final, el cierre de la cartelera (tu proyecto)
+  function canalesTele() {
+    var P = SALAS.tv.salaPropia, Z = P.zonas, R = {};
+    (P.recorrido || []).forEach(function (p) { R[p.zona] = p.texto; });
+    var C = programasTv().map(function (id, k) {
+      var d = Z[id], v = videoDe(d);
+      return { id: id, n: k + 1, nombre: d.nombre, ceja: d.ceja, dur: d.duracion || '', mini: MEDIOS + '../tv/pantalla-' + (d.pantalla || id) + '.webp',
+        h: v.h, v: v.v || v.h, poster: v.poster, botones: d.botones || [], relato: R[id] || '' };
+    });
+    var F = Z.cartelera && Z.cartelera.cierre;
+    if (F) C.push({ id: 'tuproyecto', n: C.length + 1, tu: true, nombre: F.nombre, ceja: F.ceja, titulo: F.titulo, texto: F.texto, dur: '', relato: F.relato || '' });
+    return C;
   }
-  function cerrarLightbox() {
-    lbVideo.pause(); lbVideo.removeAttribute('src'); lbVideo.load(); lightbox.hidden = true;
-    var b = lbDesde && document.contains(lbDesde) ? lbDesde : panelCuerpo.querySelector('.media-grande'); lbDesde = null; if (b) b.focus();
+  function teleCelular() { return TELE_CEL.matches; }
+  function teleVertical() { return teleCelular() && window.innerHeight > window.innerWidth; }
+  function fuenteTele(c) { return teleVertical() ? c.v : c.h; }
+  function canalTele() { return CANALES[rep.i]; }
+  // Los botones de cada video: los de su tarjeta del canal (su sala, BiPlot HQ, la conversación con Plotty o una página)
+  function botonesTele(c) {
+    var conSala = c.botones.some(function (b) { return b.sala && salaDe(b.sala); });
+    return c.botones.map(function (b, k) {
+      var cls = 'bp-btn chico' + ((b.sala && salaDe(b.sala)) || (!conSala && k === c.botones.length - 1) ? ' primario' : '');
+      if (b.url) return '<a class="' + cls + '" href="' + esc(b.url) + '" target="_blank" rel="noopener">' + esc(b.texto) + '<span class="ico" aria-hidden="true">' + icono('afuera') + '</span><span class="sr">(se abre en otra pestaña)</span></a>';
+      if (b.sala && salaDe(b.sala)) return '<button type="button" class="' + cls + '" data-tele-sala="' + esc(b.sala) + '">' + esc(b.texto || 'Entrar a su sala') + '</button>';
+      if (b.hq) return '<button type="button" class="' + cls + '" data-tele-hq="1">' + esc(b.texto || 'Pasar a BiPlot HQ') + '</button>';
+      if (b.chat) return '<button type="button" class="' + cls + '" data-tele-chat="1">' + esc(b.texto || 'Conversar con Plotty') + '</button>';
+      return '';
+    }).join('');
   }
-  $('#lightbox-cerrar').addEventListener('click', cerrarLightbox);
-  lightbox.addEventListener('click', function (e) { if (e.target === lightbox) cerrarLightbox(); });
+  function htmlTele() {
+    var F = CANALES[CANALES.length - 1], felipe = PERSONAL.felipe;
+    var teclas = CANALES.map(function (c, k) {
+      return '<button type="button" class="tele-tecla' + (c.tu ? ' es-tu' : '') + '" data-canal="' + k + '" aria-label="' + esc('Canal ' + c.n + ': ' + c.nombre) + '">' + c.n + '</button>';
+    }).join('');
+    var guia = CANALES.map(function (c, k) {
+      return '<li><button type="button" class="tele-fila" data-canal="' + k + '"><span class="tele-fila-n">' + dosCifras(c.n) + '</span>' +
+        (c.tu ? '<span class="tele-ajuste" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>' : '<img src="' + esc(c.mini) + '" alt="" width="160" height="90" loading="lazy">') +
+        '<span class="tele-fila-txt"><small>' + esc(c.ceja) + '</small><b>' + esc(c.nombre) + '</b></span><span class="tele-fila-dur">' + esc(c.tu ? '—' : c.dur) + '</span>' +
+        '<span class="tele-visto" aria-hidden="true">' + IT.visto + '</span><span class="sr tele-sr-visto"> (ya lo viste)</span></button></li>';
+    }).join('');
+    return '<div class="tele-velo"></div>' +
+      '<button type="button" class="tele-cerrar" data-tele="cerrar" aria-label="Apagar la tele">' + IT.cerrar + '</button>' +
+      '<p class="sr" aria-live="polite" data-t="anuncio"></p>' +
+      '<div class="tele-escena">' +
+        '<div class="tele-caja">' +
+          '<svg class="tele-antena" viewBox="0 0 140 56" aria-hidden="true"><path d="M70 54L26 12M70 54L114 12"/><circle cx="26" cy="12" r="8"/><circle cx="114" cy="12" r="8"/></svg>' +
+          '<div class="tele-pantalla">' +
+            '<video class="tele-video" playsinline preload="metadata"></video>' +
+            '<div class="tele-nieve" aria-hidden="true"><b></b></div>' +
+            '<div class="tele-osd" aria-hidden="true"><b class="tele-osd-n"><small>CH</small><span data-t="n"></span></b><span class="tele-osd-txt"><span class="tele-ceja" data-t="ceja"></span><b data-t="nombre"></b><span class="tele-hora" data-t="hora"></span></span></div>' +
+            (F.tu ? '<div class="tele-carta" hidden><div class="tele-barras" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
+              '<div class="tele-carta-caja"><p class="tele-ceja">Canal ' + dosCifras(F.n) + ' · ' + esc(F.nombre) + '</p><h3>' + esc(F.titulo) + '</h3><p>' + esc(F.texto) + '</p>' +
+              '<div class="tele-carta-botones"><a class="bp-cta" href="' + esc(whatsapp('Hola BiPlot, vi ' + SALAS.tv.nombre + ' en la oficina y quiero agendar un diagnóstico.')) + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>' +
+              '<button type="button" class="bp-btn" data-tele="inicio">Volver al canal 01</button></div></div></div>' : '') +
+            '<div class="tele-sigue" role="status" hidden><div class="tele-sigue-cab"><span class="tele-ceja">A continuación · <b data-s="n"></b></span>' +
+              '<span class="tele-cuenta" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5"/><circle class="tele-cuenta-v" cx="18" cy="18" r="15.5"/></svg><b data-s="cuenta"></b></span></div>' +
+              '<div class="tele-sigue-prog"><img data-s="mini" alt="" width="160" height="90"><span><b data-s="nombre"></b><small data-s="ceja"></small></span></div>' +
+              '<p class="tele-relato">' + avatar('felipe') + '<span><small>' + esc(felipe.nombre + ' · ' + felipe.rol) + '</small><q data-s="relato"></q></span></p>' +
+              '<div class="tele-sigue-botones"><button type="button" class="bp-btn chico primario" data-tele="ya"><span class="ico" aria-hidden="true">' + icono('play') + '</span>Ver ahora</button>' +
+              '<button type="button" class="bp-btn chico" data-tele="quedar">Quedarme aquí</button></div></div>' +
+            '<div class="tele-retoma" role="status" hidden><span>Seguimos donde quedaste, en el <b data-r="t"></b></span><button type="button" class="bp-btn chico" data-tele="principio">Desde el principio</button></div>' +
+            '<div class="tele-guia" hidden><div class="tele-guia-cab"><p class="tele-ceja">Guía de programación</p><button type="button" class="bp-btn chico" data-tele="guia">Cerrar la guía</button></div>' +
+              '<ol aria-label="Los canales de BiPlot.TV">' + guia + '</ol></div>' +
+            '<div class="tele-linea" aria-hidden="true"><i data-t="avance"></i></div>' +
+          '</div>' +
+          '<div class="tele-bisel"><span class="tele-led" aria-hidden="true"></span><span class="tele-marca" aria-hidden="true">BiPlot<b>.TV</b></span><div class="tele-botones" data-t="botones"></div></div>' +
+        '</div>' +
+        '<div class="tele-control" role="group" aria-label="Control remoto">' +
+          '<div class="tele-c-arriba"><button type="button" class="tele-redondo" data-tele="cerrar" aria-label="Apagar la tele">' + IT.apagar + '</button>' +
+            '<span class="tele-ir" aria-hidden="true"></span><button type="button" class="tele-redondo" data-tele="mudo"></button></div>' +
+          '<div class="tele-cruz">' +
+            '<button type="button" class="tele-cruz-b arr" data-tele="sig" aria-label="Canal siguiente">' + IT.arriba + '<small aria-hidden="true">CH</small></button>' +
+            '<button type="button" class="tele-cruz-b izq" data-tele="atras" aria-label="Retroceder 10 segundos">' + IT.izq + '</button>' +
+            '<button type="button" class="tele-cruz-ok" data-tele="play" data-foco></button>' +
+            '<button type="button" class="tele-cruz-b der" data-tele="adelante" aria-label="Adelantar 10 segundos">' + IT.der + '</button>' +
+            '<button type="button" class="tele-cruz-b aba" data-tele="ant" aria-label="Canal anterior"><small aria-hidden="true">CH</small>' + IT.abajo + '</button>' +
+          '</div>' +
+          '<div class="tele-teclado">' + teclas + '<button type="button" class="tele-tecla tele-tecla-guia" data-tele="guia" aria-label="Guía de programación" aria-expanded="false">' + IT.guia + '<small aria-hidden="true">GUÍA</small></button></div>' +
+          '<p class="tele-marca tele-c-pie" aria-hidden="true">BiPlot<b>.TV</b></p>' +
+        '</div>' +
+        // En el celular, los botones del video van sobre la barra: canal anterior, el canal (abre la guía) y canal siguiente
+        '<div class="tele-botones tele-botones-cel" data-t="botones"></div>' +
+        '<div class="tele-mando"><button type="button" class="tele-redondo" data-tele="ant" aria-label="Canal anterior">' + IT.abajo + '</button>' +
+          '<button type="button" class="tele-mando-canal" data-tele="guia" data-foco aria-expanded="false"><b data-t="n"></b><span><small data-t="ceja"></small><span data-t="nombre"></span></span>' + IT.guia + '<span class="sr"> (guía de programación)</span></button>' +
+          '<button type="button" class="tele-redondo" data-tele="sig" aria-label="Canal siguiente">' + IT.arriba + '</button></div>' +
+      '</div>' +
+      '<p class="tele-ayuda" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> cambia de canal · <kbd>1</kbd>…<kbd>' + Math.min(9, CANALES.length) + '</kbd> · <kbd>Espacio</kbd> pausa · <kbd>Esc</kbd> apaga</p>' +
+      '<p class="tele-desliza" aria-hidden="true">' + IT.arriba + 'Desliza para cambiar de canal</p>';
+  }
+  function construirTele() {
+    CANALES = canalesTele();
+    rep.vistos = leerJson('tv-vistos') || [];
+    tele.innerHTML = htmlTele();
+    repV = tele.querySelector('.tele-video');
+    ['play', 'pause', 'volumechange'].forEach(function (ev) { repV.addEventListener(ev, function () { pintarTele(); if (ev === 'pause') mostrarOsd(); }); });
+    repV.addEventListener('timeupdate', avanceTele);
+    repV.addEventListener('loadedmetadata', avanceTele);
+    repV.addEventListener('ended', function () { marcarVisto(canalTele()); mostrarSigue(); });
+    // Un clic (o un toque) en el video lo pausa; al mover el mouse sobre la pantalla aparece el canal
+    repV.addEventListener('click', function () { alternarTele(); mostrarOsd(); });
+    var pantalla = tele.querySelector('.tele-pantalla'), p0 = null;
+    pantalla.addEventListener('mousemove', function () { if (rep.abierta) mostrarOsd(); });
+    // En el celular, deslizar hacia arriba sube de canal (como los reels) y hacia abajo lo baja
+    pantalla.addEventListener('touchstart', function (e) { var t = e.touches[0]; p0 = { x: t.clientX, y: t.clientY }; }, { passive: true });
+    pantalla.addEventListener('touchend', function (e) {
+      if (!p0 || !tele.querySelector('.tele-guia').hidden) { p0 = null; return; }
+      var t = e.changedTouches[0], dx = t.clientX - p0.x, dy = t.clientY - p0.y; p0 = null;
+      if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx)) irCanal(rep.i + (dy < 0 ? 1 : -1));
+    }, { passive: true });
+    // La línea de abajo de la pantalla también adelanta (con el mouse)
+    tele.querySelector('.tele-linea').addEventListener('click', function (e) {
+      if (canalTele().tu || !repV.duration) return;
+      var r = this.getBoundingClientRect(); repV.currentTime = repV.duration * Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+    });
+    tele.addEventListener('click', clicTele);
+    tele.addEventListener('keydown', teclaTele);
+    // Al girar el celular, el video cambia al formato que calza, en el mismo segundo
+    window.addEventListener('resize', function () {
+      if (!rep.abierta || canalTele().tu || teleVertical() === rep.vert) return;
+      var t = repV.currentTime, andando = !repV.paused;
+      rep.vert = teleVertical(); repV.src = fuenteTele(canalTele()); repV.currentTime = t;
+      if (andando) { var p = repV.play(); if (p && p.catch) p.catch(function () {}); }
+    });
+  }
+  // Se prende en el video que se tocó (src); sin video («Prender la tele»), en el último canal que se vio, donde quedó, o en el 01
+  function abrirTele(src, desde) {
+    if (!CANALES) construirTele();
+    var k = -1, punto = leerJson('tv-punto');
+    if (src) CANALES.forEach(function (c, j) { if (k < 0 && !c.tu && (c.h === src || c.v === src)) k = j; });
+    else if (punto) CANALES.forEach(function (c, j) { if (c.id === punto.id) k = j; });
+    if (k < 0) k = 0;
+    rep.desde = desde || document.activeElement; rep.abierta = true;
+    tele.hidden = false; document.body.classList.add('tele-prendida');
+    // Los videos sin sonido de las tarjetas se detienen mientras tanto
+    rep.fondo = Array.prototype.filter.call(document.querySelectorAll('video.panel-video'), function (v) { return !v.paused; });
+    rep.fondo.forEach(function (v) { v.pause(); });
+    var c = CANALES[k], t = punto && punto.id === c.id && punto.t > 5 ? punto.t : 0;
+    irCanal(k, { directo: true, t: t });
+    if (t) retomarTele(t);
+    // En el celular parado, la primera vez: «Desliza para cambiar de canal»
+    if (teleVertical() && !leer('tv-desliza')) { tele.classList.add('ver-desliza'); guardar('tv-desliza', '1'); setTimeout(function () { tele.classList.remove('ver-desliza'); }, 2600); }
+    var f = Array.prototype.filter.call(tele.querySelectorAll('[data-foco]'), function (x) { return x.offsetParent !== null; })[0];
+    if (f) f.focus({ preventScroll: true });
+  }
+  function cerrarTele(sinFoco) {
+    if (!rep.abierta) return;
+    pararSigue(); alternarGuia(false); clearTimeout(rep.cambio); tele.classList.remove('cambiando');
+    // Si quedó a la mitad, la próxima vez sigue desde ahí
+    var c = canalTele(), t = repV.currentTime, d = repV.duration;
+    guardarJson('tv-punto', !c.tu && t > 5 && d && t < d - 5 ? { id: c.id, t: Math.floor(t) } : null);
+    repV.pause(); repV.removeAttribute('src'); repV.load();
+    if (document.fullscreenElement && tele.contains(document.fullscreenElement)) document.exitFullscreen().catch(function () {});
+    tele.hidden = true; rep.abierta = false; document.body.classList.remove('tele-prendida');
+    rep.fondo.forEach(function (v) { if (document.contains(v)) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } });
+    rep.fondo = [];
+    if (!sinFoco && rep.desde && document.contains(rep.desde)) rep.desde.focus({ preventScroll: true });
+    rep.desde = null;
+  }
+  function irCanal(k, o) {
+    o = o || {};
+    var N = CANALES.length; k = (k % N + N) % N;
+    pararSigue(); ocultarTele('.tele-retoma'); alternarGuia(false); tele.classList.remove('ver-desliza');
+    rep.i = k;
+    var c = CANALES[k], poner = function () {
+      tele.classList.toggle('en-tu', !!c.tu);
+      var carta = tele.querySelector('.tele-carta'); if (carta) carta.hidden = !c.tu;
+      if (c.tu) { repV.pause(); repV.removeAttribute('src'); repV.removeAttribute('poster'); repV.load(); }
+      else {
+        rep.vert = teleVertical(); repV.poster = c.poster || ''; repV.src = fuenteTele(c);
+        if (o.t) repV.currentTime = o.t;
+        var p = repV.play(); if (p && p.catch) p.catch(function () {});
+      }
+      pintarTele(); avanceTele(); mostrarOsd();
+    };
+    clearTimeout(rep.cambio);
+    if (o.directo || reducido || quieta()) { tele.classList.remove('cambiando'); poner(); return; }
+    // Un tercio de segundo de estática, con el número del canal que entra
+    var nv = tele.querySelector('.tele-nieve');
+    nv.style.backgroundImage = 'url(' + nieveTele() + ')'; nv.querySelector('b').textContent = dosCifras(c.n);
+    tele.classList.add('cambiando'); repV.pause();
+    rep.cambio = setTimeout(function () { poner(); rep.cambio = setTimeout(function () { tele.classList.remove('cambiando'); }, 260); }, 220);
+  }
+  function nieveTele() {
+    if (nieve) return nieve;
+    var cv = document.createElement('canvas'); cv.width = 192; cv.height = 108;
+    var x = cv.getContext('2d'), im = x.createImageData(192, 108);
+    for (var k = 0; k < im.data.length; k += 4) { var g = Math.random() * 255 | 0; im.data[k] = g; im.data[k + 1] = Math.min(255, g + 6); im.data[k + 2] = Math.min(255, g + 14); im.data[k + 3] = 255; }
+    x.putImageData(im, 0, 0); nieve = cv.toDataURL(); return nieve;
+  }
+  function alternarTele() { if (canalTele().tu) return; if (repV.paused) { var p = repV.play(); if (p && p.catch) p.catch(function () {}); } else repV.pause(); }
+  function saltarTele(s) { if (canalTele().tu || !repV.duration) return; repV.currentTime = Math.max(0, Math.min(repV.duration - .2, repV.currentTime + s)); mostrarOsd(); }
+  function completaTele() {
+    var el = tele.querySelector('.tele-pantalla');
+    if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
+    else if (el.requestFullscreen) el.requestFullscreen().catch(function () {});
+  }
+  function ocultarTele(s) { var e = tele.querySelector(s); if (e) e.hidden = true; }
+  function retomarTele(t) {
+    var r = tele.querySelector('.tele-retoma'); r.querySelector('[data-r="t"]').textContent = minutos(t); r.hidden = false;
+    clearTimeout(r.t); r.t = setTimeout(function () { r.hidden = true; }, 6000);
+  }
+  function marcarVisto(c) { if (c && !c.tu && rep.vistos.indexOf(c.id) < 0) { rep.vistos.push(c.id); guardarJson('tv-vistos', rep.vistos); pintarTele(); } }
+  // Al terminar: el siguiente, anunciado por Felipe, con cinco segundos para quedarse
+  function mostrarSigue() {
+    var s = CANALES[(rep.i + 1) % CANALES.length], el = tele.querySelector('.tele-sigue'), n = 5;
+    el.querySelector('[data-s="n"]').textContent = dosCifras(s.n);
+    el.querySelector('[data-s="nombre"]').textContent = s.nombre;
+    el.querySelector('[data-s="ceja"]').textContent = s.ceja + (s.dur ? ' · ' + s.dur : '');
+    var im = el.querySelector('[data-s="mini"]'); im.hidden = !!s.tu; if (!s.tu) im.src = s.mini;
+    el.classList.toggle('es-tu', !!s.tu);
+    el.querySelector('[data-s="relato"]').textContent = s.relato; el.querySelector('.tele-relato').hidden = !s.relato;
+    var cu = el.querySelector('[data-s="cuenta"]'); cu.textContent = n;
+    el.hidden = false; tele.classList.add('siguiendo');
+    el.classList.remove('corre'); void el.offsetWidth; if (!reducido && !quieta()) el.classList.add('corre');
+    clearInterval(rep.sigue);
+    rep.sigue = setInterval(function () { n--; cu.textContent = Math.max(n, 0); if (n <= 0) irCanal(rep.i + 1); }, 1000);
+  }
+  function pararSigue() { clearInterval(rep.sigue); rep.sigue = null; ocultarTele('.tele-sigue'); tele.classList.remove('siguiendo'); }
+  // El cartel con el número y el nombre, como en la tele: se esconde solo (y se queda con el video en pausa)
+  function mostrarOsd() {
+    tele.classList.add('con-osd'); clearTimeout(rep.osd);
+    rep.osd = setTimeout(function () { if (!repV.paused) tele.classList.remove('con-osd'); }, 3500);
+  }
+  function alternarGuia(si) {
+    var g = tele.querySelector('.tele-guia'); if (!g) return;
+    var antes = !g.hidden; si = si == null ? !antes : si;
+    g.hidden = !si; tele.classList.toggle('con-guia', si);
+    tele.querySelectorAll('[aria-expanded]').forEach(function (b) { b.setAttribute('aria-expanded', si ? 'true' : 'false'); });
+    if (si) { var a = g.querySelector('.tele-fila.actual') || g.querySelector('.tele-fila'); if (a) a.focus({ preventScroll: true }); }
+    else if (antes && g.contains(document.activeElement)) {
+      var b = Array.prototype.filter.call(tele.querySelectorAll('[aria-expanded]'), function (x) { return x.offsetParent !== null; })[0]; if (b) b.focus({ preventScroll: true });
+    }
+  }
+  function pintarTele() {
+    if (!CANALES) return;
+    var c = canalTele();
+    // Los textos y los botones del video, sólo al cambiar de canal (así no se pierde el foco al pausar)
+    if (rep.pintado !== rep.i) {
+      rep.pintado = rep.i;
+      tele.querySelectorAll('[data-t]').forEach(function (e) {
+        var k = e.getAttribute('data-t');
+        if (k === 'n') e.textContent = dosCifras(c.n);
+        else if (k === 'nombre') e.textContent = c.nombre;
+        else if (k === 'ceja') e.textContent = c.ceja;
+        else if (k === 'botones') e.innerHTML = c.tu ? '' : botonesTele(c);
+        else if (k === 'anuncio') e.textContent = 'Canal ' + dosCifras(c.n) + ': ' + c.nombre;
+      });
+    }
+    tele.querySelectorAll('[data-canal]').forEach(function (b) {
+      var k = +b.getAttribute('data-canal');
+      b.classList.toggle('actual', k === rep.i);
+      b.classList.toggle('visto', rep.vistos.indexOf(CANALES[k].id) > -1);
+      if (k === rep.i) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+    });
+    tele.querySelectorAll('[data-tele="play"]').forEach(function (b) { b.innerHTML = repV.paused ? icono('play') : IT.pausa; b.setAttribute('aria-label', repV.paused ? 'Reproducir' : 'Pausar'); });
+    tele.querySelectorAll('[data-tele="mudo"]').forEach(function (b) { b.innerHTML = repV.muted ? IT.mudo : IT.sonido; b.setAttribute('aria-label', repV.muted ? 'Activar el sonido' : 'Silenciar'); });
+    tele.classList.toggle('pausada', repV.paused);
+  }
+  function avanceTele() {
+    var c = canalTele(), d = repV.duration || 0, t = repV.currentTime || 0, f = c.tu || !d ? 0 : t / d;
+    tele.querySelector('[data-t="avance"]').style.transform = 'scaleX(' + f + ')';
+    tele.querySelector('[data-t="hora"]').textContent = c.tu ? '' : minutos(t) + ' / ' + (d ? minutos(d) : c.dur);
+    if (f > .9) marcarVisto(c);
+  }
+  function clicTele(e) {
+    // Un clic fuera de la tele (en lo oscuro) la apaga
+    if (e.target === tele || e.target.classList.contains('tele-velo') || e.target.classList.contains('tele-escena')) { cerrarTele(); return; }
+    var b = e.target.closest('[data-tele], [data-canal], [data-tele-sala], [data-tele-hq], [data-tele-chat]'); if (!b || !tele.contains(b)) return;
+    if (b.hasAttribute('data-canal')) { irCanal(+b.getAttribute('data-canal')); return; }
+    // Los botones del video llevan a otra parte: la tele se apaga y se va para allá
+    if (b.hasAttribute('data-tele-sala')) { e.preventDefault(); cerrarTele(true); entrarSala(b.getAttribute('data-tele-sala'), { directo: true }); return; }
+    if (b.hasAttribute('data-tele-hq')) { e.preventDefault(); cerrarTele(true); entrarOficina({ boton: $('#recorrer-toggle') }); return; }
+    if (b.hasAttribute('data-tele-chat')) { e.preventDefault(); cerrarTele(true); abrir({ tipo: 'chat', id: 'plotty' }, false, $('#recorrer-toggle')); return; }
+    var a = b.getAttribute('data-tele');
+    if (a === 'cerrar') cerrarTele();
+    else if (a === 'sig') irCanal(rep.i + 1);
+    else if (a === 'ant') irCanal(rep.i - 1);
+    else if (a === 'play') { alternarTele(); mostrarOsd(); }
+    else if (a === 'mudo') repV.muted = !repV.muted;
+    else if (a === 'atras') saltarTele(-10);
+    else if (a === 'adelante') saltarTele(10);
+    else if (a === 'guia') alternarGuia();
+    else if (a === 'ya') irCanal(rep.i + 1);
+    else if (a === 'quedar') pararSigue();
+    else if (a === 'inicio') irCanal(0);
+    else if (a === 'principio') { ocultarTele('.tele-retoma'); repV.currentTime = 0; }
+  }
+  // Mientras está prendida, el teclado es sólo de la tele
+  function teclaTele(e) {
+    e.stopPropagation();
+    var k = e.key, g = tele.querySelector('.tele-guia'), enGuia = !g.hidden && g.contains(e.target);
+    if (k === 'Escape') { e.preventDefault(); if (!g.hidden) alternarGuia(false); else cerrarTele(); return; }
+    if (k === 'Tab') {
+      var f = Array.prototype.filter.call(tele.querySelectorAll('button, a[href]'), function (x) { return x.offsetParent !== null; });
+      if (!f.length) return;
+      var i = f.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && (i === f.length - 1 || i < 0)) { e.preventDefault(); f[0].focus(); }
+      return;
+    }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    // En la guía, las flechas recorren los canales
+    if (enGuia && /^Arrow/.test(k)) {
+      var filas = Array.prototype.slice.call(g.querySelectorAll('.tele-fila')), j = filas.indexOf(document.activeElement);
+      if (j > -1) { e.preventDefault(); filas[(j + (k === 'ArrowDown' || k === 'ArrowRight' ? 1 : -1) + filas.length) % filas.length].focus(); }
+      return;
+    }
+    if (/^[1-9]$/.test(k) && +k <= CANALES.length) { e.preventDefault(); irCanal(+k - 1); return; }
+    if (k === ' ' && /^(BUTTON|A)$/.test(e.target.tagName)) return;
+    if (k === ' ' || k === 'k' || k === 'K') { e.preventDefault(); alternarTele(); mostrarOsd(); return; }
+    if (k === 'm' || k === 'M') { e.preventDefault(); repV.muted = !repV.muted; return; }
+    if (k === 'f' || k === 'F') { e.preventDefault(); completaTele(); return; }
+    if (k === 'ArrowUp' || k === 'PageUp') { e.preventDefault(); irCanal(rep.i + 1); return; }
+    if (k === 'ArrowDown' || k === 'PageDown') { e.preventDefault(); irCanal(rep.i - 1); return; }
+    if (k === 'ArrowRight' || k === 'ArrowLeft') { e.preventDefault(); saltarTele(k === 'ArrowRight' ? 10 : -10); }
+  }
+  // Si el foco se escapa (un clic en otra parte), vuelve a la tele
+  document.addEventListener('focusin', function (e) {
+    if (!rep.abierta || tele.contains(e.target)) return;
+    var f = Array.prototype.filter.call(tele.querySelectorAll('[data-foco]'), function (x) { return x.offsetParent !== null; })[0]; if (f) f.focus({ preventScroll: true });
+  });
 
   /* ── Recorrido guiado: lo guía Atlas, que ve todo desde arriba ── */
   var GUIA = [

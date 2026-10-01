@@ -19,6 +19,8 @@
 // BiPlot.TV, el canal de BiPlot, en su edificio de la plaza: un clic sobre el edificio abre su vista previa con la
 // programación; adentro, la cartelera, el estreno con su video, la pantalla del centro de frente (como en la NBA, con sus
 // seis repeticiones), el camarín con «Agenda tu diagnóstico» y el recorrido con Felipe (con movimiento reducido, quieta).
+// La tele de BiPlot.TV, donde se ve todo «Ver con sonido»: su control remoto (en el celular, la barra y deslizar), los canales
+// con ↑ y los números, la guía, «A continuación» con Felipe, lo visto, el canal 08 «Tu proyecto», «Prender la tele» y Escape.
 // Al final carga casos de prueba (sólo en el navegador de la prueba, no en datos.js) para revisar las calles por rubro,
 // sus techos, las plantillas y las fases. NAVEGADOR=<ruta> usa otro Chromium.
 //
@@ -689,6 +691,103 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(/^https:\/\/wa\.me\/\d+\?text=/.test(tvr.camarin.cta) && tvr.camarin.chat, 'el camarín lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
   ok(tvr.rec.p1.n === '1 de 12' && tvr.rec.p1.t === 'La cartelera' && tvr.rec.p4.n === '4 de 12' && tvr.rec.p4.t === 'La pantalla del centro' &&
     tvr.rec.p1.guia === tvr.rec.esperado[0] && tvr.rec.p4.guia === tvr.rec.esperado[1] && tvr.rec.fin, '«Recorrer con Felipe» va de la cartelera a la pantalla del centro (4 de 12), Felipe habla en cada parada y Escape lo termina');
+  // La tele de BiPlot.TV: todo «Ver con sonido» se ve en ella, con su control remoto (en el celular, la barra de abajo), toda
+  // la programación y el último canal, «Tu proyecto». Se prueba la tele, no el video: donde el navegador no trae H.264 (la
+  // nube) los videos no cargan, así que el final de un video se simula
+  await abrir(w, h, movil, false, '#tv');
+  await sleep(700);
+  const te = await js(`(async () => {
+    const PP = window.OFICINA_DATOS.salas.tv.salaPropia, Z = PP.zonas, P = {};
+    window.OFICINA_DATOS.proyectos.forEach((p) => { P[p.id] = p; });
+    const canales = Z.cartelera.programas.map((id) => typeof Z[id].video === 'string' ? P[Z[id].video].media : Z[id].video);
+    const tele = document.querySelector('#tele'), src = () => tele.querySelector('.tele-video')?.getAttribute('src') || '';
+    const visible = (s) => [...tele.querySelectorAll(s)].filter((x) => x.offsetParent !== null);
+    const tecla = async (k) => { (document.activeElement || document.body).dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true })); await ${W(650)}; };
+    const vert = ${movil}, r = { lightbox: !!document.querySelector('#lightbox'), esperado: canales.map((c) => vert ? c.v : c.h) };
+    // Todo «Ver con sonido» de la oficina (los casos y el teaser de la recepción) está en la programación
+    r.fuera = window.OFICINA_DATOS.proyectos.filter((p) => p.media).map((p) => p.media.h).concat(['../assets/casos/teaser-biplot-h.mp4']).filter((h) => !canales.some((c) => c.h === h));
+    // El estreno: su tarjeta y «Ver con sonido»
+    const z = document.querySelector('.zona-sala[data-zona="estreno"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(500)};
+    const g = document.querySelector('#sala-tarjeta [data-grande]'); g.click(); await ${W(400)};
+    r.abre = { visible: !tele.hidden, modal: tele.getAttribute('aria-modal'), src: src(), foco: tele.contains(document.activeElement), n: tele.querySelector('.tele-osd [data-t="n"]').textContent,
+      nombre: tele.querySelector('.tele-osd [data-t="nombre"]').textContent, teclas: tele.querySelectorAll('.tele-tecla[data-canal]').length, filas: tele.querySelectorAll('.tele-fila').length,
+      control: visible('.tele-control').length, mando: visible('.tele-mando').length, botones: visible('[data-t="botones"] .bp-btn').map((b) => b.textContent).join(' | '),
+      desborde: document.documentElement.scrollWidth > innerWidth };
+    // En el celular, deslizar hacia arriba sube de canal y hacia abajo lo baja
+    if (vert) {
+      const p = tele.querySelector('.tele-pantalla'), t = (y) => new Touch({ identifier: 1, target: p, clientX: 180, clientY: y });
+      const desliza = async (a, b) => { p.dispatchEvent(new TouchEvent('touchstart', { touches: [t(a)], changedTouches: [t(a)], bubbles: true })); p.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [t(b)], bubbles: true })); await ${W(650)}; return src(); };
+      r.desliza = [await desliza(600, 300), await desliza(300, 600)];
+    }
+    // Canal siguiente (↑), un número (5) y la guía (con las flechas)
+    await tecla('ArrowUp'); r.sube = { src: src(), anuncio: tele.querySelector('[data-t="anuncio"]').textContent };
+    await tecla('5'); r.cinco = src();
+    visible('[aria-expanded]')[0].click(); await ${W(300)};
+    const guia = tele.querySelector('.tele-guia');
+    r.guia = { abierta: !guia.hidden, foco: document.activeElement.getAttribute('data-canal') };
+    await tecla('ArrowDown'); r.guia.baja = document.activeElement.getAttribute('data-canal');
+    document.activeElement.click(); await ${W(650)};
+    Object.assign(r.guia, { src: src(), cerrada: guia.hidden, vuelve: tele.contains(document.activeElement) && document.activeElement.hasAttribute('aria-expanded') });
+    // Al terminar: queda visto y aparece «A continuación», con Felipe; pasa solo (o con «Ver ahora»)
+    tele.querySelector('.tele-video').dispatchEvent(new Event('ended')); await ${W(200)};
+    const s = tele.querySelector('.tele-sigue');
+    r.sigue = { visible: !s.hidden, nombre: s.querySelector('[data-s="nombre"]').textContent, relato: s.querySelector('[data-s="relato"]').textContent,
+      esperado: (PP.recorrido.find((p) => p.zona === 'nuhome') || {}).texto, visto: JSON.parse(localStorage.getItem('oficina-tv-vistos') || '[]').includes('haru'),
+      marca: tele.querySelector('.tele-fila[data-canal="5"]').classList.contains('visto') };
+    if (${w === 1440}) await ${W(5600)}; else { s.querySelector('[data-tele="ya"]').click(); await ${W(650)}; }
+    r.sigue.solo = src();
+    // El último canal: «Tu proyecto», con un solo «Agenda tu diagnóstico»
+    await tecla('8');
+    const carta = tele.querySelector('.tele-carta');
+    r.tu = { carta: !carta.hidden, cta: visible('a.bp-cta').map((a) => a.href), botones: visible('[data-t="botones"] .bp-btn').length, titulo: carta.querySelector('h3').textContent };
+    // Escape apaga la tele: la sala y la tarjeta siguen ahí, y el foco vuelve a «Ver con sonido»
+    await tecla('Escape');
+    r.cierra = { apagada: tele.hidden, sala: document.body.classList.contains('en-sala-propia') && !document.querySelector('#sala-tarjeta').hidden, foco: document.activeElement === g, hash: location.hash };
+    // «Prender la tele», en la cartelera: el canal donde quedaste, con «Seguimos donde quedaste»
+    localStorage.setItem('oficina-tv-punto', JSON.stringify({ id: 'visita', t: 30 }));
+    const zc = document.querySelector('.zona-sala[data-zona="cartelera"]'); zc.focus(); zc.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(500)};
+    const pr = document.querySelector('#sala-tarjeta [data-tele-prender]');
+    r.prender = { boton: pr ? pr.textContent : '' };
+    if (pr) { pr.click(); await ${W(400)}; }
+    const rt = tele.querySelector('.tele-retoma');
+    Object.assign(r.prender, { src: src(), retoma: rt.hidden ? '' : rt.textContent });
+    await tecla('Escape');
+    localStorage.removeItem('oficina-tv-punto'); localStorage.removeItem('oficina-tv-vistos');
+    return r; })()`);
+  ok(!te.lightbox && !te.fuera.length, 'el video solo ya no está: todo «Ver con sonido» de la oficina (los casos y el teaser de la recepción) está en la programación de la tele' +
+    (te.fuera.length ? ' (fuera: ' + te.fuera.join(', ') + ')' : ''));
+  ok(te.abre.visible && te.abre.modal === 'true' && te.abre.src === te.esperado[0] && te.abre.foco && te.abre.n === '01' && te.abre.nombre === 'Un bocado a la vez' && te.abre.teclas === 8 &&
+    te.abre.filas === 8 && (movil ? te.abre.mando === 1 && te.abre.control === 0 : te.abre.control === 1 && te.abre.mando === 0) &&
+    /^Descargar Rumbo.* \| Entrar a la sala de Rumbo$/.test(te.abre.botones) && !te.abre.desborde,
+    '«Ver con sonido» del estreno prende la tele en el canal 01, ' + (movil ? 'en vertical y con la barra abajo' : 'con su control remoto') + ', sus 8 canales y los botones del video (' + te.abre.botones + ')');
+  if (movil) ok(te.desliza && te.desliza[0] === te.esperado[1] && te.desliza[1] === te.esperado[0], 'en el celular, deslizar hacia arriba sube de canal y hacia abajo lo baja');
+  ok(te.sube.src === te.esperado[1] && te.sube.anuncio === 'Canal 02: Pasa, la oficina está abierta' && te.cinco === te.esperado[4], '↑ sube al canal 02 (y lo anuncia) y la tecla 5 pone Fundos 360');
+  ok(te.guia.abierta && te.guia.foco === '4' && te.guia.baja === '5' && te.guia.src === te.esperado[5] && te.guia.cerrada && te.guia.vuelve,
+    'la guía se abre en el canal que está al aire, se recorre con las flechas y, al elegir Haru 360, se cierra y el foco vuelve a su botón');
+  ok(te.sigue.visible && te.sigue.nombre === 'Nu Home 360' && te.sigue.relato === te.sigue.esperado && te.sigue.visto && te.sigue.marca && te.sigue.solo === te.esperado[6],
+    'al terminar Haru 360 queda visto y aparece «A continuación: Nu Home 360», con la frase de Felipe; ' + (w === 1440 ? 'a los cinco segundos pasa solo' : '«Ver ahora» lo pone'));
+  ok(te.tu.carta && te.tu.cta.length === 1 && /^https:\/\/wa\.me\/\d+\?text=Hola%20BiPlot%2C%20vi%20BiPlot\.TV%20en%20la%20oficina/.test(te.tu.cta[0]) && te.tu.botones === 0 &&
+    te.tu.titulo === 'Este canal todavía no sale al aire', 'el canal 08 es «Tu proyecto»: la carta de ajuste, con un solo «Agenda tu diagnóstico» (el WhatsApp de BiPlot)');
+  ok(te.cierra.apagada && te.cierra.sala && te.cierra.foco && te.cierra.hash === '#tv', 'Escape apaga la tele: la sala y la tarjeta del estreno siguen ahí y el foco vuelve a «Ver con sonido»');
+  ok(te.prender.boton === 'Prender la tele' && te.prender.src === te.esperado[2] && /Seguimos donde quedaste, en el 0:30/.test(te.prender.retoma),
+    '«Prender la tele», en la cartelera, vuelve al canal donde quedaste (03), con «Seguimos donde quedaste»');
+  // Con movimiento reducido, sin estática ni la cuenta animada
+  if (w === 1440) {
+    await abrir(w, h, movil, true, '#tv');
+    await sleep(500);
+    const rm = await js(`(async () => {
+      const z = document.querySelector('.zona-sala[data-zona="estreno"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(500)};
+      document.querySelector('#sala-tarjeta [data-grande]').click(); await ${W(300)};
+      const tele = document.querySelector('#tele'), v = tele.querySelector('.tele-video');
+      document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+      const r = { estatica: tele.classList.contains('cambiando'), src: v.getAttribute('src') };
+      v.dispatchEvent(new Event('ended')); await ${W(100)};
+      r.anillo = tele.querySelector('.tele-sigue').classList.contains('corre');
+      document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      localStorage.removeItem('oficina-tv-punto'); localStorage.removeItem('oficina-tv-vistos');
+      return r; })()`);
+    ok(!rm.estatica && /media\/tv\/teaser-equipo-h\.mp4$/.test(rm.src) && !rm.anillo, 'con movimiento reducido, la tele cambia de canal sin estática y la cuenta de «A continuación» no se anima');
+  }
   await abrir(w, h, movil, false, '#conversar');
   ok((await js("!!document.querySelector('#panel:not([hidden]) .chat') && document.querySelector('#svg-escena').classList.contains('oficina-abierta')")), 'oficina/#conversar entra y abre la conversación con Plotty');
   // La página para compartir de una sala lleva a la oficina, dentro de la sala

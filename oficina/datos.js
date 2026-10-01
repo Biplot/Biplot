@@ -288,7 +288,9 @@
          en la NBA: los capítulos animados, la oficina y su equipo, y cada caso en 45 segundos. Cada video sale en horizontal (16:9) y en vertical (9:16): al verlo con sonido
          se elige el que calza con la pantalla. Los dos nuevos están en media/tv/, con los pósters de las pantallas de la
          sala; los demás, donde ya estaban (video: '<id>' usa el del caso). Aby graba en el set y Felipe guía el recorrido:
-         lo cuenta como si fuera un partido. Sus frases son de ejemplo hasta que las aprueben. */
+         lo cuenta como si fuera un partido. Sus frases son de ejemplo hasta que las aprueben. Todo «Ver con sonido» de la
+         oficina abre la tele del canal: sus canales son los programas de la cartelera y, al final, su cierre; al terminar
+         cada video, Felipe anuncia el siguiente con su frase del recorrido. */
       tv: { nombre: 'BiPlot.TV', sub: 'El canal de BiPlot', etiqueta: 'BiPlot.TV · El canal de BiPlot',
         titulo: 'El canal de BiPlot',
         texto: 'Todos los videos de BiPlot en un solo lugar: los capítulos animados, la oficina y su equipo, y cada caso en 45 segundos. Hoy se estrena «Un bocado a la vez», el capítulo de Rumbo.',
@@ -315,9 +317,14 @@
           ],
           zonas: {
             cartelera: { nombre: 'La cartelera', ceja: 'BiPlot.TV · Programación', titulo: 'Toda la programación',
-              texto: 'Siete videos, y cada uno sale en horizontal y en vertical. Toca uno para verlo con sonido. Vienen más capítulos.',
+              texto: 'Siete videos, y cada uno sale en horizontal y en vertical. Toca uno para verlo con sonido, o prende la tele y cambia de canal. Vienen más capítulos.',
+              // Los canales de la tele, en este orden (del 01 en adelante); un video nuevo es una línea más aquí
               programas: ['estreno', 'equipo', 'visita', 'teaser', 'fundos', 'haru', 'nuhome'],
-              botones: ['recorrer'] },
+              // El último canal de la tele, después de la programación: tu proyecto, que todavía no sale al aire
+              cierre: { nombre: 'Tu proyecto', ceja: 'Próximamente', titulo: 'Este canal todavía no sale al aire',
+                texto: 'Los capítulos cuentan cómo trabaja BiPlot, caso por caso. El próximo puede ser el tuyo: todo empieza con un diagnóstico, y la primera sesión es sin costo.',
+                relato: 'El próximo capítulo puede ser el tuyo. ¿Entras a la cancha?' },
+              botones: [{ tele: true, texto: 'Prender la tele' }, 'recorrer'] },
             estreno: { nombre: 'Un bocado a la vez', ceja: 'Estreno · Rumbo', titulo: '¿Cómo te comes un elefante?', duracion: '0:50', pantalla: 'estreno',
               texto: 'Una muchacha sueña con llegar a la cumbre del cerro, pero no se puede ni levantar del sofá. Abre Rumbo y del celular sale una cría de elefante que le marca el camino, un punto por día. El elefante crece con su constancia, de Cría a Sabio, hasta que llegan juntos arriba. En clave de rock de estadio.',
               chips: ['Capítulo', '0:50', '16:9 y 9:16'],
