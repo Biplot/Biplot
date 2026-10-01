@@ -78,3 +78,29 @@ eligió entre tres: el estudio, una pantalla gigante al aire libre y una torre).
 ```bash
 SALIDA=/tmp/sala-tv node oficina/_herramientas/propuestas/dibujar-sala.mjs tv
 ```
+
+## El reproductor de BiPlot.TV (en curso: tres opciones)
+
+`reproductor/` es la propuesta de un reproductor donde se cambian los videos sin salir de él (hoy, «Ver con sonido» abre
+un solo video, sin lista ni siguiente). Es una maqueta y no está en la oficina: `capturas.mjs` abre la oficina en
+BiPlot.TV, le pone encima `reproductor.js` y `reproductor.css` (toman el lugar del video en grande) y fotografía las tres
+versiones, en el computador (1440 × 900) y en el celular (390 × 844):
+
+- **remoto**, el control remoto: se cambia de canal (del 1 al 8, CH ▲▼, o deslizando en el celular), con un golpe de
+  estática y el número del canal, como en la tele; la guía trae toda la programación.
+- **control**, la sala de control: el programa al aire, el que sigue (el previo) y el muro, con un monitor por video; el
+  que se toca sale al aire y «Corte» pasa al siguiente. En el celular, el programa va arriba, en horizontal.
+- **historias**, como las de Instagram: la programación es la barra de arriba y se toca para pasar; en el celular, en
+  vertical y en la pantalla entera.
+
+Las tres toman la programación de la cartelera de `datos.js`, siguen solas al terminar (Felipe anuncia el siguiente con
+su frase del recorrido, de ejemplo), marcan lo visto, retoman donde quedaste y terminan en el canal 08, «Tu proyecto»,
+que todavía no sale al aire: ahí va «Agenda tu diagnóstico».
+
+```bash
+WEBM=<carpeta con las copias .webm> SALIDA=/tmp/reproductor node oficina/_herramientas/propuestas/reproductor/capturas.mjs
+```
+
+Con `remoto`, `control`, `historias` u `hoy` (cómo es hoy) saca sólo esas. `WEBM` hace falta donde Chromium no trae H.264
+(en la nube): cada `.mp4` se sirve desde su copia `.webm`, en la misma ruta dentro de esa carpeta
+(`ffmpeg -i <video>.mp4 -vf scale=960:-2 -c:v libvpx-vp9 -crf 40 -b:v 0 -c:a libopus <video>.webm`; 540 de ancho los verticales).
