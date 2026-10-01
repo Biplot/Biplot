@@ -286,7 +286,7 @@
     var atras = B.principal.atras.replace(/§CASOS§/g, n + (n === 1 ? ' caso' : ' casos')).replace(/§NCASOS§/g, n + (n === 1 ? ' CASO' : ' CASOS')).replace(/§M§/g, medios);
     var zonas = B.principal.zonas.map(function (z) {
       var p = porId[z.id];
-      var nombre = z.id === 'oficina' ? 'BiPlot HQ' : z.id === 'archivo' ? 'El Archivo' : z.id === 'pasaje' ? 'El pasaje' : p ? p.nombre : z.id;
+      var nombre = z.id === 'oficina' ? 'BiPlot HQ' : z.id === 'archivo' ? 'El Archivo' : z.id === 'pasaje' ? 'El pasaje' : z.id === 'tv' ? ((D.salas && D.salas.tv && D.salas.tv.nombre) || 'BiPlot.TV') : p ? p.nombre : z.id;
       return { id: z.id, nombre: nombre, caja: z.caja, foco: z.foco, zoom: 2.1, barrio: true, hq: !!z.hq, calle: z.hq ? '' : 'principal' };
     });
     var L = B.local, yFin = G.y1, xFin = G.x1;

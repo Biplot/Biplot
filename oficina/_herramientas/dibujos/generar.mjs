@@ -268,16 +268,19 @@ console.log('salas.js', kb(salasJs), '·', Object.keys(salas).join(', '), '·', 
 const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const ICONO = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='1.7' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='11.5' cy='20.5' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='16' cy='17' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='23' cy='11' r='2.8' fill='%23FF6B4A'/%3E%3C/svg%3E`;
 for (const id of Object.keys(SALAS)) {
-  // El Archivo no es un proyecto: es el museo de BiPlot (datos.js, salas.archivo)
+  // El Archivo no es un proyecto: es el museo de BiPlot (datos.js, salas.archivo). BiPlot.TV tampoco: es su canal (salas.tv)
   const museo = id === 'archivo' && DATOS.salas.archivo && DATOS.salas.archivo.salaPropia;
-  const pr = museo ? { nombre: DATOS.salas.archivo.nombre, esencia: DATOS.salas.archivo.esencia } : DATOS.proyectos.find((p) => p.id === id);
+  const canal = id === 'tv' && DATOS.salas.tv && DATOS.salas.tv.salaPropia;
+  const propiaBp = museo ? DATOS.salas.archivo : canal ? DATOS.salas.tv : null;
+  const pr = propiaBp ? { nombre: propiaBp.nombre, esencia: propiaBp.esencia } : DATOS.proyectos.find((p) => p.id === id);
   if (!pr) continue;
   const url = `https://biplot.cl/oficina/${id}/`, img = `https://biplot.cl/oficina/kit/png/sala-${id}-og.png`;
   // El local libre tampoco: es la sala de ventas de BiPlot (datos.js, proyectos.libre.salaPropia)
   const ventas = id === 'libre';
-  const titulo = museo ? `${pr.nombre}, el museo de BiPlot` : ventas ? `${pr.nombre}: la sala de ventas de BiPlot` : `${pr.nombre} · La oficina de BiPlot`;
+  const titulo = museo ? `${pr.nombre}, el museo de BiPlot` : ventas ? `${pr.nombre}: la sala de ventas de BiPlot` : canal ? `${pr.nombre}, el canal de BiPlot` : `${pr.nombre} · La oficina de BiPlot`;
   const desc = museo ? `${pr.esencia} Una pieza de cada época y de cada desarrollo, en la oficina de BiPlot.` :
     ventas ? 'Mira cómo se vería tu local en el barrio de BiPlot, cómo avanza tu proyecto y cuánto cuesta. La primera sesión es sin costo.' :
+    canal ? `${pr.esencia} Todos los videos de BiPlot en un solo lugar: pasa al canal en la oficina de BiPlot.` :
     `${pr.esencia} Pasa a la sala de ${pr.nombre} en la oficina de BiPlot y mira lo que construimos.`;
   const html = `<!doctype html>
 <html lang="es">
@@ -298,7 +301,7 @@ for (const id of Object.keys(SALAS)) {
 <meta property="og:image" content="${img}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${escHtml(`${museo ? `${pr.nombre}, el museo de BiPlot, dibujado` : ventas ? 'La sala de ventas de BiPlot dibujada' : `La sala de ${pr.nombre} dibujada`}, con su gente. ${pr.esencia}`)}">
+<meta property="og:image:alt" content="${escHtml(`${museo ? `${pr.nombre}, el museo de BiPlot, dibujado` : ventas ? 'La sala de ventas de BiPlot dibujada' : canal ? `${pr.nombre}, el canal de BiPlot, dibujado` : `La sala de ${pr.nombre} dibujada`}, con su gente. ${pr.esencia}`)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${img}">
 <link rel="icon" href="${ICONO}">
@@ -315,10 +318,10 @@ a { color: #17C3B2; font-weight: 600; }
 </head>
 <body>
 <main>
-  <img src="../kit/png/sala-${id}-og.png" alt="${escHtml(museo ? `${pr.nombre}, el museo de BiPlot` : ventas ? 'La sala de ventas de BiPlot' : `La sala de ${pr.nombre}`)}" width="1200" height="630">
+  <img src="../kit/png/sala-${id}-og.png" alt="${escHtml(museo ? `${pr.nombre}, el museo de BiPlot` : ventas ? 'La sala de ventas de BiPlot' : canal ? `${pr.nombre}, el canal de BiPlot` : `La sala de ${pr.nombre}`)}" width="1200" height="630">
   <h1>${escHtml(pr.nombre)}</h1>
   <p>${escHtml(pr.esencia)}</p>
-  <p><a href="../#${id}">${museo ? 'Entrar al museo en la oficina de BiPlot' : ventas ? 'Entrar a la sala de ventas en la oficina de BiPlot' : 'Entrar a la sala en la oficina de BiPlot'}</a></p>
+  <p><a href="../#${id}">${museo ? 'Entrar al museo en la oficina de BiPlot' : ventas ? 'Entrar a la sala de ventas en la oficina de BiPlot' : canal ? 'Entrar al canal en la oficina de BiPlot' : 'Entrar a la sala en la oficina de BiPlot'}</a></p>
 </main>
 </body>
 </html>
