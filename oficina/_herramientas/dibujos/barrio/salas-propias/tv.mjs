@@ -1,14 +1,14 @@
-// BiPlot.TV, el canal de BiPlot: el último local de la calle principal, después de El Archivo. Un estudio de televisión
+// BiPlot.TV, el canal de BiPlot: un edificio propio en la plaza, junto a BiPlot HQ (barrio.mjs). Un estudio de televisión
 // con su sala de estreno, donde están todos los videos de BiPlot. Al fondo a la izquierda, el cine: la pantalla grande con
 // el estreno (hoy «Un bocado a la vez», el capítulo de Rumbo), su telón y dos filas de butacas con público. Al medio, el set
 // de Aby y Felipe: la pared con la marca del canal, el escritorio, dos focos y dos cámaras. A la derecha, el camarín, que
 // espera al próximo invitado: tu proyecto (el coral es sólo para eso). En el muro de la izquierda, cómo se hace un
 // capítulo (guion y look, animación y música, al aire) y el muro de pantallas, con un programa en cada una y su consola
-// adelante. En la entrada, la cartelera con la programación y el carro de las cabritas. Aby graba en el set y Felipe
-// guía el recorrido: lo cuenta como si fuera un partido. Sus textos (tarjetas, burbujas y recorrido) están en datos.js
+// adelante. En la entrada, la cartelera con la programación y el carro de las cabritas. Al medio, colgando sobre la
+// cancha como en la NBA, la pantalla del centro: las repeticiones del canal y el marcador, con sus anillos de luces.
+// Aby graba en el set y Felipe guía el recorrido: lo cuenta como si fuera un partido. Sus textos (tarjetas, burbujas y recorrido) están en datos.js
 // (salas.tv.salaPropia).
 import { montar, base, registrar, planoXen, plantaAlta, silla, txt, mono, PELO, Z, PIEL, EA, r1 } from './comun.mjs';
-import * as S from '../locales.mjs';
 
 const AZUL = '#0E2A47', AZUL2 = '#12375E', NOCHE = '#0B1726', CIAN = '#17C3B2', MENTA = '#7FD8CF', ACERO = '#35679A';
 const NIEBLA = '#F2F4F7', GRIS = '#C9D4DF', SUAVE = '#8FA3B8', CEJA = '#0B6F66', CORAL = '#FF6B4A', LUZ = '#FFF1CF';
@@ -23,7 +23,7 @@ const W = 20, D = 14, HM = 2.6;
 const PANTALLA = (id) => `§M§../tv/pantalla-${id}.webp`;
 
 // El isotipo de BiPlot.TV, en un cuadrado de s × s: un televisor con sus antenas y, en la pantalla, el isotipo de BiPlot
-// (los ejes, dos puntos cian y el punto final coral). También va en el techo del local (barrio.mjs).
+// (los ejes, dos puntos cian y el punto final coral). También va en el techo del edificio (barrio.mjs).
 export const ISO_TV = (s) => `<g transform="scale(${(s / 100).toFixed(3)})">` +
   `<path d="M50 25L33 9M50 25L67 9" stroke="${MENTA}" stroke-width="4.5" stroke-linecap="round"/><circle cx="33" cy="9" r="5.5" fill="${MENTA}"/><circle cx="67" cy="9" r="5.5" fill="${MENTA}"/>` +
   `<rect x="5" y="25" width="90" height="68" rx="17" fill="${AZUL}" stroke="${CIAN}" stroke-width="4.5"/><rect x="16" y="35" width="68" height="48" rx="9" fill="${NOCHE}"/>` +
@@ -121,6 +121,79 @@ const CARTELERA = `<rect width="250" height="128" rx="6" fill="${NOCHE}"/>` +
   `<path d="M40 83H210" stroke="#DCE2E7" stroke-width="1.2"/>` + mono(125, 96, 'BIPLOT HQ · LA VISITA · BIPLOT', 7.6, AZUL, ' text-anchor="middle"') +
   mono(125, 108, 'FUNDOS 360° · HARU 360 · NU HOME 360', 7.6, AZUL, ' text-anchor="middle"');
 
+// ───────── La pantalla del centro, como en la NBA ─────────
+// Las repeticiones que pasa, una tras otra: [pantalla, rótulo]. Son seis porque oficina.css (.loc-repe) turna seis, cada
+// una 3,5 segundos; sin movimiento queda la primera, el estreno.
+const REPES = [['estreno', 'ESTRENO · UN BOCADO A LA VEZ'], ['visita', 'LA VISITA DE PLOTTY'], ['teaser', 'BIPLOT EN 30 SEGUNDOS'],
+  ['fundos', 'FUNDOS 360°'], ['haru', 'HARU 360'], ['nuhome', 'NU HOME 360']];
+// Los números del marcador, en siete segmentos y un poco inclinados (los apagados se ven tenues). s es el alto de un
+// dígito: cada uno avanza 0,7 s y los dos puntos del reloj, 0,22 s.
+const SEGMENTOS = { 0: 'abcdef', 1: 'bc', 2: 'abdeg', 3: 'abcdg', 4: 'bcfg', 5: 'acdfg', 6: 'acdefg', 7: 'abc', 8: 'abcdefg', 9: 'abcdfg', '-': 'g' };
+const anchoLed = (texto, s) => [...String(texto)].reduce((a, c) => a + (c === ':' ? 0.22 : 0.7) * s, 0) - 0.16 * s;
+function led(x, y, s, texto, col, apagado = '#14212F') {
+  const w = s * 0.54, t = s * 0.12, g = t * 0.3;
+  let h = '', cx = x;
+  for (const c of String(texto)) {
+    if (c === ':') { h += [0.32, 0.68].map((f) => `<rect x="${r1(cx)}" y="${r1(y + s * f - t / 2)}" width="${r1(t)}" height="${r1(t)}" rx="${r1(t * 0.3)}" fill="${col}"/>`).join(''); cx += s * 0.22; continue; }
+    const on = SEGMENTOS[c] || '', hz = (yy) => [cx + t / 2 + g, yy, w - t - 2 * g, t], vt = (xx, yy) => [xx, yy, t, s / 2 - t / 2 - 2 * g];
+    const seg = { a: hz(y), g: hz(y + s / 2 - t / 2), d: hz(y + s - t), f: vt(cx, y + t / 2 + g), b: vt(cx + w - t, y + t / 2 + g), e: vt(cx, y + s / 2 + g), c: vt(cx + w - t, y + s / 2 + g) };
+    for (const [n, [sx, sy, sw, sh]] of Object.entries(seg)) h += `<rect x="${r1(sx)}" y="${r1(sy)}" width="${r1(sw)}" height="${r1(sh)}" rx="${r1(t * 0.45)}" fill="${on.includes(n) ? col : apagado}"/>`;
+    cx += s * 0.7;
+  }
+  return `<g transform="translate(${r1(x)} ${r1(y + s)}) skewX(-6) translate(${r1(-x)} ${r1(-(y + s))})">${h}</g>`;
+}
+// La trama de luces de una pantalla de estadio
+const PUNTOS = (id, w, h) => `<defs><pattern id="${id}" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r=".9" fill="${MENTA}" opacity=".1"/></pattern></defs><rect width="${w}" height="${h}" rx="4" fill="url(#${id})"/>`;
+// El marcador: BiPlot.TV juega de local (sus puntos son los videos del canal), el reloj marca lo que dura el estreno y la
+// visita es tu proyecto, que todavía no entra a la cancha. En la pantalla (240 × 130) y de frente (1280 × 720).
+const VIDEOS = String(MURO_TV.length + 1).padStart(2, '0');
+const MARCADOR = `<rect width="240" height="130" rx="4" fill="#05090E"/>` + PUNTOS('tv-puntos', 240, 130) +
+  mono(14, 17, 'LOCAL', 7.5, MENTA, ' letter-spacing="1.2"') + MARCA(14, 34, 13) + led(16, 42, 44, VIDEOS, CIAN) + mono(16, 100, 'VIDEOS', 7, SUAVE, ' letter-spacing="1"') +
+  mono(120, 17, 'ESTRENO', 7.5, MENTA, ' text-anchor="middle" letter-spacing="1.2"') + led(120 - anchoLed('0:50', 30) / 2, 26, 30, '0:50', LUZ) +
+  `<rect x="94" y="66" width="52" height="15" rx="7.5" fill="${NOCHE}" stroke="${CIAN}" stroke-width="1.2"/><circle cx="103" cy="73.5" r="3" fill="${CIAN}"/>` + mono(125, 76.5, 'EN VIVO', 7, NIEBLA, ' text-anchor="middle" letter-spacing=".6"') +
+  mono(226, 17, 'VISITA', 7.5, MENTA, ' text-anchor="end" letter-spacing="1.2"') + mono(226, 33, 'TU PROYECTO', 9, NIEBLA, ' text-anchor="end" letter-spacing=".4"') +
+  led(226 - anchoLed('--', 44), 42, 44, '--', MENTA) + mono(226, 100, 'EL PRÓXIMO', 7, SUAVE, ' text-anchor="end" letter-spacing="1"') +
+  `<path d="M0 108H240V126Q240 130 236 130H4Q0 130 0 126Z" fill="${CIAN}"/>` + mono(120, 122.5, '¿ENTRAS A LA CANCHA?', 8.5, NOCHE, ' text-anchor="middle" letter-spacing="1"');
+// Las repeticiones, con su rótulo abajo (fuera de la oficina, en una imagen fija, se ve sólo la primera)
+const REPETICIONES = `<rect width="240" height="130" rx="4" fill="#05090E"/>` +
+  REPES.map(([id, rotulo], i) => `<g class="loc-repe${i ? '' : ' primera'}"${i ? ` opacity="0" style="animation-delay:${i * 3.5}s"` : ''}>` +
+    `<image href="${PANTALLA(id)}" x="4" y="4" width="232" height="122" preserveAspectRatio="xMidYMid slice"/>` +
+    `<rect x="4" y="104" width="232" height="22" fill="#05090E" opacity=".82"/>` + mono(12, 118.5, rotulo, 7.6, NIEBLA, ' letter-spacing=".5"') + '</g>').join('') +
+  `<rect x="4" y="4" width="232" height="122" fill="url(#brillo-pantalla)"/>` +
+  `<rect x="10" y="10" width="66" height="16" rx="3" fill="${NOCHE}"/><circle cx="18" cy="18" r="3" fill="${CIAN}"/>` + mono(25, 21, 'REPETICIÓN', 6.6, NIEBLA, ' letter-spacing=".5"');
+// Un anillo de luces (w × h): la cinta, repetida, corre hacia la izquierda (oficina.css, .loc-led) o queda quieta. El
+// texto lleva espacios duros y su largo fijo (textLength), para que la vuelta no se note.
+const CINTA_LED = ['BIPLOT.TV', 'EN VIVO', 'LAS MEJORES JUGADAS', 'ESTRENO: UN BOCADO A LA VEZ', ''].join('\u00A0·\u00A0');
+function anillo(id, w, h, corre) {
+  const fs = h * 0.62, largo = r1(CINTA_LED.length * fs * 0.6), veces = Math.ceil(w / largo) + 1;
+  const cinta = Array.from({ length: veces }, (_, i) => `<text x="${r1(i * largo)}" y="${r1(h * 0.76)}" font-family="'Space Mono','DejaVu Sans Mono',monospace" font-weight="700" font-size="${r1(fs)}" fill="${CIAN}" textLength="${largo}" lengthAdjust="spacingAndGlyphs">${CINTA_LED}</text>`).join('');
+  return `<defs><clipPath id="${id}"><rect width="${w}" height="${h}"/></clipPath></defs><rect width="${w}" height="${h}" fill="#05090E"/>` +
+    `<g clip-path="url(#${id})"><g${corre ? ` class="loc-led" style="--led:-${largo}px"` : ''}>${cinta}</g></g>`;
+}
+// La panza, debajo de las pantallas: la marca del canal en una cara y el reloj de posesión en la otra (176 × 64; arriba
+// queda una franja libre, que el anillo tapa desde este lado)
+const PANZA_Y = `<rect width="176" height="64" fill="#05090E"/><g transform="translate(16 20)">${ISO_TV(38)}</g>` + MARCA(62, 47, 19);
+const PANZA_X = `<rect width="176" height="64" fill="#05090E"/>` + mono(16, 36, 'POSESIÓN', 8, MENTA, ' letter-spacing="1.2"') + mono(16, 50, 'BIPLOT.TV', 8, SUAVE, ' letter-spacing="1"') +
+  led(176 - 16 - anchoLed('24', 32), 23, 32, '24', LUZ);
+// El techo: el televisor del canal, como en el techo del edificio (220 × 220)
+const TECHO = `<rect width="220" height="220" rx="10" fill="${AZUL}"/><rect x="8" y="8" width="204" height="204" rx="7" fill="none" stroke="${CIAN}" stroke-width="2.4"/>` +
+  `<g transform="translate(50 32)">${ISO_TV(120)}</g>` + MARCA(110, 186, 34, ' text-anchor="middle"');
+// De frente y en grande: el marcador, las repeticiones y las dos cintas
+const MARCADOR_FRENTE = `<rect width="1280" height="720" rx="18" fill="#05090E"/>` + PUNTOS('tv-puntos-f', 1280, 720) +
+  `<path d="M0 18Q0 0 18 0H1262Q1280 0 1280 18V54H0Z" fill="${NOCHE}"/>` + mono(640, 36, 'BIPLOT.TV · EN VIVO · LAS MEJORES JUGADAS · ESTRENO: UN BOCADO A LA VEZ', 19, CIAN, ' text-anchor="middle" letter-spacing="3"') +
+  mono(90, 118, 'LOCAL', 22, MENTA, ' letter-spacing="4"') + `<g transform="translate(88 140)">${ISO_TV(62)}</g>` + MARCA(162, 188, 46) + led(100, 222, 168, VIDEOS, CIAN) +
+  mono(100, 432, 'VIDEOS EN EL CANAL', 18, SUAVE, ' letter-spacing="2"') +
+  mono(640, 118, 'ESTRENO', 22, MENTA, ' text-anchor="middle" letter-spacing="4"') + led(640 - anchoLed('0:50', 120) / 2, 150, 120, '0:50', LUZ) +
+  `<rect x="560" y="300" width="160" height="44" rx="22" fill="${NOCHE}" stroke="${CIAN}" stroke-width="3"/><circle cx="586" cy="322" r="8" fill="${CIAN}"/>` + mono(656, 330, 'EN VIVO', 20, NIEBLA, ' text-anchor="middle" letter-spacing="2"') +
+  mono(640, 390, 'UN BOCADO A LA VEZ', 20, GRIS, ' text-anchor="middle" letter-spacing="2"') +
+  mono(1190, 118, 'VISITA', 22, MENTA, ' text-anchor="end" letter-spacing="4"') + txt(1190, 188, 'TU PROYECTO', 46, NIEBLA, ' text-anchor="end"') + led(1190 - anchoLed('--', 168), 222, 168, '--', MENTA) +
+  mono(1190, 432, 'EL PRÓXIMO CAPÍTULO', 18, SUAVE, ' text-anchor="end" letter-spacing="2"') +
+  `<path d="M470 100V440M810 100V440" stroke="${CIAN}" stroke-opacity=".25" stroke-width="2"/>` +
+  mono(80, 490, 'LAS REPETICIONES', 18, MENTA, ' letter-spacing="3"') +
+  REPES.map(([id, rotulo], i) => { const x = 80 + i * 190; return `<rect x="${x}" y="504" width="176" height="99" rx="6" fill="${NOCHE}"/><image href="${PANTALLA(id)}" x="${x + 3}" y="507" width="170" height="93" preserveAspectRatio="xMidYMid slice"/>` +
+    mono(x, 628, rotulo.replace('ESTRENO · ', ''), 12, GRIS, ' letter-spacing=".5"'); }).join('') +
+  `<path d="M0 666H1280V702Q1280 720 1262 720H18Q0 720 0 702Z" fill="${CIAN}"/>` + mono(640, 701, '¿ENTRAS A LA CANCHA?', 22, NOCHE, ' text-anchor="middle" letter-spacing="4"');
+
 // ───────── Piezas ─────────
 // Una butaca del cine, mirando a la pantalla (hacia el fondo): el respaldo queda hacia adelante
 function butaca(L, x, y, z) {
@@ -190,22 +263,42 @@ function monitor(L, y0, zt, w, h, id, rotulo, dur) {
   planoXen(L, 0.091, y0, zt - h - 0.015, Wp, 11, `<rect width="${Wp}" height="11" rx="2" fill="${NOCHE}"/>` + mono(4, 8.4, rotulo, 7, MENTA, ' letter-spacing=".5"') + mono(Wp - 4, 8.4, dur, 7, GRIS, ' text-anchor="end"'), -38.6);
 }
 
-// ───────── El local en la calle, abierto (4,6 × 4,3) ─────────
-// El adelanto de la sala: la pantalla del estreno, dos filas de butacas con su público, una cámara y la marca del canal
-export function localTv(L) {
-  S.base(L, '#142335', { muroY: MURO, muroX: MURO2 });
-  L.piso(0, 0, DEFS_PISO + mancha(1.6, 0.9, 1.6, 'tv-cine', 1.2), -55);
-  L.planoY(0.3, 0.02, 1.74, 250, 141, `<rect width="250" height="141" fill="#05090E"/><image href="${PANTALLA('estreno')}" x="4" y="4" width="242" height="133" preserveAspectRatio="xMidYMid slice"/>` +
-    `<rect x="4" y="4" width="242" height="133" fill="url(#brillo-pantalla)"/>`, -39);
-  L.planoX(3.95, 1.66, 210, 58, `<g transform="translate(0 2)">${ISO_TV(52)}</g>` + MARCA(60, 40, 29), -39);
-  L.caja(0.35, 2.45, 0, 2.3, 0.75, 0.12, { t: '#1B2B3D', l: '#131F2D', r: '#0E1824' }, 3.0);
-  const publico = { '0.8,1.85': { pelo: '#1A1613', ropa: '#2F7C78', piel: PIEL.morena[0] }, '1.5,2.8': { pelo: '#B5532E', ropa: '#C9A24E', piel: PIEL.clara[0], moño: true } };
-  for (const [y, z] of [[1.85, 0], [2.8, 0.12]]) for (const x of [0.8, 1.5, 2.2]) {
-    butaca(L, x, y, z);
-    const p = publico[x + ',' + y];
-    if (p) deEspaldas(L, x, y - 0.04, z + 0.3, p, x + y + z * 0.5 + 0.2);
+// La pantalla del centro, colgando sobre el medio del estudio. De abajo hacia arriba: la panza (la marca y el reloj de
+// posesión), el anillo de abajo, las pantallas (se ven dos: las repeticiones y el marcador), el anillo de arriba (su
+// cinta corre), el techo con el televisor del canal y los cuatro cables, que se pierden hacia arriba. Va por delante de
+// lo que queda detrás y debajo (la cámara, el foco y quien pasa por abajo).
+function pantallaCentro(L, zona) {
+  // (las caras están dibujadas para un cubo de 2,4: f agranda todo lo demás en la misma proporción)
+  const A = 2.8, f = A / 2.4, X = 10.4 - A / 2, Y = 7.8 - A / 2, Z = 2.95, H = 1.3 * f, X1 = X + A, Y1 = Y + A, k = X1 + Y1 - 2;
+  const caja = (d, z0, h, dk) => L.caja(X + d, Y + d, z0, A - 2 * d, A - 2 * d, h, NEGRO, k + dk);
+  const escala = (svg) => `<g transform="scale(${f.toFixed(4)})">${svg}</g>`;
+  const caras = (d, zTop, ancho, alto, svgY, svgX, dk) => {
+    L.planoY(X + d, Y1 - d + 0.003, zTop, r1(ancho * f), r1(alto * f), escala(svgY), k + dk);
+    planoXen(L, X1 - d + 0.003, Y1 - d, zTop, r1(ancho * f), r1(alto * f), escala(svgX), k + dk + 0.001);
+  };
+  const dp = 0.32 * f, anillos = 0.16 * f, sobra = 0.05 * f, pz = 0.64 * f;
+  caja(dp, Z - anillos - pz, pz, 0);
+  caras(dp, Z - anillos - 0.005, 176, 64, PANZA_Y, PANZA_X, 0.001);
+  caja(-sobra, Z - anillos, anillos, 0.01);
+  caras(-sobra, Z, 250, 16, anillo('tv-led-1', 250, 16, false), anillo('tv-led-2', 250, 16, false), 0.011);
+  caja(0, Z, H, 0.02);
+  caras(0, Z + H, 240, 130, REPETICIONES, MARCADOR, 0.021);
+  caja(-sobra, Z + H, anillos, 0.03);
+  caras(-sobra, Z + H + anillos, 250, 16, anillo('tv-led-3', 250, 16, true), anillo('tv-led-4', 250, 16, true), 0.031);
+  const dt = 0.1 * f, zt = Z + H + anillos + 0.08 * f;
+  L.caja(X + dt, Y + dt, Z + H + anillos, A - 2 * dt, A - 2 * dt, 0.08 * f, { t: AZUL, l: NOCHE, r: '#081A2D' }, k + 0.04);
+  L.piso(X + dt, Y + dt, escala(TECHO), k + 0.041, zt + 0.001);
+  let cables = `<defs><linearGradient id="tv-cable" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${SUAVE}" stop-opacity=".85"/><stop offset="1" stop-color="${SUAVE}" stop-opacity="0"/></linearGradient></defs>`;
+  for (const [cx, cy] of [[X + 0.3, Y + 0.3], [X1 - 0.3, Y + 0.3], [X + 0.3, Y1 - 0.3], [X1 - 0.3, Y1 - 0.3]]) {
+    const [px, py] = L.P(cx, cy, zt);
+    cables += `<rect x="${r1(px - 0.7)}" y="${r1(py - 54)}" width="1.4" height="54" fill="url(#tv-cable)"/>`;
   }
-  camara(L, 3.55, 2.3);
+  L.add(k + 0.05, cables);
+  zona('marcador', { formas: [{ plano: [[X - sobra, Y1 + sobra, zt], [X1 + sobra, Y1 + sobra, zt], [X1 + sobra, Y1 + sobra, Z - anillos], [X - sobra, Y1 + sobra, Z - anillos]] },
+    { plano: [[X1 + sobra, Y1 + sobra, zt], [X1 + sobra, Y - sobra, zt], [X1 + sobra, Y - sobra, Z - anillos], [X1 + sobra, Y1 + sobra, Z - anillos]] },
+    { plano: [[X, Y, zt], [X1, Y, zt], [X1, Y1, zt], [X, Y1, zt]], soloToque: true },
+    { plano: [[X + dp, Y1 - dp, Z - anillos - pz], [X1 - dp, Y1 - dp, Z - anillos - pz], [X1 - dp, Y + dp, Z - anillos - pz]], soloToque: true }],
+  lugar: [X + A / 2, Y + A / 2, zt + 0.7], guia: [7.9, 10.6], frente: { svg: MARCADOR_FRENTE, ancho: 1280, alto: 720 } });
 }
 
 // ───────── La sala ─────────
@@ -216,8 +309,10 @@ export function salaTv(o = {}) {
     let panos = '';
     for (let i = 1; i < 10; i++) panos += `<path d="M${i * 200} 0V1400" stroke="#1C3049" stroke-width="3"/>`;
     for (let j = 1; j < 7; j++) panos += `<path d="M0 ${j * 200}H2000" stroke="#1C3049" stroke-width="3"/>`;
-    const luces = mancha(3.1, 1.6, 2.6, 'tv-cine', 2.0) + mancha(9.8, 2.4, 2.4) + mancha(15.4, 1.9, 1.4) + mancha(15.4, 2.35, 0.7, 'tv-espera');
-    base(E, L, { W, D, HM, piso: '#142335', dibujo: DEFS_PISO + panos + luces, muroY: MURO, muroX: MURO2, zocalo: NOCHE, tope: '#1D3550', canto: '#183048', filete: CIAN });
+    const luces = mancha(3.1, 1.6, 2.6, 'tv-cine', 2.0) + mancha(9.8, 2.4, 2.4) + mancha(15.4, 1.9, 1.4) + mancha(15.4, 2.35, 0.7, 'tv-espera') + mancha(10.4, 7.8, 2.2, 'tv-cine');
+    // El círculo central de la cancha, bajo la pantalla del centro
+    const cancha = `<g fill="none" stroke="${CIAN}" stroke-opacity=".3"><circle cx="1040" cy="780" r="190" stroke-width="6"/><circle cx="1040" cy="780" r="62" stroke-width="5"/></g>`;
+    base(E, L, { W, D, HM, piso: '#142335', dibujo: DEFS_PISO + panos + luces + cancha, muroY: MURO, muroX: MURO2, zocalo: NOCHE, tope: '#1D3550', canto: '#183048', filete: CIAN });
 
     // Los cables de las cámaras, por el piso, hasta la consola
     L.linea([[8.4, 4.9, 0.005], [6.2, 7.6, 0.005], [0.9, 8.4, 0.005]], '#0A0F15', 2.4, -29);
@@ -248,7 +343,7 @@ export function salaTv(o = {}) {
     L.cil(3.82, 3.75, 0.69, 0.08, 0.15, '#F2F4F7', '#DCE2E7', 3.82 + 3.75 + 0.6);
     { const [cx, cy] = L.P(3.82, 3.75, 0.86); L.add(3.82 + 3.75 + 0.61, [[-3, 0], [2, -2], [4, 1], [-1, -3]].map(([dx, dy]) => `<circle cx="${r1(cx + dx)}" cy="${r1(cy + dy)}" r="2.4" fill="#FFF3C4"/>`).join('')); }
     zona('estreno', { formas: [{ plano: [[SX, 0.03, SZ], [SX + SW, 0.03, SZ], [SX + SW, 0.03, SZ - SH], [SX, 0.03, SZ - SH]] }, { piso: [[1.55, 2.4], [4.65, 2.4], [4.65, 4.3], [1.55, 4.3]], alto: 1.0, soloToque: true }],
-      lugar: [SX + SW / 2, 0.05, 2.62], guia: [5.6, 4.4] });
+      lugar: [SX + SW / 2, 0.05, 2.62], guia: [4.7, 5.3] });
 
     // ── El set de Aby y Felipe: la tarima, la pared con la marca, el escritorio, los focos y las cámaras ──
     const TX = 6.6;
@@ -338,6 +433,9 @@ export function salaTv(o = {}) {
     pj('tvReel', 5.95, 10.45, 0, 'i');
     // (en celular se entra viendo de cerca este punto: el set, las cámaras y la cartelera)
     lugar('entrada', 12.6, 6.6, 1.1);
+
+    // Al medio, colgando sobre la cancha: la pantalla del centro
+    pantallaCentro(L, zona);
 
     // Felipe guía el recorrido; mientras tanto, va y viene entre la entrada y el set
     camina('felipe', o.felipe ? [[...o.felipe, 4], [17.4, 8.6, 2], [...o.felipe]] : [[16.6, 12.3, 3], [17.4, 8.6, 2], [12.6, 7.2, 2.5], [7.4, 6.8, 2.5], [12.6, 7.2], [17.4, 8.6]], { vel: 0.45 });

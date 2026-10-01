@@ -810,6 +810,13 @@ button { font: inherit; color: inherit; }
 .loc-haz { transform-box: fill-box; transform-origin: 50% 100%; animation: loc-haz 7s ease-in-out infinite; }
 .loc-haz.otro { animation-delay: -3.5s; }
 @keyframes loc-haz { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+/* La pantalla del centro de BiPlot.TV: seis repeticiones se turnan, 3,5 s cada una (sin movimiento queda la primera), y
+   la cinta de los anillos corre lo que mide su texto (--led, en el dibujo) */
+.loc-repe { opacity: 0; animation: loc-repe 21s linear infinite; }
+.loc-repe.primera { opacity: 1; }
+@keyframes loc-repe { 0% { opacity: 0; } 1.5%, 15.2% { opacity: 1; } 16.7%, 100% { opacity: 0; } }
+.loc-led { animation: loc-led 16s linear infinite; }
+@keyframes loc-led { from { transform: translateX(0); } to { transform: translateX(var(--led)); } }
 .loc-contorno { animation: loc-contorno 2.6s ease-in-out infinite; }
 @keyframes loc-contorno { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .35; } }
 /* Los textos que cambian (cupos, módulos, racha) se turnan */

@@ -283,9 +283,9 @@
             { zona: 'tuproyecto', titulo: 'Tu turno', texto: 'Este pedestal está libre. ¿Será tu proyecto la próxima pieza?' }
           ]
         } },
-      /* BiPlot.TV, el canal de BiPlot, en el último local de la calle principal, después de El Archivo (su dibujo:
-         dibujos/barrio/salas-propias/tv.mjs). Un estudio con su sala de estreno: los capítulos animados, la oficina y su
-         equipo, y cada caso en 45 segundos. Cada video sale en horizontal (16:9) y en vertical (9:16): al verlo con sonido
+      /* BiPlot.TV, el canal de BiPlot, en un edificio propio en la plaza, junto a BiPlot HQ (su dibujo:
+         dibujos/barrio/salas-propias/tv.mjs). Un estudio con su sala de estreno y, al medio, la pantalla del centro, como
+         en la NBA: los capítulos animados, la oficina y su equipo, y cada caso en 45 segundos. Cada video sale en horizontal (16:9) y en vertical (9:16): al verlo con sonido
          se elige el que calza con la pantalla. Los dos nuevos están en media/tv/, con los pósters de las pantallas de la
          sala; los demás, donde ya estaban (video: '<id>' usa el del caso). Aby graba en el set y Felipe guía el recorrido:
          lo cuenta como si fuera un partido. Sus frases son de ejemplo hasta que las aprueben. */
@@ -354,6 +354,9 @@
               texto: 'La pared con la marca del canal, el escritorio, dos focos y dos cámaras. Aby pregunta lo que todos se preguntan y Felipe cuenta lo que hace el equipo como si fuera un partido: quién pasó la pelota, quién la metió y cuánto falta para el final.',
               chips: ['Aby · La corresponsal', 'Felipe · El rostro'],
               botones: [{ hq: true, texto: 'Pasar a BiPlot HQ' }] },
+            marcador: { nombre: 'La pantalla del centro', ceja: 'BiPlot.TV · Como en la NBA', titulo: 'Las mejores jugadas, al centro de la cancha',
+              texto: 'Cuelga sobre el medio del estudio, como en la NBA: cuatro pantallas, los anillos de luces y el marcador. Pasa las repeticiones del canal, una tras otra. En el marcador, BiPlot.TV juega de local; la visita es tu proyecto, que todavía no entra a la cancha.',
+              botones: [{ zona: 'estreno', texto: 'Ver el estreno' }, { zona: 'cartelera', texto: 'Toda la programación' }] },
             guion: { nombre: 'Así se hace un capítulo', ceja: 'BiPlot.TV · El guion', titulo: 'Tres pasos, y cada uno se aprueba',
               texto: 'Primero, el guion y el look: la historia compás por compás, el elenco y seis cuadros clave. Después, la animación con su música, cuadro a cuadro, dibujada y compuesta por código. Al final, los dos formatos: horizontal para la web y LinkedIn, vertical para Reels, TikTok y estados.' },
             camarin: { nombre: 'El camarín', ceja: 'Tu turno', titulo: 'El próximo capítulo puede ser el tuyo',
@@ -364,6 +367,7 @@
             { zona: 'cartelera', titulo: 'La cartelera', texto: '¡Bienvenido a BiPlot.TV! Hoy hay estreno. Pásala, que yo la cuento.' },
             { zona: 'estreno', titulo: 'El estreno', texto: 'En pantalla grande, Un bocado a la vez: del sofá a la cumbre, punto por punto. ¡Triple sobre la bocina!' },
             { zona: 'set', titulo: 'El set', texto: 'Aquí grabamos con Aby. Ella pregunta, yo relato.' },
+            { zona: 'marcador', titulo: 'La pantalla del centro', texto: '¡Miren arriba! Las mejores jugadas del canal, una tras otra. De local, BiPlot.TV; de visita, tu proyecto.' },
             { zona: 'guion', titulo: 'Así se hace un capítulo', texto: 'Un capítulo se juega en tres tiempos: guion y look, animación con su música, y al aire.' },
             { zona: 'equipo', titulo: 'El equipo', texto: 'El equipo completo, uno por uno, cada cual con su frase. La alineación titular.' },
             { zona: 'visita', titulo: 'La visita de Plotty', texto: 'Plotty recorre la oficina y sale a la calle. Una asistencia de cancha completa.' },
