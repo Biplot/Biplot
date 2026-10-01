@@ -567,8 +567,8 @@ a { color: inherit; }
     <button type="button" class="vp-snd" data-vp-snd hidden><svg class="i" aria-hidden="true"><use href="#i-snd"/></svg>Activar sonido</button>
     <div class="vp-end" data-vp-end hidden><button type="button" class="btn btn-gold" data-vp-again><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Volver a ver</button></div></div>
 </div>
-<script src="lib/manifest.js?v=20261002b"></script>
-<script src="lib/entorno-datos.js?v=20261002b"></script>
+<script src="lib/manifest.js?v=20261002c"></script>
+<script src="lib/entorno-datos.js?v=20261002c"></script>
 <script>
 (function () {
   "use strict";
@@ -1489,7 +1489,11 @@ a { color: inherit; }
   var vpSnd = $("[data-vp-snd]");
   vpSnd.addEventListener("click", function () { vpVid.muted = false; vpSnd.hidden = true; vpVid.play(); });
   vpVid.addEventListener("volumechange", function () { if (!vpVid.muted) vpSnd.hidden = true; });
-  vpVid.addEventListener("ended", function () { vpEnd.hidden = false; $("[data-vp-again]").focus({ preventScroll: true }); });
+  // Al terminar, la ventana se cierra sola (para volver a verlo está "Ver video" en el mapa y en la ficha)
+  vpVid.addEventListener("ended", function () {
+    var dentro = vp.contains(document.activeElement);
+    vpT = setTimeout(function () { closeVideo(!dentro); }, reduced ? 0 : 500);
+  });
   $("[data-vp-again]").addEventListener("click", function () { vpEnd.hidden = true; vpVid.currentTime = 0; vpVid.play(); });
   vp.addEventListener("keydown", function (e) {
     if (e.key !== "Tab" || wide.matches) return;   // en celular la ventana es modal: el foco no sale de ella
