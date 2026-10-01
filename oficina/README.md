@@ -63,7 +63,8 @@ su sala con su gente y alguien que camina entre los muebles (el vecino de la der
 transparente mientras tanto); vuelve a cerrarse al cerrar su panel, al salir de su sala o al entrar a la oficina. La
 calle es tranquila: dos personas caminando por la vereda, el repartidor, una clienta en el directorio y, en la plaza
 (con su mural, la pileta y el quiosco), un abuelo y una paseadora con su perro; la gente de cada local está adentro y
-se ve al abrirlo. En el **pasaje** está el directorio con las calles del barrio.
+se ve al abrirlo. En el **pasaje** está el directorio con las calles del barrio. Al fondo de la plaza, junto a la
+oficina, está el edificio de **BiPlot.TV**, el canal de BiPlot (más abajo).
 
 | Local | En el techo | Al tocarlo se abre y se ve | Y su panel |
 |---|---|---|---|
@@ -151,7 +152,7 @@ todavía WhatsApp propio (sin él, no hay botón para escribirles; nunca va el d
 
 **El Archivo, el museo de BiPlot.** El Archivo también tiene su sala propia (su dibujo en
 `barrio/salas-propias/archivo.mjs`; sus textos en `datos.js`, en `salas.archivo.salaPropia`). Se entra desde su panel en
-la calle («Entrar al museo»), con `#archivo`, desde la sala de Rumbo (es la última sala vecina) o con
+la calle («Entrar al museo»), con `#archivo`, desde las salas vecinas (va entre la sala de ventas y BiPlot.TV) o con
 **biplot.cl/oficina/archivo/**. Es una sala de galería en orden: dos filas de vitrinas iguales, en las mismas columnas, y
 una sola línea en el piso («Seis décadas, la misma línea»), del mismo grosor todo el camino. Adelante, las épocas, de
 derecha a izquierda como se entra (1985 la libreta, 1990 la terminal, 1998 el software de caja, 2015 el portátil con sus
@@ -180,6 +181,43 @@ recorrido y está «Agenda tu diagnóstico» (el único coral de la sala). Todo 
 $0, la respuesta en menos de 48 horas hábiles, las diez fases y la medición a los 30, 60 y 90 días; quienes la visitan son
 ilustraciones sin nombre. Bajo las diez fases de su tarjeta va también Atlas (`atlas: true` en la zona).
 
+**BiPlot.TV, el canal de BiPlot.** No es un local de la calle: es un edificio propio al fondo de la plaza, junto a
+BiPlot HQ (`CANAL` y `canal()` en `barrio/barrio.mjs`). Tiene el televisor del canal y «BiPlot.TV» pintados en el techo,
+como el isotipo en el techo de la oficina; en el costado que mira al final de la calle, la pantalla gigante con el
+estreno; sobre la puerta, la marquesina con ampolletas; la antena (su luz pestañea), la parabólica, dos focos de estreno
+que barren el cielo y una alfombra cian con cordones desde el camino hasta la puerta. Al tocarlo, su vista previa trae el
+canal por dentro, «Entrar al canal» y la programación (cada video se ve ahí mismo, con sonido). En el menú tiene su propio
+botón, «Ver BiPlot.TV, el canal», y también está en la lista de la calle principal y en el recorrido guiado. Se entra
+con `#tv` o con **biplot.cl/oficina/tv/**, y en las salas vecinas va después de El Archivo.
+
+Adentro (su dibujo en `barrio/salas-propias/tv.mjs`; sus textos en `datos.js`, en `salas.tv.salaPropia`) es un estudio
+de televisión con su sala de estreno:
+
+- **El cine**, con la pantalla grande del estreno, su telón y dos filas de butacas con público.
+- **El set** de Aby y Felipe: la pared con la marca del canal, el escritorio, dos focos y dos cámaras.
+- **El camarín**, que espera al próximo invitado: la silla de director dice «Tu proyecto» y aquí está el único coral de
+  la sala, «Agenda tu diagnóstico».
+- En el muro, **«Así se hace un capítulo»** (guion y look, animación y música, al aire; se abre de frente) y el **muro de
+  pantallas**, un monitor por video, con su consola.
+- En la entrada, **la cartelera** (abre toda la programación) y el carro de las cabritas.
+- Al medio, colgando sobre la cancha como en la NBA, **la pantalla del centro**. En una cara pasan las repeticiones (el
+  estreno, la visita de Plotty, BiPlot en 30 segundos y los tres casos 360, 3,5 segundos cada una: `.loc-repe`, en
+  `oficina.css`, turna seis) y en la otra va el marcador: BiPlot.TV de local con los videos del canal, el reloj con lo que
+  dura el estreno y, de visita, «Tu proyecto», que todavía no entra a la cancha. Los anillos de luces llevan una cinta que
+  corre (`.loc-led`), la panza lleva la marca y el reloj de posesión, y en el piso está el círculo central. Al tocarla se
+  abre de frente: el marcador en grande y las seis repeticiones. Con «reducir movimiento» queda quieta en el estreno.
+
+Cada pantalla abre su tarjeta con su video: sin sonido en la tarjeta y en grande, con sonido, con «Ver con sonido»; cada
+video sale en horizontal y en vertical, y se ve el que calza con la pantalla. Felipe guía el recorrido de doce paradas,
+contado como un partido de básquetbol. Las frases de Aby y Felipe son de ejemplo hasta que ellos las aprueben; el
+público, el operador y las visitas son ilustraciones sin nombre.
+
+**La programación** son siete videos: «Un bocado a la vez» (el capítulo de Rumbo, el estreno), «Pasa, la oficina está
+abierta» (el teaser del equipo), la visita de Plotty, BiPlot en 30 segundos y Fundos, Haru y Nu Home 360. Los dos
+primeros están en `media/tv/` en versión web (16:9 y 9:16, con sus pósters), junto a la miniatura de cada pantalla
+(`pantalla-<id>.webp`); los demás, donde ya estaban. Los capítulos de clientes se suman cuando cada cliente apruebe
+mostrarlos.
+
 **Las vitrinas, en 3D.** Al tocar una vitrina del museo (cada época, cada desarrollo y el pedestal libre) se abre en
 grande y en 3D, sobre la sala oscurecida: su pedestal con su cédula, su vidrio y la pieza del centro van girando, una
 vuelta cada 20 segundos, con su texto al lado (su capítulo, su pantalla real, «Entrar a su sala»). Al abrirse se ve igual
@@ -192,7 +230,8 @@ oscurecida detrás (se sigue viendo), y debajo (o al lado, si la imagen es angos
 botones. En el museo: el mural de las diez fases (el proceso completo, con quién lleva cada fase), la línea de tiempo de
 2026, el cuadro de BiPlot HQ el día que abrió y el primer plano; en Nu Home, las terminaciones y la pantalla real del
 diseñador; en Fundos, los tres paisajes del ventanal y el letrero del equipo; en Haru, la pizarra de los rolls; en
-Eleven, el horario y el team; en Rumbo, la rueda de la vida, los hábitos, las recompensas y la noche. Lo que tiene su
+Eleven, el horario y el team; en Rumbo, la rueda de la vida, los hábitos, las recompensas y la noche; en BiPlot.TV,
+«Así se hace un capítulo» y la pantalla del centro. Lo que tiene su
 propia explicación (un mueble, un rincón con su gente) sigue abriendo su tarjeta (las vitrinas del museo, en 3D), y la foto que traiga (una
 pantalla real) se toca y se abre igual, en grande y completa, con su pie «datos de ejemplo»; también las pantallas del
 rincón de BiPlot. Se cierra con la ×, con `Escape` o tocando lo oscuro, y el foco vuelve a lo que se tocó; abierta desde
@@ -204,7 +243,7 @@ chico no se agranda más de 3,2 veces y, en celular, la línea de tiempo trae ad
 y con sus zonas en el dibujo (`zona()` y `lugar()`): la de Nu Home en `barrio/salas-grandes.mjs` y las demás en
 `barrio/salas-propias/`, una por archivo, con sus piezas comunes (muros, pantallas, sillas, el kiosco de BiPlot) en
 `salas-propias/comun.mjs`. La del museo no es de un proyecto: su `salaPropia` está en `salas.archivo`; la sala de ventas
-es la del local libre (`proyectos` → `libre`). Quien camina puede volar (`camina(id, ruta, { z })`, como Plotty).
+es la del local libre (`proyectos` → `libre`), y la del canal, en `salas.tv`. Quien camina puede volar (`camina(id, ruta, { z })`, como Plotty).
 
 **Cómo crece el barrio: una calle por rubro.** La calle principal queda con los proyectos que tienen sala dibujada a
 mano. Los demás casos van a la **calle de su rubro** (los mismos rubros de la primera pregunta de Plotty), que aparece
@@ -241,15 +280,15 @@ sólo para su vitrina.
 | `oficina.js` | Interfaz: cámara (arrastrar, rueda, pellizco, teclado), entrar y salir de la oficina, menú con el barrio y su buscador, el local abierto con su vista previa, la sala de cada empresa, El Archivo, recorrido guiado, paneles, chat, videos y enlaces directos |
 | `oficina.css` | Estilos con los tokens oscuros de la marca y todas las animaciones |
 | `elenco.js` | *Generado.* Los cabezones de la oficina y la credencial (lo usan la oficina y el kit) |
-| `barrio.js` | *Generado.* La oficina cerrada y la calle principal (locales con su techo, plaza, pasaje, El Archivo), y las piezas de las calles por rubro: el local cerrado en cada estado, el dibujo de cada rubro y la gente de paso |
+| `barrio.js` | *Generado.* La oficina cerrada y la calle principal (locales con su techo, la plaza con el edificio de BiPlot.TV, pasaje, El Archivo), y las piezas de las calles por rubro: el local cerrado en cada estado, el dibujo de cada rubro y la gente de paso |
 | `locales.js` | *Generado.* Cada local por dentro, como se ve al abrirlo: los de la calle principal y el de un caso según su plantilla o su estado, con su gente y quien camina; se carga al abrir el primer local (o con el mouse encima de uno) |
 | `salas.js` | *Generado.* La sala grande de cada empresa, con su gente, quienes caminan y sus puntos (una sala propia, en vez de puntos, trae sus lugares, sus zonas y dónde está su gente); se carga (después de `locales.js`) al entrar a la primera sala o con la primera vista previa sin video |
 | `ilustraciones.js` | *Generado.* Las ilustraciones de ficha; se cargan recién al abrir la primera ficha |
-| `<sala>/index.html` | *Generado.* La página para compartir cada sala (`fundos/`, `haru/`, `eleven/`, `nuhome/`, `rumbo/` y `archivo/`, el museo): su vista previa y el paso a la oficina |
+| `<sala>/index.html` | *Generado.* La página para compartir cada sala (`fundos/`, `haru/`, `eleven/`, `nuhome/`, `rumbo/`, `archivo/` el museo, `libre/` la sala de ventas y `tv/` el canal): su vista previa y el paso a la oficina |
 | `kit/` | Galería y plantilla de las piezas de Instagram y de cada sala (`?pieza=sala-haru&formato=og`) |
-| `kit/png/` | Los PNG exportados (37 archivos) |
+| `kit/png/` | Los PNG exportados (41 archivos) |
 | `casos/` | Copias publicables de las demos y documentos de los casos de referencia del núcleo |
-| `media/` | El teaser de Nu Home 360 (horizontal, vertical y póster) y, en `media/salas/`, las pantallas reales de cada sala (de los videos de cada caso, con datos de ejemplo), sus recortes y los logos |
+| `media/` | El teaser de Nu Home 360 (horizontal, vertical y póster); en `media/salas/`, las pantallas reales de cada sala (de los videos de cada caso, con datos de ejemplo), sus recortes y los logos; y en `media/tv/`, los videos de BiPlot.TV en versión web (el estreno y el teaser del equipo, con sus pósters) y la miniatura de cada video de su programación |
 | `_herramientas/` | Scripts internos y las fuentes de los dibujos. **No se publican en biplot.cl** (Jekyll ignora carpetas con `_`) |
 
 Sin librerías ni build para la página: SVG, CSS y JavaScript planos. Lo único externo son las fuentes de Google Fonts
@@ -315,6 +354,10 @@ camina sólo mientras se ve.
   sala.
 - **Videos de las salas**: Fundos y Haru usan los teasers del sitio (`assets/casos/`); el de Nu Home vive en `oficina/media/`,
   comprimido con `ffmpeg -crf 28 -preset slow -movflags +faststart` y con el póster en el segundo 10.
+- **El estreno de BiPlot.TV**: el capítulo nuevo va en `datos.js` (la zona `estreno` de `salas.tv.salaPropia`, con su
+  video en `media/tv/`, y primero en los `programas` de la cartelera) y su pantalla en `media/tv/pantalla-estreno.webp`.
+  Su nombre y lo que dura también van en los dibujos: la marquesina del edificio (`barrio.mjs`) y la cartelera, la franja
+  del set, los anillos, la primera repetición y el reloj del marcador (`salas-propias/tv.mjs`). Después se regenera.
 - **Casos de referencia**: si cambian en su fuente, correr `node oficina/_herramientas/sincronizar-casos.mjs`. Son
   negocios ilustrativos, no clientes: viven en la estantería, no en la calle.
 
@@ -336,7 +379,9 @@ pieza de cada sala, la pantalla del diseñador de Nu Home con un clic de verdad,
 del rincón de BiPlot, siempre completas, con la sala oscurecida detrás, y el recorrido que sigue detrás), las vitrinas en
 3D (giran solas, se pausan y se giran a mano; con movimiento reducido, quietas), la sala de ventas del local libre (se
 entra desde la calle; la lista de precios de frente con «Agenda tu diagnóstico», las diez fases con Atlas, la ventana a
-los vecinos, la mesa de Lupe, Atlas que habla y el recorrido con Plotty),
+los vecinos, la mesa de Lupe, Atlas que habla y el recorrido con Plotty), BiPlot.TV (un clic sobre su edificio en la
+plaza, su botón en el menú, la cartelera, el estreno con su video, la pantalla del centro de frente, el camarín y el
+recorrido con Felipe; con movimiento reducido, quieta),
 chat de Plotty con la cámara en
 el rubro, vitrina,
 El Archivo, teclado, enlaces directos y las páginas para compartir, pausa, movimiento reducido, errores de consola y
@@ -408,6 +453,9 @@ historias) y en horizontal (1920 × 1080), a 30 cuadros por segundo, con H.264 y
 
 Texto sugerido para la publicación: *Conoce al equipo de la oficina, del diagnóstico a la cosecha. Pasa:
 biplot.cl/oficina*
+
+En la oficina se ve en BiPlot.TV, en una versión web más liviana: `media/tv/teaser-equipo-h.mp4` y `-v.mp4`, con sus
+pósters.
 
 Se genera con `node oficina/_herramientas/exportar-teaser.mjs` (necesita ffmpeg en el PATH, o `FFMPEG=<ruta>`), que
 deja `teaser-equipo-9x16.mp4` y `teaser-equipo-16x9.mp4` en `oficina/kit/video/` (entre 50 y 70 MB cada uno; no se
