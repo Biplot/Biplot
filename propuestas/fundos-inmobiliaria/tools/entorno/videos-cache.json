@@ -70,5 +70,14 @@
   "h": 720,
   "dur": 6.2,
   "audio": true
+ },
+ "frutillar": {
+  "mp4": "assets/entorno/videos/frutillar.mp4",
+  "webm": "assets/entorno/videos/frutillar.webm",
+  "poster": "assets/entorno/videos/frutillar.webp",
+  "w": 1280,
+  "h": 720,
+  "dur": 5.5,
+  "audio": true
  }
 }
