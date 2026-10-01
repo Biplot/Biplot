@@ -58,6 +58,18 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
     Los rótulos se ubican sin choques en `labels()` (interfaz, píldora, trazo de la ruta y pines; lo que no cabe se
     esconde). La píldora del lugar elegido se abre hacia el lado libre y, si no cabe, pierde el tiempo (`is-short`).
     En celular un dedo en vertical desplaza la página (no el mapa) y el aviso "Ver ficha" queda en la parte visible.
+    Paneles compactos (el mapa manda): en computador el panel de lugares (`--pw` 284/300 px) se pliega a su cabecera
+    (`[data-pmin]`, `.panel.is-min`) y la ficha (`--cw` 304/324 px, alto automático, texto en 3 líneas con "Leer más")
+    se minimiza a una barra con el lugar y su tiempo (`[data-cmin]`/`[data-cmax]`, `S.cmin`); `free()` y `slack()`
+    usan esos estados y `reframe()` reacomoda la vista. Filtros en 4 columnas (ícono y nombre) en computador.
+  - Tour virtual 360° de la parcela: la URL sale de `tour` del proyecto en `lib/manifest.js` (`P.manifiesto` o
+    "puerto-varas"). Se abre con "Tour virtual 360°" bajo la parcela (`tBtn`, sin lugar elegido), con el 360° de la
+    ficha de la parcela o con `entorno.html#tour-360`: el mapa vuela a la parcela y el tour se abre como un portal
+    circular desde ella (`openT360`/`closeT360`, `clip-path` animado), sobre todo el escenario en computador y a
+    pantalla completa bajo la barra en celular. Barra con "Volver al mapa", pantalla completa y pestaña nueva; abajo,
+    "Desde aquí" con los lugares del resumen: al tocar uno se cierra el tour y se dibuja esa ruta. Si el navegador
+    no deja incrustarlo (CSP) o no carga en 15 s, ofrece abrirlo aparte. El proxy de la nube bloquea netlify: probar
+    con `page.route` que responda una página simulada.
     Revisión: `tools/pruebas` no cubre esta página; probar los 17 lugares en 1920, 1440, 1280, 1100, 390, 320 y 844×390.
 - `assets/img` fotos y logos (WebP) · `assets/video` saludo del equipo (MP4 H.264 + WebM de respaldo + portada) ·
   `assets/fonts` Cormorant Garamond y Mulish autoalojadas.

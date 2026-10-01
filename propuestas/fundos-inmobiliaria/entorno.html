@@ -32,8 +32,8 @@
   --ease-out: cubic-bezier(.16, 1, .3, 1);
   --gutter: clamp(16px, 4vw, 40px);
   --top-h: 60px;
-  --pw: 320px;   /* ancho del panel (escritorio) */
-  --cw: 336px;   /* ancho de la ficha (escritorio) */
+  --pw: 284px;   /* ancho del panel (escritorio) */
+  --cw: 304px;   /* ancho de la ficha (escritorio) */
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; }
@@ -49,7 +49,7 @@ a { color: inherit; }
 .kicker { font: 700 .68rem/1.3 var(--sans); letter-spacing: .22em; text-transform: uppercase; color: var(--gold); }
 
 /* ---------- Barra superior ---------- */
-.top { position: sticky; top: 0; z-index: 60; height: var(--top-h); background: rgba(10, 20, 14, .97); border-bottom: 1px solid var(--line); }
+.top { position: sticky; top: 0; z-index: 60; height: var(--top-h); background: var(--g900); border-bottom: 1px solid var(--line); }
 .top-in { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-inline: var(--gutter); }
 .back { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; font-size: .86rem; font-weight: 700; color: var(--cream-80); text-decoration: none; }
 .back:hover { color: var(--gold); }
@@ -70,7 +70,7 @@ a { color: inherit; }
 .fchip { flex: none; display: inline-flex; align-items: center; gap: .45rem; min-height: 40px; padding: .35rem .85rem; border: 1px solid var(--line-ui); border-radius: 999px; font-size: .8rem; font-weight: 700; color: var(--cream-80); transition: background-color .2s, border-color .2s, color .2s; }
 .fchip:hover { border-color: var(--gold); }
 .fchip[aria-pressed="true"] { background: var(--n050); border-color: var(--n050); color: var(--g900); }
-.fchip .i { width: 15px; height: 15px; color: var(--c, currentColor); }
+.fchip .i { width: 15px; height: 15px; color: var(--c, var(--gold)); }
 .fchip[aria-pressed="true"] .i { color: var(--g900); }
 .fchip small { font-weight: 700; opacity: .65; }
 
@@ -213,25 +213,25 @@ a { color: inherit; }
 
 /* Lista agrupada por tiempo */
 .p-list { padding: 0 var(--gutter) 1.6rem; scroll-padding-block: 14px; }
-.group { padding-top: 1rem; }
-.group h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding-bottom: .4rem; border-bottom: 1px solid var(--line); font: italic 500 1.2rem/1.2 var(--serif); color: var(--gold-2); }
+.group { padding-top: .8rem; }
+.group h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding-bottom: .3rem; border-bottom: 1px solid var(--line); font: italic 500 1.05rem/1.2 var(--serif); color: var(--gold-2); }
 .group h2 small { font: 800 .64rem/1 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--cream-55); }
 .group[hidden] { display: none; }
 .places { list-style: none; }
 .places li[hidden] { display: none; }
-.place { width: 100%; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: center; gap: .7rem; min-height: 52px; padding: .45rem .35rem; border-bottom: 1px solid var(--line); text-align: left; transition: background-color .2s; }
+.place { width: 100%; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: .6rem; min-height: 46px; padding: .3rem .3rem; border-bottom: 1px solid var(--line); text-align: left; transition: background-color .2s; }
 .place:hover, .place.is-hover { background: rgba(247, 245, 240, .05); }
 .place[aria-current="true"] { background: rgba(200, 161, 101, .12); box-shadow: inset 3px 0 0 var(--gold); }
-.place-ic { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--c); color: var(--c); }
-.place-ic .i { width: 15px; height: 15px; }
-.place-t strong { display: block; font-size: .88rem; font-weight: 700; line-height: 1.25; }
-.place-t span { display: block; font-size: .74rem; color: var(--cream-55); }
-.place-m { text-align: right; font: 800 .88rem/1.2 var(--sans); white-space: nowrap; }
-.place-m small { display: block; font-size: .68rem; font-weight: 700; color: var(--cream-55); }
+.place-ic { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--c); color: var(--c); }
+.place-ic .i { width: 14px; height: 14px; }
+.place-t { min-width: 0; }
+.place-t strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .85rem; font-weight: 700; line-height: 1.25; }
+.place-m { text-align: right; font: 800 .84rem/1.15 var(--sans); white-space: nowrap; }
+.place-m small { display: block; font-size: .66rem; font-weight: 700; color: var(--cream-55); }
 
 /* Ficha */
 .card { position: relative; display: flex; flex-direction: column; background: var(--g800); border: 1px solid rgba(200, 161, 101, .25); overflow: hidden; scroll-margin-top: calc(var(--top-h) + 8px); }
-.card-media { position: relative; flex: none; height: 190px; background: var(--g700); overflow: hidden; }
+.card-media { position: relative; flex: none; height: 160px; background: var(--g700); overflow: hidden; }
 .card-media > img { width: 100%; height: 100%; object-fit: cover; }
 .card-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15, 31, 22, .35), transparent 30%, transparent 50%, rgba(15, 31, 22, .96)); pointer-events: none; }
 .card-media .ph { position: absolute; inset: 0; display: grid; place-items: center; color: var(--c, var(--gold)); background: radial-gradient(90% 100% at 30% 15%, rgba(200, 161, 101, .16), transparent 70%), var(--g700); }
@@ -249,23 +249,28 @@ a { color: inherit; }
 .card-nav span { min-width: 3.4rem; text-align: center; font-size: .74rem; font-weight: 800; color: var(--cream-80); }
 .card-x { background: rgba(10, 20, 14, .82); }
 .card-nav button:hover, .card-x:hover { color: var(--gold); }
-.card-b { display: grid; gap: .85rem; padding: .2rem 1.3rem 1rem; }
+.card-b { display: grid; gap: .65rem; padding: .15rem 1.1rem .9rem; }
 .card .cat { display: inline-flex; align-items: center; gap: .45rem; font: 800 .66rem/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--c, var(--gold)); }
-.card h2 { margin-top: .45rem; font: 500 2rem/1.02 var(--serif); }
+.card h2 { margin-top: .35rem; font: 500 1.7rem/1.04 var(--serif); }
 .card h2:focus { outline: none; }
 .card .sub { margin-top: .3rem; font-size: .8rem; font-weight: 700; color: var(--gold-2); }
 .big { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
-.big b { font: 300 2.9rem/1 var(--sans); font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.03em; }
-.big em { font: italic 500 1.4rem/1 var(--serif); color: var(--gold); }
-.big-sub { margin-top: -.5rem; font-size: .8rem; color: var(--cream-70); }
-.card p.txt { color: var(--cream-80); font-size: .9rem; line-height: 1.62; }
+.big b { font: 300 2.35rem/1 var(--sans); font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.03em; }
+.big em { font: italic 500 1.15rem/1 var(--serif); color: var(--gold); }
+.big-sub { margin-top: -.45rem; font-size: .76rem; color: var(--cream-70); }
+.card p.txt { color: var(--cream-80); font-size: .85rem; line-height: 1.58; }
+.card .more-b { display: contents; }
+.card.is-clamp p.txt { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.card.is-clamp .more-b > :not(.serv) { display: none; }
+.more { justify-self: start; min-height: 28px; margin-top: -.4rem; font-size: .76rem; font-weight: 800; color: var(--gold-2); text-decoration: underline; text-underline-offset: 3px; }
+.more[hidden] { display: none; }
 .serv { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem; }
 .serv li { display: inline-flex; align-items: center; gap: .35rem; padding: .28rem .55rem; border: 1px solid var(--line); border-radius: 7px; font-size: .74rem; font-weight: 600; color: var(--cream-80); }
 .serv .i { color: var(--gold); width: 14px; height: 14px; }
 .lnk { color: var(--gold-2); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; min-height: 24px; }
 .note { font-size: .78rem; color: var(--cream-70); line-height: 1.5; padding-left: .8rem; border-left: 2px solid rgba(200, 161, 101, .5); }
-.card-foot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; padding: .9rem 1.3rem 1.2rem; }
-.card-foot .btn { padding: .65rem .5rem; gap: .4rem; font-size: .82rem; line-height: 1.2; }
+.card-foot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; padding: .7rem 1.1rem .9rem; }
+.card-foot .btn { min-height: 42px; padding: .55rem .5rem; gap: .4rem; font-size: .79rem; line-height: 1.2; }
 @media (max-width: 379px) { .card-foot { grid-template-columns: 1fr; } }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 46px; padding: .7rem .9rem; border-radius: 10px; font-weight: 800; font-size: .84rem; text-decoration: none; text-align: center; transition: background-color .2s, border-color .2s, color .2s; }
 .btn-gold { background: var(--gold); color: var(--g900); }
@@ -273,40 +278,82 @@ a { color: inherit; }
 .btn-line { border: 1px solid var(--line-ui); }
 .btn-line:hover { border-color: var(--gold); color: var(--gold); }
 /* Ficha inicial: resumen de la parcela */
-.card[data-mode="sum"] .card-media { height: 104px; }
+.card[data-mode="sum"] .card-media { height: 128px; }
 .sum { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-.sum button { display: block; padding: .75rem .9rem; text-align: left; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 0 -1px -1px 0; transition: background-color .2s; }
+.sum button { display: block; padding: .55rem .75rem; text-align: left; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 0 -1px -1px 0; transition: background-color .2s; }
 .sum button:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .sum button:hover { background: rgba(200, 161, 101, .08); }
-.sum b { display: block; font: 300 1.9rem/1 var(--sans); font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.02em; }
+.sum b { display: block; font: 300 1.6rem/1 var(--sans); font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.02em; }
 .sum b small { font-size: .8rem; font-weight: 700; color: var(--gold); margin-left: .2rem; letter-spacing: 0; }
-.sum span { display: block; margin-top: .3rem; font-size: .76rem; font-weight: 700; color: var(--cream-70); }
-.fact { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .8rem; align-items: start; padding: .8rem .9rem; border-radius: 12px; background: rgba(200, 161, 101, .1); border: 1px solid rgba(200, 161, 101, .3); }
+.sum span { display: block; margin-top: .2rem; font-size: .72rem; font-weight: 700; color: var(--cream-70); }
+.fact { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .7rem; align-items: start; padding: .6rem .75rem; border-radius: 12px; background: rgba(200, 161, 101, .1); border: 1px solid rgba(200, 161, 101, .3); }
 .fact > .i { width: 22px; height: 22px; color: var(--gold); margin-top: .1rem; }
-.fact strong { display: block; font: italic 600 1.1rem/1.1 var(--serif); color: var(--gold-2); }
-.fact p { margin-top: .2rem; color: var(--cream-80); font-size: .8rem; line-height: 1.5; }
+.fact strong { display: block; font: italic 600 1rem/1.1 var(--serif); color: var(--gold-2); }
+.fact p { margin-top: .2rem; color: var(--cream-80); font-size: .76rem; line-height: 1.5; }
+/* Ficha minimizada (escritorio): una barra con el lugar y su tiempo */
+.card-mini { display: none; }
+.card-min { display: none; }
+/* Cabecera del panel con botón para plegar (escritorio) */
+.p-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .6rem; }
+.p-min { display: none; }
+/* Tour virtual 360°: botón en la ficha de la parcela */
+.card-360 { position: absolute; inset: 0; z-index: 1; display: grid; place-content: center; justify-items: center; gap: .5rem; color: var(--n050); }
+.c360 { position: relative; display: grid; place-items: center; width: 58px; height: 58px; border-radius: 50%; background: rgba(10, 20, 14, .84); box-shadow: 0 0 0 2px var(--gold), 0 10px 30px rgba(0, 0, 0, .55); font: 800 .86rem/1 var(--sans); letter-spacing: -.01em; color: var(--gold-2); transition: transform .25s var(--ease-out); }
+.c360::before { content: ""; position: absolute; inset: -7px; border-radius: 50%; border: 1.5px dashed rgba(216, 185, 130, .75); animation: giro 14s linear infinite; }
+@keyframes giro { to { transform: rotate(360deg); } }
+.c360-l { padding: .22rem .6rem; border-radius: 999px; background: rgba(10, 20, 14, .8); font: 800 .66rem/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--n050); }
+.card-360:hover .c360, .card-360:focus-visible .c360 { transform: scale(1.07); }
 
 /* ---------- Escritorio: mapa a pantalla, panel y ficha flotantes ---------- */
 @media (min-width: 1100px) {
   .stage { height: calc(100svh - var(--top-h)); min-height: 600px; }
   .map { position: absolute; inset: 0; height: auto; }
-  .panel { position: absolute; z-index: 20; left: 18px; top: 18px; bottom: 18px; width: var(--pw); display: flex; flex-direction: column; border-radius: 18px; background: var(--glass); border: 1px solid var(--line); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .85); overflow: hidden; }
-  .p-head { padding: 1.3rem 1.3rem .8rem; border-bottom: 1px solid var(--line); }
-  .p-head h1 { font-size: 2.5rem; }
-  .filters { flex-wrap: wrap; overflow: visible; }
-  .fchip { min-height: 36px; padding: .3rem .75rem; }
-  .p-list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 1.3rem 2rem; scrollbar-width: thin; scrollbar-color: var(--line-ui) transparent; overscroll-behavior: contain;
+  .panel { position: absolute; z-index: 20; left: 16px; top: 16px; width: var(--pw); max-height: calc(100% - 32px); display: flex; flex-direction: column; border-radius: 16px; background: var(--glass); border: 1px solid var(--line); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .85); overflow: hidden; }
+  .p-head { padding: .9rem 1rem .65rem; border-bottom: 1px solid var(--line); }
+  .p-head .kicker { font-size: .6rem; }
+  .p-head h1 { margin-top: .3rem; font-size: 1.62rem; white-space: nowrap; }
+  .p-head .lead { display: none; }
+  .p-min { display: grid; place-items: center; flex: none; width: 34px; height: 34px; margin: -.2rem -.4rem 0 0; border-radius: 50%; color: var(--cream-80); }
+  .p-min:hover { background: rgba(247, 245, 240, .08); color: var(--gold); }
+  .p-min .i { transition: transform .25s var(--ease-out); transform: rotate(180deg); }
+  .panel.is-min .p-min .i { transform: none; }
+  .panel.is-min .filters, .panel.is-min .p-list { display: none; }
+  .panel.is-min .p-head { border-bottom: 0; padding-bottom: .8rem; }
+  .filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin: .6rem 0 0; padding: 0; overflow: visible; }
+  .fchip { flex-direction: column; justify-content: center; gap: 3px; min-height: 46px; padding: .3rem .15rem; border-radius: 10px; font-size: .64rem; letter-spacing: .01em; }
+  .fchip .i { width: 15px; height: 15px; }
+  .fchip small { display: none; }
+  .p-list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 1rem 1.4rem; scrollbar-width: thin; scrollbar-color: var(--line-ui) transparent; overscroll-behavior: contain;
     -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 32px), transparent); }
-  .card { position: absolute; z-index: 20; right: 80px; top: 18px; width: var(--cw); max-height: calc(100% - 36px); border-radius: 18px; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .9); }
+  .card { position: absolute; z-index: 20; right: 76px; top: 16px; width: var(--cw); max-height: calc(100% - 32px); border-radius: 16px; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .9); }
+  .card-media { height: 124px; }
+  .card[data-mode="sum"] .card-media { height: 118px; }
+  .card-min { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(10, 20, 14, .82); }
+  .card-min:hover { color: var(--gold); }
+  .card-min .i { transform: rotate(180deg); }
+  .card-tr { display: flex; gap: .35rem; }
+  .card[data-mode="sum"] .card-top { justify-content: flex-end; }
+  .card.is-min { width: auto; max-width: var(--cw); }
+  .card.is-min > :not(.card-mini) { display: none; }
+  .card.is-min .card-mini { display: flex; align-items: center; gap: .65rem; width: 100%; min-height: 54px; padding: .45rem .55rem .45rem .5rem; text-align: left; }
+  .card-mini .ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--c, var(--gold)); color: var(--c, var(--gold)); }
+  .card-mini .ic img { width: 24px; height: 24px; }
+  .card-mini .ic .i { width: 16px; height: 16px; }
+  .card-mini b { display: block; font: 600 1.05rem/1.15 var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-mini small { display: block; font-size: .7rem; font-weight: 800; color: var(--gold-2); }
+  .card-mini > span:nth-child(2) { flex: 1; min-width: 0; }
+  .card-mini > .i { flex: none; color: var(--cream-70); }
+  .card-mini:hover > .i { color: var(--gold); }
   .card-scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-ui) transparent; overscroll-behavior: contain; }
   .card-foot { flex: none; border-top: 1px solid var(--line); background: var(--g800); }
-  .zoom-ui { right: 18px; top: 18px; }
-  .map-foot { left: calc(36px + var(--pw)); max-width: calc(100% - var(--pw) - var(--cw) - 150px); }
-  .tour-btn { left: calc(36px + var(--pw)); top: 18px; }
+  .zoom-ui { right: 16px; top: 16px; }
+  .map-foot { left: calc(30px + var(--pw)); max-width: calc(100% - var(--pw) - var(--cw) - 140px); }
+  .stage.lista-min .map-foot { left: 16px; max-width: calc(100% - var(--cw) - 120px); }
+  .tour-btn { left: calc(30px + var(--pw)); top: 16px; }
+  .card-media .ph { place-items: end center; padding-bottom: 12px; }
+  .card-media .ph-ic { width: 50px; height: 50px; }
 }
-@media (min-width: 1440px) { :root { --pw: 360px; --cw: 370px; } .p-head h1 { font-size: 2.7rem; } }
-@media (min-width: 1100px) and (max-height: 920px) { .card-media { height: 128px; } .card-media .ph { place-items: end center; padding-bottom: 14px; } .card-media .ph-ic { width: 52px; height: 52px; } }
-@media (min-width: 1100px) and (max-height: 760px) { .p-head .lead { display: none; } }
+@media (min-width: 1440px) { :root { --pw: 300px; --cw: 324px; } .p-head h1 { font-size: 1.75rem; } .card-media { height: 140px; } }
 /* ---------- Tablet y celular ---------- */
 @media (max-width: 1099px) {
   .panel { display: contents; }
@@ -317,10 +364,14 @@ a { color: inherit; }
   .p-list { columns: 2; column-gap: 2rem; }
   .group { break-inside: avoid; }
 }
+@media (max-width: 1099px) {
+  .p-head h1 { font-size: clamp(2rem, 6.4vw, 2.6rem); }
+  .p-head .lead { font-size: .86rem; line-height: 1.5; }
+}
 @media (max-width: 719px) {
   .top .coords { display: none; }
   .back-l { display: none; }
-  .map { height: 60svh; }
+  .map { height: 64svh; }
   .filters { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
   .fchip { min-height: 44px; }
   .tour-btn { width: 44px; padding: 0; justify-content: center; }
@@ -337,6 +388,43 @@ a { color: inherit; }
   .p-head { padding-block: .8rem .6rem; }
   .map { height: calc(100svh - 24px); min-height: 0; }
 }
+
+/* ---------- Tour virtual 360° (portal desde la parcela) ---------- */
+.t360 { position: fixed; z-index: 55; left: 0; right: 0; top: var(--top-h); bottom: 0; background: #050a07; overflow: hidden; }
+.t360[hidden] { display: none; }
+@media (min-width: 1100px) { .t360 { position: absolute; inset: 0; z-index: 40; } }
+.t360-frame, .t360-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.t360-frame iframe { opacity: 0; transition: opacity .6s; }
+.t360.is-live .t360-frame iframe { opacity: 1; }
+.t360-load { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 1rem; color: var(--cream-80); font-size: .86rem; font-weight: 700; text-align: center; background: radial-gradient(60% 60% at 50% 50%, rgba(200, 161, 101, .12), transparent 70%), #050a07; transition: opacity .5s; }
+.t360.is-live .t360-load { opacity: 0; pointer-events: none; }
+.t360-load .c360 { width: 74px; height: 74px; font-size: 1rem; }
+.t360-load .c360::before { animation-duration: 2.4s; }
+.t360-blocked { position: absolute; inset: 0; z-index: 2; display: grid; place-content: center; justify-items: center; gap: .9rem; padding: 2rem; text-align: center; background: rgba(5, 10, 7, .92); color: var(--cream-80); font-size: .9rem; }
+.t360-blocked[hidden] { display: none; }
+.t360-blocked strong { font: 500 1.6rem/1.1 var(--serif); color: var(--n050); }
+.t360-hud { position: absolute; z-index: 3; left: 12px; right: 12px; top: 12px; display: flex; align-items: center; gap: .6rem; pointer-events: none; }
+.t360-hud > * { pointer-events: auto; }
+.t360-back, .t360-acts > * { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; min-height: 44px; padding: 0 1rem 0 .8rem; border-radius: 12px; background: rgba(10, 20, 14, .9); border: 1px solid var(--line-ui); color: var(--n050); font-size: .8rem; font-weight: 800; text-decoration: none; }
+.t360-back:hover, .t360-acts > *:hover { border-color: var(--gold); color: var(--gold); }
+.t360-id { flex: 1; min-width: 0; padding: .35rem .9rem; }
+.t360-id .kicker { font-size: .6rem; }
+.t360-id h2 { font: 500 1.35rem/1.1 var(--serif); color: var(--n050); text-shadow: 0 1px 8px rgba(0, 0, 0, .8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t360-acts { display: flex; gap: .4rem; }
+.t360-acts > * { width: 44px; padding: 0; }
+.t360-go { position: absolute; z-index: 3; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; align-items: center; gap: .4rem; max-width: calc(100% - 24px); padding: .4rem .45rem .4rem .9rem; border-radius: 999px; background: rgba(10, 20, 14, .9); border: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+.t360-go::-webkit-scrollbar { display: none; }
+.t360-go p { flex: none; font: 800 .62rem/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-right: .2rem; }
+.t360-go button { flex: none; display: inline-flex; align-items: baseline; gap: .35rem; min-height: 36px; padding: .45rem .8rem; border-radius: 999px; border: 1px solid var(--line-ui); font-size: .76rem; font-weight: 700; color: var(--cream-80); white-space: nowrap; }
+.t360-go button b { color: var(--n050); font-weight: 800; }
+.t360-go button:hover { border-color: var(--gold); color: var(--n050); }
+@media (max-width: 719px) {
+  .t360-id { display: none; }
+  .t360-hud { justify-content: space-between; }
+  .t360-go p { display: none; }
+  .t360-go { left: 12px; right: 12px; transform: none; max-width: none; padding-left: .45rem; }
+}
+.t-btn .i { padding: 6px; }
 
 /* ---------- Método y créditos ---------- */
 .wrap { width: min(1320px, 100% - 2 * var(--gutter)); margin-inline: auto; }
@@ -358,6 +446,8 @@ a { color: inherit; }
   .legend .credit a { display: inline-block; padding-block: 14px; margin-block: -14px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .c360::before { animation: none; }
+  .t360-frame iframe, .t360-load { transition: none; }
   .vp, .vp-fondo { transition: none; }
   .v-btn.is-in::before { animation: none; }
   .pin.home::before { animation: none; }
@@ -398,6 +488,10 @@ a { color: inherit; }
   <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 10v10h16V10M3 10l2-6h14l2 6H3zM10 20v-5h4v5"/></symbol>
   <symbol id="i-fuel" viewBox="0 0 24 24"><path d="M4 20V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v15M3 20h12M4 10h10M14 8l3 2v7a1.5 1.5 0 0 0 3 0V9l-2-2"/></symbol>
   <symbol id="i-school" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5L2 9zM6 11v5c3 2 9 2 12 0v-5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></symbol>
+  <symbol id="i-360" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3.5 9h17M3.5 15h17"/></symbol>
+  <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
   <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
 </svg>
 
@@ -413,12 +507,15 @@ a { color: inherit; }
   <section class="stage" data-entorno aria-label="Mapa del entorno de Fundos Puerto Varas">
     <div class="panel" data-panel>
       <div class="p-head">
-        <p class="kicker">Alerce · Región de Los Lagos</p>
-        <h1>Descubre tu <em>entorno</em></h1>
+        <div class="p-top">
+          <div><p class="kicker">Alerce · Región de Los Lagos</p>
+          <h1>Descubre tu <em>entorno</em></h1></div>
+          <button type="button" class="p-min" data-pmin aria-expanded="true" aria-controls="p-lista" aria-label="Plegar la lista de lugares"><svg class="i" aria-hidden="true"><use href="#i-down"/></svg></button>
+        </div>
         <p class="lead">Entre Puerto Montt y Puerto Varas, con el lago, los volcanes y el mar en el horizonte. Elige un lugar y te mostramos el camino desde tu parcela.</p>
         <div class="filters" role="group" aria-label="Filtrar lugares" data-filters></div>
       </div>
-      <section class="p-list" data-list aria-label="Lugares ordenados por tiempo desde la parcela"></section>
+      <section class="p-list" id="p-lista" data-list aria-label="Lugares ordenados por tiempo desde la parcela"></section>
     </div>
 
     <div class="map" data-map tabindex="0" role="region" aria-roledescription="mapa" aria-label="Mapa satelital interactivo" aria-describedby="map-help">
@@ -456,6 +553,20 @@ a { color: inherit; }
     </div>
 
     <article class="card" data-card aria-labelledby="card-title"></article>
+    <div class="t360" data-t360 role="dialog" aria-modal="true" aria-labelledby="t360-t" hidden>
+      <div class="t360-frame" data-t360-frame></div>
+      <div class="t360-load" aria-hidden="true"><span class="c360">360°</span><p>Entrando a la parcela…</p></div>
+      <div class="t360-blocked" data-t360-blocked hidden><strong>El tour se abre aparte</strong><p>Este navegador no lo puede mostrar aquí.</p><a class="btn btn-gold" data-t360-tab target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-ext"/></svg>Abrir el tour virtual</a></div>
+      <div class="t360-hud">
+        <button type="button" class="t360-back" data-t360-x><svg class="i" aria-hidden="true"><use href="#i-back"/></svg>Volver al mapa</button>
+        <div class="t360-id"><p class="kicker">Tour virtual 360°</p><h2 id="t360-t" data-t360-t></h2></div>
+        <div class="t360-acts">
+          <button type="button" data-t360-full aria-label="Pantalla completa"><svg class="i" aria-hidden="true"><use href="#i-full"/></svg></button>
+          <a data-t360-tab target="_blank" rel="noopener" aria-label="Abrir el tour en una pestaña nueva"><svg class="i" aria-hidden="true"><use href="#i-ext"/></svg></a>
+        </div>
+      </div>
+      <nav class="t360-go" data-t360-go aria-label="Ir desde la parcela"></nav>
+    </div>
     <p class="sr-only" aria-live="polite" data-live></p>
   </section>
 
@@ -483,8 +594,8 @@ a { color: inherit; }
   <div class="vp-v"><video playsinline controls preload="none"></video>
     <div class="vp-end" data-vp-end hidden><button type="button" class="btn btn-gold" data-vp-again><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Volver a ver</button></div></div>
 </div>
-<script src="lib/manifest.js?v=20261001f"></script>
-<script src="lib/entorno-datos.js?v=20261001f"></script>
+<script src="lib/manifest.js?v=20261002a"></script>
+<script src="lib/entorno-datos.js?v=20261002a"></script>
 <script>
 (function () {
   "use strict";
@@ -505,7 +616,9 @@ a { color: inherit; }
   var listBox = $("[data-list]"), card = $("[data-card]"), panel = $("[data-panel]"), hint = $("[data-hint]"), live = $("[data-live]");
   var foot = $("[data-foot]"), zoomUi = $(".zoom-ui"), tourBtn = $("[data-tour]"), peek = $("[data-peek]");
   var zIn = $('[data-zoom="in"]'), zOut = $('[data-zoom="out"]');
-  var V = { k: 1, tx: 0, ty: 0 }, S = { sel: null, f: "todo", hover: null };
+  var V = { k: 1, tx: 0, ty: 0 }, S = { sel: null, f: "todo", hover: null, cmin: false };
+  var PROY = (B.proyectos || []).filter(function (x) { return x.id === (P.manifiesto || "puerto-varas"); })[0] || {};
+  var TOUR = /^https:\/\//.test(PROY.tour || "") ? PROY.tour : "";
   var byId = {}; L.forEach(function (p) { byId[p.id] = p; });
   var SVGNS = "http://www.w3.org/2000/svg";
 
@@ -597,12 +710,29 @@ a { color: inherit; }
   L.forEach(function (p) { p.el = pinEl(p); });
   var tagEl = document.createElement("span"); tagEl.className = "r-tag num"; tagEl.hidden = true; tagEl.setAttribute("aria-hidden", "true"); pinsBox.appendChild(tagEl);
   var vBtn = document.createElement("button"); vBtn.type = "button"; vBtn.className = "v-btn"; vBtn.hidden = true; pinsBox.appendChild(vBtn);
+  var tBtn = document.createElement("button"); tBtn.type = "button"; tBtn.className = "v-btn t-btn"; tBtn.hidden = true; pinsBox.appendChild(tBtn);
+  tBtn.innerHTML = icon("360") + "Tour virtual 360°"; tBtn.setAttribute("aria-label", "Tour virtual 360° de la parcela");
   var arrEl = document.createElement("span"); arrEl.className = "r-arr"; arrEl.hidden = true; arrEl.setAttribute("aria-hidden", "true"); pinsBox.appendChild(arrEl);
+
+  /* ---------- Panel plegable (escritorio) ---------- */
+  var pminBtn = $("[data-pmin]");
+  pminBtn.addEventListener("click", function () {
+    var min = panel.classList.toggle("is-min");
+    root.classList.toggle("lista-min", min);
+    pminBtn.setAttribute("aria-expanded", min ? "false" : "true");
+    pminBtn.setAttribute("aria-label", min ? "Mostrar la lista de lugares" : "Plegar la lista de lugares");
+    reframe();
+  });
+  // Tras plegar o desplegar: la vista se reacomoda al nuevo espacio libre
+  function reframe() {
+    apply();
+    if (S.sel) flyTo(viewForPlace(byId[S.sel]), 450, queueLabels); else queueLabels();
+  }
 
   /* ---------- Filtros ---------- */
   var fbox = $("[data-filters]"), counts = {};
   L.forEach(function (p) { counts[p.cat] = (counts[p.cat] || 0) + 1; });
-  fbox.innerHTML = '<button type="button" class="fchip" data-f="todo" aria-pressed="true">Todo <small class="num">' + L.length + "</small></button>" +
+  fbox.innerHTML = '<button type="button" class="fchip" data-f="todo" aria-pressed="true">' + icon("grid") + 'Todo <small class="num">' + L.length + "</small></button>" +
     Object.keys(CAT).filter(function (k) { return counts[k]; }).map(function (k) {
       return '<button type="button" class="fchip" data-f="' + k + '" aria-pressed="false" style="--c:' + CAT[k].color + '">' + icon(CAT[k].icono || "info") + esc(CAT[k].nombre) + ' <small class="num">' + counts[k] + "</small></button>";
     }).join("");
@@ -643,8 +773,8 @@ a { color: inherit; }
       var li = document.createElement("li");
       var meta = (CAT[p.cat] || {}).nombre + " · " + (p.ruta ? km(p.ruta.km) : (p.sinCamino ? "sin camino a la cumbre" : "sin camino directo"));
       li.innerHTML = '<button type="button" class="place" aria-current="false" style="--c:' + color(p) + '">' +
-        '<span class="place-ic">' + icon(p.icono) + '</span><span class="place-t"><strong>' + esc(p.nombre) + (p.video ? '<span class="place-v" title="Con video">' + icon("play") + '<span class="sr-only">, con video</span></span>' : "") + "</strong><span>" + esc(meta) + "</span></span>" +
-        '<span class="place-m num">' + (p.ruta ? esc(mins(p.ruta.min)) + "<small>en auto</small>" : "≈ " + esc(km(p.recta)) + "<small>en línea recta</small>") + "</span></button>";
+        '<span class="place-ic">' + icon(p.icono) + '</span><span class="place-t"><strong>' + esc(p.nombre) + (p.video ? '<span class="place-v" title="Con video">' + icon("play") + '<span class="sr-only">, con video</span></span>' : "") + "</strong><span class=\"sr-only\">" + esc(meta) + "</span></span>" +
+        '<span class="place-m num">' + (p.ruta ? esc(mins(p.ruta.min)) + "<small>" + esc(km(p.ruta.km)) + "</small>" : "≈ " + esc(km(p.recta)) + "<small>en línea recta</small>") + "</span></button>";
       var bt = li.firstChild;
       bt.addEventListener("click", function () { stopTour(); select(p.id, { scroll: true, refocus: focusIn("h2") }); });
       bt.addEventListener("mouseenter", function () { hover(p.id); });
@@ -678,7 +808,9 @@ a { color: inherit; }
   function vw() { return map.clientWidth || 1; }
   function vh() { return map.clientHeight || 1; }
   // En escritorio el panel y la ficha flotan sobre el mapa: el área útil es lo que queda entre ellos
-  function slack() { return wide.matches ? { l: panel.offsetWidth + 18, r: card.offsetWidth + 80 } : { l: 0, r: 0 }; }
+  function pMin() { return panel.classList.contains("is-min"); }
+  function cMin() { return card.classList.contains("is-min"); }
+  function slack() { return wide.matches ? { l: pMin() ? 0 : panel.offsetWidth + 16, r: cMin() ? 0 : card.offsetWidth + 76 } : { l: 0, r: 0 }; }
   function kMin() { var sl = slack(); return Math.max((vw() - sl.l - sl.r) / W, vh() / H); }
   function kMax() { return Math.max(kMin() * (IMG.zoomMax || 6), 3.2); }
   function clampTo(v) {
@@ -709,7 +841,7 @@ a { color: inherit; }
   var mapTop = null;
   function free() {
     var fh = foot.offsetHeight + 24;
-    if (wide.matches) return { l: panel.offsetWidth + 18 + 40, r: vw() - card.offsetWidth - 80 - 30, t: 76, b: vh() - fh - 10 };
+    if (wide.matches) return { l: pMin() ? 22 : panel.offsetWidth + 16 + 40, r: vw() - (cMin() ? 76 + 24 : card.offsetWidth + 76 + 30), t: Math.max(76, pMin() ? panel.offsetHeight + 40 : 76), b: vh() - fh - 10 };
     // En celular cuenta solo la parte del mapa que se ve en pantalla y, con un lugar elegido, deja sitio al aviso "Ver ficha"
     //    (si el mapa va a subir a la pantalla, se cuenta desde su posición final; si casi no se ve, el mapa entero)
     var top = mapTop != null ? mapTop : rect(map).top, b = vh() - fh - 6;
@@ -825,11 +957,18 @@ a { color: inherit; }
     //    los pines atenuados que queden debajo se esconden
     var key = sel ? cover.concat([rect(sel.el.querySelector(".pin-c")), rect(homePin.querySelector(".pin-c"))]) : [];
     var routeLbl = [];
+    if (!sel && !tBtn.hidden) {
+      tBtn.style.left = P.x + "px"; tBtn.style.top = P.y + "px";
+      tBtn.classList.remove("up", "is-off2");
+      var br = rect(tBtn);
+      if (out(br) || hit(br, null, cover)) { tBtn.classList.add("up"); br = rect(tBtn); }
+      if (out(br) || hit(br, null, cover)) tBtn.classList.add("is-off2"); else routeLbl.push(br);
+    }
     if (sel && !vBtn.hidden) {
       vBtn.classList.remove("up", "is-off2");
-      var vr = rect(vBtn);
-      if (out(vr) || hit(vr, null, cover)) { vBtn.classList.add("up"); vr = rect(vBtn); }
-      if (out(vr) || hit(vr, null, cover)) vBtn.classList.add("is-off2"); else { routeLbl.push(vr); key.push(vr); }
+      var vr = rect(vBtn), vObs = cover.concat([rect(homePin.querySelector(".pin-c"))]);
+      if (out(vr) || hit(vr, null, vObs)) { vBtn.classList.add("up"); vr = rect(vBtn); }
+      if (out(vr) || hit(vr, null, vObs)) vBtn.classList.add("is-off2"); else { routeLbl.push(vr); key.push(vr); }
     }
     if (sel && !tagEl.hidden) {
       var len = sel.len || 0, spots = [.6, .45, .75, .35, .85], placed = false;
@@ -947,7 +1086,7 @@ a { color: inherit; }
   map.addEventListener("scroll", function () { map.scrollLeft = 0; map.scrollTop = 0; });
   pinsBox.addEventListener("keydown", function (e) {
     var keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1, Home: "first", End: "last" };
-    if (!(e.key in keys) || e.target === vBtn) return;
+    if (!(e.key in keys) || e.target === vBtn || e.target === tBtn) return;
     e.preventDefault(); e.stopPropagation();
     var vis = orden.filter(visible), i = S.sel ? vis.indexOf(byId[S.sel]) : -1, n = vis.length, k = keys[e.key];
     var nx = k === "first" ? vis[0] : k === "last" ? vis[n - 1] : i < 0 ? (k > 0 ? vis[0] : vis[n - 1]) : vis[(i + k + n) % n];
@@ -1055,15 +1194,30 @@ a { color: inherit; }
       return '<button type="button" data-go="' + p.id + '" aria-label="' + esc(p.nombre + ", " + minsLargo(p.ruta.min) + " en auto") + '"><b class="num">' + esc(n[0]) + "<small>" + esc(n.slice(1).join(" ")) + "</small></b><span>" + esc(p.nombre) + "</span></button>";
     }).join("");
     card.innerHTML =
-      '<div class="card-media">' + satBg(P) + '<span class="ph"><img src="assets/img/isotipo.webp" alt=""></span></div>' +
+      '<div class="card-media">' + satBg(P) +
+        (TOUR ? '<button type="button" class="card-360" data-t360-open aria-label="Tour virtual 360° de la parcela"><span class="c360" aria-hidden="true">360°</span><span class="c360-l">Tour virtual</span></button>'
+              : '<span class="ph"><img src="assets/img/isotipo.webp" alt=""></span>') +
+        '<div class="card-top"><button type="button" class="card-min" data-cmin aria-label="Minimizar ficha">' + icon("down") + "</button></div></div>" +
+      '<button type="button" class="card-mini" data-cmax aria-label="Abrir ficha de ' + esc(P.nombre) + '"><span class="ic"><img src="assets/img/isotipo.webp" alt=""></span><span><b>' + esc(P.nombre) + "</b><small>Tu parcela</small></span>" + icon("down") + "</button>" +
       '<div class="card-scroll"><div class="card-b"><div><p class="cat">Tu parcela</p><h2 id="card-title">' + esc(P.nombre) + "</h2>" + (P.sub ? '<p class="sub">' + esc(P.sub) + "</p>" : "") + "</div>" +
       '<p class="txt">' + esc(P.texto) + "</p>" +
+      '<button type="button" class="more" data-more aria-expanded="false" hidden>Leer más</button>' +
       (sum ? '<div class="sum">' + sum + "</div>" : "") +
-      (D.dato ? '<div class="fact">' + icon(D.dato.icono || "tren") + "<div><strong>" + esc(D.dato.titulo) + "</strong><p>" + esc(datoTxt()) + "</p></div></div>" : "") +
+      '<div class="more-b">' + (D.dato ? '<div class="fact">' + icon(D.dato.icono || "tren") + "<div><strong>" + esc(D.dato.titulo) + "</strong><p>" + esc(datoTxt()) + "</p></div></div>" : "") + "</div>" +
       "</div></div>" +
       '<div class="card-foot"><a class="btn btn-gold" href="https://www.google.com/maps/search/?api=1&query=' + P.lat + "," + P.lon + '" target="_blank" rel="noopener">' + icon("pin") + "Ver ubicación</a>" +
       '<a class="btn btn-line" href="' + esc(waHref("Hola Fundos, vi el mapa del entorno de Fundos Puerto Varas y quiero agendar una visita.")) + '"' + (WA ? ' target="_blank" rel="noopener"' : "") + ">" + icon("wa") + "Agendar visita</a></div>";
     card.style.removeProperty("--c");
+    cardState();
+  }
+  // "Leer más": el texto queda en 3 líneas y las notas se esconden hasta pedirlas
+  function cardState() {
+    card.classList.toggle("is-min", S.cmin && wide.matches);
+    var more = $("[data-more]", card); if (!more) { card.classList.remove("is-clamp"); return; }
+    card.classList.add("is-clamp");
+    var t = $("p.txt", card), extra = $$(".more-b > :not(.serv)", card).length;
+    more.hidden = !(extra || t.scrollHeight > t.clientHeight + 2);
+    if (more.hidden) card.classList.remove("is-clamp");
   }
   function renderCard(p) {
     card.dataset.mode = "";
@@ -1089,21 +1243,32 @@ a { color: inherit; }
     card.innerHTML =
       '<div class="card-media">' + media +
         '<div class="card-top"><div class="card-nav"><button type="button" data-step="-1" aria-label="Lugar anterior">' + icon("prev") + '</button><span class="num">' + (i + 1) + " de " + vis.length +
-        '</span><button type="button" data-step="1" aria-label="Lugar siguiente">' + icon("next") + '</button></div><button type="button" class="card-x" data-close aria-label="Cerrar ficha">' + icon("x") + "</button></div></div>" +
+        '</span><button type="button" data-step="1" aria-label="Lugar siguiente">' + icon("next") + '</button></div><span class="card-tr"><button type="button" class="card-min" data-cmin aria-label="Minimizar ficha">' + icon("down") + '</button><button type="button" class="card-x" data-close aria-label="Cerrar ficha">' + icon("x") + "</button></span></div></div>" +
+      '<button type="button" class="card-mini" data-cmax aria-label="Abrir ficha de ' + esc(p.nombre) + '" style="--c:' + color(p) + '"><span class="ic">' + icon(p.icono) + "</span><span><b>" + esc(p.nombre) + "</b><small>" + esc(p.ruta ? mins(p.ruta.min) + " en auto · " + km(p.ruta.km) : "≈ " + km(p.recta) + " en línea recta") + "</small></span>" + icon("down") + "</button>" +
       '<div class="card-scroll"><div class="card-b"><div><p class="cat" style="--c:' + color(p) + '">' + esc(c.nombre) + '</p><h2 id="card-title">' + esc(p.nombre) + "</h2>" + (p.sub ? '<p class="sub">' + esc(p.sub) + "</p>" : "") + "</div>" +
       big +
       '<p class="txt">' + esc(p.texto) + "</p>" +
+      '<button type="button" class="more" data-more aria-expanded="false" hidden>Leer más</button>' +
+      '<div class="more-b">' +
       (serv ? '<ul class="serv" aria-label="Servicios">' + serv + "</ul>" : "") +
       (p.nota ? '<p class="note">' + esc(p.nota) + "</p>" : "") +
-      (cerca.length ? '<p class="note">Muy cerca: ' + cerca.map(function (q) { return '<button type="button" class="lnk" data-go="' + q.id + '">' + esc(q.nombre) + "</button>"; }).join(", ") + "</p>" : "") + "</div></div>" +
+      (cerca.length ? '<p class="note">Muy cerca: ' + cerca.map(function (q) { return '<button type="button" class="lnk" data-go="' + q.id + '">' + esc(q.nombre) + "</button>"; }).join(", ") + "</p>" : "") + "</div></div></div>" +
       '<div class="card-foot"><a class="btn btn-gold" href="' + esc(href) + '" target="_blank" rel="noopener">' + icon(p.ruta ? "route" : "pin") + (p.ruta ? "Cómo llegar" : "Ver en Google Maps") + "</a>" +
       '<a class="btn btn-line" href="' + esc(waHref(msg)) + '"' + (WA ? ' target="_blank" rel="noopener"' : "") + ">" + icon("wa") + "Agendar visita</a></div>";
     card.style.setProperty("--c", color(p));
+    cardState();
     [vis[(i + 1) % vis.length], vis[(i - 1 + vis.length) % vis.length]].forEach(function (q) { if (q && q.foto) new Image().src = q.foto.src; });
   }
   card.addEventListener("click", function (e) {
     var g = e.target.closest("[data-go]");
     if (g) { stopTour(); select(g.dataset.go, { refocus: focusIn("h2") }); return; }
+    if (e.target.closest("[data-more]")) { var m = e.target.closest("[data-more]"), open = card.classList.toggle("is-clamp") === false; m.textContent = open ? "Leer menos" : "Leer más"; m.setAttribute("aria-expanded", open ? "true" : "false"); return; }
+    if (e.target.closest("[data-cmin]") || e.target.closest("[data-cmax]")) {
+      S.cmin = !!e.target.closest("[data-cmin]"); cardState(); stopTour();
+      (S.cmin ? $("[data-cmax]", card) : $("[data-cmin]", card)).focus({ preventScroll: true });
+      reframe(); return;
+    }
+    if (e.target.closest("[data-t360-open]")) { openT360(e.target.closest("[data-t360-open]")); return; }
     if (e.target.closest("[data-video]")) { openVideo(byId[S.sel], e.target.closest("[data-video]")); return; }
     if (e.target.closest("[data-close]")) { stopTour(); select(null, { fly: "keep", refocus: focusIn("h2") }); return; }
     var b = e.target.closest("[data-step]"); if (!b) return;
@@ -1126,6 +1291,7 @@ a { color: inherit; }
     S.sel = p ? id : null;
     hover(null);
     root.classList.toggle("has-sel", !!p);
+    tBtn.hidden = !!p || !TOUR; tBtn.classList.toggle("is-in", !p);
     L.forEach(function (q) {
       var on = q === p;
       q.el.classList.toggle("is-on", on);
@@ -1194,12 +1360,98 @@ a { color: inherit; }
   window.addEventListener("scroll", function () { if (touring && Math.abs(scrollY - tourY) > 120) stopTour(); }, { passive: true });
 
   document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && t3On) { e.preventDefault(); closeT360(); return; }
     if (e.key === "Escape" && !vp.hidden) { e.preventDefault(); closeVideo(); return; }
     if (e.key !== "Escape" || !S.sel) return;
     var inCard = card.contains(document.activeElement), inPins = pinsBox.contains(document.activeElement);
     stopTour(); select(null, { fly: "keep", refocus: inCard ? focusIn("h2") : null });
     if (inPins) homePin.focus({ preventScroll: true });
   });
+  /* ---------- Tour virtual 360°: vuelo a la parcela y portal que se abre desde ella ---------- */
+  var t3 = $("[data-t360]"), t3Frame = $("[data-t360-frame]"), t3Block = $("[data-t360-blocked]"), t3Go = $("[data-t360-go]");
+  var t3On = false, t3V0 = null, t3Timer = 0, t3Opener = null, t3Anim = null;
+  if (TOUR) {
+    $("[data-t360-t]").textContent = P.nombre;
+    $$("[data-t360-tab]").forEach(function (a) { a.href = TOUR; });
+    t3Go.innerHTML = "<p>Desde aquí</p>" + (D.resumen || []).map(function (id) { return byId[id]; }).filter(function (q) { return q && q.ruta; }).map(function (q) {
+      return '<button type="button" data-t360-to="' + q.id + '" aria-label="' + esc("Ver en el mapa el camino a " + q.nombre + ", " + minsLargo(q.ruta.min) + " en auto") + '"><b>' + esc(label(q)) + "</b>" + esc(mins(q.ruta.min)) + "</button>";
+    }).join("");
+  }
+  function t3Origin() {
+    var s = rect(t3), m = rect(map), h = rect(homePin.querySelector(".pin-c"));
+    var cx = h.left + h.width / 2, cy = h.top + h.height / 2;
+    var seen = cx > m.left && cx < m.right && cy > Math.max(m.top, 0) && cy < Math.min(m.bottom, innerHeight);
+    if (!seen && t3Opener && document.contains(t3Opener)) { var o = rect(t3Opener); cx = o.left + o.width / 2; cy = o.top + o.height / 2; }
+    else if (!seen) { cx = s.left + s.width / 2; cy = s.top + s.height / 2; }
+    return [cx - s.left, cy - s.top, s.width, s.height];
+  }
+  function t3Clip(open, done) {
+    var o = t3Origin(), R = Math.hypot(Math.max(o[0], o[2] - o[0]), Math.max(o[1], o[3] - o[1])) + 4;
+    var a = "circle(0px at " + o[0] + "px " + o[1] + "px)", b = "circle(" + R + "px at " + o[0] + "px " + o[1] + "px)";
+    if (t3Anim) t3Anim.cancel();
+    if (reduced || !t3.animate) { t3.style.clipPath = ""; done(); return; }
+    t3Anim = t3.animate([{ clipPath: open ? a : b }, { clipPath: open ? b : a }], { duration: open ? 850 : 600, easing: "cubic-bezier(.7, 0, .2, 1)", fill: "forwards" });
+    t3Anim.onfinish = function () { if (open) { t3Anim.cancel(); t3Anim = null; } done(); };
+  }
+  function t3Inert(on) {
+    $$(".stage > *").concat($$("main > section:not(.stage), main > footer")).forEach(function (el) { if (el !== t3) el.inert = on; });
+    document.documentElement.style.overflow = on && !wide.matches ? "hidden" : "";
+  }
+  function openT360(opener) {
+    if (!TOUR || t3On) return;
+    t3On = true; t3Opener = opener || null;
+    stopTour(); closeVideo(true);
+    if (S.sel) select(null, { fly: "keep" });
+    t3V0 = { k: V.k, tx: V.tx, ty: V.ty };
+    t3.classList.remove("is-live"); t3Block.hidden = true;
+    // El recorrido empieza a cargar mientras el mapa vuela hacia la parcela
+    var f = document.createElement("iframe");
+    f.src = TOUR; f.title = "Tour virtual 360° de " + P.nombre;
+    f.allow = "fullscreen; gyroscope; accelerometer; xr-spatial-tracking"; f.setAttribute("allowfullscreen", "");
+    f.addEventListener("load", function () { if (t3On) { clearTimeout(t3Timer); setTimeout(function () { t3.classList.add("is-live"); }, 200); } });
+    t3Frame.innerHTML = ""; t3Frame.appendChild(f);
+    clearTimeout(t3Timer);
+    t3Timer = setTimeout(function () { if (t3On && !t3.classList.contains("is-live")) t3Block.hidden = false; }, 15000);
+    var mr = rect(map), inView = mr.bottom > 80 && mr.top < innerHeight - 80;
+    var k = Math.min(kMax(), Math.max(V.k * 2.4, kMin() * 3)), f0 = free();
+    var go = function () {
+      t3.hidden = false; t3Inert(true);
+      t3Clip(true, function () { $("[data-t360-x]").focus({ preventScroll: true }); });
+    };
+    if (inView && !reduced) flyTo(clampTo({ k: k, tx: (f0.l + f0.r) / 2 - P.x * k, ty: (f0.t + f0.b) / 2 - P.y * k }), 750, go);
+    else go();
+  }
+  function closeT360(then) {
+    if (!t3On) return;
+    t3On = false; clearTimeout(t3Timer);
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+    t3Clip(false, function () {
+      if (t3Anim) { t3Anim.cancel(); t3Anim = null; }
+      t3.hidden = true; t3Frame.innerHTML = ""; t3.classList.remove("is-live");
+      t3Inert(false);
+      if (then) { then(); return; }
+      if (t3V0) flyTo(t3V0, reduced ? 0 : 650);
+      var o = t3Opener; t3Opener = null;
+      (o && document.contains(o) && !o.hidden ? o : homePin).focus({ preventScroll: true });
+    });
+  }
+  $("[data-t360-x]").addEventListener("click", function () { closeT360(); });
+  $("[data-t360-full]").addEventListener("click", function () {
+    if (document.fullscreenElement) { document.exitFullscreen(); return; }
+    if (t3.requestFullscreen) t3.requestFullscreen().catch(function () { window.open(TOUR, "_blank", "noopener"); });
+    else window.open(TOUR, "_blank", "noopener");
+  });
+  t3Go.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-t360-to]"); if (!b) return;
+    var id = b.dataset.t360To;
+    closeT360(function () { t3Opener = null; select(id, { scroll: true, refocus: focusIn("h2") }); });
+  });
+  // Si el sitio no deja incrustar el recorrido (política del navegador o del visor), se ofrece abrirlo aparte
+  document.addEventListener("securitypolicyviolation", function (e) {
+    var d = e.effectiveDirective || e.violatedDirective || "";
+    if (t3On && /^(frame|child|default)-src/.test(d)) { clearTimeout(t3Timer); t3Block.hidden = false; }
+  });
+
   /* ---------- Ventana flotante del video ---------- */
   var vp = $("[data-vp]"), vpFondo = $("[data-vp-fondo]"), vpVid = $("video", vp), vpEnd = $("[data-vp-end]"), vpOpener = null, vpT = 0;
   function placeVideo() {
@@ -1246,6 +1498,7 @@ a { color: inherit; }
     vpOpener = null;
   }
   vBtn.addEventListener("click", function () { if (!moved) openVideo(byId[S.sel], vBtn); });
+  tBtn.addEventListener("click", function () { if (!moved) openT360(tBtn); });
   $("[data-vp-x]").addEventListener("click", function () { closeVideo(); });
   vpFondo.addEventListener("click", function () { closeVideo(); });
   vpVid.addEventListener("ended", function () { vpEnd.hidden = false; $("[data-vp-again]").focus({ preventScroll: true }); });
@@ -1259,6 +1512,7 @@ a { color: inherit; }
   });
   function onResize() {
     placeVideo();
+    if (wide.matches) cardState();
     if (wide.matches) setPeek(null);
     apply();
     if (S.sel) flyTo(viewForPlace(byId[S.sel]), 0, queueLabels);
@@ -1266,14 +1520,20 @@ a { color: inherit; }
   var rt = 0;
   window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(onResize, 120); });
   if (wide.addEventListener) wide.addEventListener("change", function () { placeList(); onResize(); });
-  window.addEventListener("hashchange", function () { var h = location.hash.slice(1); if (byId[h] && h !== S.sel) { stopTour(); select(h); } });
+  window.addEventListener("hashchange", function () {
+    var h = location.hash.slice(1);
+    if (h === "tour-360") { if (!t3On) openT360(); return; }
+    if (byId[h] && h !== S.sel) { stopTour(); if (t3On) closeT360(function () { select(h); }); else select(h); }
+  });
 
   // Inicio: toda la zona y, si el enlace trae un lugar (#pvaras), ese lugar
   V.k = kMin(); V.tx = (vw() - W * V.k) / 2; V.ty = (vh() - H * V.k) / 2;
   apply();
   var h0 = location.hash.slice(1);
   renderSummary();
+  tBtn.hidden = !TOUR; tBtn.classList.add("is-in");
   if (byId[h0]) select(h0, { ms: 0 }); else fitAll(0);
+  if (h0 === "tour-360") openT360();   // enlace directo al tour: entorno.html#tour-360
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueLabels);
 })();
 </script>
