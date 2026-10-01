@@ -47,6 +47,10 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
     no están en el folleto llevan `"revisar": true` en `lugares.json`.
   - Interfaz: estrella de rutas tenues desde el proyecto, lista agrupada por tiempo, ficha con resumen inicial,
     enlaces directos `entorno.html#pvaras`, modo "Recorrer el entorno", zoom con Ctrl+rueda, pellizco y teclado.
+    Los rótulos se ubican sin choques en `labels()` (interfaz, píldora, trazo de la ruta y pines; lo que no cabe se
+    esconde). La píldora del lugar elegido se abre hacia el lado libre y, si no cabe, pierde el tiempo (`is-short`).
+    En celular un dedo en vertical desplaza la página (no el mapa) y el aviso "Ver ficha" queda en la parte visible.
+    Revisión: `tools/pruebas` no cubre esta página; probar los 17 lugares en 1920, 1440, 1280, 1100, 390, 320 y 844×390.
 - `assets/img` fotos y logos (WebP) · `assets/video` saludo del equipo (MP4 H.264 + WebM de respaldo + portada) ·
   `assets/fonts` Cormorant Garamond y Mulish autoalojadas.
 

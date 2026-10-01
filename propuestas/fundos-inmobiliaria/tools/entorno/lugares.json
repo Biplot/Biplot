@@ -168,7 +168,8 @@
    "sub": "Bosque y vivero de especies nativas",
    "texto": "Un espacio natural ubicado en Alerce, ideal para disfrutar de áreas verdes, caminar, descansar y conectar con la naturaleza sin alejarse de la ciudad.",
    "nota": "Parque municipal administrado por la Delegación de Alerce; revisa horarios antes de ir.",
-   "revisar": true
+   "revisar": true,
+   "corto": "Vivero Alerce"
   },
   {
    "id": "pvaras",
