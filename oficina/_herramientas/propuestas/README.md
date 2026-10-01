@@ -65,3 +65,16 @@ Usa Space Grotesk y Space Mono. Las maquetas (`mock.mjs`) quedan para probar ide
 SALIDA=/tmp/sala-archivo node oficina/_herramientas/propuestas/dibujar-sala.mjs archivo
 SALIDA=/tmp/sala-archivo node oficina/_herramientas/propuestas/sala-archivo/mock.mjs
 ```
+
+## BiPlot.TV, el canal de BiPlot
+
+`sala-tv/` es la propuesta del canal (ya está en la oficina: su dibujo vive en `../dibujos/barrio/salas-propias/tv.mjs`
+y `sala-tv/sala.mjs` sólo lo reexporta, con sus acercamientos). Es un estudio de televisión con su sala de estreno: el
+cine, el set de Aby y Felipe, el camarín, «Así se hace un capítulo», el muro de pantallas, la cartelera y, al medio,
+la pantalla del centro, como en la NBA (las repeticiones y el marcador). `salaTv({ felipe: [x, y] })` deja a Felipe
+parado en ese punto (para la maqueta del recorrido). Por fuera es un edificio propio en la plaza, junto a BiPlot HQ (se
+eligió entre tres: el estudio, una pantalla gigante al aire libre y una torre).
+
+```bash
+SALIDA=/tmp/sala-tv node oficina/_herramientas/propuestas/dibujar-sala.mjs tv
+```

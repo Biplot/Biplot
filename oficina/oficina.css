@@ -239,6 +239,7 @@ button { font: inherit; color: inherit; }
 .avatar.mini { width: 26px; height: 26px; flex: none; }
 .menu-chat { margin-top: 8px; border-color: var(--bp-borde-fuerte); background: none; }
 .menu-chat:hover { background: var(--bp-superficie-2); }
+.menu-tv { margin-top: 8px; }
 .menu-lista .punto.libre { background: none !important; border: 2px dashed var(--bp-marca-cian); }
 .panel-cuerpo .completo { margin: 4px 0 0; font: 500 14px/1.4 var(--bp-f-texto); color: var(--bp-texto-3); }
 .panel-cuerpo .esencia { margin: 0 0 12px; font: 500 17px/1.4 var(--bp-f-display); color: var(--bp-texto); }
@@ -468,6 +469,22 @@ button { font: inherit; color: inherit; }
 .tarjeta-img { margin: 0 0 12px; }
 .tarjeta-img img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; border: 1px solid var(--p-borde); background: var(--p-fondo-2); }
 .tarjeta-img figcaption { margin-top: 5px; font: 500 12px/1.3 var(--bp-f-texto); color: var(--p-pie); }
+/* BiPlot.TV: la programación (en el panel de la calle y en la cartelera del canal) y el video de cada tarjeta */
+.programas { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 8px; }
+.programa { width: 100%; display: grid; grid-template-columns: 104px minmax(0, 1fr) 20px; align-items: center; gap: 12px; padding: 6px 12px 6px 6px; border: 1px solid var(--bp-borde);
+  border-radius: 12px; background: rgba(255, 255, 255, .03); color: var(--bp-texto); font: inherit; text-align: left; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+.programa img { display: block; width: 104px; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 7px; background: #05090E; }
+.programa-txt { display: grid; gap: 3px; }
+.programa-txt .ceja { margin: 0; font: 700 10px/1.25 var(--bp-f-mono); letter-spacing: .1em; text-transform: uppercase; color: #7FD8CF; }
+.programa-txt b { font: 700 15px/1.2 var(--bp-f-display); }
+.programa-txt .dur { font: 700 11px/1 var(--bp-f-mono); color: var(--bp-texto-3); }
+.programa .ico { display: grid; place-items: center; color: var(--bp-acento); }
+.programa .ico svg { width: 18px; height: 18px; }
+.programa:hover, .programa:focus-visible { border-color: var(--bp-acento); background: var(--bp-acento-suave); }
+.sala-tarjeta .programa { border-color: var(--p-borde); color: var(--p-tinta); }
+.sala-tarjeta .programa-txt .ceja { margin: 0; color: var(--p-ceja); }
+.sala-tarjeta .programa-txt .dur { color: var(--p-pie); }
+.sala-tarjeta .tarjeta-video { margin-bottom: 12px; }
 /* Una foto (una pantalla real) se toca para verla en grande y completa */
 .ver-foto { position: relative; display: block; width: 100%; padding: 0; border: 0; border-radius: 10px; background: none; cursor: zoom-in; }
 .ver-foto img { display: block; }
@@ -789,6 +806,17 @@ button { font: inherit; color: inherit; }
 .loc-camino { animation: loc-camino 8s ease-in-out infinite; }
 @keyframes loc-camino { 0% { stroke-dasharray: 0 100; } 70%, 88% { stroke-dasharray: 100 0; opacity: .9; } 100% { stroke-dasharray: 100 0; opacity: 0; } }
 .loc-flota { animation: pj-flota 2.8s ease-in-out infinite; }
+/* Los focos de estreno de BiPlot.TV barren el cielo */
+.loc-haz { transform-box: fill-box; transform-origin: 50% 100%; animation: loc-haz 7s ease-in-out infinite; }
+.loc-haz.otro { animation-delay: -3.5s; }
+@keyframes loc-haz { 0%, 100% { transform: rotate(-9deg); } 50% { transform: rotate(9deg); } }
+/* La pantalla del centro de BiPlot.TV: seis repeticiones se turnan, 3,5 s cada una (sin movimiento queda la primera), y
+   la cinta de los anillos corre lo que mide su texto (--led, en el dibujo) */
+.loc-repe { opacity: 0; animation: loc-repe 21s linear infinite; }
+.loc-repe.primera { opacity: 1; }
+@keyframes loc-repe { 0% { opacity: 0; } 1.5%, 15.2% { opacity: 1; } 16.7%, 100% { opacity: 0; } }
+.loc-led { animation: loc-led 16s linear infinite; }
+@keyframes loc-led { from { transform: translateX(0); } to { transform: translateX(var(--led)); } }
 .loc-contorno { animation: loc-contorno 2.6s ease-in-out infinite; }
 @keyframes loc-contorno { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .35; } }
 /* Los textos que cambian (cupos, módulos, racha) se turnan */

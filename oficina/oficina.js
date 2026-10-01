@@ -49,14 +49,22 @@
   var MUSEO = SALAS.archivo && SALAS.archivo.salaPropia && ORDEN_PRINCIPAL.indexOf('archivo') > -1 ? { id: 'archivo', nombre: SALAS.archivo.nombre, cliente: SALAS.archivo.nombre,
     rubro: SALAS.archivo.sub, esencia: SALAS.archivo.esencia, salaPropia: SALAS.archivo.salaPropia, pines: [], puntos: [], enlaces: [], equipo: ['pepa'] } : null;
   function esMuseo(id) { return id === 'archivo' && !!MUSEO; }
-  function salaDe(id) { return esMuseo(id) ? MUSEO : PROYECTOS[id]; }
+  // BiPlot.TV, el canal de BiPlot (salas.tv.salaPropia en datos.js), en la plaza: todos los videos de BiPlot. No es un
+  // local ni un caso: se toca como un lugar y se entra como a una sala; entre las salas vecinas va al final, después del museo.
+  var CANAL = SALAS.tv && SALAS.tv.salaPropia && zonaPorId('tv') ? { id: 'tv', nombre: SALAS.tv.nombre, cliente: SALAS.tv.nombre,
+    rubro: SALAS.tv.sub, esencia: SALAS.tv.esencia, salaPropia: SALAS.tv.salaPropia, pines: [], puntos: [], enlaces: [], equipo: ['aby', 'felipe'] } : null;
+  function esCanal(id) { return id === 'tv' && !!CANAL; }
+  function salaDe(id) { return esMuseo(id) ? MUSEO : esCanal(id) ? CANAL : PROYECTOS[id]; }
   // El local libre de la calle principal también tiene la suya: la sala de ventas de BiPlot (proyectos.libre.salaPropia
   // en datos.js). Tampoco es un caso; entre las salas vecinas va en su lugar de la calle, antes del museo.
   var VENTAS = !!(PROYECTOS.libre && PROYECTOS.libre.salaPropia && ORDEN_PRINCIPAL.indexOf('libre') > -1);
   function esVentas(id) { return id === 'libre' && VENTAS; }
   // Cómo se llama cada sala para quien no la ve
-  function nombreSala(id) { var pr = salaDe(id); return esMuseo(id) ? pr.nombre + ', el museo de BiPlot' : esVentas(id) ? pr.nombre + ', la sala de ventas de BiPlot' : 'La sala de ' + pr.nombre; }
-  var VECINAS = CON_SALA.concat(VENTAS ? ['libre'] : [], MUSEO ? ['archivo'] : []);
+  function nombreSala(id) {
+    var pr = salaDe(id);
+    return esMuseo(id) ? pr.nombre + ', el museo de BiPlot' : esVentas(id) ? pr.nombre + ', la sala de ventas de BiPlot' : esCanal(id) ? pr.nombre + ', el canal de BiPlot' : 'La sala de ' + pr.nombre;
+  }
+  var VECINAS = CON_SALA.concat(VENTAS ? ['libre'] : [], MUSEO ? ['archivo'] : [], CANAL ? ['tv'] : []);
   var FASE_LOCAL = ['arriendo', 'diagnostico', 'obra', 'obra', 'obra', 'obra', 'obra', 'inauguracion', 'abierto', 'abierto'];
   function estadoDe(pr) {
     if (!pr || pr.libre) return 'libre';
@@ -157,7 +165,7 @@
       var zn = zonaPorId(obj.id); if (!zn) return;
       var q = P(zn.foco[0], zn.foco[1], zn.foco[2]);
       // Un local del barrio se abre al mirarlo: la cámara se acerca un poco más, para ver lo de adentro
-      var ventana = zn.hq ? 1250 : zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.id === 'pasaje' ? 470 : zn.barrio ? 410 : 520;
+      var ventana = zn.hq ? 1250 : zn.id === 'tv' ? 760 : zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.id === 'pasaje' ? 470 : zn.barrio ? 410 : 520;
       volar(q[0], q[1], zPara(obj.ventana || ventana), dur, fin);
     }
   }
@@ -205,6 +213,7 @@
     else if (tieneSala(obj.id)) accion = 'Ver el local y su sala';
     else if (pr) accion = ESTADO_TXT[estadoDe(pr)] + ' · Ver el local';
     else if (obj.id === 'archivo') accion = MUSEO ? 'El museo y todos los casos' : 'Ver todos los casos';
+    else if (obj.id === 'tv') accion = 'El canal y sus videos';
     else if (obj.id === 'pasaje') accion = 'Ver el directorio';
     else if (obj.id === 'puerta-404') accion = 'No se abre';
     return '<b>' + esc(zn.nombre) + '</b><span>' + esc(accion) + '</span>';
@@ -353,11 +362,12 @@
     if (id === 'pasaje') return { id: id, nombre: SALAS.pasaje.nombre, sub: SALAS.pasaje.sub, estado: 'lugar' };
     if (id === 'archivo') return { id: id, nombre: SALAS.archivo.nombre, sub: (MUSEO ? 'Museo de BiPlot · ' : '') + (BARRIO ? BARRIO.total : 0) + ' casos, por rubro', estado: 'lugar', color: '#7FD8CF' };
     if (id === 'libre' || /^libre-/.test(id)) return { id: id, nombre: PROYECTOS.libre.nombre, sub: 'Local disponible', estado: 'libre', color: '#7FD8CF', libre: true };
+    if (id === 'tv' && CANAL) return { id: id, nombre: SALAS.tv.nombre, sub: SALAS.tv.sub + ' · ' + programasTv().length + ' videos', estado: 'lugar', color: '#17C3B2' };
     if (!pr) return null;
     return { id: id, nombre: nombreCaso(pr), sub: pr.permiso === 'rubro' ? 'Caso sin nombre' : pr.rubro, estado: estadoDe(pr), chip: chipCaso(pr), color: pr.acento };
   }
   function callesDelBarrio() {
-    var g = [{ id: 'principal', nombre: 'Calle principal', ids: ORDEN_PRINCIPAL }];
+    var g = [{ id: 'principal', nombre: 'Calle principal', ids: ORDEN_PRINCIPAL.concat(CANAL ? ['tv'] : []) }];
     if (BARRIO) BARRIO.calles.forEach(function (c) { g.push({ id: c.id, nombre: c.nombre, ids: c.casos.concat(['libre-' + c.id]) }); });
     return g;
   }
@@ -373,6 +383,7 @@
       '<button type="button" class="menu-guia menu-oficina" data-oficina="1"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span><span class="txt">Entrar a la oficina</span></button>' +
       '<button type="button" class="menu-guia" data-guia="1"><span class="ico" aria-hidden="true">' + icono('ruta') + '</span>Hacer el recorrido guiado</button>' +
       '<button type="button" class="menu-guia menu-chat" data-chat="1">' + avatar('plotty', 'mini') + 'Conversar con Plotty</button>' +
+      (CANAL ? '<button type="button" class="menu-guia menu-tv" data-tipo="zona" data-id="tv"><span class="ico" aria-hidden="true">' + icono('tv') + '</span>Ver BiPlot.TV, el canal</button>' : '') +
       '<h3 class="menu-sub">El equipo</h3><ul class="menu-lista menu-personal">';
     E.ids.concat(E.mascotas).forEach(function (id) {
       var p = PERSONAL[id];
@@ -529,6 +540,7 @@
       ruta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/></svg>',
       afuera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
       play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+      tv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="12" rx="3"/><path d="M8 3l4 4 4-4"/></svg>',
       calle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L9 4M20 20L15 4M12 6v2M12 11v2M12 16v2"/></svg>',
       compartir: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg>',
       entrar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M4 12h11M11 8l4 4-4 4"/></svg>'
@@ -647,6 +659,34 @@
       htmlFichero(MUSEO ? 'h4' : 'h3', false) +
       '<p class="nota">Los casos de referencia del núcleo (negocios ilustrativos, no clientes) están en la estantería.</p>' + chipsEquipo(['pepa']);
   }
+  // BiPlot.TV desde la calle: el canal por dentro, el botón para entrar y la programación, que se ve directo con sonido
+  function htmlTv() {
+    var S = SALAS.tv;
+    return '<div class="media media-sala vista-sala" data-vista-sala="tv" role="img" aria-label="BiPlot.TV por dentro: el canal de BiPlot"></div>' +
+      '<p class="bp-etiqueta">' + esc(S.etiqueta) + '</p><h2 id="panel-titulo" tabindex="-1">' + esc(S.titulo) + '</h2><p>' + esc(S.texto) + '</p>' +
+      '<div class="acciones entrar-sala"><button type="button" class="bp-btn primario" data-entrar="tv"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Entrar al canal</button></div>' +
+      '<h3>La programación</h3>' + htmlProgramas(programasTv(), false) + '<p class="nota">Cada video sale en horizontal y en vertical: se ve el que calza con tu pantalla.</p>' + chipsEquipo(['aby', 'felipe']);
+  }
+  // La programación de BiPlot.TV, en el orden de su cartelera: cada video con su pantalla, de qué es, su nombre y cuánto
+  // dura. En la calle se ve directo con sonido; en el canal, cada uno abre su tarjeta (con el video y lo que cuenta)
+  function programasTv() { var Z = SALAS.tv.salaPropia.zonas, c = Z.cartelera; return (c && c.programas || []).filter(function (id) { return Z[id] && videoDe(Z[id]); }); }
+  function videoDe(d) { return typeof d.video === 'string' ? (PROYECTOS[d.video] || {}).media : d.video; }
+  function htmlProgramas(ids, enCanal) {
+    var Z = SALAS.tv.salaPropia.zonas;
+    return '<ol class="programas">' + ids.map(function (id) {
+      var d = Z[id], v = videoDe(d);
+      var dato = enCanal ? 'data-zona-ir="' + esc(id) + '"' : 'data-grande="' + esc(v.h) + '" data-grande-v="' + esc(v.v || '') + '"';
+      return '<li><button type="button" class="programa" ' + dato + '><img src="' + MEDIOS + '../tv/pantalla-' + esc(d.pantalla || id) + '.webp" alt="" width="160" height="90" loading="lazy">' +
+        '<span class="programa-txt"><span class="ceja">' + esc(d.ceja) + '</span><b>' + esc(d.nombre) + '</b><span class="dur">' + esc(d.duracion || '') + '</span></span>' +
+        '<span class="ico" aria-hidden="true">' + icono('play') + '</span>' + (enCanal ? '' : '<span class="sr"> (ver con sonido)</span>') + '</button></li>';
+    }).join('') + '</ol>';
+  }
+  // El video de una tarjeta del canal: se ve sin sonido en la tarjeta (en pantallas grandes) y con sonido en grande
+  function htmlVideoZona(d) {
+    var v = videoDe(d); if (!v) return '';
+    return '<div class="media tarjeta-video"><video class="panel-video" muted loop playsinline preload="none" poster="' + esc(v.poster) + '" data-src="' + esc(v.h) + '" aria-label="' + esc('Video: ' + d.nombre) + '"></video>' +
+      '<button type="button" class="media-grande" data-grande="' + esc(v.h) + '" data-grande-v="' + esc(v.v || '') + '">' + icono('play') + 'Ver con sonido</button></div>';
+  }
   // El buscador del fichero (en el panel o en la tarjeta del museo)
   function iniciarArchivo(caja) {
     caja = caja || panelCuerpo;
@@ -696,7 +736,7 @@
 
   /* ── Los locales del barrio se abren al tocarlos (locales.js): se va el techo y se ve lo de adentro ── */
   var localAbierto = null;
-  function esLocal(zn) { return !!(zn && zn.barrio && !zn.hq && zn.id !== 'pasaje'); }
+  function esLocal(zn) { return !!(zn && zn.barrio && !zn.hq && zn.id !== 'pasaje' && zn.id !== 'tv'); }
   // Lo de adentro de un local: el de la calle principal, o el de un caso según su plantilla o su estado (con su frente
   // y sus extras), con las marcas de su color y su nombre; los locales que se arriendan, vacíos
   function adentroDe(id) {
@@ -775,6 +815,7 @@
     if (id === 'reuniones') return vistaSala('reuniones') + cab() + '<div class="acciones">' + botonChat('Agendar con Plotty') + '</div>';
     if (id === 'pasaje') return vistaSala('pasaje') + cab() + htmlDirectorio();
     if (id === 'archivo') return htmlArchivo();
+    if (id === 'tv') return htmlTv();
     if (id === 'puerta-404') {
       return vistaSala('puerta-404') + cab() + '<div class="acciones"><button type="button" class="bp-btn" data-golpe="1">Golpear la puerta</button></div><p class="golpe" aria-live="polite"></p>';
     }
@@ -1412,9 +1453,11 @@
     return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre) + '</p><h3 id="sala-tarjeta-t" tabindex="-1">' + esc(d.titulo) + '</h3>' +
       (d.imagen ? '<figure class="tarjeta-img">' + botonFoto(MEDIOS + d.imagen + '.webp', pr.nombre + (pin ? ', ' + nombreModulo(pin[0]) + ': ' + pin[1] : ''), 'data-ver-foto') +
         '<figcaption>' + esc(piePantalla(pr, d.imagen)) + '</figcaption></figure>' : '') +
+      (d.video ? htmlVideoZona(d) : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
       (d.fases ? htmlFases(d.atlas) : '') + (d.hitos ? htmlHitos(d.hitos) : '') + (d.fichero ? '<div class="tarjeta-fichero">' + htmlFichero('h4', true) + '</div>' : '') +
+      (d.programas ? '<div class="tarjeta-programas">' + htmlProgramas(programasTv(), true) + '</div>' : '') +
       (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
         esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') + '</div>';
   }
@@ -1470,6 +1513,7 @@
     marcarZona(id, true);
     resaltarZona(id);
     if (d.biplot) { elegirPantalla(0); activarMedios(tarjeta); }
+    else if (d.video) activarMedios(tarjeta);
     // La cámara deja la zona al lado de la tarjeta (en celular, arriba de la hoja); la tarjeta aparece al llegar
     var l = libreSala(), t = tamSala();
     if (hoja) l.y1 = Math.max(l.y0 + 120, t.h - tarjeta.offsetHeight - 10);
@@ -1936,6 +1980,7 @@
     ['zona', 'eleven', 'Eleven 360', 'Un gimnasio que suma socios y no los suelta.'],
     ['zona', 'rumbo', 'Rumbo', 'Nuestra app para ordenar lo personal, un día a la vez.'],
     ['zona', 'archivo', 'El Archivo', 'El museo de BiPlot: del papel a hoy, con una pieza de cada desarrollo. Y el fichero, con todos los casos por rubro.'],
+    ['zona', 'tv', 'BiPlot.TV', 'El canal de BiPlot: los capítulos animados, la oficina y los casos, en video. Hoy se estrena «Un bocado a la vez».'],
     ['zona', 'libre', 'Tu proyecto aquí', 'Este local está esperando el próximo proyecto. ¿Conversamos?']
   ].filter(function (g) { return g[0] === 'actor' || zonaPorId(g[1]); });
   var guia = $('#guia'), pasoGuia = 0;
@@ -2005,7 +2050,7 @@
   function irAlHash(h, primera) {
     if (!h) { if (enSala) salirSala({ sinHistoria: true }); if (esc3.abierta()) salirOficina({ sinHistoria: true }); return; }
     if (h === enSala) return;
-    if (tieneSala(h) || esMuseo(h) || esVentas(h)) { entrarSala(h, { sinHistoria: true, directo: primera }); return; }
+    if (tieneSala(h) || esMuseo(h) || esVentas(h) || esCanal(h)) { entrarSala(h, { sinHistoria: true, directo: primera }); return; }
     if (enSala) salirSala({ sinHistoria: true, sinCamara: true });
     if (h === 'oficina' || h === 'planta-baja') { entrarOficina({ sinHistoria: true, directo: primera }); return; }
     if (h === 'conversar') { abrir({ tipo: 'chat', id: 'plotty' }); return; }

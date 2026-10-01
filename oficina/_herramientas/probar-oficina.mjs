@@ -16,6 +16,9 @@
 // del museo se abren en 3D, girando sobre su pedestal (se pausan y se giran a mano; con movimiento reducido, quietas).
 // La sala de ventas de BiPlot, en el local libre: se entra desde la calle, la lista de precios de frente con «Agenda tu
 // diagnóstico», las diez fases con Atlas, la ventana a los vecinos, la mesa de Lupe, Atlas que habla y el recorrido con Plotty.
+// BiPlot.TV, el canal de BiPlot, en su edificio de la plaza: un clic sobre el edificio abre su vista previa con la
+// programación; adentro, la cartelera, el estreno con su video, la pantalla del centro de frente (como en la NBA, con sus
+// seis repeticiones), el camarín con «Agenda tu diagnóstico» y el recorrido con Felipe (con movimiento reducido, quieta).
 // Al final carga casos de prueba (sólo en el navegador de la prueba, no en datos.js) para revisar las calles por rubro,
 // sus techos, las plantillas y las fases. NAVEGADOR=<ruta> usa otro Chromium.
 //
@@ -130,26 +133,27 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   await js("try{localStorage.clear()}catch(e){}; true"); await abrir(w, h, movil, false);
   ok(await js("!document.querySelector('#intro').hidden"), 'la bienvenida aparece en la primera visita');
   ok(await js('document.documentElement.scrollWidth <= innerWidth'), 'sin desborde horizontal');
-  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 31"), 'el menú lista 11 integrantes, 2 mascotas, 10 lugares de la oficina y 8 del barrio (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
+  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 33 && !!document.querySelector('#recorrer .menu-tv[data-id=\"tv\"]')"), 'el menú lista 11 integrantes, 2 mascotas, 10 lugares de la oficina, 9 del barrio y el botón de BiPlot.TV (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
   ok(await js("document.querySelectorAll('.actor').length === 13"), 'los 11 integrantes y las 2 mascotas están en la escena');
   ok(await js("document.querySelectorAll('.barrio-atras .local[data-local]').length === 7 && document.querySelectorAll('.caminante').length === 2"), 'la calle principal tiene sus 7 locales cerrados y 2 personas caminando por la vereda');
-  ok(await js("[...document.querySelectorAll('.barrio-atras image')].map(i => i.getAttribute('href')).sort().join() === 'media/salas/logo-fundos.webp,media/salas/logo-haru.webp,media/salas/logo-nuhome.webp'"), 'los techos de Fundos, Haru y Nu Home llevan su logo real');
+  ok(await js("[...document.querySelectorAll('.barrio-atras image')].map(i => i.getAttribute('href')).filter(h => /logo-/.test(h)).sort().join() === 'media/salas/logo-fundos.webp,media/salas/logo-haru.webp,media/salas/logo-nuhome.webp'"), 'los techos de Fundos, Haru y Nu Home llevan su logo real');
+  ok(await js("[...document.querySelectorAll('.barrio image')].some(i => /tv\\/pantalla-estreno\\.webp$/.test(i.getAttribute('href')))"), 'en la plaza, el edificio de BiPlot.TV muestra el estreno en su pantalla gigante');
   ok(await js("!document.querySelector('.barrio').innerHTML.includes('§') && !document.querySelector('.hq-cerrada').innerHTML.includes('§')"), 'no queda ninguna marca §…§ sin reemplazar en el barrio');
   ok(await js("!document.querySelector('#svg-escena').classList.contains('oficina-abierta') && getComputedStyle(document.querySelector('.piso-0')).display === 'none' && getComputedStyle(document.querySelector('.hq-cerrada')).opacity === '1'"), 'la oficina parte cerrada: se ve su techo y el interior no se dibuja');
   ok(await js("document.getAnimations().filter(a => a.playState === 'running' && a.effect && a.effect.target && a.effect.target.closest && a.effect.target.closest('.piso-0')).length === 0"), 'con la oficina cerrada, el equipo no se anima');
   ok(await js("[...document.querySelectorAll('button, a[href]')].every(b => { const r = b.getBoundingClientRect(); return r.width === 0 || (r.width >= 24 && r.height >= 24); })"), 'todo botón o enlace visible mide al menos 24 px');
   // Recorrido guiado completo
   const pasos = await js(`(async () => { document.querySelector('#intro-guia').click(); await ${W(300)}; const t = [], dentro = [];
-    for (let i = 0; i < 20; i++) { t.push(document.querySelector('#guia-t').textContent); dentro.push(document.querySelector('#svg-escena').classList.contains('oficina-abierta')); document.querySelector('#guia-sig').click(); await ${W(120)}; }
+    for (let i = 0; i < 21; i++) { t.push(document.querySelector('#guia-t').textContent); dentro.push(document.querySelector('#svg-escena').classList.contains('oficina-abierta')); document.querySelector('#guia-sig').click(); await ${W(120)}; }
     return { t, dentro, oculto: document.querySelector('#guia').hidden, intro: document.querySelector('#intro').hidden, chat: !!document.querySelector('#panel:not([hidden]) .chat') }; })()`);
-  ok(pasos.t.length === 20 && pasos.oculto && pasos.intro && pasos.t[0] === 'BiPlot HQ' && pasos.t.includes('El pasaje') && pasos.t[19] === 'Tu proyecto aquí', 'el recorrido guiado pasa por 20 paradas, de la oficina cerrada a la calle (' + pasos.t[0] + ' → ' + pasos.t[19] + ')');
+  ok(pasos.t.length === 21 && pasos.oculto && pasos.intro && pasos.t[0] === 'BiPlot HQ' && pasos.t.includes('El pasaje') && pasos.t[19] === 'BiPlot.TV' && pasos.t[20] === 'Tu proyecto aquí', 'el recorrido guiado pasa por 21 paradas, de la oficina cerrada a la calle y a BiPlot.TV, en la plaza (' + pasos.t[0] + ' → ' + pasos.t[20] + ')');
   ok(!pasos.dentro[0] && pasos.dentro.slice(1, 12).every(Boolean) && pasos.dentro.slice(12).every((d) => !d), 'el recorrido entra a la oficina en la recepción y sale a la calle en el pasaje');
   ok(pasos.chat, 'al terminar el recorrido se abre la conversación con Plotty');
   // Cada entrada del menú abre su panel con título (las salas de las empresas, con su vista de sala)
   const paneles = await js(`(async () => { const r = []; for (const b of document.querySelectorAll('#recorrer [data-id]')) {
       b.click(); await ${W(160)}; const t = document.querySelector('#panel-titulo'); r.push([b.dataset.id, t ? t.textContent : null, !document.querySelector('#panel').hidden]); }
     return r; })()`);
-  ok(paneles.every((p) => p[1] && p[2]), 'las 30 entradas del menú abren su panel con título' + (paneles.every((p) => p[1] && p[2]) ? '' : ': ' + paneles.filter((p) => !p[1]).map((p) => p[0]).join(', ')));
+  ok(paneles.every((p) => p[1] && p[2]), 'las ' + paneles.length + ' entradas del menú abren su panel con título' + (paneles.every((p) => p[1] && p[2]) ? '' : ': ' + paneles.filter((p) => !p[1]).map((p) => p[0]).join(', ')));
   const desb = await js("document.querySelector('#panel-cuerpo').scrollWidth <= document.querySelector('#panel-cuerpo').clientWidth + 1");
   ok(desb, 'el panel no desborda a lo ancho');
   ok(await js(`(async () => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(100)}; return document.querySelector('#panel').hidden; })()`), 'Escape cierra el panel');
@@ -185,6 +189,9 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   await js(`(async () => { document.querySelector('#salir-oficina').click(); await ${W(700)}; document.querySelector('#controles [data-accion="todo"]').click(); await ${W(900)}; return true; })()`);
   const tTotem = await clicEn(23.15, 23.78);
   ok(tTotem === 'La calle de los proyectos', 'un clic sobre el tótem del pasaje abre el directorio (' + tTotem + ')');
+  await js(`(async () => { document.querySelector('#panel-cerrar').click(); document.querySelector('#controles [data-accion="todo"]').click(); await ${W(900)}; return true; })()`);
+  const tCanal = await clicEn(36.3, 6.4);
+  ok(tCanal === 'El canal de BiPlot' && await js("!!document.querySelector('#panel [data-entrar=\"tv\"]')"), 'un clic sobre el edificio de BiPlot.TV, en la plaza, abre su vista previa con «Entrar al canal» (' + tCanal + ')');
   await js(`(async () => { document.querySelector('#panel-cerrar').click(); document.querySelector('#controles [data-accion="todo"]').click(); await ${W(900)}; return true; })()`);
   const tHaru = await clicEn(11.8, 22.3);
   await sleep(900);
@@ -464,7 +471,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   const ar = await js(`(async () => { const PP = window.OFICINA_DATOS.salas.archivo.salaPropia, b = document.querySelector('#sala-barra');
     const zonas = [...document.querySelectorAll('.zona-sala')].map(z => z.dataset.zona), quienes = [...document.querySelectorAll('.quien-sala')].map(q => q.dataset.quien);
     const r = { sala: document.body.classList.contains('en-sala-propia') && document.querySelector('#panel').hidden, nombre: document.querySelector('#sala-nombre').textContent, barra: b.hidden ? '' : b.textContent,
-      ant: document.querySelector('#sala-ant').hidden ? '' : document.querySelector('#sala-ant span').textContent, sig: !document.querySelector('#sala-sig').hidden,
+      ant: document.querySelector('#sala-ant').hidden ? '' : document.querySelector('#sala-ant span').textContent, sig: document.querySelector('#sala-sig').hidden ? '' : document.querySelector('#sala-sig span').textContent,
       faltan: Object.keys(PP.zonas).filter(z => !zonas.includes(z)).concat(PP.burbujas.map(x => x.quien).filter(q => !quienes.includes(q))), desborde: document.documentElement.scrollWidth > innerWidth };
     const t = document.querySelector('#sala-tarjeta'), abre = async (id) => { const z = document.querySelector('.zona-sala[data-zona="' + id + '"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)}; };
     const cierra = async () => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(150)}; };
@@ -538,8 +545,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     await cierra();
     r.rec = { p1, p2, enHoy, iHoy, esperado: PP.recorrido.slice(0, 2).map(p => PP.textos.guia + p.texto), fin: !b.classList.contains('recorriendo') };
     return r; })()`);
-  ok(ar.sala && ar.nombre === 'El Archivo' && /MUSEO DE BIPLOT/.test(ar.barra) && /Recorrer con Pepa/.test(ar.barra) && /Todos los casos/.test(ar.barra) && ar.ant === 'Tu proyecto aquí' && !ar.sig,
-    'oficina/#archivo abre El Archivo, el museo de BiPlot: su barra con «Recorrer con Pepa» y «Todos los casos», y la sala vecina es la sala de ventas');
+  ok(ar.sala && ar.nombre === 'El Archivo' && /MUSEO DE BIPLOT/.test(ar.barra) && /Recorrer con Pepa/.test(ar.barra) && /Todos los casos/.test(ar.barra) && ar.ant === 'Tu proyecto aquí' && ar.sig === 'BiPlot.TV',
+    'oficina/#archivo abre El Archivo, el museo de BiPlot: su barra con «Recorrer con Pepa» y «Todos los casos», entre la sala de ventas y BiPlot.TV');
   ok(!ar.faltan.length && !ar.desborde, 'en el museo están todas sus piezas y toda su gente' + (ar.faltan.length ? ' (faltan: ' + ar.faltan.join(', ') + ')' : ''));
   ok(ar.papel.t === 'Antes de todo esto, había una libreta' && ar.papel.ceja === '1985 · El papel' && ar.papel.cap === '../plotline.html#ch0 _blank' && ar.papel.tres,
     'la vitrina de la libreta se abre en 3D, con su texto de 1985 y su capítulo de «Seis décadas, la misma línea»');
@@ -622,6 +629,66 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(/Atlas · 360°/.test(vt.atlas) && /Desde aquí arriba se ve todo/.test(vt.atlas), 'Atlas, sobre la maqueta, dice que desde arriba se ve todo');
   ok(vt.rec.p1.n === '1 de ' + vt.rec.total && vt.rec.p1.t === 'La entrada' && vt.rec.p2.t === 'La sala de espera' && vt.rec.p1.guia === vt.rec.esperado[0] && vt.rec.p2.guia === vt.rec.esperado[1] &&
     vt.rec.pn.t === 'La mesa de Lupe' && vt.rec.fin, '«Recorrer con Plotty» va de la entrada a la sala de espera, Plotty habla en cada parada y termina en la mesa de Lupe');
+  // BiPlot.TV, el canal de BiPlot, en su edificio de la plaza: se entra desde el botón del menú (su vista previa trae la
+  // programación); adentro, la cartelera, el estreno con su video, la pantalla del centro de frente, el camarín y Felipe
+  await abrir(w, h, movil, false, '');
+  await sleep(700);
+  const tvr = await js(`(async () => { const PP = window.OFICINA_DATOS.salas.tv.salaPropia, boton = document.querySelector('#recorrer .menu-tv');
+    const r = { menu: boton ? boton.textContent : '' };
+    boton.click(); await ${W(900)};
+    Object.assign(r, { vista: document.querySelector('#panel-titulo')?.textContent, entrar: document.querySelector('#panel [data-entrar="tv"]')?.textContent || '',
+      programas: document.querySelectorAll('#panel .programa[data-grande]').length });
+    document.querySelector('#panel [data-entrar="tv"]').click(); await ${W(1500)};
+    const b = document.querySelector('#sala-barra'), dib = document.querySelector('#sala-dibujo');
+    const zonas = [...document.querySelectorAll('.zona-sala')].map(z => z.dataset.zona), quienes = [...document.querySelectorAll('.quien-sala')].map(q => q.dataset.quien);
+    Object.assign(r, { hash: location.hash, sala: document.body.classList.contains('en-sala-propia') && document.querySelector('#panel').hidden, nombre: document.querySelector('#sala-nombre').textContent,
+      barra: b.hidden ? '' : b.textContent, ant: document.querySelector('#sala-ant span')?.textContent, sig: document.querySelector('#sala-sig').hidden,
+      faltan: Object.keys(PP.zonas).filter(z => !zonas.includes(z)).concat(PP.burbujas.map(x => x.quien).filter(q => !quienes.includes(q))), desborde: document.documentElement.scrollWidth > innerWidth,
+      repes: dib.querySelectorAll('.loc-repe').length, cinta: dib.querySelectorAll('.loc-led').length, marcas: dib.innerHTML.includes('§') });
+    const t = document.querySelector('#sala-tarjeta'), f = document.querySelector('#sala-frente');
+    const abre = async (id) => { const z = document.querySelector('.zona-sala[data-zona="' + id + '"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(350)}; };
+    const cierra = async () => { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' })); await ${W(150)}; };
+    // La cartelera: toda la programación, y cada video lleva a su tarjeta (el estreno, con su video en los dos formatos)
+    await abre('cartelera');
+    r.cartelera = { t: document.querySelector('#sala-tarjeta-t')?.textContent, n: t.querySelectorAll('.programa[data-zona-ir]').length };
+    t.querySelector('.programa[data-zona-ir="estreno"]').click(); await ${W(400)};
+    const g = t.querySelector('[data-grande]');
+    r.estreno = { t: document.querySelector('#sala-tarjeta-t')?.textContent, video: t.querySelector('video')?.getAttribute('data-src') || '', h: g?.getAttribute('data-grande') || '', v: g?.getAttribute('data-grande-v') || '' };
+    await cierra();
+    // La pantalla del centro, como en la NBA: se abre de frente, con el marcador, sus seis repeticiones y su tarjeta
+    await abre('marcador');
+    r.marcador = { frente: !f.hidden && t.hidden, t: document.querySelector('#sala-frente-t')?.textContent, vb: f.querySelector('.frente-marco svg')?.getAttribute('viewBox'),
+      repes: f.querySelectorAll('.frente-marco image').length, botones: [...f.querySelectorAll('.tarjeta-botones button')].map(x => x.textContent).join(' | '), marcas: f.innerHTML.includes('§'),
+      desborde: document.documentElement.scrollWidth > innerWidth };
+    await cierra();
+    r.marcador.cierra = f.hidden && document.body.classList.contains('en-sala-propia') && location.hash === '#tv';
+    // El camarín: el único coral de la sala, «Agenda tu diagnóstico», y «Conversar con Plotty»
+    await abre('camarin');
+    r.camarin = { cta: t.querySelector('a.bp-cta')?.getAttribute('href') || '', chat: !!t.querySelector('[data-abrir="chat:plotty"]') };
+    await cierra();
+    // Recorrer con Felipe: doce paradas, y la cuarta es la pantalla del centro
+    const rec = () => ({ n: document.querySelector('[data-rec="n"]').textContent, t: document.querySelector('[data-rec="t"]').textContent, guia: document.querySelector('#sala-capa .burbuja.de-guia')?.textContent || '' });
+    b.querySelector('[data-recorrer]').click(); await ${W(1500)}; const p1 = rec();
+    for (let k = 1; k < 4; k++) { document.querySelector('#sala-barra [data-rec="sig"]').click(); await ${W(700)}; }
+    await ${W(900)};
+    const p4 = rec();
+    await cierra();
+    r.rec = { p1, p4, esperado: [PP.recorrido[0], PP.recorrido[3]].map(p => PP.textos.guia + p.texto), fin: !b.classList.contains('recorriendo') };
+    return r; })()`);
+  ok(tvr.menu === 'Ver BiPlot.TV, el canal' && tvr.vista === 'El canal de BiPlot' && tvr.entrar === 'Entrar al canal' && tvr.programas === 7,
+    'el botón «Ver BiPlot.TV, el canal» abre su vista previa, con «Entrar al canal» y los 7 videos de su programación (' + tvr.programas + ')');
+  ok(tvr.hash === '#tv' && tvr.sala && tvr.nombre === 'BiPlot.TV' && /EL CANAL DE BIPLOT/.test(tvr.barra) && /Recorrer con Felipe/.test(tvr.barra) && /Toda la programación/.test(tvr.barra) && tvr.ant === 'El Archivo' && tvr.sig,
+    'oficina/#tv es BiPlot.TV: su barra con «Recorrer con Felipe» y «Toda la programación», y la sala vecina es El Archivo');
+  ok(!tvr.faltan.length && !tvr.desborde && !tvr.marcas, 'en el canal están todas sus zonas y toda su gente, sin marcas §…§' + (tvr.faltan.length ? ' (faltan: ' + tvr.faltan.join(', ') + ')' : ''));
+  ok(tvr.repes === 6 && tvr.cinta === 2, 'la pantalla del centro pasa sus 6 repeticiones y sus dos anillos llevan la cinta que corre');
+  ok(tvr.cartelera.t === 'Toda la programación' && tvr.cartelera.n === 7 && tvr.estreno.t === '¿Cómo te comes un elefante?' && /media\/tv\/un-bocado-a-la-vez-h\.mp4$/.test(tvr.estreno.video) &&
+    /media\/tv\/un-bocado-a-la-vez-h\.mp4$/.test(tvr.estreno.h) && /media\/tv\/un-bocado-a-la-vez-v\.mp4$/.test(tvr.estreno.v), 'la cartelera lista los 7 videos y el estreno abre su tarjeta con su video, en horizontal y en vertical');
+  ok(tvr.marcador.frente && tvr.marcador.t === 'Las mejores jugadas, al centro de la cancha' && tvr.marcador.vb === '0 0 1280 720' && tvr.marcador.repes === 6 &&
+    tvr.marcador.botones === 'Ver el estreno | Toda la programación' && !tvr.marcador.marcas && !tvr.marcador.desborde && tvr.marcador.cierra,
+    'la pantalla del centro se abre de frente: el marcador, sus 6 repeticiones, «Ver el estreno» y «Toda la programación»; Escape la cierra');
+  ok(/^https:\/\/wa\.me\/\d+\?text=/.test(tvr.camarin.cta) && tvr.camarin.chat, 'el camarín lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
+  ok(tvr.rec.p1.n === '1 de 12' && tvr.rec.p1.t === 'La cartelera' && tvr.rec.p4.n === '4 de 12' && tvr.rec.p4.t === 'La pantalla del centro' &&
+    tvr.rec.p1.guia === tvr.rec.esperado[0] && tvr.rec.p4.guia === tvr.rec.esperado[1] && tvr.rec.fin, '«Recorrer con Felipe» va de la cartelera a la pantalla del centro (4 de 12), Felipe habla en cada parada y Escape lo termina');
   await abrir(w, h, movil, false, '#conversar');
   ok((await js("!!document.querySelector('#panel:not([hidden]) .chat') && document.querySelector('#svg-escena').classList.contains('oficina-abierta')")), 'oficina/#conversar entra y abre la conversación con Plotty');
   // La página para compartir de una sala lleva a la oficina, dentro de la sala
@@ -651,6 +718,12 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     const og = fs.readFileSync(path.join(raiz, 'oficina', 'archivo', 'index.html'), 'utf8');
     ok(/og:image" content="https:\/\/biplot\.cl\/oficina\/kit\/png\/sala-archivo-og\.png"/.test(og) && og.includes("location.replace('../#archivo')") && fs.existsSync(path.join(raiz, 'oficina', 'kit', 'png', 'sala-archivo-og.png')),
       'la página del museo (biplot.cl/oficina/archivo) trae su vista previa y lleva a El Archivo');
+  }
+  // Y la del canal
+  {
+    const og = fs.readFileSync(path.join(raiz, 'oficina', 'tv', 'index.html'), 'utf8');
+    ok(/og:image" content="https:\/\/biplot\.cl\/oficina\/kit\/png\/sala-tv-og\.png"/.test(og) && og.includes("location.replace('../#tv')") && fs.existsSync(path.join(raiz, 'oficina', 'kit', 'png', 'sala-tv-og.png')),
+      'la página del canal (biplot.cl/oficina/tv) trae su vista previa y lleva a BiPlot.TV');
   }
   ok(consola.length === 0, 'sin errores de consola' + (consola.length ? ': ' + [...new Set(consola)].join(' | ') : ''));
 }
@@ -725,6 +798,15 @@ await sleep(600);
     const a = cara(); await ${W(600)}; const b = cara(); f.querySelector('[data-v3d="izq"]').click(); await ${W(60)};
     return { quieta: !!a && a === b, boton: f.querySelector('[data-v3d="pausa"]')?.textContent, aMano: cara() !== b }; })()`);
   ok(vq.quieta && vq.boton === 'Seguir girando' && vq.aMano, 'en El Archivo, la vitrina en 3D no gira sola, pero se gira a mano');
+}
+
+// BiPlot.TV, quieto: la pantalla del centro se queda en el estreno y la cinta de sus anillos no corre
+await abrir(1440, 900, false, true, '#tv');
+await sleep(600);
+{
+  const tq = await js(`(() => { const d = document.querySelector('#sala-dibujo');
+    return { repes: [...d.querySelectorAll('.loc-repe')].map(g => getComputedStyle(g).opacity).join(), cinta: [...d.querySelectorAll('.loc-led')].every(g => getComputedStyle(g).animationName === 'none') }; })()`);
+  ok(tq.repes === '1,0,0,0,0,0' && tq.cinta, 'en BiPlot.TV, la pantalla del centro se queda en el estreno y la cinta de sus anillos no corre (' + tq.repes + ')');
 }
 
 console.log('\nRecursos con error: ' + (recursos.length ? [...new Set(recursos)].join(', ') : 'ninguno'));

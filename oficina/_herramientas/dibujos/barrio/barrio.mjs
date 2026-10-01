@@ -16,6 +16,7 @@ import * as T from './plantillas.mjs';
 import * as EN from './entorno.mjs';
 import { EA, caminante } from './salas-grandes.mjs';
 import { VISITANTES, medida } from './visitantes.mjs';
+import { ISO_TV } from './salas-propias/tv.mjs';
 
 const r1 = (n) => Math.round(n * 10) / 10;
 const { W, D } = S;
@@ -236,14 +237,14 @@ function mural(w, h) {
   return s;
 }
 function plaza(E, pj) {
-  const X0 = G.plaza, X1 = G.x1;
+  const X0 = G.plaza, X1 = G.x1, sin = new Set(CANAL.sin);
   EN.losa(E, X0, 0, X1, 20, '#27425E', { frente: false });
   EN.muroFondoY(E, X0, X1, 0, 3, { color: '#173C60' });
   const wM = Math.round((X1 - X0 - 0.6) * 100);
   E.planoY(X0 + 0.3, 0.001, 2.75, mural(wM, 250), -1790, wM, 250);
   EN.pasto(E, [[X0 + 0.4, 0.5], [X1 - 0.3, 0.5], [X1 - 0.3, 19.6], [X0 + 0.4, 19.6]], { semilla: 11, densidad: 0.8 });
   EN.camino(E, [[25.1, 21], [25.4, 16.2], [29.6, 11.2]], 1.3);
-  EN.camino(E, [[29.6, 11.2], [33.6, 6.8], [37.2, 5.6]], 1.3);
+  EN.camino(E, [[29.6, 11.2], [33.0, 10.4], [36.3, 10.1]], 1.3); // hasta la alfombra del canal
   EN.camino(E, [[26.2, 7.2], [29.6, 11.2], [33.8, 15.4], [37.6, 19.9]], 1.1);
   // La pileta con su chorro
   E.cilindro(29.6, 11.2, 0, 1.9, 0.08, '#4B627B', '#3A5470', -1200);
@@ -252,21 +253,22 @@ function plaza(E, pj) {
   E.cilindro(29.6, 11.2, 0.5, 0.18, 0.7, '#B9C8D8', '#8FA3B8', 40.62);
   E.cilindro(29.6, 11.2, 1.2, 0.42, 0.08, '#B9C8D8', '#8FA3B8', 40.63);
   { const [cx, cy] = P(29.6, 11.2, 1.3); E.add(40.64, `<g class="chorro" stroke="#7FD8CF" stroke-width="2" fill="none" opacity=".75"><path d="M${r1(cx)} ${r1(cy)}q-10 -26 -26 8M${r1(cx)} ${r1(cy)}q10 -26 26 8M${r1(cx)} ${r1(cy)}v-24"/></g>`); }
-  for (const [x, y, s] of [[25.9, 2.8, 1.15], [33.9, 3.2, 1.2], [26.2, 12.8, 1], [34.2, 13.2, 1.05], [31.2, 1.9, 0.95], [37.9, 2.6, 1.1], [38.8, 12.2, 1.0], [36.3, 9.3, 0.85]]) EN.arbol(E, x, y, { s });
+  for (const [x, y, s] of [[25.9, 2.8, 1.15], [33.9, 3.2, 1.2], [26.2, 12.8, 1], [34.2, 13.2, 1.05], [31.2, 1.9, 0.95], [37.9, 2.6, 1.1], [38.8, 12.2, 1.0], [36.3, 9.3, 0.85]]) if (!sin.has(`arbol ${x},${y}`)) EN.arbol(E, x, y, { s });
   EN.arbol(E, 27.2, 17.6, { s: 0.9, tipo: 'jacaranda' });
   EN.arbol(E, 39.3, 16.9, { s: 0.8, tipo: 'jacaranda' });
   EN.banca(E, 27.1, 9.6, 'y', { largo: 1.4 });
   EN.banca(E, 31.6, 13.6, 'x', { largo: 1.4 });
-  for (const [x, y] of [[26.4, 6.2], [33.2, 9.4], [32.4, 17.2], [37.4, 7.4]]) EN.farol(E, x, y);
+  for (const [x, y] of [[26.4, 6.2], [33.2, 9.4], [32.4, 17.2], [37.4, 7.4], ...CANAL.faroles]) if (!sin.has(`farol ${x},${y}`)) EN.farol(E, x, y);
   EN.arbusto(E, 24.8, 19.2, { s: 0.9 }); EN.arbusto(E, 35, 18.6, { s: 0.8 }); EN.arbusto(E, 40.0, 19.0, { s: 0.8 });
   // El quiosco de diarios
   {
-    const x = 33.2, y = 7.2, k = x + y + 0.5;
+    const [x, y] = CANAL.quiosco, k = x + y + 0.5;
     E.caja(x, y, 0, 1.4, 1.1, 1.3, { t: '#1F5A4A', l: '#1B5244', r: '#143E33' }, k);
     E.caja(x - 0.12, y - 0.12, 1.3, 1.64, 1.34, 0.1, { t: '#2E8263', l: '#236953', r: '#1B5244' }, k + 0.01);
     E.planoY(x + 0.12, y + 1.101, 1.15, `<rect width="116" height="70" rx="3" fill="#F4ECD8"/>` + [0, 1, 2, 3].map(i => `<rect x="${8 + i * 27}" y="10" width="22" height="30" fill="${['#E0524A', '#17C3B2', '#E0B341', '#35679A'][i]}"/><rect x="${8 + i * 27}" y="44" width="22" height="18" fill="#B9C8D8"/>`).join(''), k + 0.02, 116, 70);
     E.planoX(x + 1.401, y + 1.05, 1.22, EN.txt(8, 20, 'DIARIOS', 15, '#F4ECD8'), k + 0.03, 100, 24);
   }
+  canal(E, pj);
   // La gente de la plaza: poca, para que el barrio se vea tranquilo (y pese menos)
   pj('abuelo', 30.9, 13.5, 0, 'd');
   pj('paseadora', 30.8, 14.9, 0, 'd'); pj('perro', 32.0, 15.05, 0, 'd');
@@ -276,6 +278,95 @@ function plaza(E, pj) {
     const hx = ax + (27.8 - mp.cx) * EA, hy = ay + (33.2 - mp.pie) * EA, cx = bx + (25.4 - md.cx) * EA, cy = by + (37 - md.pie) * EA;
     E.add(47.35, `<path d="M${r1(hx)} ${r1(hy)}Q${r1((hx + cx) / 2)} ${r1(Math.max(hy, cy) + 10)} ${r1(cx)} ${r1(cy)}" stroke="#E0524A" stroke-width="1.6" fill="none"/>`);
   }
+}
+
+/* ───────── BiPlot.TV en la plaza ───────── */
+// El canal de BiPlot no es un local más: es de BiPlot, y se nota desde la calle. Es un edificio propio al fondo de la
+// plaza, hermano de BiPlot HQ (se eligió entre tres: el estudio, una pantalla gigante al aire libre y una torre).
+const TVC = { cian: '#17C3B2', menta: '#7FD8CF', azul: '#0E2A47', noche: '#0B1726', niebla: '#F2F4F7', luz: '#FFF1CF', vidrio: '#9FD8FF' };
+const MUROS_TV = { t: '#1D3A5C', l: '#1E3A5C', r: '#162D49' };
+const ESTRENO_TV = '§M§../tv/pantalla-estreno.webp';
+// La pantalla del estreno (w × h, en centésimas), con su marco y un brillo
+const afiche = (w, h) => `<defs><linearGradient id="tv-brillo-${w}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".16"/><stop offset=".45" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient></defs>` +
+  `<rect width="${w}" height="${h}" rx="5" fill="#05090E"/><image href="${ESTRENO_TV}" x="6" y="6" width="${w - 12}" height="${h - 12}" preserveAspectRatio="xMidYMid slice"/>` +
+  `<rect x="6" y="6" width="${w - 12}" height="${h - 12}" fill="url(#tv-brillo-${w})"/>`;
+// La marquesina del estreno, con sus ampolletas
+const marquesina = (w, h, texto, fs) => `<rect width="${w}" height="${h}" fill="${TVC.azul}"/>` +
+  Array.from({ length: Math.round(w / 20) }, (_, i) => { const x = r1(8 + i * (w - 16) / (Math.round(w / 20) - 1)); return `<circle cx="${x}" cy="5" r="2.6" fill="${TVC.luz}"/><circle cx="${x}" cy="${h - 5}" r="2.6" fill="${TVC.luz}"/>`; }).join('') +
+  `<rect x="12" y="11" width="${w - 24}" height="${h - 22}" rx="2" fill="#FBFAF7"/><text x="${w / 2}" y="${r1(h / 2 + fs * 0.36)}" text-anchor="middle" ${MONO} font-weight="700" font-size="${fs}" fill="${TVC.azul}" letter-spacing="1">${texto}</text>`;
+// El nombre del canal: el televisor y «BiPlot.TV» (el cuerpo de la letra se achica si el nombre no cabe: mide unas 5,4
+// veces su alto)
+const letreroTv = (w, h) => `<rect width="${w}" height="${h}" rx="8" fill="${TVC.azul}" stroke="${TVC.cian}" stroke-width="3"/><g transform="translate(${r1(h * 0.14)} ${r1(h * 0.1)})">${ISO_TV(h * 0.8)}</g>` +
+  `<text x="${r1(h * 1.05 + (w - h * 1.05) / 2)}" y="${r1(h * 0.66)}" text-anchor="middle" ${FUENTE} font-weight="700" font-size="${r1(Math.min(h * 0.46, (w - h * 1.05 - 16) / 5.4))}" fill="${TVC.niebla}">BiPlot<tspan fill="${TVC.cian}">.TV</tspan></text>`;
+// La antena (la luz de arriba pestañea) y la parabólica
+function antena(E, ax, ay, z, H, k) {
+  for (const [dx, dy] of [[-0.22, -0.18], [0.22, -0.18], [0, 0.24]]) E.linea([[ax + dx, ay + dy, z], [ax, ay, z + H]], '#8FA3B8', 1.8, k);
+  const a = (t) => [ax - 0.22 * (1 - t), ay - 0.18 * (1 - t), z + H * t], b = (t) => [ax + 0.22 * (1 - t), ay - 0.18 * (1 - t), z + H * t];
+  for (let i = 0; i < 7; i++) E.linea([a(i / 8), b((i + 0.5) / 8), a((i + 1) / 8)], '#8FA3B8', 1, k + 0.001);
+  for (const [dz, l] of [[0.6, 0.4], [1.0, 0.3]]) E.linea([[ax - l, ay, z + H - dz], [ax + l, ay, z + H - dz]], '#B9C8D8', 1.8, k + 0.002);
+  const [lx, ly] = P(ax, ay, z + H + 0.05);
+  E.add(k + 0.003, `<g class="loc-lampara"><circle cx="${r1(lx)}" cy="${r1(ly)}" r="10" fill="${TVC.cian}" opacity=".3"/><circle cx="${r1(lx)}" cy="${r1(ly)}" r="4.4" fill="${TVC.cian}"/></g>`);
+}
+function parabolica(E, x, y, z, k) {
+  E.caja(x - 0.16, y - 0.16, z, 0.32, 0.32, 0.18, { t: '#8FA3B8', l: '#6B7A8C', r: '#5B6B7F' }, k);
+  const [px, py] = P(x, y, z + 0.62);
+  E.marca(x, y, z + 1.0);
+  E.add(k + 0.001, `<path d="M${r1(px)} ${r1(py + 16)}V${r1(py + 6)}" stroke="#8FA3B8" stroke-width="2.4"/>` +
+    `<ellipse cx="${r1(px)}" cy="${r1(py)}" rx="18" ry="11.5" fill="#DCE2E7" stroke="#8FA3B8" stroke-width="1.6" transform="rotate(-28 ${r1(px)} ${r1(py)})"/>` +
+    `<ellipse cx="${r1(px + 1)}" cy="${r1(py - 1)}" rx="11.5" ry="7" fill="#B9C8D8" transform="rotate(-28 ${r1(px)} ${r1(py)})"/><path d="M${r1(px)} ${r1(py)}L${r1(px + 9)} ${r1(py - 13)}" stroke="#6B7A8C" stroke-width="1.6"/><circle cx="${r1(px + 9)}" cy="${r1(py - 13)}" r="2.2" fill="#6B7A8C"/>`);
+}
+// Dos focos de estreno que barren el cielo (oficina.css los mueve; con movimiento reducido quedan quietos)
+function focosEstreno(E, puntos, k) {
+  const haz = `<defs><linearGradient id="tv-haz" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${TVC.menta}" stop-opacity=".42"/><stop offset="1" stop-color="${TVC.menta}" stop-opacity="0"/></linearGradient></defs>`;
+  E.add(k, haz + puntos.map(([x, y, giro], i) => { const [px, py] = P(x, y, 0.35); return `<g class="loc-haz${i % 2 ? ' otro' : ''}"><path d="M${r1(px - 5)} ${r1(py)}L${r1(px - 70 + giro)} ${r1(py - 560)}H${r1(px + 70 + giro)}L${r1(px + 5)} ${r1(py)}Z" fill="url(#tv-haz)"/></g>`; }).join(''));
+  for (const [x, y] of puntos) E.cilindro(x, y, 0, 0.26, 0.38, '#DCE2E7', '#5B6776', k + 0.01 + (x + y) * 0.001);
+}
+// La vitrina iluminada de una fachada y su puerta (cara +y, en y = yf, de x0 a x1)
+function vitrinaTv(E, x0, x1, yf, alto, puerta, k) {
+  let v = E.poly([[x0, yf + 0.002, 0.15], [x1, yf + 0.002, 0.15], [x1, yf + 0.002, alto], [x0, yf + 0.002, alto]], `fill="${TVC.vidrio}" opacity=".5"`);
+  for (let x = x0 + 1.1; x < x1 - 0.2; x += 1.1) v += E.poly([[x, yf + 0.003, 0.15], [x, yf + 0.003, alto]], `stroke="#1E3A5C" stroke-width="2.4"`);
+  v += E.poly([[puerta - 0.4, yf + 0.004, 0.02], [puerta + 0.4, yf + 0.004, 0.02], [puerta + 0.4, yf + 0.004, 1.25], [puerta - 0.4, yf + 0.004, 1.25]], `fill="#14304F"`) +
+    E.poly([[puerta, yf + 0.005, 0.02], [puerta, yf + 0.005, 1.25]], `stroke="${TVC.cian}" stroke-width="1.6"`);
+  E.add(k, v);
+}
+
+// El estudio, al fondo a la derecha de la plaza: la pantalla del estreno en el costado que mira al final de la calle, la
+// marquesina sobre la puerta, el televisor y el nombre del canal pintados en el techo (como el isotipo en el techo de
+// BiPlot HQ), la antena, la parabólica, dos focos de estreno y la alfombra cian hasta el camino. CANAL dice qué cambia
+// en la plaza para que quepa (sin: los árboles y el farol que se sacan; faroles: el que se suma; quiosco: adónde se
+// corre) y dónde se toca (zona, con el foco de la cámara).
+const CANAL = {
+  sin: ['arbol 33.9,3.2', 'arbol 37.9,2.6', 'arbol 36.3,9.3', 'farol 37.4,7.4'],
+  faroles: [[39.4, 9.6]],
+  quiosco: [27.6, 3.4],
+  zona: { caja: [33.0, 1.4, 39.6, 7.2, 3.4], foco: [36.3, 4.3, 1.8] }
+};
+function canal(E, pj) {
+  const X0 = 33.0, Y0 = 1.4, AN = 6.6, FO = 5.8, H = 3.4, X1 = X0 + AN, Y1 = Y0 + FO, k = X1 + Y1 - 0.6;
+  focosEstreno(E, [[X0 - 0.5, Y1 + 0.8, -60], [X1 + 0.7, Y1 + 0.6, 60]], k - 3);
+  E.caja(X0, Y0, 0, AN, FO, H, MUROS_TV, k);
+  E.add(k + 0.001, E.poly([[X0 + 0.15, Y0 + 0.15, H + 0.001], [X1 - 0.15, Y0 + 0.15, H + 0.001], [X1 - 0.15, Y1 - 0.15, H + 0.001], [X0 + 0.15, Y1 - 0.15, H + 0.001]], `fill="none" stroke="${TVC.cian}" stroke-width="3"`));
+  E.planoZ(X0 + 2.0, Y0 + 0.45, H + 0.002, ISO_TV(260), k + 0.002, 260, 260);
+  E.planoZ(X0 + 0.35, Y0 + 3.45, H + 0.002, `<text x="295" y="100" text-anchor="middle" ${FUENTE} font-weight="700" font-size="108" fill="${TVC.niebla}">BiPlot<tspan fill="${TVC.cian}">.TV</tspan></text>`, k + 0.003, 590, 120);
+  parabolica(E, X0 + 0.7, Y0 + 0.7, H, k + 0.004);
+  antena(E, X1 - 0.6, Y0 + 0.6, H, 2.6, k + 0.005);
+  // La fachada: la vitrina con la puerta, la marquesina del estreno y el nombre del canal
+  vitrinaTv(E, X0 + 0.4, X1 - 0.4, Y1, 1.6, X0 + AN / 2, k + 0.01);
+  E.caja(X0 + 1.0, Y1, 1.75, AN - 2.0, 0.6, 0.5, { t: TVC.noche, l: TVC.azul, r: '#081A2D' }, k + 0.02);
+  E.planoY(X0 + 1.0, Y1 + 0.601, 2.25, marquesina((AN - 2.0) * 100, 50, 'ESTRENO · UN BOCADO A LA VEZ', 17), k + 0.021, (AN - 2.0) * 100, 50);
+  E.planoY(X0 + 0.5, Y1 + 0.004, 3.22, letreroTv((AN - 1.0) * 100, 66), k + 0.022, (AN - 1.0) * 100, 66);
+  // El costado: la pantalla gigante del estreno
+  E.planoX(X1 + 0.004, Y1 - 0.35, 3.15, afiche(510, 287), k + 0.03, 510, 287);
+  // La alfombra del estreno, con sus cordones, desde la puerta hasta el camino
+  const ax = X0 + AN / 2, ka = ax + Y1 + 1.5;
+  EN.superficie(E, [[ax - 0.55, Y1], [ax + 0.55, Y1], [ax + 0.55, Y1 + 2.6], [ax - 0.55, Y1 + 2.6]], TVC.cian, -1290);
+  for (const lado of [-0.75, 0.75]) {
+    const pts = [0.5, 1.4, 2.3].map((t) => [ax + lado, Y1 + t]);
+    for (const [x, y] of pts) E.linea([[x, y, 0], [x, y, 0.62]], '#B9C8D8', 2.2, ka + (lado > 0 ? 0.2 : 0));
+    for (let i = 0; i < 2; i++) E.linea([[pts[i][0], pts[i][1], 0.56], [(pts[i][0] + pts[i + 1][0]) / 2, (pts[i][1] + pts[i + 1][1]) / 2, 0.42], [pts[i + 1][0], pts[i + 1][1], 0.56]], TVC.menta, 2, ka + 0.1 + (lado > 0 ? 0.2 : 0));
+  }
+  pj('turista', ax - 1.5, Y1 + 2.8, 0, 'd');
+  pj('clienta', ax + 1.4, Y1 + 1.9, 0, 'i');
 }
 
 /* ───────── La oficina cerrada ───────── */
@@ -340,6 +431,8 @@ export function callePrincipal(datos) {
     }
     zonas.push({ id, caja: [ox, YF, ox + W, YF + D, 2.5], foco: [ox + W / 2, YF + D / 2, 1.0] });
   }
+  // BiPlot.TV, en la plaza: se toca como un lugar (no se abre como un local)
+  zonas.push({ id: 'tv', caja: CANAL.zona.caja, foco: CANAL.zona.foco });
   // Pizarras en la vereda, frente a su local (después del frente del local)
   EN.pizarra(E, 8.6, 24.72, ['VISITA LA', 'MAQUETA', 'del loteo'], { k: 4.85 + YF + W + D + 0.7 });
   EN.pizarra(E, 13.3, 24.72, ['HOY', 'Pide con', 'el QR'], { color: '#F29A6B', k: 9.55 + YF + W + D + 0.7 });
