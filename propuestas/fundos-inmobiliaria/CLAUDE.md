@@ -47,7 +47,7 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
     `claude/modest-feynman-vqi1ih` ("Add files via upload") y el cliente los tiene; sin original, `--videos` deja lo
     ya convertido. En el mapa, al terminar la animación de la ruta aparece "Ver video" bajo la píldora (`vBtn`,
     ubicado en `labels()`); la ficha muestra la portada con botón; la ventana flotante (`openVideo`) va entre el panel
-    y la ficha en computador y es modal con fondo en celular; Escape la cierra y al final ofrece "Volver a ver".
+    y la ficha en computador y es modal con fondo en celular; Escape la cierra y al terminar se cierra sola (el foco vuelve al botón que la abrió).
     La primera vez que se llega a cada lugar (por sesión, `sessionStorage` "entorno-videos") el video se abre solo
     al terminar la ruta; después, con el botón. No se abre solo en "Recorrer el entorno" ni con movimiento reducido.
     Si el navegador no deja partir con sonido, parte en silencio con "Activar sonido" (`[data-vp-snd]`).
