@@ -34,17 +34,24 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
   (único lugar a editar: lugares, textos, fotos, categorías, créditos, método). El script proyecta lat/lon a píxeles
   de la imagen, calcula las rutas por camino con OSRM (`router.project-osrm.org`, datos © OpenStreetMap; caché en
   `tools/entorno/rutas-cache.json`) y, cuando hay red, baja el mosaico Sentinel-2 y las fotos de Wikimedia Commons.
-  Uso: `python3 tools/entorno_build.py [--rutas] [--locales | --teselas] [--fotos]`; sin opciones solo regenera con la caché.
+  Uso: `python3 tools/entorno_build.py [--rutas] [--locales | --teselas] [--videos] [--fotos]`; sin opciones solo regenera con la caché.
   - Imagen: Sentinel-2 cloudless **2016** de EOX (CC BY 4.0, uso comercial con crédito; las ediciones posteriores
     son no comerciales). **No usar Google Earth** (la captura del folleto): sus Geo Guidelines no lo permiten en sitios
     comerciales. Como la red del entorno bloquea `tiles.maps.eox.at`, el usuario bajó dos GetMap WMS en EPSG:3857
     (`tools/entorno/originales/`, bbox y parámetros en `imagen.originales` de `lugares.json`) y `--locales` arma las
     capas: base z11, capa z12 desde `desde: 1.5` y detalle nativo (~9 m/px) alrededor de la parcela desde 2.4, con un
     mismo ajuste de color para todas (si no, se notan los bordes). Con red, `--teselas` hace lo mismo desde las teselas.
+  - Videos del cliente (tomas de dron de 4 a 9 s con música): `video.original` en `lugares.json`; `--videos` los
+    convierte a `assets/entorno/videos/<id>.mp4|.webm|.webp` (1280 px, ~2,5 Mb/s, portada en `portadaSeg` o a la
+    mitad). Los originales no van en `main` (pesan ~100 MB): están en el commit `b65d98e` de la rama
+    `claude/modest-feynman-vqi1ih` ("Add files via upload") y el cliente los tiene; sin original, `--videos` deja lo
+    ya convertido. En el mapa, al terminar la animación de la ruta aparece "Ver video" bajo la píldora (`vBtn`,
+    ubicado en `labels()`); la ficha muestra la portada con botón; la ventana flotante (`openVideo`) va entre el panel
+    y la ficha en computador y es modal con fondo en celular; Escape la cierra y al final ofrece "Volver a ver".
   - Fotos: títulos de Wikimedia Commons en `foto.commons`; `--fotos` las baja (1200 px) con autor y licencia para el
     crédito (requiere `commons.wikimedia.org` y `upload.wikimedia.org`). Sin foto, la ficha usa un recorte del satelital.
   - Coordenadas verificadas con al menos dos fuentes (Sernageomin, Conaf, EFE, municipio, Wikipedia, OSM). "Parque
-    Vivo Alerces" del folleto es el **Parque y Vivero Alerce** (confirmar nombre con el cliente). Textos de lugares que
+    Vivo Alerces" del folleto es el **Parque y Vivero Alerce** (así dice el letrero en el video del cliente). Textos de lugares que
     no están en el folleto llevan `"revisar": true` en `lugares.json`.
   - Interfaz: estrella de rutas tenues desde el proyecto, lista agrupada por tiempo, ficha con resumen inicial,
     enlaces directos `entorno.html#pvaras`, modo "Recorrer el entorno", zoom con Ctrl+rueda, pellizco y teclado.

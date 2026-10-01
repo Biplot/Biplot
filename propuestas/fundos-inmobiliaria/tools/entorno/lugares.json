@@ -196,7 +196,11 @@
     ]
    ],
    "texto": "La ciudad satélite de Puerto Montt, a minutos de la parcela: Cesfam, BancoEstado, supermercados, colegios y la estación del tren Llanquihue–Puerto Montt para el día a día.",
-   "revisar": true
+   "revisar": true,
+   "video": {
+    "original": "entorno/videos/ALERCE FINAL.mp4",
+    "portadaSeg": 3.7
+   }
   },
   {
    "id": "parque",
@@ -216,7 +220,10 @@
    "texto": "Un espacio natural ubicado en Alerce, ideal para disfrutar de áreas verdes, caminar, descansar y conectar con la naturaleza sin alejarse de la ciudad.",
    "nota": "Parque municipal administrado por la Delegación de Alerce; revisa horarios antes de ir.",
    "revisar": true,
-   "corto": "Vivero Alerce"
+   "corto": "Vivero Alerce",
+   "video": {
+    "original": "entorno/videos/PARQUE.mp4"
+   }
   },
   {
    "id": "pvaras",
@@ -287,7 +294,10 @@
     "commons": "File:Volcán Osorno y lago Llanquihue desde el sector Los Riscos.jpg",
     "alt": "Volcán Osorno sobre el lago Llanquihue"
    },
-   "sinRotulo": true
+   "sinRotulo": true,
+   "video": {
+    "original": "entorno/videos/LAGO LLANQUIHUE FINAL.mp4"
+   }
   },
   {
    "id": "pmontt",
@@ -339,6 +349,10 @@
    "foto": {
     "commons": "File:Parque Costanera, Puerto Montt - A74057020240105.jpg",
     "alt": "Parque Costanera de Puerto Montt"
+   },
+   "video": {
+    "original": "entorno/videos/PUERTO MONT FINAL.mp4",
+    "portadaSeg": 2.3
    }
   },
   {
@@ -381,6 +395,9 @@
    "foto": {
     "commons": "File:Vulkan Osorno, Puerto Varas, Chile (10986368703).jpg",
     "alt": "Volcán Osorno nevado"
+   },
+   "video": {
+    "original": "entorno/videos/VOLCAN OSORNO FINAL.mp4"
    }
   },
   {
@@ -406,7 +423,10 @@
     "commons": "File:Osorno Volcano and Petrohué Waterfalls.jpg",
     "alt": "Saltos del Petrohué con el volcán Osorno al fondo"
    },
-   "revisar": true
+   "revisar": true,
+   "video": {
+    "original": "entorno/videos/SALTOS DE PETROHUE.mp4"
+   }
   },
   {
    "id": "calbuco",
@@ -424,7 +444,10 @@
     "commons": "File:Volcán Calbuco y Puerto Montt.jpg",
     "alt": "Volcán Calbuco visto desde Puerto Montt"
    },
-   "revisar": true
+   "revisar": true,
+   "video": {
+    "original": "entorno/videos/CALBUCO FINAL.mp4"
+   }
   },
   {
    "id": "estacion_alerce",
