@@ -669,7 +669,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     // Recorrer con Felipe: doce paradas, y la cuarta es la pantalla del centro
     const rec = () => ({ n: document.querySelector('[data-rec="n"]').textContent, t: document.querySelector('[data-rec="t"]').textContent, guia: document.querySelector('#sala-capa .burbuja.de-guia')?.textContent || '' });
     b.querySelector('[data-recorrer]').click(); await ${W(1500)}; const p1 = rec();
-    for (let k = 1; k < 4; k++) { document.querySelector('#sala-barra [data-rec="sig"]').click(); await ${W(k < 3 ? 700 : 1600)}; }
+    for (let k = 1; k < 4; k++) { document.querySelector('#sala-barra [data-rec="sig"]').click(); await ${W(700)}; }
+    await ${W(900)};
     const p4 = rec();
     await cierra();
     r.rec = { p1, p4, esperado: [PP.recorrido[0], PP.recorrido[3]].map(p => PP.textos.guia + p.texto), fin: !b.classList.contains('recorriendo') };
