@@ -84,4 +84,4 @@ SALIDA=/tmp/sala-tv node oficina/_herramientas/propuestas/dibujar-sala.mjs tv
 Se eligió el control remoto, que ya está en la oficina: es la tele de BiPlot.TV, donde se ve todo «Ver con sonido» (el
 README de la oficina cuenta cómo funciona). La maqueta de las tres opciones (el control remoto, una sala de control con
 el muro de monitores y unas historias como las de Instagram) y su guion de fotos sobre la oficina quedaron fuera del
-código, en el primer commit de Biplot/biplot#PR.
+código, en el primer commit de Biplot/biplot#35.
