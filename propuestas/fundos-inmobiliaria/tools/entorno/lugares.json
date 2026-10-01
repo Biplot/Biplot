@@ -477,6 +477,63 @@
     "commons": "File:Laguna Fría Parque Nacional Alerce Andino.jpg",
     "alt": "Laguna Fría en el Parque Nacional Alerce Andino"
    }
+  },
+  {
+   "id": "aeropuerto",
+   "nombre": "Aeropuerto El Tepual",
+   "corto": "Aeropuerto",
+   "cat": "servicios",
+   "icono": "avion",
+   "lat": -41.4334,
+   "lon": -73.0984,
+   "lado": "l",
+   "prioridad": 1,
+   "destino": [
+    -41.43396,
+    -73.09872
+   ],
+   "destinoTxt": "hasta el terminal",
+   "sub": "Puerto Montt (PMC) · vuelos nacionales",
+   "texto": "El aeropuerto principal de la Región de Los Lagos, con vuelos nacionales regulares, entre ellos a Santiago. Se llega desde la Ruta 5 por la Ruta 226.",
+   "revisar": true
+  },
+  {
+   "id": "hospital",
+   "nombre": "Hospital Puerto Montt",
+   "corto": "Hospital",
+   "cat": "servicios",
+   "icono": "salud",
+   "lat": -41.44855,
+   "lon": -72.95734,
+   "lado": "r",
+   "prioridad": 2,
+   "destino": [
+    -41.44926,
+    -72.95729
+   ],
+   "destinoTxt": "hasta el hospital",
+   "sub": "Dr. Eduardo Schütz Schroeder · urgencia 24 h",
+   "texto": "Hospital público de alta complejidad del Servicio de Salud del Reloncaví, con urgencia las 24 horas, en el sector alto de Puerto Montt.",
+   "revisar": true
+  },
+  {
+   "id": "mall",
+   "nombre": "Mall Paseo Costanera",
+   "corto": "Mall Costanera",
+   "cat": "servicios",
+   "icono": "compras",
+   "lat": -41.4727,
+   "lon": -72.9372,
+   "lado": "r",
+   "prioridad": 3,
+   "destino": [
+    -41.47247,
+    -72.93599
+   ],
+   "destinoTxt": "hasta el estacionamiento",
+   "sub": "Centro de Puerto Montt",
+   "texto": "Centro comercial frente a la costanera de Puerto Montt, con tiendas, farmacias y servicios.",
+   "revisar": true
   }
  ],
  "imagen_sentinel": {
