@@ -238,7 +238,8 @@ colores de la marca con «Agenda tu diagnóstico», el único coral de la tele. 
 control y en la guía) y, si se cerró a la mitad, la próxima vez sigue desde ahí («Seguimos donde quedaste», con «Desde el
 principio»); lo visto y dónde quedó se guardan sólo en ese navegador. «Prender la tele» (el primer botón de la barra del
 canal, en la pantalla del centro, en la cartelera y en la vista previa del canal) la prende en el último canal que se vio,
-o en el 01. Con «reducir movimiento» (o la oficina en pausa) el cambio es directo, sin estática. Sus textos salen de `datos.js`: los canales son los `programas` de la cartelera, en ese orden; el
+o en el 01. Con «reducir movimiento» (o la oficina en pausa) el cambio es directo, sin estática. Sus textos salen de
+`datos.js`: los canales son los `programas` de la cartelera, en ese orden; el
 último, su `cierre`; y las frases, las del `recorrido`. El código está en `oficina.js` («La tele de BiPlot.TV») y sus
 estilos en `oficina.css` (`.tele`). Se eligió entre tres (el control remoto, una sala de control y unas historias como
 las de Instagram); la maqueta de las tres quedó en el historial (`_herramientas/propuestas/README.md`).
