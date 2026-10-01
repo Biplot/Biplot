@@ -317,11 +317,11 @@
           ],
           zonas: {
             cartelera: { nombre: 'La cartelera', ceja: 'BiPlot.TV · Programación', titulo: 'Toda la programación',
-              texto: 'Siete videos, y cada uno sale en horizontal y en vertical. Toca uno para verlo con sonido, o prende la tele y cambia de canal. Vienen más capítulos.',
+              texto: 'Diez videos, y cada uno sale en horizontal y en vertical. Toca uno para verlo con sonido, o prende la tele y cambia de canal. Vienen más capítulos.',
               // Los canales de la tele, en este orden (del 01 en adelante): primero BiPlot (quiénes somos, la oficina y la
               // visita de Plotty), después los casos y al final los capítulos, el más nuevo justo antes de «Tu proyecto».
               // Un video nuevo es una línea más aquí
-              programas: ['teaser', 'equipo', 'visita', 'fundos', 'haru', 'nuhome', 'estreno'],
+              programas: ['teaser', 'equipo', 'visita', 'fundos', 'haru', 'nuhome', 'plano', 'telefono', 'vendido', 'estreno'],
               // El último canal de la tele, después de la programación: tu proyecto, que todavía no sale al aire
               cierre: { nombre: 'Tu proyecto', ceja: 'Próximamente', titulo: 'Este canal todavía no sale al aire',
                 texto: 'Los capítulos cuentan cómo trabaja BiPlot, caso por caso. El próximo puede ser el tuyo: todo empieza con un diagnóstico, y la primera sesión es sin costo.',
@@ -359,6 +359,23 @@
               texto: 'El sistema de Nu Home en 45 segundos: la casa se diseña pieza por pieza, la cotización llega directo al CRM, la visita técnica revisa el terreno y un solo sistema acompaña a ventas, a la fábrica y a cada cliente.',
               chips: ['Caso', '0:46', '16:9 y 9:16'], video: 'nuhome',
               botones: [{ sala: 'nuhome', texto: 'Entrar a su sala' }] },
+            // Los capítulos de Nu Home y de Fundos, animados: se publican con el permiso de cada cliente (01-10-2026), en su
+            // versión web (media/tv/)
+            plano: { nombre: 'Del plano a la máquina', ceja: 'Capítulo · Nu Home 360', titulo: 'Uno dibuja. El otro construye.', duracion: '0:22', pantalla: 'plano',
+              texto: 'Nu Home 360 empezó en un papel. The Architect dibuja el plano y lo manda por un tubo a la sala de máquinas, donde The Engine lo construye: el diseñador 3D, los contactos y la carta Gantt. Al final, las pantallas se pliegan en módulos que encajan, de la maqueta a la llave. Con trazo de cómic y una base de hip hop.',
+              chips: ['Capítulo', '0:22', '16:9 y 9:16'],
+              video: { h: 'media/tv/del-plano-a-la-maquina-h.mp4', v: 'media/tv/del-plano-a-la-maquina-v.mp4', poster: 'media/tv/del-plano-a-la-maquina-h.jpg' },
+              botones: [{ sala: 'nuhome', texto: 'Entrar a la sala de Nu Home' }] },
+            telefono: { nombre: 'Teléfono roto', ceja: 'Capítulo · Nu Home 360', titulo: '¿Por qué la casa salió con patos?', duracion: '0:47', pantalla: 'telefono',
+              texto: 'Una clienta dibuja su casa en una servilleta y el pedido pasa de mano en mano: el vendedor, la ingeniera y el maestro de la fábrica. Llega tan cambiado que la casa sale en zancos y con una piscina de patos. The Engine rebobina y la historia se repite con Nu Home 360, donde todos ven la misma casa. Un corto mudo, sin palabras.',
+              chips: ['Capítulo', '0:47', '16:9 y 9:16'],
+              video: { h: 'media/tv/telefono-roto-h.mp4', v: 'media/tv/telefono-roto-v.mp4', poster: 'media/tv/telefono-roto-h.jpg' },
+              botones: [{ sala: 'nuhome', texto: 'Entrar a la sala de Nu Home' }] },
+            vendido: { nombre: 'Vendido dos veces', ceja: 'Capítulo · Fundos 360', titulo: 'La misma parcela, dos compradores', duracion: '0:47', pantalla: 'vendido',
+              texto: 'Sin un inventario compartido, dos vendedores venden la misma parcela, la de la araucaria, el mismo día. En la entrega llegan los dos compradores, cada uno con lo suyo, y una vaca se come los papeles. The Engine rebobina y, con Fundos 360, la parcela se reserva en un toque, cambia de color en todas las pantallas y la segunda compradora se queda con la del lado. Terminan de vecinos.',
+              chips: ['Capítulo', '0:47', '16:9 y 9:16'],
+              video: { h: 'media/tv/vendido-dos-veces-h.mp4', v: 'media/tv/vendido-dos-veces-v.mp4', poster: 'media/tv/vendido-dos-veces-h.jpg' },
+              botones: [{ sala: 'fundos', texto: 'Entrar a la sala de Fundos' }] },
             set: { nombre: 'El set', ceja: 'BiPlot.TV · El set', titulo: 'Aquí graban Aby y Felipe',
               texto: 'La pared con la marca del canal, el escritorio, dos focos y dos cámaras. Aby pregunta lo que todos se preguntan y Felipe cuenta lo que hace el equipo como si fuera un partido: quién pasó la pelota, quién la metió y cuánto falta para el final.',
               chips: ['Aby · La corresponsal', 'Felipe · El rostro'],
@@ -378,6 +395,9 @@
             { zona: 'set', titulo: 'El set', texto: 'Aquí grabamos con Aby. Ella pregunta, yo relato.' },
             { zona: 'marcador', titulo: 'La pantalla del centro', texto: '¡Miren arriba! Las mejores jugadas del canal, una tras otra. De local, BiPlot.TV; de visita, tu proyecto.' },
             { zona: 'guion', titulo: 'Así se hace un capítulo', texto: 'Un capítulo se juega en tres tiempos: guion y look, animación con su música, y al aire.' },
+            { zona: 'plano', titulo: 'Del plano a la máquina', texto: 'Del plano a la máquina: The Architect dibuja la jugada y The Engine la convierte. Pase y doble.' },
+            { zona: 'telefono', titulo: 'Teléfono roto', texto: 'Teléfono roto: el pedido pasa de mano en mano y llega cambiado. Pérdida de balón… y patos en la piscina.' },
+            { zona: 'vendido', titulo: 'Vendido dos veces', texto: 'Vendido dos veces: la misma parcela, dos compradores. ¡Falta! Rebobinamos y terminan de vecinos.' },
             { zona: 'teaser', titulo: 'BiPlot en 30 segundos', texto: 'De las planillas al sistema en treinta segundos. Contraataque.' },
             { zona: 'equipo', titulo: 'El equipo', texto: 'El equipo completo, uno por uno, cada cual con su frase. La alineación titular.' },
             { zona: 'visita', titulo: 'La visita de Plotty', texto: 'Plotty recorre la oficina y sale a la calle. Una asistencia de cancha completa.' },

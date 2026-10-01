@@ -1966,7 +1966,7 @@
   // En el computador es un televisor con su control remoto; en el celular (y en una tablet parada), la pantalla entera con
   // una barra abajo, y el video en vertical si el celular está parado.
   var tele = $('#tele'), CANALES = null, repV = null, nieve = null;
-  var rep = { i: 0, abierta: false, desde: null, sigue: null, osd: null, cambio: null, pintado: -1, vert: false, fondo: [], vistos: [] };
+  var rep = { i: 0, abierta: false, desde: null, sigue: null, osd: null, cambio: null, pintado: -1, vert: false, fondo: [], vistos: [], cifra: null };
   var TELE_CEL = window.matchMedia('(max-width: 699px), (max-height: 560px), (orientation: portrait) and (max-width: 1024px)');
   var IT = {
     pausa: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"/></svg>',
@@ -2048,7 +2048,7 @@
               '<button type="button" class="bp-btn chico" data-tele="quedar">Quedarme aquí</button></div></div>' +
             '<div class="tele-retoma" role="status" hidden><span>Seguimos donde quedaste, en el <b data-r="t"></b></span><button type="button" class="bp-btn chico" data-tele="principio">Desde el principio</button></div>' +
             '<div class="tele-guia" hidden><div class="tele-guia-cab"><p class="tele-ceja">Guía de programación</p><button type="button" class="bp-btn chico" data-tele="guia">Cerrar la guía</button></div>' +
-              '<ol aria-label="Los canales de BiPlot.TV">' + guia + '</ol></div>' +
+              '<ol aria-label="Los canales de BiPlot.TV" style="--filas:' + Math.ceil(CANALES.length / 2) + '">' + guia + '</ol></div>' +
             '<div class="tele-linea" aria-hidden="true"><i data-t="avance"></i></div>' +
           '</div>' +
           '<div class="tele-bisel"><span class="tele-led" aria-hidden="true"></span><span class="tele-marca" aria-hidden="true">BiPlot<b>.TV</b></span><div class="tele-botones" data-t="botones"></div></div>' +
@@ -2072,7 +2072,7 @@
           '<button type="button" class="tele-mando-canal" data-tele="guia" data-foco aria-expanded="false"><b data-t="n"></b><span><small data-t="ceja"></small><span data-t="nombre"></span></span>' + IT.guia + '<span class="sr"> (guía de programación)</span></button>' +
           '<button type="button" class="tele-redondo" data-tele="sig" aria-label="Canal siguiente">' + IT.arriba + '</button></div>' +
       '</div>' +
-      '<p class="tele-ayuda" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> cambia de canal · <kbd>1</kbd>…<kbd>' + Math.min(9, CANALES.length) + '</kbd> · <kbd>Espacio</kbd> pausa · <kbd>Esc</kbd> apaga</p>' +
+      '<p class="tele-ayuda" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> cambia de canal · <kbd>1</kbd>…<kbd>' + CANALES.length + '</kbd> · <kbd>Espacio</kbd> pausa · <kbd>Esc</kbd> apaga</p>' +
       '<p class="tele-desliza" aria-hidden="true">' + IT.arriba + 'Desliza para cambiar de canal</p>';
   }
   function construirTele() {
@@ -2133,6 +2133,7 @@
   function cerrarTele(sinFoco) {
     if (!rep.abierta) return;
     pararSigue(); alternarGuia(false); clearTimeout(rep.cambio); tele.classList.remove('cambiando');
+    if (rep.cifra) { clearTimeout(rep.cifra.t); rep.cifra = null; }
     // Si quedó a la mitad, la próxima vez sigue desde ahí
     var c = canalTele(), t = repV.currentTime, d = repV.duration;
     guardarJson('tv-punto', !c.tu && t > 5 && d && t < d - 5 ? { id: c.id, t: Math.floor(t) } : null);
@@ -2148,6 +2149,7 @@
   function irCanal(k, o) {
     o = o || {};
     var N = CANALES.length; k = (k % N + N) % N;
+    if (rep.cifra) { clearTimeout(rep.cifra.t); rep.cifra = null; }
     pararSigue(); ocultarTele('.tele-retoma'); alternarGuia(false); tele.classList.remove('ver-desliza');
     rep.i = k;
     var c = CANALES[k], poner = function () {
@@ -2274,6 +2276,19 @@
     else if (a === 'inicio') irCanal(0);
     else if (a === 'principio') { ocultarTele('.tele-retoma'); repV.currentTime = 0; }
   }
+  // Los números del canal, como en la tele: con diez canales o más, una cifra que puede empezar uno de dos cifras espera
+  // un momento por la segunda (1 y 0 es el 10); otra tecla la confirma al tiro y otro cambio de canal (un clic) la descarta.
+  // numeroTele(null) confirma la que espera.
+  function numeroTele(d) {
+    var N = CANALES.length, p = rep.cifra;
+    if (p) { clearTimeout(p.t); rep.cifra = null; }
+    if (d === null) { if (p && p.d <= N) irCanal(p.d - 1); return; }
+    if (p && p.d * 10 + d <= N) { irCanal(p.d * 10 + d - 1); return; }
+    if (p && p.d <= N) irCanal(p.d - 1);
+    if (d < 1 || d > N) return;
+    if (d * 10 <= N) { rep.cifra = { d: d, t: setTimeout(function () { numeroTele(null); }, 900) }; return; }
+    irCanal(d - 1);
+  }
   // Mientras está prendida, el teclado es sólo de la tele
   function teclaTele(e) {
     e.stopPropagation();
@@ -2293,7 +2308,8 @@
       if (j > -1) { e.preventDefault(); filas[(j + (k === 'ArrowDown' || k === 'ArrowRight' ? 1 : -1) + filas.length) % filas.length].focus(); }
       return;
     }
-    if (/^[1-9]$/.test(k) && +k <= CANALES.length) { e.preventDefault(); irCanal(+k - 1); return; }
+    if (/^[0-9]$/.test(k)) { e.preventDefault(); numeroTele(+k); return; }
+    numeroTele(null);
     if (k === ' ' && /^(BUTTON|A)$/.test(e.target.tagName)) return;
     if (k === ' ' || k === 'k' || k === 'K') { e.preventDefault(); alternarTele(); mostrarOsd(); return; }
     if (k === 'm' || k === 'M') { e.preventDefault(); repV.muted = !repV.muted; return; }

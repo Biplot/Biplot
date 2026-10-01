@@ -36,6 +36,9 @@ const MARCA = (x, y, fs, extra = '') => txt(x, y, `BiPlot<tspan fill="${CIAN}">.
 // tele (arriba los de BiPlot; abajo, los casos). El estreno va en la pantalla grande del cine. [zona, rótulo, duración]
 export const MURO_TV = [['teaser', 'BIPLOT', '0:30'], ['equipo', 'BIPLOT HQ', '1:25'], ['visita', 'LA VISITA', '1:19'],
   ['fundos', 'FUNDOS 360°', '0:45'], ['haru', 'HARU 360', '0:45'], ['nuhome', 'NU HOME 360', '0:46']];
+// Los capítulos de Nu Home y de Fundos, en el orden de los canales: una columna de pantallas, una sobre otra, entre «Así se
+// hace un capítulo» y el muro de pantallas. [zona, rótulo, duración]
+export const CAPITULOS_TV = [['plano', 'DEL PLANO A LA MÁQUINA', '0:22'], ['telefono', 'TELÉFONO ROTO', '0:47'], ['vendido', 'VENDIDO DOS VECES', '0:47']];
 
 // ───────── Quienes están en el canal (ilustraciones sin nombre) ─────────
 registrar({
@@ -146,7 +149,7 @@ function led(x, y, s, texto, col, apagado = '#14212F') {
 const PUNTOS = (id, w, h) => `<defs><pattern id="${id}" width="5" height="5" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r=".9" fill="${MENTA}" opacity=".1"/></pattern></defs><rect width="${w}" height="${h}" rx="4" fill="url(#${id})"/>`;
 // El marcador: BiPlot.TV juega de local (sus puntos son los videos del canal), el reloj marca lo que dura el estreno y la
 // visita es tu proyecto, que todavía no entra a la cancha. En la pantalla (240 × 130) y de frente (1280 × 720).
-const VIDEOS = String(MURO_TV.length + 1).padStart(2, '0');
+const VIDEOS = String(MURO_TV.length + CAPITULOS_TV.length + 1).padStart(2, '0');
 const MARCADOR = `<rect width="240" height="130" rx="4" fill="#05090E"/>` + PUNTOS('tv-puntos', 240, 130) +
   mono(14, 17, 'LOCAL', 7.5, MENTA, ' letter-spacing="1.2"') + MARCA(14, 34, 13) + led(16, 42, 44, VIDEOS, CIAN) + mono(16, 100, 'VIDEOS', 7, SUAVE, ' letter-spacing="1"') +
   mono(120, 17, 'ESTRENO', 7.5, MENTA, ' text-anchor="middle" letter-spacing="1.2"') + led(120 - anchoLed('0:50', 30) / 2, 26, 30, '0:50', LUZ) +
@@ -399,6 +402,13 @@ export function salaTv(o = {}) {
       const y0 = MY - (i % 3) * (MW + MG), zt = MZ[Math.floor(i / 3)];
       monitor(L, y0, zt, MW, MH, id, rotulo, dur);
       zona(id, { formas: [{ plano: [[0.09, y0, zt], [0.09, y0 - MW, zt], [0.09, y0 - MW, zt - MH], [0.09, y0, zt - MH]] }], lugar: [0.1, y0 - MW / 2, zt + 0.08], guia: [2.7, r1(y0 - MW / 2)] });
+    });
+    // La columna de los capítulos, al medio entre el guion (hasta y = GY) y el muro de pantallas
+    const PW = 1.35, PH = 0.6, PY = r1((GY + MY - 2 * (MW + MG) - MW) / 2 + PW / 2), PZ = [2.44, 1.67, 0.9];
+    CAPITULOS_TV.forEach(([id, rotulo, dur], i) => {
+      monitor(L, PY, PZ[i], PW, PH, id, rotulo, dur);
+      zona(id, { formas: [{ plano: [[0.09, PY, PZ[i]], [0.09, PY - PW, PZ[i]], [0.09, PY - PW, PZ[i] - PH - 0.13], [0.09, PY, PZ[i] - PH - 0.13]] }],
+        lugar: [0.1, PY - PW / 2, PZ[i] + 0.08], guia: [2.7, r1(PY - PW / 2)] });
     });
     // La consola: los faders, las perillas y la pantalla de lo que sale al aire
     L.caja(0.08, 8.05, 0, 0.8, 4.95, 0.56, OSCURO, 11.0);

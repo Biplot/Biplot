@@ -199,8 +199,9 @@ de televisión con su sala de estreno:
 - **El set** de Aby y Felipe: la pared con la marca del canal, el escritorio, dos focos y dos cámaras.
 - **El camarín**, que espera al próximo invitado: la silla de director dice «Tu proyecto» y aquí está el único coral de
   la sala, «Agenda tu diagnóstico».
-- En el muro, **«Así se hace un capítulo»** (guion y look, animación y música, al aire; se abre de frente) y el **muro de
-  pantallas**, un monitor por video, en el orden de los canales de la tele, con su consola.
+- En el muro, **«Así se hace un capítulo»** (guion y look, animación y música, al aire; se abre de frente); a su lado,
+  **la columna de los capítulos** de Nu Home y de Fundos, tres pantallas una sobre otra; y el **muro de pantallas**, un
+  monitor por video de BiPlot y de los casos, en el orden de los canales de la tele, con su consola.
 - En la entrada, **la cartelera** (abre toda la programación, con «Prender la tele») y el carro de las cabritas.
 - Al medio, colgando sobre la cancha como en la NBA, **la pantalla del centro**. En una cara pasan las repeticiones (el
   estreno, la visita de Plotty, BiPlot en 30 segundos y los tres casos 360, 3,5 segundos cada una: `.loc-repe`, en
@@ -211,28 +212,31 @@ de televisión con su sala de estreno:
   quieta en el estreno.
 
 Cada pantalla abre su tarjeta con su video, sin sonido; «Ver con sonido» prende la tele del canal (más abajo). La barra
-del canal parte con «Prender la tele» y después «Recorrer con Felipe»: Felipe guía el recorrido de doce paradas, contado
+del canal parte con «Prender la tele» y después «Recorrer con Felipe»: Felipe guía el recorrido de quince paradas, contado
 como un partido de básquetbol. Las frases de Aby y Felipe son de ejemplo hasta
 que ellos las aprueben; el público, el operador y las visitas son ilustraciones sin nombre.
 
-**La programación** son siete videos, en este orden: BiPlot en 30 segundos, «Pasa, la oficina está abierta» (el teaser
-del equipo), la visita de Plotty, Fundos, Haru y Nu Home 360 y, al final, «Un bocado a la vez» (el capítulo de Rumbo, el
-estreno). Primero BiPlot (quiénes somos, el equipo y cómo trabajamos), después los casos y al final los capítulos, el más
-nuevo justo antes de «Tu proyecto»: así la tele cuenta una historia de corrido, y el «A continuación» de Felipe calza
-(después de Nu Home anuncia el estreno, y después del estreno viene «El próximo capítulo puede ser el tuyo»). El estreno
-y el teaser del equipo están en `media/tv/` en versión web (16:9 y 9:16, con sus pósters), junto a la miniatura de cada
-pantalla (`pantalla-<id>.webp`); los demás, donde ya estaban. Los capítulos de clientes se suman cuando cada cliente
-apruebe mostrarlos.
+**La programación** son diez videos, en este orden: BiPlot en 30 segundos, «Pasa, la oficina está abierta» (el teaser
+del equipo), la visita de Plotty, Fundos, Haru y Nu Home 360, los capítulos de Nu Home («Del plano a la máquina» y
+«Teléfono roto») y de Fundos («Vendido dos veces») y, al final, «Un bocado a la vez» (el capítulo de Rumbo, el estreno).
+Primero BiPlot (quiénes somos, el equipo y cómo trabajamos), después los casos y al final los capítulos, el más nuevo
+justo antes de «Tu proyecto»: así la tele cuenta una historia de corrido, y el «A continuación» de Felipe calza (después
+de Nu Home 360 anuncia el primer capítulo, y después del estreno viene «El próximo capítulo puede ser el tuyo»). Los
+capítulos de Nu Home y de Fundos se publican con el permiso de cada cliente (01-10-2026). Los capítulos, el estreno y el
+teaser del equipo están en `media/tv/` en versión web (16:9 y 9:16, con sus pósters), junto a la miniatura de cada
+pantalla (`pantalla-<id>.webp`); los demás, donde ya estaban. Los capítulos de otros clientes se suman cuando cada
+cliente apruebe mostrarlos.
 
 **La tele de BiPlot.TV.** Todo «Ver con sonido» de la oficina (en las tarjetas y la vista previa del canal, en la
 recepción de BiPlot HQ y en el rincón de BiPlot de cada sala) se ve en la tele del canal, con toda la programación a mano.
 En el computador es un televisor con sus antenas y su control remoto; en el celular (y en una tablet parada), la pantalla
 entera, con los botones del video y una barra abajo, y el video en vertical si el celular está parado. Se prende en el
-video que se tocó y se cambia de canal con CH ▲▼, con los números (del 1 al 8) o con la guía de programación; en el
-celular, también deslizando hacia arriba o hacia abajo. Entre canal y canal hay un tercio de segundo de estática con el
-número del que entra, y arriba aparece el canal con su nombre, como en la tele (se esconde solo). Al terminar un video,
-Felipe anuncia el siguiente con su frase del recorrido («A continuación») y a los cinco segundos pasa solo; «Quedarme
-aquí» lo detiene. El último canal, el 08, es «Tu proyecto», que todavía no sale al aire: una carta de ajuste en los
+video que se tocó y se cambia de canal con CH ▲▼, con los números (del 1 al 11: como en la tele, el 1 espera un momento
+por la segunda cifra, y 1 y 0 es el 10) o con la guía de programación; en el celular, también deslizando hacia arriba o
+hacia abajo. Entre canal y canal hay un tercio de segundo de estática con el número del que entra, y arriba aparece el
+canal con su nombre, como en la tele (se esconde solo). Al terminar un video, Felipe anuncia el siguiente con su frase
+del recorrido («A continuación») y a los cinco segundos pasa solo; «Quedarme aquí» lo detiene. El último canal, el 11,
+es «Tu proyecto», que todavía no sale al aire: una carta de ajuste en los
 colores de la marca con «Agenda tu diagnóstico», el único coral de la tele. Cada video lleva los botones de su tarjeta
 (su sala, «Descargar Rumbo», BiPlot HQ o Plotty), en el borde de la tele o sobre la barra. La tele marca lo visto (en el
 control y en la guía) y, si se cerró a la mitad, la próxima vez sigue desde ahí («Seguimos donde quedaste», con «Desde el
@@ -325,7 +329,7 @@ sólo para su vitrina.
 | `kit/` | Galería y plantilla de las piezas de Instagram y de cada sala (`?pieza=sala-haru&formato=og`) |
 | `kit/png/` | Los PNG exportados (41 archivos) |
 | `casos/` | Copias publicables de las demos y documentos de los casos de referencia del núcleo |
-| `media/` | El teaser de Nu Home 360 (horizontal, vertical y póster); en `media/salas/`, las pantallas reales de cada sala (de los videos de cada caso, con datos de ejemplo), sus recortes y los logos; y en `media/tv/`, los videos de BiPlot.TV en versión web (el estreno y el teaser del equipo, con sus pósters) y la miniatura de cada video de su programación |
+| `media/` | El teaser de Nu Home 360 (horizontal, vertical y póster); en `media/salas/`, las pantallas reales de cada sala (de los videos de cada caso, con datos de ejemplo), sus recortes y los logos; y en `media/tv/`, los videos de BiPlot.TV en versión web (los capítulos, el estreno y el teaser del equipo, con sus pósters) y la miniatura de cada video de su programación |
 | `_herramientas/` | Scripts internos y las fuentes de los dibujos. **No se publican en biplot.cl** (Jekyll ignora carpetas con `_`) |
 
 Sin librerías ni build para la página: SVG, CSS y JavaScript planos. Lo único externo son las fuentes de Google Fonts
@@ -398,7 +402,8 @@ camina sólo mientras se ve.
   del set, los anillos, la primera repetición y el reloj del marcador (`salas-propias/tv.mjs`). Después se regenera.
 - **Un video nuevo en BiPlot.TV**: su zona en `salas.tv.salaPropia` (nombre, ceja, `duracion`, `pantalla`, su `video`
   con sus dos formatos y su póster, y sus botones), su miniatura en `media/tv/pantalla-<id>.webp`, su frase de Felipe en
-  el `recorrido`, su monitor en el muro de pantallas (`salas-propias/tv.mjs`, en el mismo orden, y se regenera) y su id
+  el `recorrido`, su monitor en el muro de pantallas (`MURO_TV` en `salas-propias/tv.mjs`, en el mismo orden; si es un
+  capítulo, en la columna de los capítulos, `CAPITULOS_TV`; y se regenera) y su id
   en los `programas` de la cartelera, donde le toque: primero BiPlot, después los casos y al final los capítulos, el más
   nuevo justo antes de «Tu proyecto». La tele lo suma sola como un canal más: lo numera, lo pone en el control, en la
   guía y en la mini tele, y «Tu proyecto» sigue al final.
@@ -426,7 +431,8 @@ entra desde la calle; la lista de precios de frente con «Agenda tu diagnóstico
 los vecinos, la mesa de Lupe, Atlas que habla y el recorrido con Plotty), BiPlot.TV (un clic sobre su edificio en la
 plaza, su botón en el menú, la cartelera, el estreno con su video, la pantalla del centro de frente, el camarín y el
 recorrido con Felipe; con movimiento reducido, quieta), la tele de BiPlot.TV (todo «Ver con sonido»: su control remoto o
-su barra, los canales con ↑, con los números, con la guía y deslizando, «A continuación» con Felipe, lo visto, el canal 08
+su barra, los canales con ↑, con los números (de una y de dos cifras), con la guía y deslizando, «A continuación» con
+Felipe, lo visto, el canal 11
 con «Agenda tu diagnóstico», «Prender la tele» en la barra del canal y con «Seguimos donde quedaste», Escape y
 movimiento reducido), la mini tele (a la vista sin tapar nada, en la calle y en el canal; cambia de canal sola, se prende
 en el canal que muestra y queda en el que se vio; con movimiento reducido, quieta),
@@ -457,7 +463,8 @@ recibe el foco al abrirse y lo devuelve al cerrarse, y los botones miden al meno
 diálogo: recibe el foco, lo mantiene adentro mientras está abierta y lo devuelve al cerrarse; su dibujo lleva su nombre y,
 la línea de tiempo, sus fechas para lectores de pantalla. La tele de BiPlot.TV también es un diálogo: recibe el foco, lo
 mantiene adentro y lo devuelve al apagarse, anuncia cada canal a lectores de pantalla y se maneja entera con teclado (↑ ↓
-cambian de canal, los números van directo, ← → retroceden y adelantan 10 segundos, Espacio pausa, M silencia, F pone la
+cambian de canal, los números van directo (los de dos cifras, como en la tele), ← → retroceden y adelantan 10 segundos,
+Espacio pausa, M silencia, F pone la
 pantalla completa, las flechas recorren la guía y Escape la cierra o apaga la tele). La mini tele es un botón («Prender
 la tele de BiPlot.TV»): lo que muestra es decorativo, su cambio de canal se detiene con «reducir movimiento» o la pausa,
 y al apagar la tele el foco vuelve a ella. Una vitrina en 3D es una imagen con su nombre; su giro se
