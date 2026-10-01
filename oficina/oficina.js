@@ -331,6 +331,7 @@
   $('#controles').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b) return;
     var r = rect(), acc = b.getAttribute('data-accion');
+    if (acc === 'tele') { abrirTele(null, b); return; }
     // En una sala propia, los mismos botones mueven su cámara
     if (propia && acc !== 'pausa') { propia.aMano = true; if (acc === 'todo') verSalaEntera(600); else zoomSalaCentro(acc === 'acercar' ? 1.35 : 0.74); return; }
     if (acc === 'acercar') zoomEn(r.left + r.width / 2, r.top + r.height / 2, 1.35);
@@ -2303,6 +2304,40 @@
     if (!rep.abierta || tele.contains(e.target)) return;
     var f = Array.prototype.filter.call(tele.querySelectorAll('[data-foco]'), function (x) { return x.offsetParent !== null; })[0]; if (f) f.focus({ preventScroll: true });
   });
+
+  // Dónde está la tele: siempre a mano, en toda la oficina. (Prototipo de dos formas, para elegir: ?tele=a, un botón,
+  // arriba en el computador y junto a los controles en el celular; ?tele=b, la mini tele: una tele chiquita con el canal
+  // en vivo, sin sonido, que cambia de canal sola y se prende en el canal que muestra)
+  var HALLA = (/[?&]tele=([ab])/.exec(location.search) || [0, 'b'])[1];
+  document.documentElement.classList.add('halla-' + HALLA);
+  var mini = $('#mini-tele'), miniK = 0;
+  function construirMini() {
+    if (!mini || !CANAL) return;
+    var C = canalesTele().filter(function (c) { return !c.tu; }), punto = leerJson('tv-punto');
+    C.forEach(function (c, k) { if (punto && punto.id === c.id) miniK = k; });
+    mini.querySelector('.mini-tele-pantalla').insertAdjacentHTML('afterbegin', C.map(function (c, k) {
+      return '<img src="' + esc(c.mini) + '" alt="" width="160" height="90" loading="lazy" data-canal="' + esc(c.h) + '"' + (k === miniK ? ' class="ver"' : '') + '>';
+    }).join(''));
+    mini.querySelector('.mini-tele-n').textContent = dosCifras(miniK + 1);
+    mini.addEventListener('click', function () { var v = mini.querySelector('.mini-tele-pantalla img.ver'); abrirTele(v ? v.getAttribute('data-canal') : null, mini); });
+    setTimeout(zapMini, 4500);
+  }
+  // Cada 4,5 segundos, un golpe de estática y el canal que sigue (quieta con movimiento reducido o la oficina en pausa)
+  function zapMini() {
+    setTimeout(zapMini, 4500);
+    if (document.hidden || rep.abierta || quieta() || !mini.offsetParent) return;
+    var im = mini.querySelectorAll('.mini-tele-pantalla img'); if (im.length < 2) return;
+    miniK = (miniK + 1) % im.length;
+    mini.querySelector('.mini-tele-nieve').style.backgroundImage = 'url(' + nieveTele() + ')';
+    mini.classList.add('zapea');
+    setTimeout(function () {
+      Array.prototype.forEach.call(im, function (x, k) { x.classList.toggle('ver', k === miniK); });
+      mini.querySelector('.mini-tele-n').textContent = dosCifras(miniK + 1);
+    }, 150);
+    setTimeout(function () { mini.classList.remove('zapea'); }, 330);
+  }
+  construirMini();
+  $('#barra-tele').addEventListener('click', function () { abrirTele(null, this); });
 
   /* ── Recorrido guiado: lo guía Atlas, que ve todo desde arriba ── */
   var GUIA = [

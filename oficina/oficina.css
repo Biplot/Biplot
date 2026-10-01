@@ -132,6 +132,33 @@ button { font: inherit; color: inherit; }
 .controles [aria-pressed="true"] { border-color: var(--bp-acento); background: #14445A; }
 .en-sala .controles, .en-sala .rotulo { display: none; }
 
+/* Dónde está la tele (prototipo: .halla-a, un botón; .halla-b, la mini tele en vivo) */
+.barra-tele, .controles .ctl-tele, .mini-tele { display: none; }
+.halla-a .barra-tele { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; min-height: 40px; padding: 8px 15px; border: 1.5px solid var(--bp-borde-fuerte);
+  border-radius: var(--bp-radio-pill); background: rgba(23, 195, 178, .08); color: var(--bp-texto); font: 600 14px/1 var(--bp-f-display); cursor: pointer; white-space: nowrap; }
+.halla-a .barra-tele:hover { border-color: var(--bp-acento); }
+.halla-a .barra-tele ~ .barra-volver { margin-left: 0; }
+.barra-tele svg { width: 18px; height: 18px; fill: none; stroke: var(--bp-acento); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.controles .ctl-tele { color: var(--bp-acento); }
+.halla-b .mini-tele { display: flex; }
+.mini-tele { position: absolute; z-index: 15; right: 16px; bottom: 230px; width: 132px; flex-direction: column; align-items: center; padding: 0; border: 0; background: none;
+  color: var(--bp-texto); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.mini-tele-antena { width: 48px; height: 18px; margin-bottom: -3px; fill: #7FD8CF; stroke: #7FD8CF; stroke-width: 3.2; stroke-linecap: round; filter: drop-shadow(0 1px 2px rgba(3, 10, 20, .8)); }
+.mini-tele-caja { display: block; width: 100%; padding: 7px 7px 0; border: 2.5px solid var(--bp-acento); border-radius: 16px; background: #0E2A47;
+  box-shadow: 0 0 0 4px rgba(23, 195, 178, .14), 0 12px 28px rgba(3, 10, 20, .6); transition: transform .18s ease, border-color .18s ease; }
+.mini-tele-pantalla { position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: #05090E; }
+.mini-tele-pantalla img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.mini-tele-pantalla img.ver { opacity: 1; }
+.mini-tele-nieve { position: absolute; inset: 0; z-index: 1; background-size: cover; opacity: 0; }
+.mini-tele.zapea .mini-tele-nieve { opacity: 1; }
+.mini-tele-n { position: absolute; z-index: 2; left: 5px; top: 5px; padding: 2px 5px; border-radius: 4px; background: rgba(5, 9, 14, .8); color: #7FD8CF; font: 700 10px/1 var(--bp-f-mono); }
+.mini-tele-pie { display: flex; align-items: center; justify-content: center; gap: 7px; height: 27px; font: 600 12.5px/1 var(--bp-f-display); white-space: nowrap; }
+.mini-tele-led { width: 7px; height: 7px; border-radius: 50%; background: var(--bp-acento); box-shadow: 0 0 7px var(--bp-acento); }
+.mini-tele:hover .mini-tele-caja { transform: translateY(-2px); border-color: #3FD3C4; }
+.mini-tele:focus { outline: none; }
+.mini-tele:focus-visible .mini-tele-caja { box-shadow: var(--bp-foco), 0 12px 28px rgba(3, 10, 20, .6); }
+.tele-prendida .mini-tele, .sala-hoja .mini-tele { display: none !important; }
+
 /* Bienvenida y recorrido guiado */
 .intro, .guia { position: absolute; z-index: 25; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(560px, calc(100% - 32px));
   background: rgba(14, 42, 71, .97); border: 1px solid var(--bp-borde-fuerte); border-radius: 18px; padding: 22px 24px; box-shadow: var(--bp-sombra-2); }
@@ -868,6 +895,17 @@ button { font: inherit; color: inherit; }
   .controles [data-accion="acercar"], .controles [data-accion="alejar"] { display: none; }
   .controles .con-texto .txt { display: none; }
   .controles .con-texto { width: 44px; padding: 0; justify-content: center; }
+  .halla-a .barra-tele { display: none; }
+  .halla-a .controles .ctl-tele { display: grid; }
+  .halla-a .recorrer { right: 172px; }
+  .mini-tele { right: 116px; bottom: 16px; width: 70px; }
+  .en-sala-propia .mini-tele { bottom: calc(var(--alto-barra, 0px) + 26px); }
+  .halla-b .recorrer { right: 198px; }
+  .mini-tele-antena { position: absolute; top: -11px; left: 50%; width: 28px; height: 11px; margin: 0 0 0 -14px; stroke-width: 2.4; }
+  .mini-tele-caja { padding: 4px; border-width: 2px; border-radius: 11px; }
+  .mini-tele-pantalla { border-radius: 6px; }
+  .mini-tele-n { left: 3px; top: 3px; padding: 1px 3px; font-size: 8px; }
+  .mini-tele-pie { display: none; }
   .intro, .guia { bottom: 76px; width: calc(100% - 24px); padding: 18px; }
   .intro h2 { font-size: 21px; }
   .intro p { font-size: 15px; margin-bottom: 14px; }
