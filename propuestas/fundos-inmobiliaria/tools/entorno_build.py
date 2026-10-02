@@ -282,22 +282,32 @@ def fotos(cfg):
 
 
 # ---------------------------------------------------------------- rutas por camino (OSRM)
+def clave_ruta(o, l):
+    """Clave de caché de la ruta; con "via" (puntos intermedios, p. ej. para forzar el túnel) también entra en la clave."""
+    k = "%.6f,%.6f>%.6f,%.6f" % (o["lat"], o["lon"], l["destino"][0], l["destino"][1])
+    for v in l.get("via", []):
+        k += "|%.6f,%.6f" % (v[0], v[1])
+    return k
+
+
 def rutas(cfg):
     cache = leer("rutas-cache.json", {})
     o = cfg["proyecto"]
     for l in cfg["lugares"]:
         if not l.get("destino"):
             continue
-        clave = "%.6f,%.6f>%.6f,%.6f" % (o["lat"], o["lon"], l["destino"][0], l["destino"][1])
+        clave = clave_ruta(o, l)
         if clave in cache:
             continue
-        url = OSRM.format(o="%f,%f" % (o["lon"], o["lat"]), d="%f,%f" % (l["destino"][1], l["destino"][0]))
+        via = "".join(";%f,%f" % (v[1], v[0]) for v in l.get("via", []))
+        url = OSRM.format(o="%f,%f" % (o["lon"], o["lat"]) + via, d="%f,%f" % (l["destino"][1], l["destino"][0]))
         r = json.loads(bajar(url))
         rt = r["routes"][0]
+        fin = r["waypoints"][-1]
         cache[clave] = {"km": rt["distance"] / 1000, "min": rt["duration"] / 60, "coords": rt["geometry"]["coordinates"],
-                        "llegada": r["waypoints"][1]["name"], "desvio_m": r["waypoints"][1]["distance"]}
+                        "llegada": fin["name"], "desvio_m": fin["distance"]}
         print("  ruta", l["id"], round(rt["distance"] / 1000, 1), "km", round(rt["duration"] / 60), "min ->",
-              r["waypoints"][1]["name"], round(r["waypoints"][1]["distance"]), "m")
+              fin["name"], round(fin["distance"]), "m")
         time.sleep(1.1)
     guardar("rutas-cache.json", cache)
 
@@ -365,8 +375,7 @@ def construir(cfg):
         d["x"], d["y"] = px(l["lat"], l["lon"])
         d["recta"] = round(haversine((o["lat"], o["lon"]), (l["lat"], l["lon"])), 1)
         if l.get("destino"):
-            clave = "%.6f,%.6f>%.6f,%.6f" % (o["lat"], o["lon"], l["destino"][0], l["destino"][1])
-            r = rc.get(clave)
+            r = rc.get(clave_ruta(o, l))
             if r:
                 pts = [px(la, lo) for lo, la in r["coords"]]
                 s = simplificar(pts, cfg.get("simplificar_px", 0.35))
