@@ -14,7 +14,9 @@ Pasos (cada uno se puede saltar si ya está hecho; los resultados quedan en cach
   --rutas     calcula las rutas por camino con OSRM (router.project-osrm.org, datos © OpenStreetMap)
 Sin opciones solo regenera lib/entorno-datos.js con lo que haya en caché.
 
-Uso: python3 tools/entorno_build.py [--teselas] [--fotos] [--rutas]
+Uso: python3 tools/entorno_build.py [--proyecto ID] [--rutas] [--locales | --teselas] [--videos] [--fotos]
+Sin --proyecto es Puerto Varas (tools/entorno/lugares.json → lib/entorno-datos.js). Con --proyecto ID se usa
+tools/entorno/ID/lugares.json y la salida va a lib/entorno-ID.js (la página: entorno.html?p=ID).
 """
 import io
 import json
@@ -28,6 +30,10 @@ import urllib.request
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.dirname(AQUI)
 DIR = os.path.join(AQUI, "entorno")
+PROY = ""
+if "--proyecto" in sys.argv:
+    PROY = sys.argv[sys.argv.index("--proyecto") + 1]
+    DIR = os.path.join(AQUI, "entorno", PROY)
 UA = "biplot-fundos-entorno/1.0 (https://biplot.cl; propuesta Fundos Inmobiliaria)"
 TESELA = "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/g/{z}/{y}/{x}.jpg"
 OSRM = "https://router.project-osrm.org/route/v1/driving/{o};{d}?overview=full&geometries=geojson"
@@ -403,13 +409,15 @@ def construir(cfg):
         "imagen": {"src": im["src"], "w": ic["w"], "h": ic["h"], "mpp": round(mpp, 3), "zoomMax": im.get("zoomMax", 6), "capas": capas},
         "creditoCorto": im.get("creditoCorto", cfg.get("creditoCorto", [])), "creditos": creditos, "metodo": cfg.get("metodo", []), "categorias": cfg["categorias"],
         "anillos": cfg.get("anillos", []), "dato": cfg.get("dato"), "resumen": cfg.get("resumen", []), "paisaje": paisaje,
-        "proyecto": proyecto, "lugares": salida,
+        "proyecto": proyecto, "lugares": salida, "pagina": cfg.get("pagina", {}),
     }
-    js = "/* Generado por tools/entorno_build.py: no editar a mano (editar tools/entorno/lugares.json). */\nwindow.__ENTORNO__ = " + \
+    fuente = "tools/entorno/" + (PROY + "/" if PROY else "") + "lugares.json"
+    js = "/* Generado por tools/entorno_build.py: no editar a mano (editar " + fuente + "). */\nwindow.__ENTORNO__ = " + \
          json.dumps(datos, ensure_ascii=False, separators=(",", ":")) + ";\n"
-    with open(os.path.join(RAIZ, "lib/entorno-datos.js"), "w", encoding="utf-8") as f:
+    out = "lib/entorno-%s.js" % PROY if PROY else "lib/entorno-datos.js"
+    with open(os.path.join(RAIZ, out), "w", encoding="utf-8") as f:
         f.write(js)
-    print("lib/entorno-datos.js", len(js) // 1024, "KB ·", len(salida), "lugares")
+    print(out, len(js) // 1024, "KB ·", len(salida), "lugares")
 
 
 if __name__ == "__main__":

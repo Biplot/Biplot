@@ -485,8 +485,8 @@ a { color: inherit; }
 
 <header class="top">
   <div class="top-in">
-    <a class="back" href="./#entorno"><svg class="i" aria-hidden="true"><use href="#i-back"/></svg><span>Volver<span class="back-l"> a la propuesta</span></span></a>
-    <span class="brand"><img src="assets/img/isotipo.webp" alt="" width="30" height="30"><span>Fundos<small>Puerto Varas</small></span></span>
+    <a class="back" href="./#entorno" data-volver><svg class="i" aria-hidden="true"><use href="#i-back"/></svg><span>Volver<span class="back-l"> a la propuesta</span></span></a>
+    <span class="brand"><img src="assets/img/isotipo.webp" alt="" width="30" height="30"><span>Fundos<small data-pg-marca>Puerto Varas</small></span></span>
     <span class="coords num" data-coords></span>
   </div>
 </header>
@@ -496,11 +496,11 @@ a { color: inherit; }
     <div class="panel" data-panel>
       <div class="p-head">
         <div class="p-top">
-          <div><p class="kicker">Alerce · Región de Los Lagos</p>
+          <div><p class="kicker" data-pg-kicker>Alerce · Región de Los Lagos</p>
           <h1>Descubre tu <em>entorno</em></h1></div>
           <button type="button" class="p-min" data-pmin aria-expanded="true" aria-controls="p-lista" aria-label="Plegar la lista de lugares"><svg class="i" aria-hidden="true"><use href="#i-down"/></svg></button>
         </div>
-        <p class="lead">Entre Puerto Montt y Puerto Varas, con el lago, los volcanes y el mar en el horizonte. Elige un lugar y te mostramos el camino desde tu parcela.</p>
+        <p class="lead" data-pg-lead>Entre Puerto Montt y Puerto Varas, con el lago, los volcanes y el mar en el horizonte. Elige un lugar y te mostramos el camino desde tu parcela.</p>
         <div class="filters" role="group" aria-label="Filtrar lugares" data-filters></div>
       </div>
       <section class="p-list" id="p-lista" data-list aria-label="Lugares ordenados por tiempo desde la parcela"></section>
@@ -568,7 +568,12 @@ a { color: inherit; }
     <div class="vp-end" data-vp-end hidden><button type="button" class="btn btn-gold" data-vp-again><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Volver a ver</button></div></div>
 </div>
 <script src="lib/manifest.js?v=20261002e"></script>
-<script src="lib/entorno-datos.js?v=20261002e"></script>
+<script>(function () {
+  // entorno.html?p=malalcahuello → lib/entorno-malalcahuello.js; sin p (o p=puerto-varas) → lib/entorno-datos.js
+  var m = /[?&]p=([a-z-]+)/.exec(location.search), id = m ? m[1] : "", ok = ["malalcahuello", "marchigue"];
+  var src = ok.indexOf(id) >= 0 ? "lib/entorno-" + id + ".js" : "lib/entorno-datos.js";
+  document.write('<script src="' + src + '?v=20261002e"><\/script>');
+})();</script>
 <script>
 (function () {
   "use strict";
@@ -616,6 +621,13 @@ a { color: inherit; }
     return d + "°" + String(m).padStart(2, "0") + "′" + String(s).padStart(2, "0") + "″ " + (v < 0 ? neg : pos);
   }
   $("[data-coords]").textContent = dms(P.lat, "N", "S") + " · " + dms(P.lon, "E", "O");
+  // Textos de la página según el proyecto (lugares.json → pagina)
+  var PG = D.pagina || {};
+  if (PG.marca) { $("[data-pg-marca]").textContent = PG.marca; document.title = "Descubre tu entorno · Fundos " + PG.marca; }
+  if (PG.kicker) $("[data-pg-kicker]").textContent = PG.kicker;
+  if (PG.lead) $("[data-pg-lead]").textContent = PG.lead;
+  if (PG.volver) $("[data-volver]").setAttribute("href", PG.volver);
+  if (PG.marca) root.setAttribute("aria-label", "Mapa del entorno de Fundos " + PG.marca);
 
   /* ---------- Imagen, capas, anillos, paisaje y estrella de rutas ---------- */
   var base = $("[data-base]");
@@ -1182,7 +1194,7 @@ a { color: inherit; }
       '<div class="more-b">' + (D.dato ? '<div class="fact">' + icon(D.dato.icono || "tren") + "<div><strong>" + esc(D.dato.titulo) + "</strong><p>" + esc(datoTxt()) + "</p></div></div>" : "") + "</div>" +
       "</div></div>" +
       '<div class="card-foot"><a class="btn btn-gold" href="https://www.google.com/maps/search/?api=1&query=' + P.lat + "," + P.lon + '" target="_blank" rel="noopener">' + icon("pin") + "Ver ubicación</a>" +
-      '<a class="btn btn-line" href="' + esc(waHref("Hola Fundos, vi el mapa del entorno de Fundos Puerto Varas y quiero agendar una visita.")) + '"' + (WA ? ' target="_blank" rel="noopener"' : "") + ">" + icon("wa") + "Agendar visita</a></div>";
+      '<a class="btn btn-line" href="' + esc(waHref("Hola Fundos, vi el mapa del entorno de " + P.nombre + " y quiero agendar una visita.")) + '"' + (WA ? ' target="_blank" rel="noopener"' : "") + ">" + icon("wa") + "Agendar visita</a></div>";
     card.style.removeProperty("--c");
     cardState();
   }
@@ -1215,7 +1227,7 @@ a { color: inherit; }
     var serv = (p.serv || []).map(function (s) { return "<li>" + icon(s[0]) + esc(s[1]) + "</li>"; }).join("");
     var vis = orden.filter(visible), i = vis.indexOf(p);
     var cerca = L.filter(function (q) { return q !== p && visible(q) && Math.hypot(q.x - p.x, q.y - p.y) * MPP < 900; });
-    var msg = "Hola Fundos, estuve viendo el mapa del entorno de Fundos Puerto Varas (" + p.nombre + (p.ruta ? ", a " + mins(p.ruta.min) + " en auto" : "") + ") y quiero agendar una visita.";
+    var msg = "Hola Fundos, estuve viendo el mapa del entorno de " + P.nombre + " (" + p.nombre + (p.ruta ? ", a " + mins(p.ruta.min) + " en auto" : "") + ") y quiero agendar una visita.";
     card.innerHTML =
       '<div class="card-media">' + media +
         '<div class="card-top"><div class="card-nav"><button type="button" data-step="-1" aria-label="Lugar anterior">' + icon("prev") + '</button><span class="num">' + (i + 1) + " de " + vis.length +
