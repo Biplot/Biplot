@@ -812,18 +812,7 @@ html:not(.js) .plan-zoom { display: none; }
   }
   .lot-panel .lot-empty { display: block; }
   .lot-close { display: none; }
-  /* Planos muy anchos (Puerto Varas): el plano usa todo el ancho y el detalle va debajo */
-  .plan.is-wide .plan-body { grid-template-columns: 1fr; }
-  .plan.is-wide .lot-panel { position: relative; top: auto; max-height: none; }
-  .plan.is-wide .lot-empty { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; align-items: start; }
-  .plan.is-wide .lot-empty > .lot-empty-icon, .plan.is-wide .lot-empty > h3, .plan.is-wide .lot-empty > p { grid-column: 1; }
-  .plan.is-wide .lot-empty .lot-stats { grid-column: 1; }
-  .plan.is-wide .lot-empty .lot-short { grid-column: 2; grid-row: 1 / span 4; margin-top: 0; }
-  .plan.is-wide .lot-empty .lot-help { grid-column: 1 / -1; }
-  .plan.is-wide .lot-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; align-items: start; }
-  .plan.is-wide .lot-detail > * { grid-column: 1; }
-  .plan.is-wide .lot-detail > .lot-facts, .plan.is-wide .lot-detail > .lot-sim { grid-column: 2; }
-  .plan.is-wide .lot-detail > .lot-facts { grid-row: 1 / span 5; margin-top: 0; }
+  /* Planos muy anchos (Puerto Varas): también con el detalle a la derecha; el plano baja de alto (layoutPlan) */
 }
 @media (min-width: 1280px) {
   .plan-body { grid-template-columns: minmax(0, 1fr) 360px; }
@@ -1449,8 +1438,7 @@ body.tour-lock { overflow: hidden; }
   .finder { grid-template-columns: minmax(11rem, 1fr) minmax(12.5rem, 1fr) minmax(190px, 16.5rem) auto; }
   .finder-result { max-width: none; min-width: 0; }
   .finder-result span { white-space: normal; }
-  .plan.is-wide .lot-empty { grid-template-rows: auto auto auto 1fr; align-content: start; }
-  .plan.is-wide .lot-empty .lot-stats { align-self: start; }
+
 }
 .finder-by { text-wrap: balance; }
 /* Laptops chicos: buscador en dos filas (campos arriba, resultado y botón abajo), como en tablet */
@@ -1967,7 +1955,9 @@ html:not(.js) .tc-tabs { display: none; }
   .pl-symbols li { font-size: .74rem; }
   .plan-legend .sym-disp { width: 18px; height: 18px; }
   /* el detalle del lote acompaña al plano con el mismo alto */
-  .plan:not(.is-wide) .lot-panel { max-height: min(calc(100vh - var(--nav-h) - 2rem), var(--stage-h, 100vh)); }
+  .plan .lot-panel { max-height: min(calc(100vh - var(--nav-h) - 2rem), var(--stage-h, 100vh)); overflow-y: auto; scrollbar-width: thin; }
+  .plan.is-wide .lot-empty .lot-help { display: none; }
+  .plan.is-wide .lot-panel { padding: 1.2rem 1.3rem; }
 }
 
 /* Chips de precio: versión corta en el celular y el tablet no se usa ("3 disponibles") */
@@ -2159,3 +2149,21 @@ html.js[data-vista="compra"] main, html.js[data-vista="equipo"] main { padding-t
 .pv-lanz p:last-child { margin-top: .5rem; color: var(--cream-70); font-size: .92rem; max-width: 60ch; }
 .pv-lanz .btn .i { width: 18px; height: 18px; }
 .pv-ref { margin-top: .7rem; font-size: .74rem; color: var(--cream-55); }
+
+/* ---------------- Otros proyectos: invitación a cotizar (pestaña Puerto Varas) ---------------- */
+.pv-otros .section-head h2 em { font-style: italic; color: var(--gold-ink); }
+.otros { display: grid; gap: 1.2rem; }
+@media (min-width: 900px) { .otros { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.otro { display: grid; grid-template-columns: minmax(0, 1fr); overflow: hidden; border-radius: var(--r-lg); background: var(--n050); box-shadow: var(--shadow-card); }
+@media (min-width: 560px) { .otro { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); } }
+.otro-art { position: relative; min-height: 170px; background: var(--g800); overflow: hidden; }
+.otro-art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.otro-b { display: flex; flex-direction: column; gap: .55rem; padding: 1.2rem 1.3rem 1.3rem; }
+.otro-meta { font: 700 .66rem/1.2 var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--gold-ink); }
+.otro h3 { font-size: clamp(1.6rem, 2.4vw, 2rem); }
+.otro-txt { font-size: .88rem; line-height: 1.55; color: var(--n600); }
+.otro-dl { display: flex; gap: 1.3rem; margin-top: .2rem; }
+.otro-dl dt { font: 700 .62rem/1.2 var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--n500); }
+.otro-dl dd { margin-top: .15rem; font: 600 1.15rem/1.1 var(--serif); color: var(--g900); font-variant-numeric: lining-nums; }
+.otro-acts { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: auto; padding-top: .6rem; }
+.otro-acts .btn { padding: .7rem 1rem; font-size: .86rem; }

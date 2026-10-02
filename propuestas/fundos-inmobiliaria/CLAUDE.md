@@ -22,7 +22,8 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
 
 ## Estructura y datos
 - **Pestañas** (`initVistas` en `main.js`): Puerto Varas (inicio) · Proyectos · Tu compra · Equipo. Cada sección dice
-  en `data-vista` en qué pestañas aparece (`#recorrido` y `#plano` en "inicio proyectos"; `#visita` en todas) y el
+  en `data-vista` en qué pestañas aparece (`#plano` en "inicio proyectos"; `#recorrido` solo en Proyectos: en la
+  pestaña Puerto Varas los botones 360° abren `entorno.html#tour-360`; `#visita` en todas) y el
   CSS esconde el resto (`html.js[data-vista=…]`). Sin JavaScript se ve todo seguido. Un script en el `<head>` fija la
   pestaña según el `#` para que no parpadee. Los enlaces internos (`#simulador`, `#plano`, `#equipo-4`…) cambian de
   pestaña solos; las pestañas llevan al comienzo (`#puerto-varas`, `#proyectos-inicio`, `#tu-compra`, `#nosotros`).
@@ -32,7 +33,10 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
   (`videoDestacado`, bucle sin texto armado con los videos del cliente: lago, Frutillar, Petrohué, Osorno y Puerto
   Varas; versión vertical para celular), datos (desde, disponibles), la vitrina del entorno (mapa en miniatura con
   las rutas de `lib/entorno-datos.js`, que se carga al acercarse; tiempos y videos que abren `entorno.html#lugar`) y
-  es el proyecto con que parten el plano y el recorrido. Las pruebas usan `tools/pruebas/_vista.js` (`clasica()` deja
+  es el proyecto con que parten el plano y el recorrido. Al final de esa pestaña, "Cotiza también nuestros otros
+  proyectos" (`#otros-proyectos`, `[data-otro]`): Malalcahuello y Marchigüe con desde/disponibles del manifiesto,
+  "Cotizar" (precarga el formulario de visita) y "Ver lotes". El plano de Puerto Varas (ancho, `.plan.is-wide`) va con
+  el detalle a la derecha y baja de alto (`layoutPlan`); el panel toma el alto del plano y muestra 3 lotes más baratos. Las pruebas usan `tools/pruebas/_vista.js` (`clasica()` deja
   la página como antes: pestaña Proyectos con el plano en Malalcahuello).
 - `index.html` todo el contenido (se lee sin JS) · `styles.css` tokens del manual + estilos · `main.js` módulos IIFE
   (`initPlan`, `initTour`, `initSim`, `initVisit`, `initSellers`, `initVideo`, `initCompra`, …) aislados con `safe()`.
