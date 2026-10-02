@@ -2498,6 +2498,11 @@
       var dsp = disponibles(p).length, d0 = desde(p);
       $$("[data-pv-disp]").forEach(function (el) { el.textContent = dsp; });
       if (d0) $$("[data-pv-desde]").forEach(function (el) { el.textContent = clp(d0); });
+      $$("[data-pv-lanz]").forEach(function (a) {
+        a.addEventListener("click", function () {
+          Visit.prefill({ proyecto: p.nombre, mensaje: "Quiero recibir el plano de disponibilidad y la lista de precios de lanzamiento de Fundos de Puerto Varas, y coordinar una visita guiada al terreno.", scroll: true });
+        });
+      });
       $$("[data-pv-plan]").forEach(function (a) {
         a.addEventListener("click", function () { Plan.apply({ id: p.id, soloDisponibles: true }); });
       });

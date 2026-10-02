@@ -129,6 +129,10 @@ Mínimo antes de publicar: `interacciones.js`, `plano.js`, `qa.js`, `anchos.js` 
   detalle del lote toma el mismo alto (`--stage-h`) y los enlaces a `#plano` llevan directo a la herramienta.
   En celular el plano parte acercado (lotes tocables) con botón para ver completo.
 - Cotizador compacto: la cotización completa visible en computador; en celular, franja con la cuota bajo los controles.
+- Puerto Varas (textos del cliente, octubre 2026): parcelas **planas**, con rol propio (SAG) y vista a los volcanes
+  Osorno (a la derecha) y Calbuco (a la izquierda, al fondo), en el Pasaje El Encanto (Ruta La Colonia); acceso
+  controlado, caminos estabilizados, factibilidad eléctrica en la entrada y agua por noria o pozo. **No decir "bosque
+  nativo"** (hay poco) y el estero **cruza la parcelación** (no "entre bosque y estero").
 - Página en pestañas (pedido del cliente): Puerto Varas, el proyecto que están empujando (con su folleto), es lo más
   atractivo del inicio; el resto (proyectos, compra, equipo) va en otras pestañas.
 - Página corta por secciones (el cliente sintió que tanto scroll cansa): Cómo comprar, Simulador, Preguntas y Mi compra
