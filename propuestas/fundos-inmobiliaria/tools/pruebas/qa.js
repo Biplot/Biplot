@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
 const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate-errors-spki-list=KnP1OnzHv/y42eRQmbGwoYTHcSJF448m6CU5mdngwKk=,PS48cX347wDVcRynzq+DFqswl2PLNE1sG6uQvxMCOS0="];
 const out = {}, errs = [];
@@ -8,7 +9,7 @@ async function page(browser, w, h, mob) {
   const p = await ctx.newPage();
   p.on("pageerror", e => errs.push(w + " " + e.message));
   p.on("console", m => { if (m.type() === "error" && !/ERR_CERT|net::/.test(m.text())) errs.push(w + " " + m.text()); });
-  await p.goto(B, { waitUntil: "networkidle" }); await W(700);
+  await p.goto(B, { waitUntil: "networkidle" }); await W(700); await clasica(p);
   return p;
 }
 (async () => {

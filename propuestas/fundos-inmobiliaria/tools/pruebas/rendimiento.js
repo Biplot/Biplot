@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
 const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate-errors-spki-list=KnP1OnzHv/y42eRQmbGwoYTHcSJF448m6CU5mdngwKk=,PS48cX347wDVcRynzq+DFqswl2PLNE1sG6uQvxMCOS0="];
 (async () => {
@@ -10,7 +11,7 @@ const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate
   d.on("request", r => reqs.push(r.url()));
   d.on("pageerror", e => errs.push(e.message));
   d.on("console", m => { if (m.type() === "error" && !/ERR_CERT|net::/.test(m.text())) errs.push(m.text()); });
-  await d.goto(B, { waitUntil: "networkidle" }); await d.waitForTimeout(600);
+  await d.goto(B, { waitUntil: "networkidle" }); await d.waitForTimeout(600); await clasica(d);
   out.fontReqs = reqs.filter(u => /font|woff/.test(u)).map(u => u.replace(/^.*\//, ""));
   out.google = reqs.filter(u => /googleapis|gstatic/.test(u)).length;
   out.fontsLoaded = await d.evaluate(() => [...document.fonts].filter(f => f.status === "loaded").map(f => f.family + " " + f.style + " " + f.weight));
@@ -48,7 +49,7 @@ const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate
   await ctx.close();
   // sin JavaScript
   const nj = await (await browser.newContext({ viewport: { width: 390, height: 844 }, javaScriptEnabled: false })).newPage();
-  await nj.goto(B, { waitUntil: "networkidle" });
+  await nj.goto(B, { waitUntil: "networkidle" }); await clasica(nj);
   out.nojs = await nj.evaluate(() => ({ js: document.documentElement.classList.contains("js"), links: getComputedStyle(document.querySelector(".nav-links")).display, toggle: getComputedStyle(document.querySelector(".nav-toggle")).display, filters: getComputedStyle(document.querySelector(".plan-filters")).display, sim: getComputedStyle(document.querySelector(".sim-controls")).display, reveal: getComputedStyle(document.querySelector(".reveal")).opacity }));
   await nj.screenshot({ path: "ux/nojs-top.png" });
   await nj.evaluate(() => document.getElementById("plano").scrollIntoView()); await nj.screenshot({ path: "ux/nojs-plan.png" });

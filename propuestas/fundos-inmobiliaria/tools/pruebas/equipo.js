@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 const W = ms => new Promise(r => setTimeout(r, ms));
 (async () => {
   const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--proxy-server=" + process.env.HTTPS_PROXY] });
@@ -6,7 +7,7 @@ const W = ms => new Promise(r => setTimeout(r, ms));
     const mob = w < 700;
     const pg = await (await browser.newContext({ viewport: { width: w, height: h }, isMobile: mob, hasTouch: mob })).newPage();
     const errs = []; pg.on("pageerror", e => errs.push(e.message)); pg.on("console", m => { if (m.type() === "error" && !/ERR_CERT|net::/.test(m.text())) errs.push(m.text()); });
-    await pg.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" });
+    await pg.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" }); await vista(pg, "equipo");
     await pg.evaluate(() => document.querySelector(".sellers-head").scrollIntoView({ block: "start", behavior: "instant" })); await pg.evaluate(() => scrollBy(0, -90)); await W(1200);
     await pg.screenshot({ path: `ux/sl-grid-${w}.png` });
     await pg.click('[data-seller="3"]'); await W(900);

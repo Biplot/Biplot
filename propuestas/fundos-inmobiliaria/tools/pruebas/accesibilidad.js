@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
 const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate-errors-spki-list=KnP1OnzHv/y42eRQmbGwoYTHcSJF448m6CU5mdngwKk=,PS48cX347wDVcRynzq+DFqswl2PLNE1sG6uQvxMCOS0="];
 (async () => {
@@ -7,7 +8,7 @@ const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate
   // ---- móvil 390: foco en el plano no desplaza el escenario; barra oculta no enfocable
   const m = await (await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 })).newPage();
   m.on("pageerror", e => logs.push("M " + e.message));
-  await m.goto(B, { waitUntil: "networkidle" }); await m.waitForTimeout(800);
+  await m.goto(B, { waitUntil: "networkidle" }); await m.waitForTimeout(800); await clasica(m);
   out.mbarTopVis = await m.evaluate(() => getComputedStyle(document.querySelector(".mbar")).visibility);
   await m.evaluate(() => document.querySelector(".skip-plan").scrollIntoView({ block: "center", behavior: "instant" }));
   await m.focus(".skip-plan"); await m.keyboard.press("Tab"); await m.waitForTimeout(700);
@@ -25,7 +26,7 @@ const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate
   // ---- escritorio
   const d = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
   d.on("pageerror", e => logs.push("D " + e.message));
-  await d.goto(B, { waitUntil: "networkidle" }); await d.waitForTimeout(800);
+  await d.goto(B, { waitUntil: "networkidle" }); await d.waitForTimeout(800); await clasica(d);
   out.formDesc = await d.evaluate(() => ({ nombre: document.getElementById("v-nombre").getAttribute("aria-describedby"), acepto: document.querySelector('[name="acepto"]').getAttribute("aria-invalid") }));
   out.waFloatTop = await d.evaluate(() => { const w = document.querySelector(".wa-float"); return [w.className, getComputedStyle(w).visibility]; });
   out.priceValText = await d.evaluate(() => document.getElementById("f-precio").getAttribute("aria-valuetext"));
@@ -64,7 +65,7 @@ const ARGS = ["--proxy-server=" + process.env.HTTPS_PROXY, "--ignore-certificate
   out.formOk = await d.evaluate(() => { const f = document.querySelector(".visit-form"); return { ok: !document.querySelector(".form-ok").hidden, inertKids: [...f.children].filter(c => c.inert).length, kids: f.children.length }; });
   // movimiento reducido
   const r = await (await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: "reduce" })).newPage();
-  await r.goto(B, { waitUntil: "networkidle" }); await r.waitForTimeout(1500);
+  await r.goto(B, { waitUntil: "networkidle" }); await r.waitForTimeout(1500); await clasica(r);
   out.reducedAnims = await r.evaluate(() => document.getAnimations().map(a => a.animationName || a.transitionProperty).filter(Boolean));
   console.log(JSON.stringify(out, null, 1)); console.log(logs.join("\n") || "no errors");
   await browser.close();

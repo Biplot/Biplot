@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
 (async () => {
   const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--proxy-server=" + process.env.HTTPS_PROXY] });
@@ -9,7 +10,7 @@ const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
   const logs = [];
   m.on("pageerror", e => logs.push("M pageerror: " + e.message));
   m.on("console", x => { if (x.type() === "error") logs.push("M " + x.text()); });
-  await m.goto(B, { waitUntil: "networkidle" }); await m.waitForTimeout(1000);
+  await m.goto(B, { waitUntil: "networkidle" }); await m.waitForTimeout(1000); await clasica(m);
   await m.evaluate(() => document.querySelector("#plano .plan").scrollIntoView({ behavior: "instant" }));
   await m.waitForTimeout(300);
   const pin45 = m.locator('#plano .pin[data-n="45"]');
@@ -49,7 +50,7 @@ const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
   const d = await ctx.newPage();
   d.on("pageerror", e => logs.push("D pageerror: " + e.message));
   d.on("console", x => { if (x.type() === "error") logs.push("D " + x.text()); });
-  await d.goto(B, { waitUntil: "networkidle" }); await d.waitForTimeout(1000);
+  await d.goto(B, { waitUntil: "networkidle" }); await d.waitForTimeout(1000); await clasica(d);
   await d.evaluate(() => document.querySelector("#plano .plan").scrollIntoView({ behavior: "instant" }));
   // precio mínimo: no cuenta vendidos
   await d.evaluate(() => { const r = document.querySelector("[data-price]"); r.value = 0; r.dispatchEvent(new Event("input")); });
