@@ -91,7 +91,7 @@
   }
  ],
  "metodo": [
-  "Rutas por camino y tiempos en auto calculados desde Camino El Encanto con OSRM, sobre la red vial de OpenStreetMap. Son tiempos sin tráfico: en temporada alta, con lluvia o nieve pueden ser mayores.",
+  "Rutas por camino y tiempos en auto calculados desde el Pasaje El Encanto con OSRM, sobre la red vial de OpenStreetMap. Son tiempos sin tráfico: en temporada alta, con lluvia o nieve pueden ser mayores.",
   "Donde no hay camino directo (la cumbre del volcán Calbuco) mostramos la distancia en línea recta, marcada con “≈” y una línea punteada.",
   "Cada ubicación se verificó con al menos dos fuentes públicas: Sernageomin, Conaf, EFE, Municipalidad de Puerto Montt, Wikipedia y OpenStreetMap.",
   "Los anillos punteados marcan 5, 10 y 20 km alrededor de la parcela."
@@ -153,8 +153,8 @@
   "nombre": "Fundos Puerto Varas",
   "lat": -41.3700833,
   "lon": -72.8781389,
-  "sub": "Camino El Encanto, Alerce · Puerto Montt",
-  "texto": "Fundos Puerto Varas se encuentra en un punto estratégico entre Puerto Montt y Puerto Varas. Una ubicación que permite disfrutar de la tranquilidad y naturaleza del sur, manteniendo una excelente conexión con dos de las ciudades más importantes de la Región de Los Lagos."
+  "sub": "Pasaje El Encanto · Ruta La Colonia",
+  "texto": "Parcelas planas de 5.000 m², con rol propio y vista despejada a los volcanes Osorno y Calbuco, en el punto intermedio entre Puerto Montt y Puerto Varas: la tranquilidad del campo con la ciudad a minutos."
  },
  "lugares": [
   {

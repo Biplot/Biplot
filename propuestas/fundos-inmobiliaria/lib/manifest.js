@@ -160,9 +160,9 @@
         estado: "venta",
         region: "Los Lagos",
         zona: "Entre mar y lago",
-        resumen: "Fundos de Puerto Varas: bosque nativo atravesado por un estero, con camino principal y caminos interiores. A 25 min de Puerto Montt y de Puerto Varas.",
-        descripcion: "Fundos de Puerto Varas, entre mar y lago. Un predio de bosque nativo atravesado por un estero, con acceso por camino principal y caminos interiores a cada parcela. Vida de sur, cerca de la ciudad.",
-        destacados: ["Estero dentro del predio", "Bosque nativo", "Acceso por camino principal", "Plano y antecedentes legales a la vista"],
+        resumen: "Parcelas planas con rol propio y vista a los volcanes Osorno y Calbuco, en el Pasaje El Encanto. A 25 min de Puerto Montt y de Puerto Varas.",
+        descripcion: "Fundos de Puerto Varas: 79 parcelas planas en el Pasaje El Encanto (Ruta La Colonia), entre Puerto Montt y Puerto Varas, con vista despejada a los volcanes Osorno y Calbuco. Un estero cruza la parcelación. Acceso controlado, caminos interiores estabilizados, factibilidad eléctrica en la entrada y agua por captación subterránea individual.",
+        destacados: ["Vista despejada a los volcanes Osorno y Calbuco", "Topografía 100 % plana", "Roles propios aprobados por el SAG, listos para escriturar", "Acceso controlado y caminos estabilizados", "Factibilidad eléctrica y agua por noria o pozo"],
         // Por camino desde la parcela (OSRM/OpenStreetMap, ver tools/entorno/lugares.json); tiempos sin tráfico
         cercanias: [["Alerce", "5 km · 8 min"], ["Puerto Montt", "16 km · 25 min"], ["Puerto Varas", "18 km · 25 min"], ["Aeropuerto El Tepual", "37 km · 45 min"]],
         cercaniasNota: "Por camino desde la parcela, en auto y sin tráfico.",

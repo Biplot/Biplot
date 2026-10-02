@@ -2125,3 +2125,37 @@ html.js[data-vista="compra"] main, html.js[data-vista="equipo"] main { padding-t
   html.js .nav.is-solid { background: var(--g900); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 @media (max-width: 559px) { .pv-lbl.home b { display: none; } }
+
+/* ---------------- Puerto Varas: por qué elegirlo, infraestructura y postales ---------------- */
+.pv-porque .section-head h2 em, .pv-postales .section-head h2 em { font-style: italic; color: var(--gold-ink); }
+.pv-postales .section-head h2 em { color: var(--gold); }
+.pv-why { list-style: none; display: grid; gap: 1.6rem 2rem; }
+@media (min-width: 720px) { .pv-why { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .pv-why { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.pv-why li { display: grid; gap: .9rem; align-content: start; padding-top: 1.2rem; border-top: 1px solid var(--gold); }
+.pv-why li > .i { width: 34px; height: 34px; color: var(--gold-ink); }
+.pv-why h3 { font-size: clamp(1.35rem, 2vw, 1.6rem); }
+.pv-why p { margin-top: .45rem; color: var(--n600); font-size: .92rem; line-height: 1.6; }
+.pv-infra { margin-top: clamp(2.2rem, 5vw, 3.4rem); padding: clamp(1.2rem, 3vw, 1.8rem); border-radius: var(--r-lg); background: var(--n100); }
+.pv-infra h3 { font: 700 .74rem/1.2 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--gold-ink); }
+.pv-infra ul { list-style: none; display: grid; gap: 1rem 1.6rem; margin-top: 1.1rem; }
+@media (min-width: 720px) { .pv-infra ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .pv-infra ul { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.pv-infra li { display: flex; gap: .75rem; align-items: flex-start; }
+.pv-infra li > .i { flex: none; width: 38px; height: 38px; padding: 9px; border-radius: 50%; background: var(--g900); color: var(--gold); }
+.pv-infra strong { display: block; font-size: .95rem; color: var(--g900); }
+.pv-infra span { display: block; margin-top: .2rem; font-size: .84rem; line-height: 1.5; color: var(--n600); }
+.pv-post { display: grid; gap: 1rem; }
+@media (min-width: 720px) { .pv-post { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.4rem; } }
+.pv-post figure { position: relative; margin: 0; border-radius: var(--r-lg); overflow: hidden; aspect-ratio: 16 / 10; background: var(--g800); }
+.pv-post img { width: 100%; height: 100%; object-fit: cover; }
+.pv-post figure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(6, 13, 9, .9) 0%, rgba(6, 13, 9, .2) 50%, rgba(6, 13, 9, 0) 70%); }
+.pv-post figcaption { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; padding: 1.1rem 1.2rem 1.2rem; color: var(--cream-80); font-size: .86rem; line-height: 1.5; }
+.pv-post figcaption span { display: block; font: 700 .66rem/1.2 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+.pv-post figcaption strong { display: block; margin: .3rem 0 .35rem; font: 500 clamp(1.6rem, 2.6vw, 2.1rem)/1.05 var(--serif); color: var(--n050); }
+.pv-lanz { display: grid; gap: 1.2rem; align-items: center; margin-top: clamp(2rem, 4vw, 3rem); padding: clamp(1.3rem, 3vw, 2rem); border-radius: var(--r-lg); background: rgba(200, 161, 101, .1); border: 1px solid rgba(200, 161, 101, .4); }
+@media (min-width: 900px) { .pv-lanz { grid-template-columns: minmax(0, 1fr) auto; gap: 2.4rem; } }
+.pv-lanz-t { margin-top: .5rem; font: 500 clamp(1.5rem, 2.6vw, 2.1rem)/1.15 var(--serif); color: var(--n050); }
+.pv-lanz p:last-child { margin-top: .5rem; color: var(--cream-70); font-size: .92rem; max-width: 60ch; }
+.pv-lanz .btn .i { width: 18px; height: 18px; }
+.pv-ref { margin-top: .7rem; font-size: .74rem; color: var(--cream-55); }
