@@ -1,5 +1,6 @@
 // Prueba del recorrido 360°: node tourcheck.js <ancho> <alto> <prefijo> [--csp]
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 (async () => {
   const [w, h, out] = process.argv.slice(2);
   const csp = process.argv.includes("--csp");
@@ -24,7 +25,7 @@ const { chromium } = require("playwright");
       r.fulfill({ response: resp, body });
     });
   }
-  await page.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" });
+  await page.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" }); await clasica(page);
   await page.waitForTimeout(1500);
   const st = () => page.$eval("[data-tour-stage]", e => e.getAttribute("data-state"));
   await page.evaluate(() => document.querySelector("#recorrido").scrollIntoView({ behavior: "instant" }));

@@ -55,6 +55,11 @@
 
     // Video de portada (sin sonido, en bucle). Ocupa el marco de la foto del equipo, que queda de respaldo.
     // mp4/webm: versión horizontal o cuadrada; mp4Movil/webmMovil: versión vertical para celular (opcional).
+    // Proyecto destacado: abre la página (pestaña "Puerto Varas") y es el que muestran primero el plano y el recorrido
+    destacado: "puerto-varas",
+    // Portada del destacado: bucle armado con los videos del cliente (lago, Frutillar, Petrohué, Osorno, Puerto Varas)
+    videoDestacado: { mp4: "assets/video/puerto-varas.mp4", webm: "assets/video/puerto-varas.webm", poster: "assets/video/puerto-varas.webp", mp4Movil: "assets/video/puerto-varas-movil.mp4", webmMovil: "assets/video/puerto-varas-movil.webm", posterMovil: "assets/video/puerto-varas-movil.webp" },
+
     videoPortada: { mp4: "assets/video/portada.mp4", webm: "assets/video/portada.webm", poster: "", mp4Movil: "assets/video/portada-movil.mp4", webmMovil: "assets/video/portada-movil.webm", posterMovil: "" },
 
     // Monto de reserva por lote (dato de Fundos 360°)

@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 (async () => {
   const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--proxy-server=" + process.env.HTTPS_PROXY] });
   const out = {}; const errs = [];
@@ -6,9 +7,10 @@ const { chromium } = require("playwright");
     const p = await b.newPage({ viewport: { width: w, height: h } });
     p.on("pageerror", e => errs.push(tag + ": " + e.message));
     p.on("console", m => { if (m.type() === "error") errs.push(tag + " console: " + m.text()); });
-    await p.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" });
+    await p.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" }); await clasica(p);
     const r = {};
     r.hidden = await p.$$eval("[data-tc-panel]", ps => ps.map(x => x.id + ":" + x.hidden));
+    await vista(p, "compra");
     await p.evaluate(() => document.getElementById("tu-compra").scrollIntoView());
     await p.waitForTimeout(600);
     r.where1 = await p.textContent("[data-nav-where]");
@@ -31,6 +33,7 @@ const { chromium } = require("playwright");
     r.avance = await p.$eval(".nav", e => e.style.getPropertyValue("--avance"));
     r.docH = await p.evaluate(() => +(document.documentElement.scrollHeight / innerHeight).toFixed(1));
     // Nosotros
+    await vista(p, "equipo");
     await p.evaluate(() => document.getElementById("nosotros").scrollIntoView());
     await p.waitForTimeout(800);
     await p.screenshot({ path: `ux/tc-${tag}-nos.png` });
@@ -40,6 +43,7 @@ const { chromium } = require("playwright");
       await p.click("[data-sellers-next]", { force: true }); await p.waitForTimeout(800);
       r.sellersScroll = [before, await p.$eval("[data-sellers]", e => e.scrollLeft)];
     }
+    await vista(p, "proyectos");
     await p.evaluate(() => document.getElementById("proyectos").scrollIntoView());
     await p.waitForTimeout(600);
     await p.screenshot({ path: `ux/tc-${tag}-proy.png` });

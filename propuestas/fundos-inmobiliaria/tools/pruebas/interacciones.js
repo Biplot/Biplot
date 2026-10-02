@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 const URL = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
 const ARGS = ["--proxy-server=" + (process.env.HTTPS_PROXY || "http://127.0.0.1:43387"), "--ignore-certificate-errors-spki-list=KnP1OnzHv/y42eRQmbGwoYTHcSJF448m6CU5mdngwKk=,PS48cX347wDVcRynzq+DFqswl2PLNE1sG6uQvxMCOS0="];
 
@@ -12,7 +13,7 @@ const ARGS = ["--proxy-server=" + (process.env.HTTPS_PROXY || "http://127.0.0.1:
   const page = await ctx.newPage();
   page.on("console", m => { if (["error", "warning"].includes(m.type())) logs.push("D " + m.type() + ": " + m.text()); });
   page.on("pageerror", e => logs.push("D pageerror: " + e.message));
-  await page.goto(URL, { waitUntil: "networkidle" });
+  await page.goto(URL, { waitUntil: "networkidle" }); await clasica(page);
   await page.waitForTimeout(1200);
 
   // Plano: seleccionar lote 12
@@ -129,6 +130,7 @@ const ARGS = ["--proxy-server=" + (process.env.HTTPS_PROXY || "http://127.0.0.1:
   await page.locator(".visit-form").screenshot({ path: "i-form-ok.png" });
 
   // Reservar un lote → formulario precargado
+  await vista(page, "proyectos");
   await page.evaluate(() => document.getElementById("plano").scrollIntoView({ behavior: "instant" }));
   await page.waitForTimeout(600);
   if (await page.locator('label.st-reservada').isVisible()) await page.locator('label.st-reservada').click(); // vuelve a mostrar reservados (estado anterior: solo disponibles)
@@ -160,7 +162,7 @@ const ARGS = ["--proxy-server=" + (process.env.HTTPS_PROXY || "http://127.0.0.1:
   const m = await mctx.newPage();
   m.on("console", x => { if (["error", "warning"].includes(x.type())) logs.push("M " + x.type() + ": " + x.text()); });
   m.on("pageerror", e => logs.push("M pageerror: " + e.message));
-  await m.goto(URL, { waitUntil: "networkidle" });
+  await m.goto(URL, { waitUntil: "networkidle" }); await clasica(m);
   await m.waitForTimeout(1000);
   await m.locator("[data-menu-open]").tap();
   await m.waitForTimeout(800);

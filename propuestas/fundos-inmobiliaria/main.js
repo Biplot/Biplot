@@ -79,6 +79,16 @@
   var Sim = { set: function () {} };
   var Tour = { open: function () {} };
   var Video = { open: function () {} };
+  var Vista = { set: function () { return false; }, current: function () { return ""; } };
+  var DESTACADO = proyecto(B.destacado) ? B.destacado : "";
+
+  // Alto real de la barra superior (con la franja de pestañas en celular y tablet)
+  function navBottomPx() {
+    var nv = $(".nav"); if (!nv) return 0;
+    var b = nv.getBoundingClientRect().bottom, t = $(".nav-links", nv);
+    if (t && getComputedStyle(t).position === "absolute") b = Math.max(b, t.getBoundingClientRect().bottom);
+    return Math.max(0, b);
+  }
 
   /* =============================================================
      Contacto: un solo lugar para número, correo y horario
@@ -98,6 +108,82 @@
   }
 
   /* =============================================================
+     Pestañas: Puerto Varas · Proyectos · Tu compra · Equipo
+     Cada sección dice en data-vista en qué pestañas aparece. Los enlaces internos (#plano, #simulador…)
+     cambian de pestaña si hace falta; las pestañas llevan al comienzo de su vista.
+     ============================================================= */
+  function initVistas() {
+    var root = document.documentElement;
+    var PRIMERA = { inicio: "puerto-varas", proyectos: "proyectos-inicio", compra: "tu-compra", equipo: "nosotros" };
+    var links = $$("[data-vista-link]"), cur = "";
+    function targetFor(hash) {
+      var id = decodeURIComponent((hash || "").replace(/^#/, ""));
+      if (!id) return null;
+      var el = document.getElementById(id);
+      if (!el && /^lote-/.test(id)) el = $("#plano");
+      if (!el && /^recorrido-/.test(id)) el = $("#recorrido");
+      if (!el && /^equipo-\d+$/.test(id)) el = $("#nosotros");
+      return el;
+    }
+    function vistaPara(hash) {
+      var el = targetFor(hash), box = el && el.closest("[data-vista]");
+      if (!box) return "";
+      var vs = box.getAttribute("data-vista").split(/\s+/);
+      return vs.indexOf(cur) >= 0 ? cur : vs[0];
+    }
+    function set(v) {
+      if (!PRIMERA[v] || v === cur) return false;
+      cur = v;
+      root.setAttribute("data-vista", v);
+      links.forEach(function (a) {
+        if (a.getAttribute("data-vista-link") === v) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+      });
+      document.dispatchEvent(new CustomEvent("fundos:vista", { detail: v }));
+      // Los módulos que miden su espacio (plano, recorrido) se reacomodan
+      window.dispatchEvent(new Event("resize"));
+      return true;
+    }
+    function jump(el) {
+      var y = el ? window.scrollY + el.getBoundingClientRect().top - navBottomPx() - 8 : 0;
+      window.scrollTo({ top: Math.max(0, y), behavior: "instant" });
+    }
+    Vista.set = set;
+    Vista.current = function () { return cur; };
+    Vista.paraHash = vistaPara;
+
+    links.forEach(function (a) {
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        var v = a.getAttribute("data-vista-link");
+        var changed = set(v);
+        if (changed || window.scrollY > 0) window.scrollTo({ top: 0, behavior: changed || reduced ? "instant" : "smooth" });
+        try { history.pushState(null, "", "#" + PRIMERA[v]); } catch (x) { /* marco sin historial */ }
+      });
+    });
+    // Enlaces internos a otra pestaña: primero se muestra la vista; el salto lo hace el navegador o el módulo
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || a.hasAttribute("data-vista-link")) return;
+      var v = vistaPara(a.getAttribute("href"));
+      if (v && v !== cur) { set(v); window.scrollTo({ top: 0, behavior: "instant" }); }
+    }, true);
+    function fromHash() {
+      var v = vistaPara(location.hash);
+      if (v && set(v)) {
+        var el = targetFor(location.hash);
+        jump(el && el.id === PRIMERA[v] ? null : el);
+      }
+    }
+    window.addEventListener("hashchange", fromHash);
+    window.addEventListener("popstate", fromHash);
+    var v0 = vistaPara(location.hash) || "inicio";
+    set(v0);
+    if (location.hash && targetFor(location.hash) && targetFor(location.hash).id !== PRIMERA[v0]) {
+      window.setTimeout(function () { jump(targetFor(location.hash)); }, 60);
+    }
+  }
+
+  /* =============================================================
      Navegación + menú móvil
      ============================================================= */
   function initNav() {
@@ -110,36 +196,6 @@
       };
       onScroll();
       window.addEventListener("scroll", onScroll, { passive: true });
-    }
-
-    // Sección actual en el menú
-    var links = $$(".nav-links a");
-    if ("IntersectionObserver" in window && links.length) {
-      var byId = {};
-      links.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
-      // Nombre de la sección actual junto al logo (celular y tablet, donde el menú está plegado)
-      var where = $("[data-nav-where]"), current = "";
-      var nombres = { proyectos: "Proyectos", recorrido: "Recorrido 360°", plano: "Elige tu parcela", nosotros: "Equipo", visita: "Agenda tu visita" };
-      var setWhere = function () {
-        if (!where) return;
-        var t = nombres[current] || "";
-        if (current === "tu-compra") { var sel = $('[data-tc-tab][aria-selected="true"]'); t = sel ? sel.textContent.trim() : "Tu compra"; }
-        where.textContent = t;
-      };
-      document.addEventListener("fundos:tab", setWhere);
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (!en.isIntersecting) return;
-          Object.keys(byId).forEach(function (k) { byId[k].classList.remove("is-current"); });
-          if (byId[en.target.id]) byId[en.target.id].classList.add("is-current");
-          current = en.target.id;
-          setWhere();
-        });
-      }, { rootMargin: "-45% 0px -50% 0px", threshold: 0 });
-      var portal = $(".nav-portal");
-      if (portal) byId.portal = portal;
-      // Se observan todas las secciones: al pasar por una sin enlace, el subrayado se limpia
-      $$("main > section[id], #buscador").forEach(function (s) { io.observe(s); });
     }
 
     // Menú móvil (dialog nativo: foco atrapado y Esc gratis)
@@ -493,7 +549,7 @@
     var favList = $("[data-favs-list]"), favSend = $("[data-favs-send]"), favClear = $("[data-favs-clear]");
     var favMain = $("[data-favs-main]"), favUndo = $("[data-favs-undo]"), favRestore = $("[data-favs-restore]");
 
-    var first = proyectos.filter(function (p) { return p.lotes && p.lotes.length; })[0];
+    var first = proyecto(DESTACADO) && proyecto(DESTACADO).lotes.length ? proyecto(DESTACADO) : proyectos.filter(function (p) { return p.lotes && p.lotes.length; })[0];
     var S = {
       id: first ? first.id : (proyectos[0] && proyectos[0].id),
       est: { disponible: true, reservada: true, vendida: true },
@@ -517,7 +573,7 @@
     }
     function filtersActive() { return S.max < Infinity || S.sector !== "" || !S.est.disponible || !S.est.reservada || !S.est.vendida; }
     function isFav(id, n) { return favs.indexOf(id + ":" + n) > -1; }
-    function navBottom() { var nv = $(".nav"); return nv ? Math.max(0, nv.getBoundingClientRect().bottom) : 0; }
+    function navBottom() { return navBottomPx(); }
     // Salto sin animación (al abrir un enlace directo)
     function jumpTo(y) {
       var html = document.documentElement, prevB = html.style.scrollBehavior;
@@ -1814,7 +1870,7 @@
     var stage = $("[data-tour-stage]", root), poster = $("[data-tour-poster]", root), frame = $("[data-tour-frame]", root);
     var lens = $("[data-tour-enter]", root), status = $("[data-tour-status]", root), fullBtn = $("[data-tour-full]", root);
     var picks = $$("[data-tour-pick]", root);
-    var first = proyectos.filter(function (p) { return p.tour; })[0];
+    var first = proyecto(DESTACADO) && proyecto(DESTACADO).tour ? proyecto(DESTACADO) : proyectos.filter(function (p) { return p.tour; })[0];
     if (!stage || !first) return;
     var cur = "", blocked = false, iframe = null, timer = 0, token = 0;
     var seen = {};   // proyectos cuyo recorrido sí se abrió
@@ -2058,16 +2114,19 @@
     return { file: src, link: src };
   }
 
-  function initVideo() {
-    // Portada: video de fondo sobre la foto del equipo (que queda como respaldo)
-    var hv = B.videoPortada || {}, hero = $("[data-hero]"), heroArt = hero && ($(".hero-photo", hero) || $(".hero-art", hero));
+  function heroVideo(hero, hv, toggle) {
+    var heroArt = hero && ($(".hero-photo", hero) || $(".hero-art", hero));
     // En pantallas bajo 960 px se usa la versión para celular, si existe
     if (!desktop.matches && (hv.mp4Movil || hv.webmMovil)) hv = { mp4: hv.mp4Movil, webm: hv.webmMovil, poster: hv.posterMovil || hv.poster };
     var conn = navigator.connection || {};
     // Sin video con ahorro de datos o conexiones más lentas que 4G
     var light = conn.saveData || (!!conn.effectiveType && conn.effectiveType !== "4g");
-    if ((hv.mp4 || hv.webm) && heroArt && !reduced && !light) {
-      var v = document.createElement("video"), toggle = $("[data-hero-video-toggle]");
+    if (!(hv.mp4 || hv.webm) || !heroArt || reduced || light) return;
+    var made = false;
+    function make() {
+      if (made || !hero.getClientRects().length) return;
+      made = true;
+      var v = document.createElement("video");
       v.className = "hero-video";
       v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true;
       v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.setAttribute("aria-hidden", "true");
@@ -2100,6 +2159,14 @@
         $("use", toggle).setAttribute("href", paused ? "#i-play" : "#i-pause");
       });
     }
+    make();
+    if (!made) document.addEventListener("fundos:vista", make);
+  }
+
+  function initVideo() {
+    // Portadas: video de fondo sobre una imagen que queda de respaldo. Se crean cuando su pestaña se ve.
+    heroVideo($("[data-hero]"), B.videoPortada || {}, $("[data-hero-video-toggle]"));
+    heroVideo($("[data-pvhero]"), B.videoDestacado || {}, $("[data-pv-toggle]"));
 
     // Visor
     var dlg = $("[data-vdialog]");
@@ -2371,7 +2438,7 @@
       var p = document.getElementById(id);
       if (p) { p.setAttribute("role", "tabpanel"); p.setAttribute("aria-labelledby", t.id); p.setAttribute("tabindex", "-1"); }
     });
-    function navH() { var nv = $(".nav"); return nv && getComputedStyle(nv).position === "fixed" ? nv.offsetHeight : 0; }
+    function navH() { var nv = $(".nav"); return nv && getComputedStyle(nv).position === "fixed" ? navBottomPx() : 0; }
     function toTop() {
       var y = window.scrollY + root.getBoundingClientRect().top - navH() + 1;
       window.scrollTo({ top: y, behavior: reduced ? "auto" : "smooth" });
@@ -2421,10 +2488,91 @@
     if (ids.indexOf(location.hash.slice(1)) >= 0) window.setTimeout(fromHash, 150);
   }
 
+  /* =============================================================
+     Puerto Varas: datos de la portada y mapa del entorno en miniatura
+     (las rutas salen de lib/entorno-datos.js, que se carga al acercarse)
+     ============================================================= */
+  function initPV() {
+    var p = proyecto("puerto-varas");
+    if (p) {
+      var dsp = disponibles(p).length, d0 = desde(p);
+      $$("[data-pv-disp]").forEach(function (el) { el.textContent = dsp; });
+      if (d0) $$("[data-pv-desde]").forEach(function (el) { el.textContent = clp(d0); });
+      $$("[data-pv-plan]").forEach(function (a) {
+        a.addEventListener("click", function () { Plan.apply({ id: p.id, soloDisponibles: true }); });
+      });
+    }
+    var map = $("[data-pv-map]"), box = $("[data-pv-map-in]");
+    if (!map || !box) return;
+    var built = false;
+    function load() {
+      if (built) return;
+      built = true;
+      if (window.__ENTORNO__) { draw(window.__ENTORNO__); return; }
+      var sc = document.createElement("script");
+      sc.src = "lib/entorno-datos.js?v=" + ((/[?&]v=([\w]+)/.exec(($('script[src*="main.js"]') || {}).src || "") || [])[1] || "1");
+      sc.onload = function () { if (window.__ENTORNO__) draw(window.__ENTORNO__); };
+      document.head.appendChild(sc);
+    }
+    function draw(D) {
+      var P = D.proyecto, byId = {};
+      D.lugares.forEach(function (l) { byId[l.id] = l; });
+      var claves = ["alerce", "pmontt", "pvaras", "aeropuerto"];
+      var otros = ["frutillar", "osorno", "petrohue", "angelmo", "alerce_andino"];
+      var todos = claves.concat(otros).map(function (id) { return byId[id]; }).filter(function (l) { return l && l.ruta; });
+      // Encuadre: la parcela y los lugares, con margen, en la proporción de la caja
+      var b = [P.x, P.y, P.x, P.y];
+      todos.forEach(function (l) { b = [Math.min(b[0], l.x), Math.min(b[1], l.y), Math.max(b[2], l.x), Math.max(b[3], l.y)]; });
+      var pad = 70, x0 = b[0] - pad, y0 = b[1] - pad * 1.4, w = b[2] - b[0] + 2 * pad, h = b[3] - b[1] + pad * 2.4;
+      var ar = map.clientWidth / Math.max(1, map.clientHeight) || 1.2;
+      if (w / h > ar) { var nh = w / ar; y0 -= (nh - h) / 2; h = nh; } else { var nw = h * ar; x0 -= (nw - w) / 2; w = nw; }
+      var svg = '<svg viewBox="' + [x0, y0, w, h].map(function (n) { return n.toFixed(1); }).join(" ") + '" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+        '<image href="' + esc(D.imagen.src) + '" x="0" y="0" width="' + D.imagen.w + '" height="' + D.imagen.h + '"/>';
+      var labels = "";
+      todos.forEach(function (l, i) {
+        var key = claves.indexOf(l.id) >= 0, dly = (key ? 0 : .5) + i * .12;
+        svg += '<path class="rt draw' + (key ? " k" : "") + '" data-rt="' + l.id + '" pathLength="1" style="--d:' + dly.toFixed(2) + 's" d="' + esc(l.ruta.d) + '"/>';
+        var fin = l.ruta.fin || [l.x, l.y];
+        var lx = (fin[0] - x0) / w * 100, ly = (fin[1] - y0) / h * 100;
+        // Mismo redondeo que el mapa del entorno (a 5 minutos)
+        var n = l.ruta.min < 10 ? Math.max(1, Math.round(l.ruta.min)) : Math.round(l.ruta.min / 5) * 5;
+        var t = n < 60 ? n + " min" : Math.floor(n / 60) + " h" + (n % 60 ? " " + n % 60 : "");
+        // Junto a la parcela solo el punto; en los bordes el rótulo se abre hacia adentro
+        var hx0 = (P.x - x0) / w * 100, hy0 = (P.y - y0) / h * 100, cerca = Math.hypot(lx - hx0, (ly - hy0) * h / w) < 9;
+        var lado = lx < 22 ? " al" : (lx > 78 ? " ar" : "");
+        // En pantallas angostas solo llevan nombre los cuatro principales y el Osorno
+        if (map.clientWidth < 520 && claves.indexOf(l.id) < 0 && l.id !== "osorno") cerca = true;
+        labels += '<span class="pv-lbl' + lado + '" style="left:' + lx.toFixed(2) + "%;top:" + ly.toFixed(2) + "%;--d:" + (dly + 1.1).toFixed(2) + 's"><i class="pv-dot"></i>' +
+          (cerca ? "" : "<b>" + esc(l.corto || l.nombre) + "<small>" + t + "</small></b>") + "</span>";
+      });
+      svg += "</svg>";
+      var hx = (P.x - x0) / w * 100, hy = (P.y - y0) / h * 100;
+      labels += '<span class="pv-lbl home" style="left:' + hx.toFixed(2) + "%;top:" + hy.toFixed(2) + '%"><img src="assets/img/isotipo-174.webp" alt="" width="44" height="44"><b>Tu parcela</b></span>';
+      box.innerHTML = svg + labels;
+      if (reduced || !("IntersectionObserver" in window)) { map.classList.add("is-in"); return; }
+      var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { map.classList.add("is-in"); io.disconnect(); } }, { threshold: .35 });
+      io.observe(map);
+    }
+    // Pasar sobre un tiempo resalta su ruta
+    $$("[data-pv-route]").forEach(function (a) {
+      var id = a.getAttribute("data-pv-route");
+      var on = function (v) { var r = $('[data-rt="' + id + '"]', box); if (r) r.classList.toggle("is-hi", v); };
+      a.addEventListener("mouseenter", function () { on(true); });
+      a.addEventListener("mouseleave", function () { on(false); });
+      a.addEventListener("focus", function () { on(true); });
+      a.addEventListener("blur", function () { on(false); });
+    });
+    if ("IntersectionObserver" in window) {
+      var near = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { load(); near.disconnect(); } }, { rootMargin: "600px 0px" });
+      near.observe(map);
+    } else load();
+  }
+
   function boot() {
     window.__fundosBoot = true;
     document.documentElement.classList.add("js");
     safe(initContact, "initContact");
+    safe(initVistas, "initVistas");
     safe(initNav, "initNav");
     safe(initReveals, "initReveals");
     safe(initHero, "initHero");
@@ -2440,6 +2588,7 @@
     safe(initFaq, "initFaq");
     safe(initCompra, "initCompra");
     safe(initSellers, "initSellers");
+    safe(initPV, "initPV");
     safe(initOffscreen, "initOffscreen");
     $$('input[type="range"]').forEach(paintRange);
   }

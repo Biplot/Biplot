@@ -21,6 +21,19 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
    imprime el mapa de archivos; publicar ese HTML con esos archivos en la URL del artefacto de arriba.
 
 ## Estructura y datos
+- **Pestañas** (`initVistas` en `main.js`): Puerto Varas (inicio) · Proyectos · Tu compra · Equipo. Cada sección dice
+  en `data-vista` en qué pestañas aparece (`#recorrido` y `#plano` en "inicio proyectos"; `#visita` en todas) y el
+  CSS esconde el resto (`html.js[data-vista=…]`). Sin JavaScript se ve todo seguido. Un script en el `<head>` fija la
+  pestaña según el `#` para que no parpadee. Los enlaces internos (`#simulador`, `#plano`, `#equipo-4`…) cambian de
+  pestaña solos; las pestañas llevan al comienzo (`#puerto-varas`, `#proyectos-inicio`, `#tu-compra`, `#nosotros`).
+  En celular y tablet (< 1024 px) las pestañas van en una franja bajo la barra (`--tabs-h`; usar `navBottomPx()` para
+  medir la barra). Al cambiar de pestaña se dispara `resize` (plano y recorrido se reacomodan) y `fundos:vista`.
+- **Destacado** (`destacado` en `lib/manifest.js`, hoy Puerto Varas): abre la página con su portada en video
+  (`videoDestacado`, bucle sin texto armado con los videos del cliente: lago, Frutillar, Petrohué, Osorno y Puerto
+  Varas; versión vertical para celular), datos (desde, disponibles), la vitrina del entorno (mapa en miniatura con
+  las rutas de `lib/entorno-datos.js`, que se carga al acercarse; tiempos y videos que abren `entorno.html#lugar`) y
+  es el proyecto con que parten el plano y el recorrido. Las pruebas usan `tools/pruebas/_vista.js` (`clasica()` deja
+  la página como antes: pestaña Proyectos con el plano en Malalcahuello).
 - `index.html` todo el contenido (se lee sin JS) · `styles.css` tokens del manual + estilos · `main.js` módulos IIFE
   (`initPlan`, `initTour`, `initSim`, `initVisit`, `initSellers`, `initVideo`, `initCompra`, …) aislados con `safe()`.
 - `lib/manifest.js` **único lugar de datos**: contacto, proyectos, lotes (`[n, categoría, estado]`), categorías de
@@ -116,6 +129,8 @@ Mínimo antes de publicar: `interacciones.js`, `plano.js`, `qa.js`, `anchos.js` 
   detalle del lote toma el mismo alto (`--stage-h`) y los enlaces a `#plano` llevan directo a la herramienta.
   En celular el plano parte acercado (lotes tocables) con botón para ver completo.
 - Cotizador compacto: la cotización completa visible en computador; en celular, franja con la cuota bajo los controles.
+- Página en pestañas (pedido del cliente): Puerto Varas, el proyecto que están empujando (con su folleto), es lo más
+  atractivo del inicio; el resto (proyectos, compra, equipo) va en otras pestañas.
 - Página corta por secciones (el cliente sintió que tanto scroll cansa): Cómo comprar, Simulador, Preguntas y Mi compra
   van como pestañas en `#tu-compra` (`initCompra`; los enlaces a esos `#id` abren su pestaña); Nosotros compacto con
   valores cortos y el equipo en carrusel; proyectos en carrusel en celular; indicador de sección (`[data-nav-where]`)

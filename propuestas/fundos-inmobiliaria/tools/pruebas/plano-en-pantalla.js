@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 const W = ms => new Promise(r => setTimeout(r, ms));
 (async () => {
   const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--proxy-server=" + process.env.HTTPS_PROXY] });
@@ -6,7 +7,7 @@ const W = ms => new Promise(r => setTimeout(r, ms));
   for (const [w, h] of sizes) {
     const mob = w < 700;
     const pg = await (await browser.newContext({ viewport: { width: w, height: h }, isMobile: mob, hasTouch: mob })).newPage();
-    await pg.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" });
+    await pg.goto("http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/", { waitUntil: "networkidle" }); await clasica(pg);
     const res = [];
     for (const id of ["malalcahuello", "marchigue", "puerto-varas"]) {
       await pg.evaluate(i => { document.querySelector('[role="tab"][data-tab="' + i + '"]').click(); }, id); await W(700);

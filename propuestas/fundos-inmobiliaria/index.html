@@ -21,15 +21,16 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"RealEstateAgent","name":"Fundos Inmobiliaria","url":"https://www.fundosinmobiliaria.com/","slogan":"La tierra como punto de partida.","areaServed":["Malalcahuello","Marchigüe","Puerto Varas"],"address":{"@type":"PostalAddress","addressCountry":"CL"}}
 </script>
-<script>document.documentElement.classList.add("js");setTimeout(function(){if(!window.__fundosBoot)document.documentElement.classList.remove("js")},8000)</script>
-<link rel="preload" as="image" href="assets/img/equipo-portada-900.webp" imagesrcset="assets/img/equipo-portada-900.webp 900w, assets/img/equipo-portada-1600.webp 1600w" imagesizes="(min-width: 960px) 58vw, 100vw" fetchpriority="high">
+<script>(function(){var d=document.documentElement,h=location.hash.slice(1),m={inicio:"proyectos","proyectos-inicio":"proyectos",buscador:"proyectos",proyectos:"proyectos","tu-compra":"compra","como-comprar":"compra",simulador:"compra",preguntas:"compra",portal:"compra",nosotros:"equipo",equipo:"equipo"};d.setAttribute("data-vista",m[h]||(/^equipo-\d+$/.test(h)?"equipo":"inicio"))})();document.documentElement.classList.add("js");setTimeout(function(){if(!window.__fundosBoot){document.documentElement.classList.remove("js");document.documentElement.removeAttribute("data-vista")}},8000)</script>
+<link rel="preload" as="image" href="assets/video/puerto-varas.webp" media="(min-width: 960px)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/video/puerto-varas-movil.webp" media="(max-width: 959px)" fetchpriority="high">
 <link rel="preload" href="assets/fonts/cormorant-garamond.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/cormorant-garamond-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/mulish.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="styles.css?v=20261001a">
-<script defer src="lib/manifest.js?v=20261001a"></script>
-<script defer src="lib/planos.js?v=20261001a"></script>
-<script defer src="main.js?v=20261001a"></script>
+<link rel="stylesheet" href="styles.css?v=20261002a">
+<script defer src="lib/manifest.js?v=20261002a"></script>
+<script defer src="lib/planos.js?v=20261002a"></script>
+<script defer src="main.js?v=20261002a"></script>
 </head>
 <body>
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
@@ -171,7 +172,7 @@
 <!-- ================================ NAV ================================ -->
 <header class="nav" data-nav>
   <div class="nav-left">
-    <a class="brand" href="#inicio" aria-label="Fundos Inmobiliaria, inicio">
+    <a class="brand" href="#puerto-varas" aria-label="Fundos Inmobiliaria, inicio">
       <img src="assets/img/isotipo-174.webp" srcset="assets/img/isotipo-174.webp 174w, assets/img/isotipo.webp 480w" sizes="58px" alt="" width="58" height="42" decoding="async">
       <span class="brand-word" aria-hidden="true">Fundos<small>Inmobiliaria</small></span>
     </a>
@@ -180,12 +181,10 @@
     <span class="nav-where" data-nav-where aria-hidden="true"></span>
   </div>
   <nav class="nav-links" aria-label="Principal">
-    <a href="#proyectos">Proyectos</a>
-    <a href="#recorrido">Recorrido 360°</a>
-    <a href="#plano">Elige tu parcela</a>
-    <a href="#tu-compra">Tu compra</a>
-    <a href="#nosotros">Equipo</a>
-    <a href="#preguntas">Preguntas</a>
+    <a href="#puerto-varas" data-vista-link="inicio">Puerto Varas<span class="nl-new">Nuevo</span></a>
+    <a href="#proyectos-inicio" data-vista-link="proyectos">Proyectos</a>
+    <a href="#tu-compra" data-vista-link="compra">Tu compra</a>
+    <a href="#nosotros" data-vista-link="equipo">Equipo</a>
   </nav>
   <div class="nav-actions">
     <a class="nav-portal" href="#portal"><svg class="i" aria-hidden="true"><use href="#i-key"/></svg>Mi compra</a>
@@ -204,15 +203,19 @@
       <button class="icon-btn" type="button" aria-label="Cerrar menú" data-menu-close><svg class="i" aria-hidden="true"><use href="#i-close"/></svg></button>
     </div>
     <nav class="menu-links" aria-label="Menú móvil">
-      <a href="#proyectos" data-menu-link>Proyectos</a>
-      <a href="#recorrido" data-menu-link>Recorrido 360°</a>
-      <a href="#plano" data-menu-link>Elige tu parcela</a>
-      <a href="#tu-compra" data-menu-link>Tu compra</a>
-      <a href="#como-comprar" data-menu-link>Cómo comprar</a>
-      <a href="#simulador" data-menu-link>Simulador</a>
-      <a href="#nosotros" data-menu-link>Equipo</a>
-      <a href="#preguntas" data-menu-link>Preguntas</a>
-      <a href="#portal" data-menu-link>Mi compra</a>
+      <a href="#puerto-varas" data-menu-link data-vista-link="inicio">Puerto Varas</a>
+      <a href="#proyectos-inicio" data-menu-link data-vista-link="proyectos">Proyectos</a>
+      <a href="#tu-compra" data-menu-link data-vista-link="compra">Tu compra</a>
+      <a href="#nosotros" data-menu-link data-vista-link="equipo">Equipo</a>
+      <span class="menu-sub">
+        <a href="#plano" data-menu-link>Elige tu parcela</a>
+        <a href="#recorrido" data-menu-link>Recorrido 360°</a>
+        <a href="entorno.html">Mapa del entorno</a>
+        <a href="#como-comprar" data-menu-link>Cómo comprar</a>
+        <a href="#simulador" data-menu-link>Simulador</a>
+        <a href="#preguntas" data-menu-link>Preguntas</a>
+        <a href="#portal" data-menu-link>Mi compra</a>
+      </span>
     </nav>
     <div class="menu-cta">
       <a class="btn btn-gold" href="#visita" data-menu-link>Agendar visita</a>
@@ -223,11 +226,74 @@
 
 <main id="contenido">
 
-<!-- ================================ HERO ================================ -->
-<section class="hero" id="inicio" data-hero>
+<!-- ============================ PUERTO VARAS (pestaña de inicio) ============================ -->
+<section class="hero pv-hero" id="puerto-varas" data-pvhero data-vista="inicio" aria-labelledby="pv-title">
   <div class="hero-art" aria-hidden="true">
     <picture class="hero-photo">
-      <img src="assets/img/equipo-portada-900.webp" srcset="assets/img/equipo-portada-900.webp 900w, assets/img/equipo-portada-1600.webp 1600w" sizes="(min-width: 960px) 58vw, 100vw" alt="" width="1600" height="1600" fetchpriority="high" decoding="async">
+      <source media="(max-width: 959px)" srcset="assets/video/puerto-varas-movil.webp" width="540" height="960">
+      <img src="assets/video/puerto-varas.webp" alt="" width="1600" height="900" fetchpriority="high" decoding="async">
+    </picture>
+    <div class="hero-grain"></div>
+    <div class="hero-shade"></div>
+  </div>
+  <div class="hero-inner">
+    <p class="kicker hero-kicker"><span class="pv-badge">Nuevo proyecto</span> <span class="nw">Alerce · Región de Los Lagos</span></p>
+    <h1 class="hero-title" id="pv-title">
+      <span class="line"><span>Fundos</span></span>
+      <span class="line"><span><em>Puerto Varas.</em></span></span>
+    </h1>
+    <p class="hero-sub">Parcelas de 5.000&nbsp;m² entre bosque nativo y un estero, a 25 minutos de Puerto Montt y de Puerto Varas. El lago, los volcanes y el mar, a la vuelta de tu casa.</p>
+    <div class="hero-actions">
+      <a class="btn btn-gold btn-lg" href="#plano" data-pv-plan>Ver parcelas disponibles<svg class="i i-go" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      <a class="btn btn-ghost btn-lg" href="#recorrido" data-tour-open="puerto-varas"><svg class="i" aria-hidden="true"><use href="#i-360"/></svg>Recorrer en 360°</a>
+    </div>
+  </div>
+  <dl class="pv-stats">
+    <div><dt>Desde</dt><dd data-pv-desde>$27.990.000</dd></div>
+    <div><dt>Disponibles</dt><dd><span data-pv-disp>78</span> parcelas</dd></div>
+    <div><dt>Cada parcela</dt><dd>5.000 m²</dd></div>
+    <div><dt>A Puerto Montt</dt><dd>25 min</dd></div>
+  </dl>
+  <button class="hero-video-toggle" type="button" data-pv-toggle aria-label="Pausar el video de portada" hidden><svg class="i" aria-hidden="true"><use href="#i-pause"/></svg></button>
+</section>
+
+<section class="section dark pv-entorno" id="entorno" data-vista="inicio" aria-labelledby="entorno-title">
+  <div class="container pv-ent">
+    <a class="pv-map" href="entorno.html" data-pv-map aria-label="Abrir el mapa interactivo del entorno">
+      <span class="pv-map-in" data-pv-map-in></span>
+      <span class="pv-map-cta"><svg class="i" aria-hidden="true"><use href="#i-compass"/></svg>Explorar el mapa</span>
+    </a>
+    <div class="pv-ent-txt">
+      <p class="kicker">El entorno</p>
+      <h2 id="entorno-title">Todo lo bueno del sur, <em>a minutos</em> de tu parcela</h2>
+      <p class="lead">Lagos, volcanes, ciudades y servicios, con el camino real y el tiempo en auto desde Camino El Encanto.</p>
+      <ul class="pv-times">
+        <li><a href="entorno.html#alerce" data-pv-route="alerce"><b>8<small>min</small></b><span>Alerce</span></a></li>
+        <li><a href="entorno.html#pmontt" data-pv-route="pmontt"><b>25<small>min</small></b><span>Puerto Montt</span></a></li>
+        <li><a href="entorno.html#pvaras" data-pv-route="pvaras"><b>25<small>min</small></b><span>Puerto Varas</span></a></li>
+        <li><a href="entorno.html#aeropuerto" data-pv-route="aeropuerto"><b>45<small>min</small></b><span>Aeropuerto</span></a></li>
+      </ul>
+      <p class="pv-vids-t">Míralo en video</p>
+      <div class="pv-vids">
+        <a href="entorno.html#osorno" data-pv-route="osorno"><img src="assets/entorno/videos/osorno.webp" alt="" width="1280" height="720" loading="lazy" decoding="async"><span><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Volcán Osorno<small>1 h 30</small></span></a>
+        <a href="entorno.html#petrohue" data-pv-route="petrohue"><img src="assets/entorno/videos/petrohue.webp" alt="" width="1280" height="720" loading="lazy" decoding="async"><span><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Saltos del Petrohué<small>1 h 20</small></span></a>
+        <a href="entorno.html#frutillar" data-pv-route="frutillar"><img src="assets/entorno/videos/frutillar.webp" alt="" width="1280" height="720" loading="lazy" decoding="async"><span><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Frutillar<small>45 min</small></span></a>
+        <a href="entorno.html#pvaras" data-pv-route="pvaras"><img src="assets/entorno/videos/pvaras.webp" alt="" width="1280" height="720" loading="lazy" decoding="async"><span><svg class="i" aria-hidden="true"><use href="#i-play"/></svg>Puerto Varas<small>25 min</small></span></a>
+      </div>
+      <div class="pv-ent-acts">
+        <a class="btn btn-gold" href="entorno.html">Explorar el entorno<svg class="i i-go" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="btn btn-ghost" href="entorno.html#tour-360"><svg class="i" aria-hidden="true"><use href="#i-360"/></svg>Tour 360° de la parcela</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ HERO ================================ -->
+<section class="hero" id="inicio" data-hero data-vista="proyectos">
+  <span class="vista-ancla" id="proyectos-inicio" aria-hidden="true"></span>
+  <div class="hero-art" aria-hidden="true">
+    <picture class="hero-photo">
+      <img src="assets/img/equipo-portada-900.webp" srcset="assets/img/equipo-portada-900.webp 900w, assets/img/equipo-portada-1600.webp 1600w" sizes="(min-width: 960px) 58vw, 100vw" alt="" width="1600" height="1600" loading="lazy" decoding="async">
     </picture>
     <div class="hero-grain"></div>
     <div class="hero-shade"></div>
@@ -235,10 +301,10 @@
 
   <div class="hero-inner">
     <p class="kicker hero-kicker"><span class="nw">Parcelas de 5.000 m²</span> <span class="nw">· Araucanía</span> <span class="nw">· O'Higgins · Los Lagos</span></p>
-    <h1 class="hero-title">
+    <h2 class="hero-title">
       <span class="line"><span>La tierra como</span></span>
       <span class="line"><span><em>punto de partida.</em></span></span>
-    </h1>
+    </h2>
     <p class="hero-sub">Somos el equipo de Fundos. Te ayudamos a elegir tu parcela en Malalcahuello, Marchigüe o Puerto Varas y te acompañamos desde la primera visita hasta la inscripción en el Conservador. Sin letra chica.</p>
     <div class="hero-actions">
       <a class="btn btn-gold btn-lg" href="#plano" data-plan-disp>Ver parcelas disponibles<svg class="i i-go" aria-hidden="true"><use href="#i-arrow"/></svg></a>
@@ -257,7 +323,7 @@
 </section>
 
 <!-- ============================== BUSCADOR ============================== -->
-<div class="finder-wrap" id="buscador">
+<div class="finder-wrap" id="buscador" data-vista="proyectos">
   <form class="finder" role="search" aria-label="Buscar parcelas" action="#plano" data-finder novalidate>
     <div class="finder-field">
       <label for="f-destino">Destino</label>
@@ -296,7 +362,7 @@
 </div>
 
 <!-- ============================== VALORES (ticker) ============================== -->
-<div class="ticker" aria-hidden="true">
+<div class="ticker" aria-hidden="true" data-vista="proyectos">
   <div class="ticker-track">
     <span>Transparencia</span><i>✳︎</i><span>Cercanía</span><i>✳︎</i><span>Innovación</span><i>✳︎</i><span>Confianza</span><i>✳︎</i><span>Tierra</span><i>✳︎</i><span>Pertenencia</span><i>✳︎</i>
     <span>Transparencia</span><i>✳︎</i><span>Cercanía</span><i>✳︎</i><span>Innovación</span><i>✳︎</i><span>Confianza</span><i>✳︎</i><span>Tierra</span><i>✳︎</i><span>Pertenencia</span><i>✳︎</i>
@@ -304,7 +370,7 @@
 </div>
 
 <!-- ============================== PROYECTOS ============================== -->
-<section class="section light" id="proyectos" aria-labelledby="proyectos-title">
+<section class="section light" id="proyectos" data-vista="proyectos" aria-labelledby="proyectos-title">
   <div class="container">
     <header class="section-head reveal">
       <p class="kicker">Nuestros proyectos</p>
@@ -466,7 +532,7 @@
 </section>
 
 <!-- ============================== RECORRIDO 360° ============================== -->
-<section class="section cream tour-section" id="recorrido" aria-labelledby="tour-title">
+<section class="section cream tour-section" id="recorrido" data-vista="inicio proyectos" aria-labelledby="tour-title">
   <div class="container">
     <header class="section-head reveal">
       <p class="kicker">Recorrido virtual 360°</p>
@@ -543,7 +609,7 @@
 </section>
 
 <!-- ============================== PLANO INTERACTIVO ============================== -->
-<section class="section dark plan-section" id="plano" aria-labelledby="plano-title">
+<section class="section dark plan-section" id="plano" data-vista="inicio proyectos" aria-labelledby="plano-title">
   <div class="container">
     <header class="section-head reveal">
       <p class="kicker">Elige tu parcela</p>
@@ -677,7 +743,7 @@
 </section>
 
 <!-- ============================== TU COMPRA (pestañas) ============================== -->
-<section class="tu-compra" id="tu-compra" aria-labelledby="tc-title" data-tc>
+<section class="tu-compra" id="tu-compra" data-vista="compra" aria-labelledby="tc-title" data-tc>
   <div class="tc-bar">
     <div class="container tc-bar-in">
       <h2 class="tc-title" id="tc-title">Todo sobre <em>tu compra</em></h2>
@@ -903,7 +969,7 @@
 </section>
 
 <!-- ============================== NOSOTROS ============================== -->
-<section class="section light about" id="nosotros" aria-labelledby="nosotros-title">
+<section class="section light about" id="nosotros" data-vista="equipo" aria-labelledby="nosotros-title">
   <img class="about-mark" src="assets/img/isotipo.webp" alt="" width="480" height="346" loading="lazy" decoding="async">
   <div class="container">
     <div class="about-grid">
@@ -951,7 +1017,7 @@
 
 
 <!-- ============================== VISITA / CONTACTO ============================== -->
-<section class="section dark visit" id="visita" aria-labelledby="visita-title">
+<section class="section dark visit" id="visita" data-vista="inicio proyectos compra equipo" aria-labelledby="visita-title">
   <svg class="visit-lines" viewBox="0 0 1600 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
     <g fill="none" stroke="url(#g-furrow)" stroke-linecap="round">
       <path class="furrow" pathLength="1" stroke-width="1.6" d="M-40 260C300 160 700 150 1100 230"/>

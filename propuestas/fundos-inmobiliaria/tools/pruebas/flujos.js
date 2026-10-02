@@ -1,4 +1,5 @@
 const { chromium } = require("playwright");
+const { vista, proyecto, clasica } = require("./_vista");
 const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
 (async () => {
   const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium", args: ["--proxy-server=" + process.env.HTTPS_PROXY] });
@@ -8,7 +9,7 @@ const B = "http://127.0.0.1:8765/propuestas/fundos-inmobiliaria/";
   d.on("pageerror", e => logs.push("pageerror: " + e.message));
   d.on("console", x => { if (x.type() === "error" || x.type() === "warning") logs.push(x.type() + " " + x.text()); });
   await d.route(/netlify|github\.io/, r => r.fulfill({ status: 200, contentType: "text/html", body: "<body>tour</body>" }));
-  await d.goto(B, { waitUntil: "networkidle" }); await d.waitForTimeout(800);
+  await d.goto(B, { waitUntil: "networkidle" }); await d.waitForTimeout(800); await clasica(d);
   // buscador: todos + 15M
   await d.selectOption("#f-presupuesto", "15000000"); await d.waitForTimeout(600);
   out.finder15 = await d.evaluate(() => ({ n: document.querySelector("[data-finder-count]").textContent, label: document.querySelector("[data-finder-label]").textContent, by: document.querySelector("[data-finder-by]").textContent, cta: document.querySelector("[data-finder-cta]").textContent }));
