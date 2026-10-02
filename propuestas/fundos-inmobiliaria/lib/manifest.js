@@ -83,9 +83,12 @@
         resumen: "Bosque nativo, volcanes y el río Lolén. Nieve en invierno; pesca, senderos y termas el resto del año.",
         descripcion: "Un proyecto en plena cordillera de La Araucanía, con parcelas frente al río Lolén y rodeadas de bosque nativo. Ideal para una casa de montaña, un refugio familiar o un proyecto turístico propio.",
         destacados: ["Parcelas frente al río Lolén", "Entorno de bosque nativo y volcanes", "Temporada de nieve, pesca y termas", "Plano y antecedentes legales a la vista"],
-        cercanias: [["Centro de ski Corralco", "13 km"], ["Curacautín", "28 km"], ["Temuco", "115 km"]],
-        cercaniasNota: "Distancias aproximadas desde el pueblo de Malalcahuello.",
-        mapa: "https://www.google.com/maps/search/?api=1&query=Malalcahuello%2C+Araucan%C3%ADa%2C+Chile",
+        // Por camino desde la parcela (sector Lolén, Lonquimay; ver tools/entorno/malalcahuello/lugares.json)
+        cercanias: [["Lonquimay", "17 km · 20 min"], ["Lago Icalma", "59 km · 55 min"], ["Corralco", "60 km · 1 h 10 min"], ["Curacautín", "79 km · 1 h 15 min"]],
+        cercaniasNota: "Por camino desde la parcela, en auto y sin tráfico.",
+        mapa: "https://www.google.com/maps/search/?api=1&query=-38.4743056,-71.2566389",
+        // Mapa interactivo del entorno (página aparte)
+        entorno: "entorno.html?p=malalcahuello",
         // Recorrido virtual 360° (se incrusta en la sección #recorrido)
         tour: "https://cmaulenb.github.io/fundoslonquimaynieve/",
         // Video del proyecto (opcional): enlace de YouTube o Vimeo, o un archivo en assets/video/.
@@ -119,12 +122,15 @@
         estado: "venta",
         region: "O'Higgins",
         zona: "Valle de Colchagua",
-        resumen: "Lomajes suaves, viñedos y cielos despejados. Clima templado todo el año, a unos 40 minutos de Pichilemu.",
+        resumen: "Lomajes suaves, viñedos y cielos despejados. Clima templado todo el año, a una hora de Pichilemu.",
         descripcion: "Parcelas entre lomajes y viñedos del valle de Colchagua, con clima templado y cielos despejados casi todo el año. Cerca de la costa y de la ruta del vino, para vivir con calma o invertir en una zona que crece.",
         destacados: ["Zona vitivinícola de Colchagua", "Clima templado y soleado", "Cerca de Pichilemu y Santa Cruz", "Plano y antecedentes legales a la vista"],
-        cercanias: [["Pichilemu", "43 km"], ["Santa Cruz", "49 km"], ["Santiago", "180 km"]],
-        cercaniasNota: "Distancias aproximadas desde Marchigüe.",
-        mapa: "https://www.google.com/maps/search/?api=1&query=Marchig%C3%BCe%2C+O%27Higgins%2C+Chile",
+        // Por camino desde la parcela (ver tools/entorno/marchigue/lugares.json)
+        cercanias: [["Marchigüe", "15 km · 20 min"], ["Santa Cruz", "52 km · 55 min"], ["Pichilemu", "53 km · 1 h"], ["Lago Rapel", "61 km · 1 h 5 min"]],
+        cercaniasNota: "Por camino desde la parcela, en auto y sin tráfico.",
+        mapa: "https://www.google.com/maps/search/?api=1&query=-34.4661944,-71.7074722",
+        // Mapa interactivo del entorno (página aparte)
+        entorno: "entorno.html?p=marchigue",
         // Recorrido virtual 360° (se incrusta en la sección #recorrido)
         tour: "https://marchigue.netlify.app/",
         // Video del proyecto (opcional): enlace de YouTube o Vimeo, o un archivo en assets/video/.
