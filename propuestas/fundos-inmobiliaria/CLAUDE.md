@@ -51,7 +51,19 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
   (único lugar a editar: lugares, textos, fotos, categorías, créditos, método). El script proyecta lat/lon a píxeles
   de la imagen, calcula las rutas por camino con OSRM (`router.project-osrm.org`, datos © OpenStreetMap; caché en
   `tools/entorno/rutas-cache.json`) y, cuando hay red, baja el mosaico Sentinel-2 y las fotos de Wikimedia Commons.
-  Uso: `python3 tools/entorno_build.py [--rutas] [--locales | --teselas] [--videos] [--fotos]`; sin opciones solo regenera con la caché.
+  Uso: `python3 tools/entorno_build.py [--proyecto ID] [--rutas] [--locales | --teselas] [--videos] [--fotos]`; sin opciones solo regenera con la caché.
+  - **Otros proyectos** (`--proyecto malalcahuello|marchigue`): leen `tools/entorno/ID/lugares.json` (con su caché de
+    rutas y sus `originales/`) y escriben `lib/entorno-ID.js` y `assets/entorno/ID/`. Se abren con
+    `entorno.html?p=ID` (lista blanca en el cargador al final de `entorno.html`; sin `p` es Puerto Varas) y la llave
+    `pagina` pone marca, bajada, texto y enlace de vuelta. En el sitio: `entorno` del proyecto en el manifiesto
+    (botón de la ficha) y enlaces "Descubre el entorno" en las tarjetas de proyectos y de "otros proyectos".
+    La coordenada que dio el cliente para **Malalcahuello está en el sector Lolén (comuna de Lonquimay)**, a 20 min de
+    Lonquimay y 50 min del pueblo de Malalcahuello; el mapa incluye el pueblo y el volcán Batea Mahuida (pedido del
+    cliente). En Marchigüe el nombre del sector no está confirmado. Todos los textos de lugares de estos dos mapas
+    llevan `"revisar": true` (por aprobar con el cliente) y no tienen videos ni fotos aún (la ficha usa el satelital).
+    Fuera de la imagen el mapa muestra su borde reflejado y apagado (`img.espejo`) y `clampTo` deja pasar la vista un
+    poco del borde (18 % del ancho, 30 % del alto): en estos dos la parcela y varios lugares quedan cerca del borde.
+    Revisión: `entorno.html?p=ID` con todos sus lugares en los mismos 7 tamaños (y Puerto Varas de nuevo).
   - Imagen: Sentinel-2 cloudless **2016** de EOX (CC BY 4.0, uso comercial con crédito; las ediciones posteriores
     son no comerciales). **No usar Google Earth** (la captura del folleto): sus Geo Guidelines no lo permiten en sitios
     comerciales. Como la red del entorno bloquea `tiles.maps.eox.at`, el usuario bajó dos GetMap WMS en EPSG:3857

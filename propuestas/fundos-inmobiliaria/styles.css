@@ -2167,3 +2167,7 @@ html.js[data-vista="compra"] main, html.js[data-vista="equipo"] main { padding-t
 .otro-dl dd { margin-top: .15rem; font: 600 1.15rem/1.1 var(--serif); color: var(--g900); font-variant-numeric: lining-nums; }
 .otro-acts { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: auto; padding-top: .6rem; }
 .otro-acts .btn { padding: .7rem 1rem; font-size: .86rem; }
+/* Enlace al mapa "Descubre tu entorno" del proyecto (entorno.html) */
+.link-entorno { display: inline-flex; align-items: center; gap: .45rem; align-self: flex-start; min-height: 44px; margin-top: .15rem; color: inherit; font-size: .88rem; font-weight: 600; text-decoration: underline; text-decoration-color: rgba(200, 161, 101, .6); text-underline-offset: .22em; }
+.link-entorno:hover { text-decoration-color: currentColor; }
+.link-entorno .i { width: 1.05em; height: 1.05em; flex: none; color: var(--gold-ink); }

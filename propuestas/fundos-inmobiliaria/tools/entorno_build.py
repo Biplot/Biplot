@@ -176,6 +176,7 @@ def recorte(orig, bbox, z, salida, calidad, ancho_max=None, ref=None):
         w, h = ancho_max, h * ancho_max / w
     out = img.resize((round(w), round(h)), Image.LANCZOS, box=caja)
     out = color(out, ref or orig["archivo"])
+    os.makedirs(os.path.dirname(os.path.join(RAIZ, salida)), exist_ok=True)
     out.save(os.path.join(RAIZ, salida), "WEBP", quality=calidad, method=6)
     print("  ->", salida, out.size, os.path.getsize(os.path.join(RAIZ, salida)) // 1024, "KB")
     return out.size
