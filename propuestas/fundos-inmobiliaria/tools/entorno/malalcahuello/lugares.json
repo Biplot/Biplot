@@ -6,7 +6,7 @@
   "zoom": 11,
   "bbox": [
    -71.95,
-   -38.86,
+   -38.93,
    -70.85,
    -38.3
   ],
@@ -48,11 +48,11 @@
     "archivo": "entorno/malalcahuello/originales/sentinel-base.jpg",
     "bbox": [
      -71.95,
-     -38.86,
+     -38.93,
      -70.85,
      -38.3
     ],
-    "wms": "bbox=-8009437,-4701637,-7886985,-4621892&width=4000&height=2605"
+    "wms": "bbox=-8009437,-4711649,-7886985,-4621892&width=4000&height=2932"
    },
    "detalle": {
     "archivo": "entorno/malalcahuello/originales/sentinel-detalle.jpg",
@@ -283,6 +283,20 @@
    "nota": "El acceso final es por la Ruta S-51-R. En invierno puede haber nieve.",
    "destinoTxt": "hasta Villa Icalma, en la orilla sur del lago",
    "llegada": "Villa Icalma",
+   "revisar": true
+  },
+  {
+   "id": "batea_mahuida",
+   "nombre": "Volcán Batea Mahuida",
+   "corto": "Batea Mahuida",
+   "cat": "naturaleza",
+   "icono": "volcan",
+   "lat": -38.816278,
+   "lon": -71.185278,
+   "sinCamino": "Se ve desde Icalma; se sube por el lado argentino, cruzando el paso Icalma",
+   "sub": "Volcán de 1.948 m en el límite con Argentina, junto a Icalma",
+   "texto": "Es un volcán apagado de 1.948 m en el límite entre Chile y Argentina, frente a Icalma. Su nombre en mapudungun significa “cerro con forma de batea”, por su cumbre plana, donde hay dos lagunas en lo que fue su cráter. Por el lado argentino, a unos 10 km de Villa Pehuenia, funciona un parque de nieve.",
+   "nota": "Para subir se cruza a Argentina por el paso Icalma: lleve documentos y revise el estado del paso antes de viajar.",
    "revisar": true
   },
   {
