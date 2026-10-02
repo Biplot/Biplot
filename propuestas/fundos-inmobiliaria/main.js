@@ -164,6 +164,12 @@
     document.addEventListener("click", function (e) {
       var a = e.target.closest && e.target.closest('a[href^="#"]');
       if (!a || a.hasAttribute("data-vista-link")) return;
+      // En la pestaña Puerto Varas no está el recorrido: su 360° se abre en el mapa del entorno
+      var to = a.getAttribute("data-tour-open");
+      if (to && cur === "inicio") {
+        var tp = proyecto(to === "plan" ? Plan.current() : to);
+        if (tp && tp.entorno) { e.preventDefault(); e.stopImmediatePropagation(); window.location.href = tp.entorno + "#tour-360"; return; }
+      }
       var v = vistaPara(a.getAttribute("href"));
       if (v && v !== cur) { set(v); window.scrollTo({ top: 0, behavior: "instant" }); }
     }, true);
@@ -608,6 +614,7 @@
       layoutPlan(true);
     }
     function isWide() { var b = (PL() && PL().viewBox) || [0, 0, 1000, 640]; return b[2] / b[3] > 2; }
+    // Los planos anchos (Puerto Varas) llevan el detalle al lado: el plano baja a su alto natural (un poco más)
 
     /* ---- Zoom y desplazamiento del plano ----
        Botones + / − / completo, pellizco, arrastre, doble clic y Ctrl + rueda.
@@ -632,6 +639,7 @@
         var above = cats ? Math.max(0, cats.getBoundingClientRect().top - root.getBoundingClientRect().top) : 0;
         var legH = legend && !legend.hidden ? legend.offsetHeight : 0;
         H = Math.min(H, clamp(Math.min(window.innerHeight - navH - above - catsH - legH - 24, window.innerHeight * .47), 380, 480));
+        if (isWide()) H = clamp(W * b[3] / b[2] * 1.12, 300, 480);
       }
       if (!reset && Z.W === W && Z.H) H = Z.H;    // la barra del navegador móvil cambia innerHeight: la altura no salta
       canvas.style.height = Math.round(H) + "px";
@@ -990,7 +998,7 @@
 
     /* ---- Panel de detalle ---- */
     function shortlistHtml(p) {
-      var av = disponibles(p).slice().sort(function (a, b) { return a.precio - b.precio || a.n - b.n; }).slice(0, 6);
+      var av = disponibles(p).slice().sort(function (a, b) { return a.precio - b.precio || a.n - b.n; }).slice(0, root.classList.contains("is-wide") && desktop.matches ? 3 : 6);
       if (!av.length) return "";
       return '<p class="lot-short-title">Disponibles desde el menor precio</p><div class="lot-short-list">' + av.map(function (l) {
         var c = (p.categorias || {})[l.cat];
@@ -2507,6 +2515,20 @@
         a.addEventListener("click", function () { Plan.apply({ id: p.id, soloDisponibles: true }); });
       });
     }
+    $$("[data-otro]").forEach(function (card) {
+      var o = proyecto(card.getAttribute("data-otro"));
+      if (!o) return;
+      var d0 = desde(o), src = $('.project[data-project="' + o.id + '"] .project-art svg'), art = $("[data-otro-art]", card);
+      if (src && art) art.appendChild(src.cloneNode(true));
+      $$("[data-otro-disp]", card).forEach(function (el) { el.textContent = disponibles(o).length; });
+      if (d0) $$("[data-otro-desde]", card).forEach(function (el) { el.textContent = clp(d0); });
+      if (o.resumen) $$("[data-otro-txt]", card).forEach(function (el) { el.textContent = o.resumen; });
+      $$("[data-otro-cotizar]", card).forEach(function (a) {
+        a.addEventListener("click", function () {
+          Visit.prefill({ proyecto: o.nombre, mensaje: "Quiero cotizar una parcela en " + o.nombre + ": precios, disponibilidad y formas de pago.", scroll: true });
+        });
+      });
+    });
     var map = $("[data-pv-map]"), box = $("[data-pv-map-in]");
     if (!map || !box) return;
     var built = false;
