@@ -37,6 +37,11 @@
     G.EQUIPO.map(function (p) { return '<symbol id="il-' + p.id + '" viewBox="' + IL[p.id].vb + '">' + IL[p.id].svg + '</symbol>'; }).join('') + '</defs></svg>');
   function vbDe(id) { return IL[id].vb.split(' ').map(Number); }
   function ilus(id) { var v = vbDe(id); return '<svg viewBox="' + IL[id].vb + '"><use href="#il-' + id + '" width="' + v[2] + '" height="' + v[3] + '"/></svg>'; }
+  function cara(id, px) { var v = vbDe(id); return '<svg viewBox="' + IL[id].cabeza + '" width="' + px + '" height="' + px + '"><use href="#il-' + id + '" width="' + v[2] + '" height="' + v[3] + '"/></svg>'; }
+  function iso(px) { return '<svg viewBox="0 0 100 100" width="' + px + '" height="' + px + '">' + EL.isotipo.replace(/url\(#bp-sq\)/g, 'url(#bp-sq-t)') + '</svg>'; }
+  function palabra(hq) { return '<span class="palabra"><span class="bi">Bi</span><span class="plot">Plot</span>' + (hq ? '<span class="hq">HQ</span>' : '') + '</span>'; }
+  var FLOTAN = { atlas: true, plotty: true };
+  var POR_ID = {}; G.EQUIPO.forEach(function (p) { POR_ID[p.id] = p; });
   // La silueta de cada dibujo: dónde empieza y dónde termina su tinta en cada fila (en unidades del dibujo). Con ella la
   // burbuja no tapa una mano levantada y el elenco se reparte por lo que ocupa cada uno, no por su marco. Se mide una vez,
   // pintando el dibujo en un lienzo (como imagen, el SVG tiene que ser XML válido: se le quitan los atributos de nombre
@@ -76,11 +81,6 @@
     var v = vbDe(id), a = borde(id, 0, v[3], -1), b = borde(id, 0, v[3], 1);
     return isFinite(a) && isFinite(b) ? [a, b] : [0, v[2]];
   }
-  function cara(id, px) { var v = vbDe(id); return '<svg viewBox="' + IL[id].cabeza + '" width="' + px + '" height="' + px + '"><use href="#il-' + id + '" width="' + v[2] + '" height="' + v[3] + '"/></svg>'; }
-  function iso(px) { return '<svg viewBox="0 0 100 100" width="' + px + '" height="' + px + '">' + EL.isotipo.replace(/url\(#bp-sq\)/g, 'url(#bp-sq-t)') + '</svg>'; }
-  function palabra(hq) { return '<span class="palabra"><span class="bi">Bi</span><span class="plot">Plot</span>' + (hq ? '<span class="hq">HQ</span>' : '') + '</span>'; }
-  var FLOTAN = { atlas: true, plotty: true };
-  var POR_ID = {}; G.EQUIPO.forEach(function (p) { POR_ID[p.id] = p; });
 
   /* ── Las placas: fotos grandes de la oficina, con su cámara ── */
   var PL = null, imagenes = [];
@@ -320,8 +320,8 @@
   // con su borde de arriba en `top`; si en su franja el dibujo asoma más allá (una mano, un teléfono, un rotor), se corre
   // hasta dejarle `aire` también a esa tinta; si así necesita más renglones, busca más arriba o más abajo el lugar más
   // cercano donde necesite menos, siempre con la cola (a 50 px de su borde de arriba) apuntando al recorte de la cara.
-  // ancho: el que tendría sin estorbos; entre: el
-  // espacio [desde, hasta] de la pantalla donde puede ir; tope: hasta dónde puede bajar. Se mide con la frase entera.
+  // ancho: el que tendría sin estorbos; entre: el espacio [desde, hasta] de la pantalla donde puede ir; tope: hasta dónde
+  // puede bajar. Se mide con la frase entera.
   function ponerBurbuja(b, linea, id, marco, cara, lado, o) {
     var dicho = b.querySelector('.dicho'), falta = b.querySelector('.falta');
     function probar(top) {
