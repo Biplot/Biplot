@@ -29,7 +29,7 @@
         resumen: 'Recibe a cada negocio después de Plotty. Se sienta con quien hace el trabajo, mira las planillas y los chats, y cronometra cuánto se va en cada paso. Con eso arma la radiografía y la línea base. A los 30, 60 y 90 días vuelve con el cronómetro.',
         rasgos: ['Pregunta «¿por qué?» hasta llegar al fondo.', 'Escucha más de lo que habla.', 'No sale de una reunión sin una cifra.'],
         frase: 'Lo que pides no siempre es lo que necesitas.',
-        look: 'Lupa de joyero que le agranda un ojo, moño plateado atravesado por un lápiz, gabardina arena con humita azul y un cronómetro colgado al cuello.',
+        look: 'Lupa de joyero que le agranda un ojo, moño plateado atravesado por un lápiz, gabardina arena abierta, polera azul marino con el 1, humita azul, cronómetro al cuello y el portapapeles.',
         ahora: ['Recibiendo a quien acaba de pasar por la recepción.', 'Cronometrando cuánto se va en una planilla.', 'Armando la radiografía de un negocio.']
       },
       {
@@ -38,7 +38,7 @@
         resumen: 'Toma la radiografía de Lupe y traza el mapa: qué ordenar, qué automatizar y qué construir, en ese orden. Lleva la Sala de planos, donde ves tu proceso dibujado en vivo y te llevas «tu plano».',
         rasgos: ['Ve la oficina entera antes de mover una pieza.', 'Dibuja en cualquier superficie.', 'No acepta reuniones sin pizarra.'],
         frase: 'Si no se puede dibujar, no se puede construir.',
-        look: 'Lentes-visor cian, polerón carbón con la «A», jeans con cadena y zapatillas de caña.',
+        look: 'Altísimo y desgarbado: visor cian, barba corta, polerón carbón abierto con la «A» sobre la polera con el 2, jeans con cadena y zapatillas de caña.',
         ahora: ['Dibujando el plano de un proceso de venta.', 'Proyectando un mapa con Atlas.', 'Pasándole un plano a The Engine.']
       },
       {
@@ -47,7 +47,7 @@
         resumen: 'Abre los Excel que nadie quiere abrir. Encuentra duplicados, vacíos y fórmulas rotas, y deja los datos listos para usarse. Cuando el sistema ya corre, cuenta los resultados: horas ahorradas, errores que dejaron de pasar, el antes y el después.',
         rasgos: ['Ve un duplicado a diez filas de distancia.', 'Le tiene alergia a «final_final_v3.xlsx».', 'Le dicen Byte porque todo lo mide.'],
         frase: 'Si no cuadra, no avanza.',
-        look: 'Pelo afro cortado en cubo con peineta cian, lentes cuadrados, chaqueta cuadriculada con celdas que se encienden, plumero y tableta.',
+        look: 'Baja y delgada: un afro grande cortado en cubo con peineta cian, lentes cuadrados, chaqueta cuadriculada con celdas que se encienden, polera con el 3 y el plumero en alto.',
         ahora: ['Limpiando una planilla con tres hojas repetidas.', 'Cruzando dos listas de clientes.', 'Contando las horas que se ahorró un cliente.']
       },
       {
@@ -56,16 +56,16 @@
         resumen: 'Arma el esqueleto: el modelo de datos, quién ve qué y cómo se conectan los sistemas. Después deja corriendo las automatizaciones que trabajan solas, de noche y en feriado. Muestra las demos técnicas desde la tablet.',
         rasgos: ['Nunca apaga nada un viernes.', 'Tiene una llave para cada integración.', 'Si algo funciona solo, lo da por bien hecho.'],
         frase: 'Lo que se repite, se automatiza.',
-        look: 'Polera carbón con el ícono de motor, audífonos naranjos al cuello, pantalón cargo, botas y la tablet siempre encendida.',
+        look: 'Alto y de espalda ancha: jopo, audífonos naranjos al cuello, polera carbón con el 4, cinturón de herramientas, cargo con rodilleras, botas, la tablet y la llave al hombro.',
         ahora: ['Conectando dos sistemas que no se hablaban.', 'Dejando corriendo una automatización de noche.', 'Mostrando una demo desde la tablet.']
       },
       {
-        id: 'grilla', nombre: 'Grilla', completo: 'Griselda Llanos', alias: 'Pixel', genero: 'f', rol: 'Diseño', placa: 'E5', fases: ['E5'],
-        vive: 'estaciones', lema: 'La que dibuja antes de construir.',
+        id: 'grilla', nombre: 'Grillo', completo: 'Gregorio Llanos', alias: 'Pixel', genero: 'm', rol: 'Diseño', placa: 'E5', fases: ['E5'],
+        vive: 'estaciones', lema: 'El que dibuja antes de construir.',
         resumen: 'Convierte el mapa de The Architect en una maqueta que se puede tocar antes de programar. Diseña cada pantalla para quien la va a usar, en el celular en terreno o en el escritorio de la gerencia.',
         rasgos: ['Todo cae en su grilla.', 'Prueba cada botón con el pulgar.', 'Le dicen Pixel porque ve un píxel chueco a dos metros.'],
         frase: 'Si hay que explicarlo, está mal diseñado.',
-        look: 'La más alta del equipo: pelo cian con dos lápices como antenas, lentes redondos, jardinera y una huincha de medir de bufanda.',
+        look: 'El más alto y flaco del equipo: pelo cian con dos lápices como antenas, lentes redondos, audífono cian, jardinera con el 5 y una huincha de medir de bufanda.',
         ahora: ['Dibujando la maqueta de un cotizador.', 'Probando un botón con el pulgar.', 'Alineando todo a la grilla.']
       },
       {
@@ -74,7 +74,7 @@
         resumen: 'Construye el sistema por rebanadas finas: cada una funciona sola y se puede mostrar. Parte de lo que el equipo ya tiene guardado, así cada proyecto arranca más adelante que el anterior.',
         rasgos: ['Tiene ocho pestañas abiertas y cierra una rebanada a la vez.', 'Prefiere reutilizar antes que reinventar.', 'Le dicen Kilo por el café: un kilo a la semana.'],
         frase: 'Rebanada chica, entrega segura.',
-        look: 'Rastas azules que se enroscan como tentáculos, moño con cinta cian, audífonos al cuello, polerón y la taza «</>».',
+        look: 'Rapero del Bronx: rastas azules en moño con cinta cian, pañuelo de cintillo, chaqueta inflada, camiseta KILO 5, cadena dorada con el «</>», jeans anchos, botas color trigo y la taza «</>».',
         ahora: ['Construyendo la rebanada 3.', 'Conectando el módulo de cobranza.', 'Rellenando el café.']
       },
       {
@@ -83,7 +83,7 @@
         resumen: 'Antes de que algo llegue al cliente, lo prueba en celular, tablet y escritorio, con cada perfil de usuario y en tema claro y oscuro. Se come los bichos antes de que alguien más los vea, y los guarda en un frasco.',
         rasgos: ['Revisa en cuatro pantallas a la vez.', 'Trabaja con linterna porque los bichos se esconden.', 'Desconfía de todo lo que funciona a la primera.'],
         frase: 'Si se puede romper, lo rompo yo antes.',
-        look: 'Alto y encorvado, nariz larga, chaleco negro sobre polera crema, linterna en la frente y el frasco de bichos.',
+        look: 'Alto y encorvado como oso hormiguero, nariz larga, linterna en la frente, chaleco negro sobre la polera crema con el 6, el celular y el frasco de bichos.',
         ahora: ['Probando una pantalla a 375 píxeles.', 'Revisando qué ve cada perfil.', 'Guardando un bicho en el frasco.']
       },
       {
@@ -92,7 +92,7 @@
         resumen: 'Publica el sistema, lo instala en el día a día del cliente y enseña a cada perfil a usarlo, con su manual. Tiene paciencia infinita. Da el trabajo por terminado cuando nadie tiene que llamarlo.',
         rasgos: ['Enseña igual la décima vez que la primera.', 'Su farol se prende cuando algo sale a producción.', 'Anda con el manual bajo el brazo.'],
         frase: 'No termina cuando se publica. Termina cuando se usa.',
-        look: 'El mayor del equipo: barba blanca, gorro marinero, suéter a rayas de faro, farol cian y el manual bajo el brazo.',
+        look: 'El mayor del equipo, gordito: barba blanca, gorro marinero, suéter a rayas de faro con el 7, chaquetón azul, audífono, farol cian y el manual bajo el brazo.',
         ahora: ['Subiendo una entrega a producción.', 'Enseñando a usar el sistema en terreno.', 'Escribiendo el manual de cada perfil.']
       },
       {
@@ -101,7 +101,7 @@
         resumen: 'Cuando un proyecto cierra, recorre la oficina y se lleva lo que le sirve al próximo: componentes, reglas, textos y plantillas. Sólo guarda lo que ya se usó en dos proyectos. Por eso cada sistema nuevo parte con ventaja.',
         rasgos: ['Sabe dónde está todo.', 'Bota sin pena lo que no sirve.', 'Siempre anda con un brote en el bolsillo.'],
         frase: 'Lo que sirve dos veces se guarda. Lo demás, se bota.',
-        look: 'La más baja y la más rápida: dos moños redondos como orejas de degú, trenza, delantal, botas de agua y un canasto de pepas.',
+        look: 'La más baja y la más rápida: dos moños redondos como orejas de degú, trenza, polerón gris, delantal con el 9, botas de agua y un canasto de pepas.',
         ahora: ['Guardando un componente en la estantería.', 'Revisando qué se usó dos veces.', 'Ordenando el núcleo.']
       },
       {
@@ -132,7 +132,7 @@
         resumen: 'Un orbe de vidrio con un globo de líneas y un corazón de plasma. Sostiene el mapa, como su nombre, y ve la oficina entera desde arriba. Habla poco y mira mucho. Su placa dice 360° porque no tiene una fase: ve las diez a la vez.',
         rasgos: ['Guía el recorrido de la oficina, desde arriba.', 'Proyecta sobre la mesa de dos el mapa que traza The Architect.', 'Recorre los procesos y marca dónde se pierden las horas.'],
         frase: 'Desde aquí arriba se ve todo.',
-        look: 'Un orbe de vidrio con anillos, un globo de líneas y un corazón de plasma cian.',
+        look: 'Un orbe de vidrio con anillos, un globo de líneas, un corazón de plasma cian y un visor como el de The Architect.',
         ahora: ['Proyectando un mapa sobre la mesa de dos.', 'Mirando la oficina entera.', 'Esperando el próximo recorrido.']
       },
       {
@@ -141,7 +141,7 @@
         resumen: 'El isotipo de BiPlot convertido en bot, con dos rotores y cara de LED. Es la primera automatización que armó The Engine y atiende la recepción: conversa, apura y no soporta los formularios largos.',
         rasgos: ['Hace tres preguntas y te dice por dónde partir.', 'Si calificas, su antena se pone coral y te invita a agendar.', 'Si una automatización falla, pone cara de bicho y llama a Tamandúa.'],
         frase: 'Tres preguntas. Prometo que no es un formulario.',
-        look: 'El isotipo de BiPlot hecho bot: dos rotores, cara de LED y una antena.',
+        look: 'El isotipo de BiPlot hecho bot: dos rotores, cara de LED, la antena cian y el 0 en la barriga.',
         ahora: ['Atendiendo la recepción.', 'Esperando a alguien para hacerle tres preguntas.', 'Vigilando las máquinas.']
       }
     ],

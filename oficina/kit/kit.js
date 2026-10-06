@@ -96,8 +96,9 @@
     var k = alto ? 0.47 : 0.45, dy = alto ? 290 : 272, y0 = 0, paso = alto ? 250 : 240, s = '';
     filas.forEach(function (fila, i) {
       fila.forEach(function (id, j) {
-        var p = PERSONAL[id], cx = (j - (fila.length - 1) / 2) * paso, y = y0 + i * dy;
-        s += '<g transform="translate(' + (cx - 150 * k) + ' ' + y + ') scale(' + k + ')">' + I[id].svg + '</g>' +
+        // Cada dibujo se escala por su alto (el de la línea de la banda mide 600 × 1260; el anterior, 300 × 520)
+        var p = PERSONAL[id], cx = (j - (fila.length - 1) / 2) * paso, y = y0 + i * dy, v = I[id].vb.split(' ').map(Number), kk = k * 520 / v[3];
+        s += '<g transform="translate(' + (cx - v[2] / 2 * kk) + ' ' + y + ') scale(' + kk + ')">' + I[id].svg + '</g>' +
           '<g transform="translate(' + cx + ' ' + (y + 520 * k + 6) + ')"><rect x="-92" y="-22" width="184" height="40" rx="20" fill="#0E2A47" stroke="rgba(127,216,207,.6)" stroke-width="1.5"/>' +
           '<text x="' + (p.placa.length > 3 ? -30 : -14) + '" y="5" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="600" font-size="' + (p.nombre.length > 9 ? 17 : 21) + '" fill="#F2F4F7">' + esc(p.nombre) + '</text>' +
           '<rect x="' + (p.placa.length > 3 ? 26 : 44) + '" y="-13" width="' + (p.placa.length > 3 ? 60 : 38) + '" height="24" rx="6" fill="#17C3B2"/><text x="' + (p.placa.length > 3 ? 56 : 63) + '" y="4" text-anchor="middle" font-family="Space Mono, monospace" font-weight="700" font-size="' + (p.placa.length > 3 ? 12 : 14) + '" fill="#0E2A47">' + p.placa + '</text></g>';

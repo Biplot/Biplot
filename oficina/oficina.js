@@ -2372,7 +2372,7 @@
     ['zona', 'diagnostico', 'Sala de diagnóstico', 'Lupe hace el diagnóstico: el proceso real, los dolores en horas y pesos, y la línea base contra la que se mide todo.'],
     ['zona', 'planos', 'Planos y máquinas', 'The Architect traza el mapa y The Engine lo convierte en sistemas. Una sola mesa, de punta a punta.'],
     ['actor', 'celda', 'Celda · Datos y métricas', 'Abre tus planillas, encuentra lo que no cuadra y deja los datos listos.'],
-    ['actor', 'grilla', 'Grilla · Diseño', 'Dibuja la maqueta antes de construir, para que la pruebes con tu equipo.'],
+    ['actor', 'grilla', 'Grillo · Diseño', 'Dibuja la maqueta antes de construir, para que la pruebes con tu equipo.'],
     ['actor', 'bucle', 'Bucle · Desarrollo', 'Construye por rebanadas: entregas cortas que funcionan solas.'],
     ['actor', 'tamandua', 'Tamandúa · Validación', 'Prueba todo en cuatro pantallas y con cada perfil antes de que llegue a ti.'],
     ['actor', 'faro', 'Faro · Puesta en marcha', 'Sube cada entrega a producción y enseña a usarla.'],

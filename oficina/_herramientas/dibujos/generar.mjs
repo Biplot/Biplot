@@ -15,7 +15,8 @@
 //
 // Uso, desde la raíz del repo:  node oficina/_herramientas/dibujos/generar.mjs
 //
-// Fuentes: cabezones/ (personajes de oficina), ilustracion/ (personajes de ficha y redes) y barrio/ (la calle, sus
+// Fuentes: cabezones/ (personajes de oficina), banda/ (personajes de ficha, redes y videos, en la línea de la banda;
+// ilustracion/ guarda a Aby y Felipe hasta su visto bueno) y barrio/ (la calle, sus
 // locales, las plantillas por rubro, la gente del barrio y las salas grandes).
 // Las medidas de cada cabezón (caja, centro y pies) están en cabezones/medidas.json.
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -138,30 +139,35 @@ writeFileSync(path.join(oficina, 'elenco.js'), elenco);
 console.log('elenco.js', kb(elenco));
 
 /* ───────── Ilustraciones de ficha ───────── */
+// En la línea de la banda (banda/): el dibujo de tres cuartos de cada uno, de 600 × 1260 (Plotty y Atlas, 600 × 600),
+// con sus letras en trazos. Aby y Felipe siguen con su dibujo aprobado (ilustracion/) hasta que den su visto bueno a su
+// versión nueva; PRENSA_BANDA=<carpeta> la muestra antes sin subirla (banda/ilustrar.mjs).
 const ILUS = {};
-const personas = ['lupe', 'celda', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'architect', 'engine'];
-for (const id of personas) {
-  const m = await import(`./ilustracion/${id}.mjs`);
-  ILUS[id] = { vb: '0 0 300 520', svg: prefijar(redondear(m[id]()), 'il-' + id) };
+const banda = await import('./banda/ilustrar.mjs');
+const prensaBanda = await banda.prensa();
+for (const id of banda.idsBanda()) {
+  const { vb, svg } = banda.ilustrar(id);
+  ILUS[id] = { vb, svg: prefijar(svg, 'il-' + id) };
 }
 const ab = await import('./ilustracion/aby.mjs');
-ILUS.aby = { vb: '0 0 300 520', svg: prefijar(redondear(ab.abyUrbana()), 'il-aby') };
-ILUS['aby-elegante'] = { vb: '0 0 300 520', svg: prefijar(redondear(ab.abyElegante()), 'il-abye') };
 const fe = await import('./ilustracion/felipe.mjs');
-ILUS.felipe = { vb: '0 0 300 520', svg: prefijar(redondear(fe.felipe()), 'il-felipe') };
+if (!prensaBanda) {
+  ILUS.aby = { vb: '0 0 300 520', svg: prefijar(redondear(ab.abyUrbana()), 'il-aby') };
+  ILUS.felipe = { vb: '0 0 300 520', svg: prefijar(redondear(fe.felipe()), 'il-felipe') };
+}
+ILUS['aby-elegante'] = { vb: '0 0 300 520', svg: prefijar(redondear(ab.abyElegante()), 'il-abye') };
 ILUS['felipe-elegante'] = { vb: '0 0 300 520', svg: prefijar(redondear(fe.felipeElegante()), 'il-felipee') };
-const at = await import('./ilustracion/atlas.mjs');
-const pl = await import('./ilustracion/plotty.mjs');
-ILUS.atlas = { vb: '0 0 300 320', svg: redondear(at.atlas('mira', 'il-at')) };
-ILUS.plotty = { vb: '0 0 300 320', svg: redondear(pl.plotty('hola', 'il-pl')) };
-// Recorte de la cabeza de cada ilustración (viewBox), para los avatares del kit
-const CABEZA = { bucle: '90 14 124 124', lupe: '88 106 124 124', celda: '86 22 128 128', grilla: '88 30 124 124', tamandua: '84 36 124 124', faro: '80 38 140 140', pepa: '86 120 128 128',
-  architect: '86 18 128 128', engine: '86 36 128 128', aby: '84 46 132 132', 'aby-elegante': '84 46 132 132',
-  felipe: '88 38 128 128', 'felipe-elegante': '88 38 128 128', plotty: '66 20 168 168', atlas: '70 78 160 160' };
+// Recorte de la cabeza de cada ilustración (viewBox), para las caras del kit, del sitio y de los videos
+const CABEZA = { lupe: '160 218 305 305', architect: '140 14 320 320', celda: '145 238 310 310', engine: '140 66 320 320',
+  grilla: '155 20 290 290', bucle: '130 100 360 360', tamandua: '95 110 300 300', faro: '140 280 320 320', pepa: '192 352 250 250',
+  aby: prensaBanda ? '155 202 290 290' : '84 46 132 132', 'aby-elegante': '84 46 132 132',
+  felipe: prensaBanda ? '180 168 280 280' : '88 38 128 128', 'felipe-elegante': '88 38 128 128',
+  plotty: '120 60 360 360', atlas: '115 110 370 370' };
 for (const id of Object.keys(ILUS)) ILUS[id].cabeza = CABEZA[id];
 const ilus = CABECERA('ilustraciones') + `/*
- * La ilustración de cada integrante (tinta con peso y color plano), para las fichas de la oficina y el kit.
- * Se carga recién cuando se abre la primera ficha. window.Ilustraciones[id] = { vb, svg }.
+ * La ilustración de cada integrante en la línea de la banda (tres cuartos, tinta a mano y color plano), para las fichas
+ * de la oficina, el kit y los videos. Se carga recién cuando se abre la primera ficha.
+ * window.Ilustraciones[id] = { vb, svg, cabeza }: 600 × 1260 con el suelo en y = 1240 (Plotty y Atlas, 600 × 600).
  */
 window.Ilustraciones = ${JSON.stringify(ILUS)};
 `;
