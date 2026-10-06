@@ -521,8 +521,10 @@ pósters.
 Se genera con `node oficina/_herramientas/exportar-teaser.mjs` (necesita ffmpeg en el PATH, o `FFMPEG=<ruta>`), que
 deja `teaser-equipo-9x16.mp4` y `teaser-equipo-16x9.mp4` en `oficina/kit/video/` (entre 50 y 70 MB cada uno; no se
 suben al repo). Con `--formato 9x16` hace uno solo, `--cuadros 15.5,30` saca esos segundos en PNG para revisar, `--solo-audio`
-deja sólo el sonido y `--placas <carpeta>` guarda los fondos para reusarlos en la próxima pasada. Todo está en
-`_herramientas/teaser/`:
+deja sólo el sonido, `--salida <carpeta>` los deja en otra carpeta y `--placas <carpeta>` guarda los fondos para reusarlos
+en la próxima pasada. Cada cuadro se fotografía hasta que dos tomas seguidas salen iguales (Chrome a veces entrega la
+foto antes de terminar de pintar los dibujos con su tinta a mano), así que cada formato tarda entre 30 y 45 minutos.
+Todo está en `_herramientas/teaser/`:
 
 - `guion.js`: los tiempos (a 100 pulsos por minuto), las frases de la intro y, por personaje, su placa, rol, frase,
   color, su rincón de la oficina y su voz. La imagen y el sonido salen de este mismo guion, así que caen juntos.
