@@ -18,7 +18,8 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
 - `assets/` — video, imágenes y scripts. En `assets/oficina/`, lo de la oficina que usa el sitio: las caras del equipo
   (`caras/`, se generan con `node oficina/_herramientas/exportar-kit.mjs --caras`), la visita guiada en versión web
   (`visita-plotty-h.mp4` y `visita-plotty-v.mp4`, con sus pósters; ver la sección de la visita en `oficina/README.md`) y
-  dos recortes de los dibujos de la oficina: `oficina-adentro.webp` (el equipo en sus estaciones) y `local-libre.webp`
+  dos recortes de los dibujos de la oficina: `oficina-adentro.webp` (el equipo en sus estaciones; se vuelve a sacar con
+  `node oficina/_herramientas/fotografiar-adentro.mjs <salida.png>` y se pasa a WebP con calidad 78) y `local-libre.webp`
   (el local «Tu proyecto aquí»).
 - `propuestas/fundos-inmobiliaria/` — propuesta de sitio para Fundos Inmobiliaria (no indexada; ver su README).
 
