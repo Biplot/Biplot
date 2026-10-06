@@ -36,7 +36,7 @@ vestuario de gala para contenido y redes: su cabezón en `_herramientas/dibujos/
 | **Tamandúa** | Tomás Hormazábal | Validación | E6 | Su estación | «Si se puede romper, lo rompo yo antes.» |
 | **Faro** | Fausto Torres | Puesta en marcha | E7 | El tubo a producción | «No termina cuando se publica. Termina cuando se usa.» |
 | **Pepa** | Josefa Huerta | Cosecha | E9 | Estantería del núcleo | «Lo que sirve dos veces se guarda. Lo demás, se bota.» |
-| **Aby** | | La corresponsal | PRENSA | El set | «¿The Engine existe? Yo tampoco lo sé.» |
+| **Aby** | | La corresponsal | PRENSA | El set | «Tres, dos, uno… estamos al aire.» |
 | **Felipe** (Rodman) | | El rostro | PRENSA | El set, con Aby | «Pásala, que yo la cuento.» |
 | **Atlas** | | Mascota de The Architect | 360° | Sobre la mesa de dos | «Desde aquí arriba se ve todo.» |
 | **Plotty** | | Recepción | E0 | Recepción | «Tres preguntas. Prometo que no es un formulario.» |

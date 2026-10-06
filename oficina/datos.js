@@ -109,7 +109,7 @@
         vive: 'set', lema: 'La que pregunta lo que todos se preguntan.',
         resumen: 'Entra a todas las salas con su pase de prensa. Pregunta lo que la gente se pregunta y casi nunca recibe una respuesta clara.',
         rasgos: ['Siempre anda grabando.', 'Pregunta lo que nadie se atreve a preguntar.', 'Graba primero y pregunta después.'],
-        frase: '¿The Engine existe? Yo tampoco lo sé.',
+        frase: 'Tres, dos, uno… estamos al aire.',
         look: 'Ondas largas color miel, aros dorados, bomber azul con el parche de Plotty, polera «REC» y el celular con aro de luz.',
         ahora: ['Grabando en el set.', 'Preguntándole a Kilo qué rompió hoy.', 'Buscando a The Engine con la cámara encendida.']
       },
