@@ -136,7 +136,8 @@ Mínimo antes de publicar: `interacciones.js`, `plano.js`, `qa.js`, `anchos.js` 
   `overpass.kumi.systems` u Overpass Turbo (Exportar → datos sin procesar). El usuario sube los archivos por la web
   de GitHub ("Add files via upload") a la rama de trabajo.
 - Git: no reescribir la rama de trabajo (el entorno bloquea el push forzado). Tras fusionar un PR, seguir sobre la misma
-  rama: su contenido es igual a `main` (fusión squash), así que basta subir encima y abrir otro PR.
+  rama: subir encima, fusionar `main` en la rama (`git merge origin/main`; si choca solo por la fusión squash,
+  quedarse con la versión de la rama tras verificar que `main` no trae nada más) y abrir otro PR.
 - Fotos HEIC del iPhone: `pip install pillow-heif`. ffmpeg: `pip install imageio-ffmpeg`. Videos del iPhone son HDR
   (HLG): convertir a SDR con `zscale` + `tonemap` antes de codificar.
 
