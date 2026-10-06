@@ -274,7 +274,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(await js("document.querySelector('#svg-escena').classList.contains('oficina-abierta') && document.querySelector('#panel').hidden"), 'oficina/#oficina entra a la oficina');
   await abrir(w, h, movil, false, '#lupe');
   ok((await js("document.querySelector('#panel-titulo')?.textContent")) === 'Lupe' && await js("document.querySelector('#svg-escena').classList.contains('oficina-abierta')"), 'oficina/#lupe entra a la oficina y abre la ficha de Lupe');
-  // Felipe, la otra cara real: sin apellido, su apodo va solo; graba con Aby en el set
+  // Felipe, el rostro: sin apellido, su apodo va solo; graba con Aby en el set
   await abrir(w, h, movil, false, '#felipe');
   const fe = await js(`(async () => { for (let i = 0; i < 30 && !document.querySelector('#panel .ficha-ilus'); i++) await ${W(100)};
     const r = { titulo: document.querySelector('#panel-titulo')?.textContent, apodo: document.querySelector('#panel .completo')?.textContent,

@@ -2378,7 +2378,7 @@
     ['actor', 'faro', 'Faro · Puesta en marcha', 'Sube cada entrega a producción y enseña a usarla.'],
     ['zona', 'laboratorio', 'Laboratorio de métricas', 'A los 30, 60 y 90 días se mide contra la línea base. Si no bajó, se dice.'],
     ['zona', 'estanteria', 'Estantería del núcleo', 'Pepa guarda aquí lo que sirve para el próximo. También están los casos de referencia.'],
-    ['zona', 'set', 'El set', 'Aquí graban Aby, la corresponsal, y Felipe, el rostro. Las dos caras reales de la oficina.'],
+    ['zona', 'set', 'El set', 'Aquí graban Aby, la corresponsal, y Felipe, el rostro.'],
     ['zona', 'pasaje', 'El pasaje', 'Por aquí se sale a la calle: un local por proyecto, con su nombre y su logo en el techo. Toca uno para abrirlo, ver qué hicimos y entrar a su sala.'],
     ['zona', 'nuhome', 'Nu Home 360', 'Casas modulares: del primer contacto a la entrega, en una sola plataforma.'],
     ['zona', 'fundos', 'Fundos 360', 'Venta de parcelas: el terreno sobre la mesa y el ciclo de venta completo.'],

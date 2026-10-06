@@ -107,8 +107,8 @@
       {
         id: 'aby', nombre: 'Aby', genero: 'f', rol: 'La corresponsal', placa: 'PRENSA', fases: [],
         vive: 'set', lema: 'La que pregunta lo que todos se preguntan.',
-        resumen: 'Una de las dos caras reales de la oficina. Graba en el mundo real y entra a la oficina dibujada con su pase de prensa. Pregunta lo que la gente se pregunta y casi nunca recibe una respuesta clara.',
-        rasgos: ['Siempre anda grabando.', 'Pregunta lo que nadie se atreve a preguntar.', 'Tampoco sabe quién es real. O eso dice.'],
+        resumen: 'Entra a todas las salas con su pase de prensa. Pregunta lo que la gente se pregunta y casi nunca recibe una respuesta clara.',
+        rasgos: ['Siempre anda grabando.', 'Pregunta lo que nadie se atreve a preguntar.', 'Graba primero y pregunta después.'],
         frase: '¿The Engine existe? Yo tampoco lo sé.',
         look: 'Ondas largas color miel, aros dorados, bomber azul con el parche de Plotty, polera «REC» y el celular con aro de luz.',
         ahora: ['Grabando en el set.', 'Preguntándole a Kilo qué rompió hoy.', 'Buscando a The Engine con la cámara encendida.']
@@ -116,7 +116,7 @@
       {
         id: 'felipe', nombre: 'Felipe', alias: 'Rodman', genero: 'm', rol: 'El rostro', placa: 'PRENSA', fases: [],
         vive: 'set', lema: 'El que da la cara.',
-        resumen: 'La otra cara real de la oficina. Graba con Aby y cuenta lo que hace el equipo como si fuera un partido: quién pasó la pelota, quién la metió y cuánto falta para el final.',
+        resumen: 'Graba con Aby y cuenta lo que hace el equipo como si fuera un partido: quién pasó la pelota, quién la metió y cuánto falta para el final.',
         rasgos: ['Siempre anda con una pelota de básquetbol.', 'Edita con Tyler, the Creator de fondo.', 'Le dicen Rodman por el pelo. No por los rebotes. O eso dice.'],
         frase: 'Pásala, que yo la cuento.',
         look: 'Pelo al ras en zigzag rojo y negro con las puntas amarillas, chaqueta de trabajo negra con una flor en la solapa, cadena dorada, pantalón ancho gris con manchas y la pelota girando en el índice.',

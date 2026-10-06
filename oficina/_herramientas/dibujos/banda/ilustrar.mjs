@@ -30,7 +30,7 @@ const DIBUJOS = {
 const SIN_TINTA = ['architect', 'engine'];
 const MASCOTAS = ['plotty', 'atlas'];
 
-// Aby y Felipe son personas reales: su versión en la línea de la banda entra recién con su visto bueno. Mientras, la
+// La versión de Aby y Felipe en la línea de la banda entra cuando se apruebe. Mientras, la
 // oficina sigue con su dibujo aprobado (ilustracion/aby.mjs y felipe.mjs). Para verla antes, PRENSA_BANDA=<carpeta con
 // aby.mjs y felipe.mjs> la suma sin subirla al repo.
 export async function prensa() {

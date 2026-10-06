@@ -20,10 +20,10 @@ sus enlaces y el equipo que la hizo. Las mismas piezas sirven para Instagram y p
 Once integrantes, cada uno con placa, y dos mascotas. En la oficina son cabezones en vector, con el mismo trazo de la
 escena; en las fichas, en redes y en los videos, ilustraciones en la línea de la banda (tinta a mano, color plano y su
 número chico en la camiseta), dibujadas en `_herramientas/dibujos/banda/`. Coral no aparece en ningún dibujo: sigue
-reservado para "Agenda tu diagnóstico". Aby y Felipe, la dupla de PRENSA, son las dos caras reales de la oficina: su
-versión en la línea de la banda entra recién con su visto bueno y, mientras, siguen con su ilustración aprobada
-(`_herramientas/dibujos/ilustracion/`). Tienen además un vestuario de gala para contenido y redes: su cabezón en
-`_herramientas/dibujos/cabezones/` y su ilustración en `ilustraciones.js` (`aby-elegante` y `felipe-elegante`).
+reservado para "Agenda tu diagnóstico". Aby y Felipe, la dupla de PRENSA, siguen con su ilustración aprobada
+(`_herramientas/dibujos/ilustracion/`) hasta que se apruebe su versión en la línea de la banda. Tienen además un
+vestuario de gala para contenido y redes: su cabezón en `_herramientas/dibujos/cabezones/` y su ilustración en
+`ilustraciones.js` (`aby-elegante` y `felipe-elegante`).
 
 | Integrante | Nombre | Rol | Placa | Dónde está | Frase |
 |---|---|---|---|---|---|
