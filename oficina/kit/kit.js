@@ -16,7 +16,7 @@
   var D = window.OFICINA_DATOS, E = window.Elenco, I = window.Ilustraciones;
   var PERSONAL = {}; D.personal.concat(D.mascotas).forEach(function (p) { PERSONAL[p.id] = p; });
   var FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630], cara: [160, 160] };
-  var PIEZAS = E.ids.map(function (id) { return 'ficha-' + id; }).concat(['oficina', 'elenco', 'motor', 'quien']);
+  var PIEZAS = E.ids.map(function (id) { return 'ficha-' + id; }).concat(['oficina', 'elenco', 'motor']);
   var PROY = {}; D.proyectos.forEach(function (p) { PROY[p.id] = p; });
   // El Archivo también tiene su sala: el museo de BiPlot (no es un proyecto, pero su vista previa va igual)
   var A = D.salas.archivo;
@@ -122,18 +122,6 @@
       '<p class="k-cierre">Tú hablas con una persona del equipo. <span>El motor hace el resto, fase por fase.</span></p>' + pie();
   }
 
-  /* ── ¿Quién es real? ── */
-  function quien(f) {
-    var ids = E.ids;
-    return '<div class="k-halo"></div><p class="k-eyebrow">La oficina</p><h1 class="k-titulo">¿Quién es real?</h1>' +
-      '<p class="k-bajada">Aby y Felipe dicen que ellos. Los demás no contestan.</p>' +
-      '<ul class="k-caras">' + ids.map(function (id) {
-        return '<li' + (id === 'aby' || id === 'felipe' ? ' class="real"' : '') + '><span class="k-cara">' + ilustracion(id, '', true) + '</span><b>' + esc(PERSONAL[id].nombre) + '</b></li>';
-      }).join('') + '</ul>' +
-      '<p class="k-cierre">Pasa a la oficina y decide tú. <span>Nadie lo confirma. Nadie lo desmiente.</span></p>' +
-      pie(f === '9x16' ? 'Averígualo en <b>biplot.cl/oficina</b>' : null);
-  }
-
   /* ── La sala de cada empresa ── */
   function dibujoSala(id, clase) {
     var S = window.Salas.salas[id], vb = S.vb.split(' ').map(Number);
@@ -155,7 +143,6 @@
     if (pieza === 'oficina') return oficina(f);
     if (pieza === 'elenco') return elenco(f);
     if (pieza === 'motor') return motor(f);
-    if (pieza === 'quien') return quien(f);
     return '';
   }
   function montar(destino, pieza, f) {

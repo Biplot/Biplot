@@ -476,7 +476,7 @@ además hay un botón para pausar, que también detiene a la gente de los locale
 
 ## Kit para Instagram
 
-Catorce piezas en publicación (1080 × 1350) e historia (1080 × 1920), más la imagen para compartir el enlace
+Quince piezas en publicación (1080 × 1350) e historia (1080 × 1920), más la imagen para compartir el enlace
 (1200 × 630, `oficina-og.png`, ya enlazada en las etiquetas `og:image` de la página) y la de cada sala
 (`sala-<id>-og.png`, la de las páginas `oficina/<id>/`). En las historias lo importante queda fuera de las franjas de
 250 px de arriba y abajo.
@@ -488,7 +488,6 @@ Catorce piezas en publicación (1080 × 1350) e historia (1080 × 1920), más la
 | Vista previa de cada sala | `sala-<id>-og.png` | (La usan las páginas `oficina/<id>/` al compartir el enlace) |
 | El equipo | `elenco-4x5.png`, `elenco-9x16.png` | Once integrantes, uno por parte del trabajo. Los reconoces por su placa. |
 | ¿Quién hace qué? | `motor-4x5.png`, `motor-9x16.png` | Diez fases, un solo motor. |
-| ¿Quién es real? | `quien-4x5.png`, `quien-9x16.png` | Aby y Felipe dicen que ellos. Los demás no contestan. |
 | Fichas | `ficha-<id>-4x5.png`, `ficha-<id>-9x16.png` | Una por integrante: su frase, sus tres rasgos (en `datos.js`) y biplot.cl/oficina |
 
 Se regeneran con `node oficina/_herramientas/exportar-kit.mjs` (todas) o `--solo ficha-lupe,oficina,sala-haru`. Con

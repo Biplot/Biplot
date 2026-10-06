@@ -24,7 +24,7 @@ const arg = (n, d) => { const i = process.argv.indexOf('--' + n); return i > -1 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const IDS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'pepa', 'aby', 'felipe'];
-const PIEZAS = IDS.map((id) => 'ficha-' + id).concat(['oficina', 'elenco', 'motor', 'quien']);
+const PIEZAS = IDS.map((id) => 'ficha-' + id).concat(['oficina', 'elenco', 'motor']);
 const FORMATOS = { '4x5': [1080, 1350], '9x16': [1080, 1920], og: [1200, 630], cara: [160, 160] };
 // La sala de cada empresa, el museo de El Archivo, la sala de ventas del local libre y BiPlot.TV: vista previa del enlace
 // biplot.cl/oficina/<sala>; Haru 360, además, publicación e historia
