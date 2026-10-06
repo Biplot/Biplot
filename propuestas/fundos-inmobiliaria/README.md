@@ -48,7 +48,9 @@ Todo lo editable está en `lib/manifest.js`.
 
 Publicada en https://biplot.cl/propuestas/fundos-inmobiliaria/ (cada cambio entra por un pull request a `main`).
 
-- [ ] **Mapa "Descubre tu entorno" (`entorno.html`):** imagen satelital ya reemplazada por Sentinel-2 cloudless 2016 (libre para uso comercial con crédito). Falta bajar las fotos de Wikimedia Commons (requiere que la red permita `commons.wikimedia.org` y `upload.wikimedia.org`; fotos propias del cliente, si las tiene, son mejores). Videos del cliente ya integrados en 9 lugares (Alerce, parque, Puerto Varas, Frutillar, lago, Puerto Montt, Osorno, Petrohué y Calbuco); faltan los demás si los tiene. El cliente debe aprobar los textos de los lugares nuevos (marcados con `"revisar": true`).
+- [ ] **Mapa "Descubre tu entorno" (`entorno.html`):** imagen satelital ya reemplazada por Sentinel-2 cloudless 2016 (libre para uso comercial con crédito). Falta bajar las fotos de Wikimedia Commons (requiere que la red permita `commons.wikimedia.org` y `upload.wikimedia.org`; fotos propias del cliente, si las tiene, son mejores). Videos del cliente ya integrados en 9 lugares (Alerce, parque, Puerto Varas, Frutillar, lago, Puerto Montt, Osorno, Petrohué y Calbuco); faltan los demás si los tiene (Todos los Santos, Angelmó, Alerce Andino…). El de Frutillar podría ser una muestra recortada del convertidor: confirmar con el original. El cliente debe aprobar los textos de los lugares nuevos (marcados con `"revisar": true`).
+- [ ] **Mapas del entorno de Malalcahuello y Marchigüe** (`entorno.html?p=malalcahuello`, `?p=marchigue`, publicados en octubre 2026): confirmar con el cliente todos los textos de lugares (todos `"revisar": true`); la coordenada de Malalcahuello está en el sector Lolén (Lonquimay), a 20 min de Lonquimay y 50 min del pueblo, así que el chip "Cerca de Corralco" de la tarjeta (1 h 10 min) conviene revisarlo; confirmar el nombre del sector de Marchigüe y la frase "a una hora de Pichilemu" (antes decía "40 minutos"; la ruta calculada da 1 h). Sin videos ni fotos todavía: si el cliente tiene tomas de dron de esas zonas, se integran como las de Puerto Varas.
+- [ ] **WhatsApp y precios:** el número de contacto y los precios de `lib/manifest.js` son de ejemplo (`+56 9 0000 0000`).
 - [ ] **Planos en SVG:** el cliente enviará los planos vectoriales de Malalcahuello y Puerto Varas (y después Marchigüe) para calcarlos exactos. Hoy la geometría sale de las imágenes de los masterplan, enderezada con `tools/enderezar_planos.py`. Al llegar: revisar que cada lote sea su propia forma (no una imagen incrustada), asociar cada forma a su número de lote y reemplazar la geometría de ese proyecto en `lib/planos.js`, manteniendo el formato `{d, l, r}`.
 - [ ] **Cargos del equipo:** hoy todos dicen "Equipo comercial" en `lib/manifest.js` (`equipo`); falta el cargo y WhatsApp propio de cada persona, si los hay.
 
@@ -63,7 +65,8 @@ assets/img/       Isotipo (del manual, también en 174 px para el menú), logos 
 assets/fonts/     Cormorant Garamond y Mulish (woff2, latín)
 assets/video/     Videos propios: el saludo del equipo (MP4 + WebM de respaldo y su imagen) y, si se usan, portada y proyectos
 .htaccess         Caché para hosting Apache/Hostinger
-tools/            enderezar_planos.py (geometría de los planos), artefacto_build.py (vista previa en Claude)
+tools/            enderezar_planos.py (geometría de los planos), artefacto_build.py (vista previa en Claude),
+                  entorno_build.py + entorno/ (mapas del entorno), portada_puerto_varas.py (video de portada)
 tools/pruebas/    Pruebas automáticas con Playwright (ver su LEEME.md)
 CLAUDE.md         Contexto para retomar el trabajo con Claude: publicación, datos, planos, pruebas y decisiones
 ```

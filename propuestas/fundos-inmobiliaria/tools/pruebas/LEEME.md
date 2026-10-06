@@ -26,5 +26,7 @@ Se corren desde una carpeta temporal porque guardan capturas (`ux/*.png`). Cada 
 | `cotizador.js` | Alto del cotizador en contado y financiamiento |
 | `pestanas.js` | "Todo sobre tu compra": pestañas, teclado, enlaces `#simulador`/`#portal`/`#preguntas`, indicador de sección, carruseles |
 | `largo.js` | Largo de la página en pantallas, total y por sección (computador y celular) |
+| `entorno.js` | Mapa del entorno: todos los lugares de un proyecto en 7 tamaños (píldora, rótulos y botones sin quedar bajo panel, ficha, controles ni pie). Uso: `node entorno.js [malalcahuello\|marchigue]` (sin argumento, Puerto Varas); `MIN=1` con paneles minimizados. Tarda ~5 min por proyecto; debe dar "0 problem views" |
+| `_vista.js` | Ayuda para las demás: elegir pestaña (`vista`), proyecto del plano (`proyecto`) o dejar la página como antes de las pestañas (`clasica`) |
 
 Nota: el Chromium de pruebas no reproduce H.264, por eso los videos del sitio llevan también WebM.

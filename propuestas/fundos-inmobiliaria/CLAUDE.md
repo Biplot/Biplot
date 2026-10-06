@@ -63,7 +63,7 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
     llevan `"revisar": true` (por aprobar con el cliente) y no tienen videos ni fotos aún (la ficha usa el satelital).
     Fuera de la imagen el mapa muestra su borde reflejado y apagado (`img.espejo`) y `clampTo` deja pasar la vista un
     poco del borde (18 % del ancho, 30 % del alto): en estos dos la parcela y varios lugares quedan cerca del borde.
-    Revisión: `entorno.html?p=ID` con todos sus lugares en los mismos 7 tamaños (y Puerto Varas de nuevo).
+    Revisión: `tools/pruebas/entorno.js [ID]` (todos los lugares en los mismos 7 tamaños; correr también Puerto Varas).
   - Imagen: Sentinel-2 cloudless **2016** de EOX (CC BY 4.0, uso comercial con crédito; las ediciones posteriores
     son no comerciales). **No usar Google Earth** (la captura del folleto): sus Geo Guidelines no lo permiten en sitios
     comerciales. Como la red del entorno bloquea `tiles.maps.eox.at`, el usuario bajó dos GetMap WMS en EPSG:3857
@@ -105,7 +105,7 @@ Toda la interfaz y los textos van en **español de Chile**. Lee también `README
     "Desde aquí" con los lugares del resumen: al tocar uno se cierra el tour y se dibuja esa ruta. Si el navegador
     no deja incrustarlo (CSP) o no carga en 15 s, ofrece abrirlo aparte. El proxy de la nube bloquea netlify: probar
     con `page.route` que responda una página simulada.
-    Revisión: `tools/pruebas` no cubre esta página; probar los 17 lugares en 1920, 1440, 1280, 1100, 390, 320 y 844×390.
+    Revisión: `tools/pruebas/entorno.js` (los 17 lugares en 1920, 1440, 1280, 1100, 390, 320 y 844×390; `MIN=1` con paneles minimizados).
 - `assets/img` fotos y logos (WebP) · `assets/video` saludo del equipo (MP4 H.264 + WebM de respaldo + portada) ·
   `assets/fonts` Cormorant Garamond y Mulish autoalojadas.
 
@@ -131,6 +131,12 @@ Mínimo antes de publicar: `interacciones.js`, `plano.js`, `qa.js`, `anchos.js` 
   `--proxy-server=$HTTPS_PROXY`. **No reproduce H.264**: los videos deben tener también WebM (y así se prueban).
 - El proxy bloquea biplot.cl (verificar el despliegue por GitHub Actions "pages build and deployment"), Hugging Face
   (no hay transcripción de audio) y algunos CDN.
+- También bloquea Overpass (`overpass-api.de` y espejos), Nominatim y las teselas de OpenStreetMap; OSRM sí funciona.
+  Desde el navegador del usuario, `overpass-api.de` responde 406 a las consultas por enlace (GET): usar el espejo
+  `overpass.kumi.systems` u Overpass Turbo (Exportar → datos sin procesar). El usuario sube los archivos por la web
+  de GitHub ("Add files via upload") a la rama de trabajo.
+- Git: no reescribir la rama de trabajo (el entorno bloquea el push forzado). Tras fusionar un PR, seguir sobre la misma
+  rama: su contenido es igual a `main` (fusión squash), así que basta subir encima y abrir otro PR.
 - Fotos HEIC del iPhone: `pip install pillow-heif`. ffmpeg: `pip install imageio-ffmpeg`. Videos del iPhone son HDR
   (HLG): convertir a SDR con `zscale` + `tonemap` antes de codificar.
 
@@ -149,6 +155,8 @@ Mínimo antes de publicar: `interacciones.js`, `plano.js`, `qa.js`, `anchos.js` 
   Osorno (a la derecha) y Calbuco (a la izquierda, al fondo), en el Pasaje El Encanto (Ruta La Colonia); acceso
   controlado, caminos estabilizados, factibilidad eléctrica en la entrada y agua por noria o pozo. **No decir "bosque
   nativo"** (hay poco) y el estero **cruza la parcelación** (no "entre bosque y estero").
+- **Descartado (octubre 2026):** mini mapa de servicios por ciudad (hospital, supermercados, etc. al llegar a una ciudad
+  en el mapa del entorno). El usuario lo dejó de lado; no retomarlo salvo que lo pida.
 - Página en pestañas (pedido del cliente): Puerto Varas, el proyecto que están empujando (con su folleto), es lo más
   atractivo del inicio; el resto (proyectos, compra, equipo) va en otras pestañas.
 - Página corta por secciones (el cliente sintió que tanto scroll cansa): Cómo comprar, Simulador, Preguntas y Mi compra
