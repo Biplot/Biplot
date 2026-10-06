@@ -71,8 +71,10 @@ const EDGE = [process.env.NAVEGADOR, 'C:/Program Files (x86)/Microsoft/Edge/Appl
   '/usr/bin/microsoft-edge', '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/opt/pw-browsers/chromium'].find((p) => p && fs.existsSync(p));
 if (!EDGE) { console.error('No encontré Edge ni Chrome (usa NAVEGADOR=<ruta>)'); process.exit(2); }
 const perfil = fs.mkdtempSync(path.join(os.tmpdir(), 'teaser_perfil_'));
+// --run-all-compositor-stages-before-draw: cada foto espera a que esté todo pintado. Sin eso, en un cuadro pesado (los
+// dibujos con su tinta a mano, un corte con fondo nuevo) a veces salía una franja o unas caras sin pintar.
 const edge = spawn(EDGE, ['--headless=new', '--remote-debugging-port=0', ...(process.getuid && process.getuid() === 0 ? ['--no-sandbox'] : []), `--user-data-dir=${perfil}`,
-  '--no-first-run', '--disable-extensions', '--hide-scrollbars', '--force-color-profile=srgb', '--font-render-hinting=none', 'about:blank'], { stdio: 'ignore' });
+  '--no-first-run', '--disable-extensions', '--hide-scrollbars', '--force-color-profile=srgb', '--font-render-hinting=none', '--run-all-compositor-stages-before-draw', 'about:blank'], { stdio: 'ignore' });
 let puerto = 0, objetivos = null;
 for (let i = 0; i < 120 && !objetivos; i++) {
   try { if (!puerto) puerto = Number(fs.readFileSync(path.join(perfil, 'DevToolsActivePort'), 'utf8').split(/\r?\n/)[0]); if (puerto) objetivos = await (await fetch(`http://127.0.0.1:${puerto}/json/list`)).json(); } catch { /* aún no */ }
