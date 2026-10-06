@@ -71,8 +71,9 @@ const EDGE = [process.env.NAVEGADOR, 'C:/Program Files (x86)/Microsoft/Edge/Appl
   '/usr/bin/microsoft-edge', '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser', '/opt/pw-browsers/chromium'].find((p) => p && fs.existsSync(p));
 if (!EDGE) { console.error('No encontré Edge ni Chrome (usa NAVEGADOR=<ruta>)'); process.exit(2); }
 const perfil = fs.mkdtempSync(path.join(os.tmpdir(), 'teaser_perfil_'));
+// --run-all-compositor-stages-before-draw: Chrome termina de pintar antes de dibujar cada cuadro (ver también foto())
 const edge = spawn(EDGE, ['--headless=new', '--remote-debugging-port=0', ...(process.getuid && process.getuid() === 0 ? ['--no-sandbox'] : []), `--user-data-dir=${perfil}`,
-  '--no-first-run', '--disable-extensions', '--hide-scrollbars', '--force-color-profile=srgb', '--font-render-hinting=none', 'about:blank'], { stdio: 'ignore' });
+  '--no-first-run', '--disable-extensions', '--hide-scrollbars', '--force-color-profile=srgb', '--font-render-hinting=none', '--run-all-compositor-stages-before-draw', 'about:blank'], { stdio: 'ignore' });
 let puerto = 0, objetivos = null;
 for (let i = 0; i < 120 && !objetivos; i++) {
   try { if (!puerto) puerto = Number(fs.readFileSync(path.join(perfil, 'DevToolsActivePort'), 'utf8').split(/\r?\n/)[0]); if (puerto) objetivos = await (await fetch(`http://127.0.0.1:${puerto}/json/list`)).json(); } catch { /* aún no */ }
@@ -96,9 +97,20 @@ async function ir(direccion, w, h) {
   await cdp('Page.navigate', { url: direccion });
   await listo; cargada = null;
 }
+// La foto del cuadro, repetida hasta que dos seguidas salgan iguales: a veces Chrome la entrega antes de terminar de
+// pintar (en un cuadro pesado, con los dibujos y su tinta a mano, faltaba una burbuja, unas caras o una franja), y la
+// que ya no cambia al repetirse está completa. Cuenta cuántas hubo que repetir.
+let repetidas = 0;
 async function foto(formato = 'jpeg') {
-  const c = await cdp('Page.captureScreenshot', { format: formato, ...(formato === 'jpeg' ? { quality: 94 } : {}), captureBeyondViewport: false });
-  return Buffer.from(c.data, 'base64');
+  const sacar = async () => Buffer.from((await cdp('Page.captureScreenshot', { format: formato, ...(formato === 'jpeg' ? { quality: 94 } : {}), captureBeyondViewport: false })).data, 'base64');
+  let img = await sacar();
+  for (let i = 0; i < 6; i++) {
+    const otra = await sacar();
+    if (otra.equals(img)) return img;
+    if (!i) repetidas++;
+    img = otra; await sleep(100);
+  }
+  return img;
 }
 
 try {
@@ -148,7 +160,7 @@ try {
       if (n % 150 === 0) process.stdout.write(`  ${formato}: ${n}/${total} cuadros (${Math.round((Date.now() - t0) / 1000)} s)\r`);
     }
     ff.stdin.end(); await termino;
-    console.log(`✓ ${path.relative(raiz, mp4)} · ${total} cuadros · ${(fs.statSync(mp4).size / 1048576).toFixed(1)} MB · ${Math.round((Date.now() - t0) / 1000)} s`);
+    console.log(`✓ ${path.relative(raiz, mp4)} · ${total} cuadros · ${(fs.statSync(mp4).size / 1048576).toFixed(1)} MB · ${Math.round((Date.now() - t0) / 1000)} s · ${repetidas} fotos repetidas`); repetidas = 0;
   }
   if (errores.length) console.log('Errores de la página:\n  ' + [...new Set(errores)].join('\n  '));
 } finally {

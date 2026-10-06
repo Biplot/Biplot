@@ -210,9 +210,10 @@
   css(plotty, { left: f2(PX - PW / 2) + 'px', top: f2(PY - PH / 2) + 'px', width: PW + 'px', height: f2(PH) + 'px' });
   var CARA_Y = (CAB_P[1] + CAB_P[3] / 2) / VB_P[3] * PH - PH / 2;   // la cara, respecto del centro
   var burbuja = el('div', 'burbuja', '<span class="dicho"></span><span class="cursor"></span><span class="falta" style="color:transparent"></span>', escenario);
-  // (en vertical, lejos del borde derecho, donde Reels pone sus botones)
+  // (en vertical, lejos del borde derecho, donde Reels pone sus botones; y sin rozar la mano con que saluda Plotty, ni
+  // cuando salta al hablar)
   var BW = V ? 600 : 760;
-  css(burbuja, { left: (V ? 345 : 360) + 'px', width: 'max-content', maxWidth: BW + 'px', fontSize: '40px', padding: V ? '24px 30px' : '24px 32px' });
+  css(burbuja, { left: (V ? 355 : 370) + 'px', width: 'max-content', maxWidth: BW + 'px', fontSize: '40px', padding: V ? '24px 30px' : '24px 32px' });
   var bDicho = burbuja.querySelector('.dicho'), bFalta = burbuja.querySelector('.falta'), bCursor = burbuja.querySelector('.cursor');
   // Las líneas de Plotty, con cuándo aparece la burbuja y cuándo se va
   var LINEAS = (function () {

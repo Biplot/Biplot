@@ -6,3 +6,6 @@ desktop.ini
 # Logs / temp
 *.log
 .vercel
+
+# Videos grandes del teaser y la visita (se exportan con exportar-teaser.mjs; no se suben)
+oficina/kit/video/

@@ -1,4 +1,4 @@
-// Felipe (le dicen Rodman) en vector, versión oficina: la otra cara real, que graba con Aby. Dos vestuarios, como ella.
+// Felipe (le dicen Rodman) en vector, versión oficina: el rostro, que graba con Aby. Dos vestuarios, como ella.
 // Urbano: chaqueta de trabajo negra abierta sobre polera negra, cadena dorada, pantalón ancho gris con manchas y
 // zapatillas grises; hace girar una pelota de básquetbol en el índice. Elegante: esmoquin con solapas de satén, humita
 // roja, zapatos de charol con calcetines rojos, el micrófono y la pelota bajo el brazo. En los dos, el pelo al ras

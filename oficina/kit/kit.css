@@ -87,27 +87,12 @@
 .f-9x16 .k-cierre { top: 1482px; }
 .f-9x16.p-motor .k-pie { bottom: 270px; }
 
-/* ¿Quién es real? */
-/* Once caras: en la publicación, seis y cinco; en la historia, cuatro por fila */
-.k-caras { left: 40px; right: 40px; top: 470px; list-style: none; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 34px 16px; }
-.k-caras li { width: 148px; display: grid; justify-items: center; gap: 12px; font: 600 24px/1.1 var(--bp-f-display); color: #D5E2EE; text-align: center; }
+/* Las caras redondas (las del motor y la cara sola, para el sitio: el círculo llena la pieza y lo de afuera queda transparente) */
 .k-cara { display: block; width: 144px; height: 144px; border-radius: 50%; overflow: hidden; background: #17446F; border: 4px solid rgba(127, 216, 207, .45); }
 .k-cara svg { display: block; width: 100%; height: 100%; }
-/* La cara sola, para el sitio: el círculo llena la pieza y lo de afuera queda transparente */
 .f-cara { background: transparent; }
 .f-cara::before { display: none; }
 .f-cara .k-cara { left: 0; top: 0; width: 160px; height: 160px; }
-.k-caras .real .k-cara { border-color: #17C3B2; box-shadow: 0 0 0 8px rgba(23, 195, 178, .18); }
-.k-caras .real b { color: #17C3B2; }
-.p-quien .k-titulo { font-size: 128px; }
-.p-quien .k-bajada { top: 300px; }
-.p-quien .k-cierre { top: 1060px; }
-.f-9x16.p-quien .k-titulo { top: 330px; font-size: 128px; }
-.f-9x16.p-quien .k-bajada { top: 480px; }
-.f-9x16 .k-caras { top: 620px; gap: 34px 24px; }
-.f-9x16 .k-caras li { width: 200px; }
-.f-9x16 .k-cara { width: 186px; height: 186px; }
-.f-9x16.p-quien .k-cierre { top: 1490px; }
 .k-quien { gap: 8px; }
 .k-quien svg { border-radius: 50%; background: #17446F; overflow: hidden; }
 

@@ -42,6 +42,45 @@
   function palabra(hq) { return '<span class="palabra"><span class="bi">Bi</span><span class="plot">Plot</span>' + (hq ? '<span class="hq">HQ</span>' : '') + '</span>'; }
   var FLOTAN = { atlas: true, plotty: true };
   var POR_ID = {}; G.EQUIPO.forEach(function (p) { POR_ID[p.id] = p; });
+  // La silueta de cada dibujo: dónde empieza y dónde termina su tinta en cada fila (en unidades del dibujo). Con ella la
+  // burbuja no tapa una mano levantada y el elenco se reparte por lo que ocupa cada uno, no por su marco. Se mide una vez,
+  // pintando el dibujo en un lienzo (como imagen, el SVG tiene que ser XML válido: se le quitan los atributos de nombre
+  // inválido que el HTML deja pasar).
+  var SILUETA = {};
+  function medirSilueta(id) {
+    var v = vbDe(id), e = 0.5, w = Math.round(v[2] * e), h = Math.round(v[3] * e), caja = document.createElement('div'), img = new Image();
+    caja.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + IL[id].vb + '" width="' + w + '" height="' + h + '">' + IL[id].svg + '</svg>';
+    Array.prototype.forEach.call(caja.querySelectorAll('*'), function (n) {
+      Array.prototype.slice.call(n.attributes).forEach(function (a) { if (!/^[A-Za-z_][\w.:-]*$/.test(a.name)) n.removeAttribute(a.name); });
+    });
+    return new Promise(function (ok) {
+      img.onload = img.onerror = ok;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(caja.firstChild));
+    }).then(function () {
+      var c = document.createElement('canvas'), x = c.getContext('2d'), izq = [], der = [];
+      c.width = w; c.height = h;
+      if (img.naturalWidth) x.drawImage(img, 0, 0, w, h);
+      var d = x.getImageData(0, 0, w, h).data;
+      for (var f = 0; f < h; f++) {
+        var a = -1, b = -1;
+        for (var k = 0; k < w; k++) if (d[(f * w + k) * 4 + 3] > 48) { if (a < 0) a = k; b = k; }
+        izq.push(a < 0 ? Infinity : a / e); der.push(b < 0 ? -Infinity : (b + 1) / e);
+      }
+      SILUETA[id] = { e: e, izq: izq, der: der };
+    });
+  }
+  // Hasta dónde llega la tinta del dibujo entre sus alturas y0 e y1 (lado -1: su borde izquierdo; 1: el derecho), o
+  // ±Infinity si ahí no hay nada (o no se pudo medir)
+  function borde(id, y0, y1, lado) {
+    var s = SILUETA[id], r = lado < 0 ? Infinity : -Infinity;
+    if (s) for (var f = Math.max(0, Math.floor(y0 * s.e)), n = Math.min(s.izq.length - 1, Math.ceil(y1 * s.e)); f <= n; f++) r = lado < 0 ? Math.min(r, s.izq[f]) : Math.max(r, s.der[f]);
+    return r;
+  }
+  // Lo que ocupa el dibujo de lado a lado: [desde, hasta] en unidades del dibujo (sin silueta, su marco entero)
+  function lados(id) {
+    var v = vbDe(id), a = borde(id, 0, v[3], -1), b = borde(id, 0, v[3], 1);
+    return isFinite(a) && isFinite(b) ? [a, b] : [0, v[2]];
+  }
 
   /* ── Las placas: fotos grandes de la oficina, con su cámara ── */
   var PL = null, imagenes = [];
@@ -224,8 +263,12 @@
   /* ═════════ 3. El equipo, uno por uno ═════════ */
   var capaRev = capa();
   var NOMBRE_MAX = V ? 180 : 190, NOMBRE_ANCHO = V ? 960 : 900;
+  // Las personas, todas a la misma escala: el marco de su dibujo (600 × 1260, con el suelo en y = 1240) mide ALTO en
+  // pantalla y sus pies quedan en SUELO, así cada una tiene la altura que le da su dibujo. Atlas y Plotty flotan, de
+  // ANCHO de ancho y centrados en FLOTA. La luz y el piso de cada uno miden lo mismo para todos (ANCHO).
+  var ALTO = V ? 1144 : 971, SUELO = V ? 1667 : 1047, PIE = 1240 / 1260, ANCHO = V ? 660 : 560, FLOTA = V ? 1120 : 520;
   G.EQUIPO.forEach(function (p, i) {
-    var d = el('div', 'personaje', '', capaRev), v = vbDe(p.id), cab = IL[p.id].cabeza.split(' ').map(Number);
+    var d = el('div', 'personaje', '', capaRev), v = vbDe(p.id), cab = IL[p.id].cabeza.split(' ').map(Number), flota = FLOTAN[p.id];
     // En horizontal se turnan: uno a la derecha, el siguiente a la izquierda (en vertical, todos igual, para leer fácil)
     var izq = !V && i % 2 === 1;
     var fondo = placa('oficina', d);
@@ -238,20 +281,20 @@
     var nombre = el('div', 'nombre display', partes ? '<span class="pre">' + partes[1] + '</span>' + partes[2] : p.nombre, d);
     var burbuja = el('div', 'burbuja', '<span class="dicho"></span><span class="cursor"></span><span class="falta" style="color:transparent"></span>', d);
     burbuja.querySelector('.falta').textContent = p.linea;
-    // La figura: parada al fondo (o flotando, Atlas y Plotty), a un lado; su cara manda dónde va la burbuja
-    var FW = V ? 660 : 560, FH = FW * v[3] / v[2], cx = V ? 690 : izq ? 520 : 1400;
-    var top = FLOTAN[p.id] ? (V ? 1120 : 520) - FH / 2 : (V ? 1700 : 1075) - FH;
-    css(figura, { left: f2(cx - FW / 2) + 'px', top: f2(top) + 'px', width: FW + 'px', height: f2(FH) + 'px' });
-    var caraX = cx - FW / 2 + (cab[0] + cab[2] / 2) / v[2] * FW, caraY = top + (cab[1] + cab[3] / 2) / v[3] * FH, radio = cab[2] / 2 / v[2] * FW;
-    var bw = V ? 500 : 700, bder = caraX - radio - 46, bizq = Math.max(V ? 50 : 140, bder - bw);
-    if (izq) { bizq = caraX + radio + 46; bder = Math.min(W - 140, bizq + bw); burbuja.classList.add('cola-izq'); }
-    css(burbuja, { left: f2(bizq) + 'px', width: f2(bder - bizq) + 'px', top: f2(caraY - 70) + 'px', fontSize: (V ? 42 : 46) + 'px', padding: V ? '30px 34px' : '32px 40px' });
+    // La figura: parada al fondo (o flotando, Atlas y Plotty), a un lado, con la cara (el recorte cabeza) en cx; la cara
+    // manda dónde va la burbuja (ajustarBurbujas)
+    var FW = flota ? ANCHO : ALTO * v[2] / v[3], FH = FW * v[3] / v[2], k = FW / v[2], cx = V ? 690 : izq ? 520 : 1400;
+    var top = flota ? FLOTA - FH / 2 : SUELO - FH * PIE, izqFig = cx - (cab[0] + cab[2] / 2) * k;
+    css(figura, { left: f2(izqFig) + 'px', top: f2(top) + 'px', width: f2(FW) + 'px', height: f2(FH) + 'px' });
+    var caraX = cx, caraY = top + (cab[1] + cab[3] / 2) * k, radio = cab[2] / 2 * k;
+    if (izq) burbuja.classList.add('cola-izq');
+    css(burbuja, { fontSize: (V ? 42 : 46) + 'px', padding: V ? '30px 34px' : '32px 40px' });
     css(numero, V ? { right: '-40px', top: '430px', fontSize: '720px' } : izq ? { left: '-30px', top: '40px', fontSize: '680px' } : { right: '-30px', top: '40px', fontSize: '680px' });
     numero.style.webkitTextStroke = '3px ' + rgba(p.acento, 0.55);
-    css(cono, { left: f2(cx - FW * 0.75) + 'px', top: '-40px', width: f2(FW * 1.5) + 'px', height: f2(top + FH + 80) + 'px',
+    css(cono, { left: f2(cx - ANCHO * 0.75) + 'px', top: '-40px', width: f2(ANCHO * 1.5) + 'px', height: f2(top + FH + 80) + 'px',
       background: 'linear-gradient(to bottom, ' + rgba(p.acento, 0.42) + ', ' + rgba(p.acento, 0.06) + ' 70%, transparent)', clipPath: 'polygon(44% 0, 56% 0, 100% 100%, 0 100%)', mixBlendMode: 'screen', filter: 'blur(10px)' });
-    var pisoY = FLOTAN[p.id] ? top + FH + 120 : top + FH - 30;
-    css(piso, { left: f2(cx - FW * 0.55) + 'px', top: f2(pisoY - 55) + 'px', width: f2(FW * 1.1) + 'px', height: '110px', background: 'radial-gradient(ellipse at 50% 50%, ' + rgba(p.acento, 0.55) + ', transparent 70%)' });
+    var pisoY = flota ? top + FH + 120 : SUELO;
+    css(piso, { left: f2(cx - ANCHO * 0.55) + 'px', top: f2(pisoY - 55) + 'px', width: f2(ANCHO * 1.1) + 'px', height: '110px', background: 'radial-gradient(ellipse at 50% 50%, ' + rgba(p.acento, 0.55) + ', transparent 70%)' });
     velo.style.background = 'radial-gradient(ellipse 55% 45% at ' + f2(cx / W * 100) + '% ' + f2(caraY / H * 100 + 12) + '%, ' + rgba(p.acento, 0.3) + ', transparent 70%), ' +
       'linear-gradient(to bottom, rgba(4,13,24,.9), rgba(4,13,24,.35) 38%, rgba(4,13,24,.5) 70%, rgba(4,13,24,.95))';
     var rot = rotulo.querySelector('.placa'), rol = rotulo.querySelector('.rol');
@@ -261,21 +304,61 @@
     else if (izq) { css(rotulo, { left: '1000px', top: '640px' }); css(nombre, { left: '994px', top: '700px' }); }
     else { css(rotulo, { left: '140px', top: '640px' }); css(nombre, { left: '134px', top: '700px' }); }
     p.dom = { raiz: d, fondo: fondo, numero: numero, cono: cono, piso: piso, figura: figura, rotulo: rotulo, nombre: nombre, burbuja: burbuja,
-      dicho: burbuja.querySelector('.dicho'), falta: burbuja.querySelector('.falta'), cursor: burbuja.querySelector('.cursor'), cx: cx, caraY: caraY, lado: izq ? -1 : 1 };
+      dicho: burbuja.querySelector('.dicho'), falta: burbuja.querySelector('.falta'), cursor: burbuja.querySelector('.cursor'), cx: cx, caraY: caraY, lado: izq ? -1 : 1,
+      marco: { x: izqFig, y: top, k: k }, cara: { x: caraX, y: caraY, radio: radio } };
   });
-  // El nombre, lo más grande que quepa; en horizontal, la burbuja (con su frase entera) no baja hasta el rótulo
+  // El nombre, lo más grande que quepa
   function ajustarNombres() {
     ver(capaRev, true);
     G.EQUIPO.forEach(function (p) {
       var n = p.dom.nombre; ver(p.dom.raiz, true); n.style.fontSize = NOMBRE_MAX + 'px';
       var ancho = n.scrollWidth; if (ancho > NOMBRE_ANCHO) n.style.fontSize = Math.floor(NOMBRE_MAX * NOMBRE_ANCHO / ancho) + 'px';
-      if (!V) {
-        var b = p.dom.burbuja, tope = p.dom.rotulo.offsetTop - 44;
-        p.dom.dicho.textContent = p.linea; p.dom.falta.textContent = '';
-        var sobra = b.offsetTop + b.offsetHeight - tope; if (sobra > 0) b.style.top = (b.offsetTop - sobra) + 'px';
-        p.dom.dicho.textContent = ''; p.dom.falta.textContent = p.linea;
-      }
       ver(p.dom.raiz, false);
+    });
+  }
+  // Una burbuja junto a una cara: a su lado (lado -1, a la izquierda; 1, a la derecha), a `aire` del recorte de la cara y
+  // con su borde de arriba en `top`; si en su franja el dibujo asoma más allá (una mano, un teléfono, un rotor), se corre
+  // hasta dejarle `aire` también a esa tinta; si así necesita más renglones, busca más arriba o más abajo el lugar más
+  // cercano donde necesite menos, siempre con la cola (a 50 px de su borde de arriba) apuntando al recorte de la cara.
+  // ancho: el que tendría sin estorbos; entre: el espacio [desde, hasta] de la pantalla donde puede ir; tope: hasta dónde
+  // puede bajar. Se mide con la frase entera.
+  function ponerBurbuja(b, linea, id, marco, cara, lado, o) {
+    var dicho = b.querySelector('.dicho'), falta = b.querySelector('.falta');
+    function probar(top) {
+      var borde0 = cara.x + lado * (cara.radio + o.aire), a, z;
+      for (var vuelta = 0; vuelta < 6; vuelta++) {
+        a = lado < 0 ? Math.max(o.entre[0], borde0 - o.ancho) : borde0; z = lado < 0 ? borde0 : Math.min(o.entre[1], borde0 + o.ancho);
+        css(b, { left: f2(a) + 'px', width: f2(z - a) + 'px', top: f2(top) + 'px' });
+        if (o.tope != null && top + b.offsetHeight > o.tope) { top = o.tope - b.offsetHeight; b.style.top = f2(top) + 'px'; }
+        // (con holgura arriba y abajo: la figura se mece)
+        var tinta = marco.x + borde(id, (top - 18 - marco.y) / marco.k, (top + b.offsetHeight + 18 - marco.y) / marco.k, lado) * marco.k;
+        var nuevo = lado < 0 ? Math.min(borde0, tinta - o.aire) : Math.max(borde0, tinta + o.aire);
+        if (Math.abs(nuevo - borde0) < 0.5) break;
+        borde0 = nuevo;
+      }
+      return { a: a, z: z, top: top, ancho: z - a, alto: b.offsetHeight };
+    }
+    dicho.textContent = linea; falta.textContent = '';
+    var mejor = probar(o.top), libre = probar(-1e4).alto;   // (lejos de todo: sus renglones sin estorbos)
+    if (mejor.alto > libre + 1) {
+      for (var dy = 10; dy <= 2 * cara.radio; dy += 10) [o.top - dy, o.top + dy].forEach(function (top) {
+        var cola = top + 50;
+        if (cola < cara.y - cara.radio + 20 || cola > cara.y + cara.radio - 20) return;
+        var r = probar(top);
+        if (r.alto < mejor.alto - 1) mejor = r;
+      });
+    }
+    css(b, { left: f2(mejor.a) + 'px', width: f2(mejor.ancho) + 'px', top: f2(mejor.top) + 'px' });
+    dicho.textContent = ''; falta.textContent = linea;
+  }
+  // Cada burbuja junto a su cara; en horizontal, con su frase entera, sin bajar hasta el rótulo
+  function ajustarBurbujas() {
+    ver(capaRev, true);
+    G.EQUIPO.forEach(function (p) {
+      var o = p.dom; ver(o.raiz, true);
+      ponerBurbuja(o.burbuja, p.linea, p.id, o.marco, o.cara, o.lado < 0 ? 1 : -1,
+        { aire: 46, top: o.cara.y - 70, ancho: V ? 500 : 700, entre: V ? [50, W - 50] : [140, W - 140], tope: V ? null : o.rotulo.offsetTop - 44 });
+      ver(o.raiz, false);
     });
   }
 
@@ -372,27 +455,55 @@
   var eleGrupo = el('div', 'capa', '', capaEle);
   var eleTit = el('div', 'display', V ? 'Del diagnóstico<br>a la cosecha.' : 'Del diagnóstico a la cosecha.', capaEle);
   css(eleTit, { position: 'absolute', left: '0', right: '0', textAlign: 'center', top: (V ? 260 : 80) + 'px', fontSize: (V ? 100 : 88) + 'px', lineHeight: '1.02' });
-  var ATRAS = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle'], ADELANTE = ['tamandua', 'faro', 'plotty', 'pepa', 'atlas'];
+  // Atrás, de Lupe a Bucle; adelante, Tamandúa, Faro, Plotty, Pepa y Atlas (en vertical no caben los cinco: Plotty flota
+  // entre las dos filas). Cada fila va centrada y con el mismo aire entre lo que ocupa cada figura (su silueta, no su
+  // marco), sin tocarse. alto: el alto en pantalla del marco de las personas de la fila (las mascotas, en la misma
+  // proporción que en su presentación); suelo: donde pisan; centro: a qué altura flota una fila de una mascota sola.
+  // La cámara se acerca un 8 % (ELE_ZOOM) durante la toma: aun así nadie se sale del cuadro ni toca el título.
+  var ORDEN = ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro', 'plotty', 'pepa', 'atlas'];   // el orden en que aparecen
+  var FILAS = V ? [
+    { ids: ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle'], alto: 409, suelo: 950 },
+    { ids: ['plotty'], alto: 520, centro: 1118 },
+    { ids: ['tamandua', 'faro', 'pepa', 'atlas'], alto: 520, suelo: 1675 }
+  ] : [
+    { ids: ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle'], alto: 370, suelo: 595 },
+    { ids: ['tamandua', 'faro', 'plotty', 'pepa', 'atlas'], alto: 480, suelo: 1045 }
+  ];
+  var ELE_ZOOM = 1.08, ELE_ORIGEN = V ? 0.62 : 0.7, ELE_AIRE = [18, V ? 60 : 110], MASCOTA = ANCHO / ALTO;
   var figurasEle = [];
-  (function () {
-    function fila(ids, ancho, piso, paso, zi) {
-      var x0 = W / 2 - (ids.length - 1) * paso / 2;
-      ids.forEach(function (id, j) {
-        var v = vbDe(id), alto = ancho * v[3] / v[2], cx = x0 + j * paso, flota = FLOTAN[id];
-        var d = el('div', 'figura', ilus(id), eleGrupo);
-        css(d, { left: f2(cx - ancho / 2) + 'px', top: f2((flota ? piso - ancho * 520 / 300 * 0.62 : piso) - (flota ? alto / 2 : alto)) + 'px', width: ancho + 'px', height: f2(alto) + 'px', zIndex: zi });
-        figurasEle.push({ d: d, id: id, acento: POR_ID[id].acento });
+  FILAS.forEach(function (fila, n) {
+    fila.ids.forEach(function (id) {
+      var d = el('div', 'figura', ilus(id), eleGrupo); d.style.zIndex = n + 1;
+      figurasEle.push({ d: d, id: id, acento: POR_ID[id].acento, fila: fila, k: ORDEN.indexOf(id) });
+    });
+  });
+  function colocarElenco() {
+    var mitad = (W / 2 - 40) / ELE_ZOOM;   // lo que cabe a cada lado del centro, con la cámara ya encima
+    FILAS.forEach(function (fila) {
+      var fs = figurasEle.filter(function (f) { return f.fila === fila; }), alto = fila.alto, suma = 0, aire = 0;
+      for (var vuelta = 0; vuelta < 3; vuelta++) {
+        suma = 0;
+        fs.forEach(function (f) {
+          var v = vbDe(f.id), fw = FLOTAN[f.id] ? alto * MASCOTA : alto * v[2] / v[3], k = fw / v[2], l = lados(f.id);
+          f.caja = { w: fw, h: v[3] * k, x0: l[0] * k, x1: l[1] * k }; suma += f.caja.x1 - f.caja.x0;
+        });
+        aire = fs.length > 1 ? Math.min(ELE_AIRE[1], (2 * mitad - suma) / (fs.length - 1)) : 0;
+        if (fs.length < 2 || aire >= ELE_AIRE[0]) break;
+        alto *= (2 * mitad - ELE_AIRE[0] * (fs.length - 1)) / suma;   // no cabe: la fila entera, un poco más chica
+      }
+      var x = W / 2 - (suma + aire * (fs.length - 1)) / 2;
+      fs.forEach(function (f) {
+        var c = f.caja, top = FLOTAN[f.id] ? (fila.centro != null ? fila.centro : fila.suelo - alto * 0.62) - c.h / 2 : fila.suelo - c.h * PIE;
+        css(f.d, { left: f2(x - c.x0) + 'px', top: f2(top) + 'px', width: f2(c.w) + 'px', height: f2(c.h) + 'px' });
+        x += c.x1 - c.x0 + aire;
       });
-    }
-    if (V) { fila(ATRAS, 236, 1200, 160, 1); fila(ADELANTE, 300, 1640, 188, 2); }
-    else { fila(ATRAS, 238, 700, 286, 1); fila(ADELANTE, 300, 1066, 330, 2); }
-    figurasEle.forEach(function (f, k) { f.k = k; });
-  })();
+    });
+  }
 
   function elenco(t) {
     var on = t >= G.elenco && t < G.cierre; ver(capaEle, on); if (!on) return;
-    var u = t - G.elenco, cam = 1 + 0.08 * eInOut(prog(u, 0, 2.4));
-    eleGrupo.style.transform = 'scale(' + f2(cam) + ')'; eleGrupo.style.transformOrigin = '50% ' + (V ? '62%' : '70%');
+    var u = t - G.elenco, cam = 1 + (ELE_ZOOM - 1) * eInOut(prog(u, 0, 2.4));
+    eleGrupo.style.transform = 'scale(' + f2(cam) + ')'; eleGrupo.style.transformOrigin = '50% ' + ELE_ORIGEN * 100 + '%';
     eleLuz.style.opacity = f2(0.6 + 0.4 * prog(u, 0, 0.5));
     figurasEle.forEach(function (f) {
       var a = eOut(prog(u, f.k * 0.055, f.k * 0.055 + 0.4)), luz = eOut(prog(u, 0.45 + f.k * 0.03, 0.8 + f.k * 0.03));
@@ -447,14 +558,19 @@
   var remLuz = el('div', 'capa', '', capaRem); remLuz.style.background = 'radial-gradient(ellipse 45% 32% at ' + (V ? '58% 60%' : '50% 60%') + ', rgba(23,195,178,.28), transparent 70%)';
   var remFig = el('div', 'figura', ilus('plotty'), capaRem);
   var remBur = el('div', 'burbuja', '<span class="dicho"></span><span class="cursor"></span><span class="falta" style="color:transparent"></span>', capaRem);
-  (function () {
-    // En vertical Plotty va más chico y a la derecha: su burbuja tiene que caber entera a su izquierda
-    var v = vbDe('plotty'), FW = V ? 480 : 520, FH = FW * v[3] / v[2], cx = V ? 720 : 1180, cy = V ? 1180 : 600;
+  // En vertical Plotty va más chico y a la derecha: su burbuja tiene que caber entera a su izquierda, sin tapar su mano
+  var REM = (function () {
+    var v = vbDe('plotty'), FW = V ? 480 : 520, FH = FW * v[3] / v[2], k = FW / v[2], cx = V ? 720 : 1180, cy = V ? 1180 : 600;
     css(remFig, { left: f2(cx - FW / 2) + 'px', top: f2(cy - FH / 2) + 'px', width: FW + 'px', height: f2(FH) + 'px' });
-    var cab = IL.plotty.cabeza.split(' ').map(Number), caraX = cx - FW / 2 + (cab[0] + cab[2] / 2) / v[2] * FW, caraY = cy - FH / 2 + (cab[1] + cab[3] / 2) / v[3] * FH;
-    var der = caraX - cab[2] / 2 / v[2] * FW - 40;
-    css(remBur, { left: f2(der - (V ? 470 : 560)) + 'px', width: (V ? 470 : 560) + 'px', top: f2(caraY - 90) + 'px', fontSize: (V ? 50 : 54) + 'px', padding: '30px 36px' });
+    var cab = IL.plotty.cabeza.split(' ').map(Number);
+    css(remBur, { fontSize: (V ? 50 : 54) + 'px', padding: '30px 36px' });
+    return { marco: { x: cx - FW / 2, y: cy - FH / 2, k: k }, cara: { x: cx - FW / 2 + (cab[0] + cab[2] / 2) * k, y: cy - FH / 2 + (cab[1] + cab[3] / 2) * k, radio: cab[2] / 2 * k } };
   })();
+  function ajustarRemate() {
+    ver(capaRem, true);
+    ponerBurbuja(remBur, G.remateLinea, 'plotty', REM.marco, REM.cara, -1, { aire: 40, top: REM.cara.y - 90, ancho: V ? 470 : 560, entre: [V ? 50 : 140, W] });
+    ver(capaRem, false);
+  }
   var remDicho = remBur.querySelector('.dicho'), remFalta = remBur.querySelector('.falta'), remCursor = remBur.querySelector('.cursor');
   remFalta.textContent = G.remateLinea;
 
@@ -560,9 +676,10 @@
       return Promise.all(imagenes.map(function (i) { i.src = PLACAS_URL + i.dataset.placa + '.jpg'; return i.decode ? i.decode().catch(function () {}) : new Promise(function (ok) { i.onload = i.onerror = ok; }); }));
     })
   ]).then(function () {
-    return Promise.all(['700 100px "Space Grotesk"', '600 100px "Space Grotesk"', '700 40px "Space Mono"'].map(function (f) { return document.fonts.load(f); }));
+    return Promise.all(['700 100px "Space Grotesk"', '600 100px "Space Grotesk"', '700 40px "Space Mono"'].map(function (f) { return document.fonts.load(f); })
+      .concat(G.EQUIPO.map(function (p) { return medirSilueta(p.id); })));
   }).then(function () {
-    ajustarNombres(); ajustarIntro();
+    ajustarNombres(); ajustarBurbujas(); colocarElenco(); ajustarRemate(); ajustarIntro();
     cuadro(parseFloat(q.get('t') || '0'));
     document.documentElement.setAttribute('data-listo', '1');
   });

@@ -18,10 +18,12 @@ sus enlaces y el equipo que la hizo. Las mismas piezas sirven para Instagram y p
 ## El equipo
 
 Once integrantes, cada uno con placa, y dos mascotas. En la oficina son cabezones en vector, con el mismo trazo de la
-escena; en las fichas y en redes, ilustraciones con tinta y color plano. Coral no aparece en ningún dibujo: sigue
-reservado para "Agenda tu diagnóstico". Aby y Felipe, la dupla de PRENSA, son las dos caras reales de la oficina y
-tienen además un vestuario de gala para contenido y redes: su cabezón en `_herramientas/dibujos/cabezones/` y su
-ilustración en `ilustraciones.js` (`aby-elegante` y `felipe-elegante`).
+escena; en las fichas, en redes y en los videos, ilustraciones en la línea de la banda (tinta a mano, color plano y su
+número chico en la camiseta), dibujadas en `_herramientas/dibujos/banda/`. Coral no aparece en ningún dibujo: sigue
+reservado para "Agenda tu diagnóstico". Aby y Felipe, la dupla de PRENSA, siguen con su ilustración aprobada
+(`_herramientas/dibujos/ilustracion/`) hasta que se apruebe su versión en la línea de la banda. Tienen además un
+vestuario de gala para contenido y redes: su cabezón en `_herramientas/dibujos/cabezones/` y su ilustración en
+`ilustraciones.js` (`aby-elegante` y `felipe-elegante`).
 
 | Integrante | Nombre | Rol | Placa | Dónde está | Frase |
 |---|---|---|---|---|---|
@@ -29,17 +31,17 @@ ilustración en `ilustraciones.js` (`aby-elegante` y `felipe-elegante`).
 | **The Architect** | | Estrategia y proyectos | E2 | Sala de planos | «Si no se puede dibujar, no se puede construir.» |
 | **Celda** (Byte) | Celeste Dávila | Datos y métricas | E3 | Su estación y el laboratorio | «Si no cuadra, no avanza.» |
 | **The Engine** | | Ejecución y sistemas | E4 | Sala de máquinas | «Lo que se repite, se automatiza.» |
-| **Grilla** (Pixel) | Griselda Llanos | Diseño | E5 | Su estación | «Si hay que explicarlo, está mal diseñado.» |
+| **Grillo** (Pixel) | Gregorio Llanos | Diseño | E5 | Su estación | «Si hay que explicarlo, está mal diseñado.» |
 | **Bucle** (Kilo) | Benjamín Ochoa | Desarrollo | E5 | Su estación | «Rebanada chica, entrega segura.» |
 | **Tamandúa** | Tomás Hormazábal | Validación | E6 | Su estación | «Si se puede romper, lo rompo yo antes.» |
 | **Faro** | Fausto Torres | Puesta en marcha | E7 | El tubo a producción | «No termina cuando se publica. Termina cuando se usa.» |
 | **Pepa** | Josefa Huerta | Cosecha | E9 | Estantería del núcleo | «Lo que sirve dos veces se guarda. Lo demás, se bota.» |
-| **Aby** | | La corresponsal | PRENSA | El set | «¿The Engine existe? Yo tampoco lo sé.» |
+| **Aby** | | La corresponsal | PRENSA | El set | «Tres, dos, uno… estamos al aire.» |
 | **Felipe** (Rodman) | | El rostro | PRENSA | El set, con Aby | «Pásala, que yo la cuento.» |
 | **Atlas** | | Mascota de The Architect | 360° | Sobre la mesa de dos | «Desde aquí arriba se ve todo.» |
 | **Plotty** | | Recepción | E0 | Recepción | «Tres preguntas. Prometo que no es un formulario.» |
 
-Pronombres para los textos: Lupe, Celda, Grilla, Pepa y Aby en femenino; el resto en masculino. En los textos públicos
+Pronombres para los textos: Lupe, Celda, Pepa y Aby en femenino; el resto en masculino. En los textos públicos
 se habla de integrantes, todos con placa y con el mismo trato.
 
 ## Qué hay en la oficina
@@ -48,7 +50,7 @@ se habla de integrantes, todos con placa y con el mismo trato.
 la puerta al fondo del pasaje. Se entra tocándola (o el pasaje), con «Entrar a la oficina» en la bienvenida y el menú, o
 con `#oficina`; se sale con «Salir a la calle», `Escape` o el botón atrás del navegador. Mientras está cerrada, su
 interior no se dibuja ni se anima. Adentro: la recepción con Plotty, la vitrina y, sobre el mesón, la libreta del primer capítulo de «Seis décadas» (la hoja
-con renglones, la corrección en rojo, la línea a mano, el timbre y el clip: ahí empieza la línea); el muro del equipo; las estaciones de Celda, Grilla, Bucle y
+con renglones, la corrección en rojo, la línea a mano, el timbre y el clip: ahí empieza la línea); el muro del equipo; las estaciones de Celda, Grillo, Bucle y
 Tamandúa; el tubo "A producción" de Faro; la sala de diagnóstico con el motor en la pizarra; la estantería del núcleo
 (Pepa, los cuatro casos de referencia, el Recetario y "Seis décadas"); el café con el reloj en hora de Chile; y al fondo
 la **Sala de planos y máquinas** (The Architect y The Engine frente a frente en la mesa de dos, Atlas proyectando el
@@ -297,7 +299,7 @@ lotes y termina con un local que se arrienda. Nada de esto se dibuja a mano: esc
 - **Plantilla por rubro**: `clinica`, `taller` o `basica` (cualquier rubro), con el nombre y el color de cada caso.
 - **La fase manda cómo se ve el local**: E0 se arrienda (techo punteado), E1 diagnóstico («Próximamente» en el techo y
   papel en la vitrina), E2 a E6 en obra (grúa, andamio y «En obra»), E7 inauguración (globos y cinta en la puerta),
-  E8 y E9 abierto. Por dentro: E1 con Lupe midiendo y el cliente, la obra con Grilla, Bucle y Tamandúa, la
+  E8 y E9 abierto. Por dentro: E1 con Lupe midiendo y el cliente, la obra con Grillo, Bucle y Tamandúa, la
   inauguración con Faro y las tijeras, y en E9 la placa del día 90 junto a la puerta.
 - **Permiso**: con su nombre, sólo con su rubro (el techo dice, por ejemplo, «Clínica dental», con el dibujo de su
   rubro) o sólo en El Archivo.
@@ -474,7 +476,7 @@ además hay un botón para pausar, que también detiene a la gente de los locale
 
 ## Kit para Instagram
 
-Catorce piezas en publicación (1080 × 1350) e historia (1080 × 1920), más la imagen para compartir el enlace
+Quince piezas en publicación (1080 × 1350) e historia (1080 × 1920), más la imagen para compartir el enlace
 (1200 × 630, `oficina-og.png`, ya enlazada en las etiquetas `og:image` de la página) y la de cada sala
 (`sala-<id>-og.png`, la de las páginas `oficina/<id>/`). En las historias lo importante queda fuera de las franjas de
 250 px de arriba y abajo.
@@ -486,7 +488,6 @@ Catorce piezas en publicación (1080 × 1350) e historia (1080 × 1920), más la
 | Vista previa de cada sala | `sala-<id>-og.png` | (La usan las páginas `oficina/<id>/` al compartir el enlace) |
 | El equipo | `elenco-4x5.png`, `elenco-9x16.png` | Once integrantes, uno por parte del trabajo. Los reconoces por su placa. |
 | ¿Quién hace qué? | `motor-4x5.png`, `motor-9x16.png` | Diez fases, un solo motor. |
-| ¿Quién es real? | `quien-4x5.png`, `quien-9x16.png` | Aby y Felipe dicen que ellos. Los demás no contestan. |
 | Fichas | `ficha-<id>-4x5.png`, `ficha-<id>-9x16.png` | Una por integrante: su frase, sus tres rasgos (en `datos.js`) y biplot.cl/oficina |
 
 Se regeneran con `node oficina/_herramientas/exportar-kit.mjs` (todas) o `--solo ficha-lupe,oficina,sala-haru`. Con
@@ -506,7 +507,7 @@ sin personajes y con biplot.cl, y un hilo con un nodo por fase cruza de lámina 
 ## Teaser del equipo
 
 Un video de 85 segundos que presenta la oficina y a once de sus personajes, uno por uno, cada uno con su frase: Plotty,
-Lupe, The Architect, Atlas, Celda, The Engine, Grilla, Bucle, Tamandúa, Faro y Pepa. Abre con el problema (planillas,
+Lupe, The Architect, Atlas, Celda, The Engine, Grillo, Bucle, Tamandúa, Faro y Pepa. Abre con el problema (planillas,
 chats, tareas repetidas), muestra la oficina de noche que se abre, pasa por el motor de diez fases y el equipo completo,
 y cierra con la marca, biplot.cl/oficina y «Agenda tu diagnóstico». Sale en vertical (1080 × 1920, para reels e
 historias) y en horizontal (1920 × 1080), a 30 cuadros por segundo, con H.264 y AAC.
@@ -520,8 +521,10 @@ pósters.
 Se genera con `node oficina/_herramientas/exportar-teaser.mjs` (necesita ffmpeg en el PATH, o `FFMPEG=<ruta>`), que
 deja `teaser-equipo-9x16.mp4` y `teaser-equipo-16x9.mp4` en `oficina/kit/video/` (entre 50 y 70 MB cada uno; no se
 suben al repo). Con `--formato 9x16` hace uno solo, `--cuadros 15.5,30` saca esos segundos en PNG para revisar, `--solo-audio`
-deja sólo el sonido y `--placas <carpeta>` guarda los fondos para reusarlos en la próxima pasada. Todo está en
-`_herramientas/teaser/`:
+deja sólo el sonido, `--salida <carpeta>` los deja en otra carpeta y `--placas <carpeta>` guarda los fondos para reusarlos
+en la próxima pasada. Cada cuadro se fotografía hasta que dos tomas seguidas salen iguales (Chrome a veces entrega la
+foto antes de terminar de pintar los dibujos con su tinta a mano), así que cada formato tarda entre 30 y 45 minutos.
+Todo está en `_herramientas/teaser/`:
 
 - `guion.js`: los tiempos (a 100 pulsos por minuto), las frases de la intro y, por personaje, su placa, rol, frase,
   color, su rincón de la oficina y su voz. La imagen y el sonido salen de este mismo guion, así que caen juntos.
