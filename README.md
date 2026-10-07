@@ -10,8 +10,8 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   **punto coral, que queda sólo para agendar el diagnóstico**. Orden: portada (con el video de fondo, una
   ficha para agendar por WhatsApp y una franja de datos); servicios y «lo que cambia con BiPlot»; casos (Fundos 360,
   Haru 360 y Nu Home 360, cada uno con su video y el enlace a su sala); «Seis décadas, la misma línea» (del papel al
-  genérico, la línea por las diez fases de la oficina y el local libre del barrio); el motor de diez fases (con la
-  cara de quien lleva cada una, sobre la curva del isotipo que termina en el punto coral); **BiPlot HQ** (la visita
+  genérico, la línea por las diez fases de la oficina y el local libre del barrio); el motor de diez fases (sobre la curva del isotipo que termina en el
+  punto coral; los personajes de la oficina no aparecen en el proceso, sólo el guiño «Conócelos en la oficina»); **BiPlot HQ** (la visita
   guiada con Plotty); precios; preguntas y contacto («Tu proceso es el próximo punto», con la opción de partir
   conversando con Plotty). El fondo de la portada es un video sin
   textos grandes de qué trata BiPlot (planillas y chats sueltos → se tachan los pasos que sobran → lo demás se
