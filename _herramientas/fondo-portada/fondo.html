@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>BiPlot · fondo de la portada</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<!--
+  El video de fondo de la portada, cuadro a cuadro: de qué trata BiPlot, sin textos grandes.
+  1) El desorden: planillas, chats, correos y notas flotando.
+  2) Los pasos que sobran se tachan y se van.
+  3) Lo que queda se ordena en la línea del isotipo (Ventas → Inventario → Cobranza → Agenda → Clientes),
+     que termina en el punto coral.
+  4) Los datos corren por la línea; después todo se vuelve a soltar y el ciclo empieza igual (bucle sin corte).
+  Todo lo que se ve en el segundo t sale de window.cuadro(t): así cada cuadro se graba por separado (grabar.mjs).
+  ?formato=16x9 (1920 × 1080, por omisión) o ?formato=9x16 (1080 × 1920). Ver: abrir con ?ver para que corra solo.
+-->
+<style>
+  *{box-sizing:border-box;margin:0}
+  html,body{background:#081B30;overflow:hidden}
+  #lienzo{position:relative;overflow:hidden;font-family:'Inter',sans-serif;color:#1d2733;
+    background:radial-gradient(ellipse 75% 70% at 58% 46%,#123659 0%,#0E2A47 45%,#081B30 100%)}
+  #reja{position:absolute;inset:0;background-image:linear-gradient(rgba(122,170,220,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(122,170,220,.06) 1px,transparent 1px);background-size:64px 64px;
+    -webkit-mask-image:radial-gradient(ellipse 70% 70% at 55% 50%,#000 30%,transparent 85%);mask-image:radial-gradient(ellipse 70% 70% at 55% 50%,#000 30%,transparent 85%)}
+  svg.capa{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  .eje{fill:none;stroke:#3f6da0;stroke-width:3;stroke-linecap:round;opacity:.35}
+  .trazo{fill:none;stroke:#17C3B2;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 10px rgba(23,195,178,.75))}
+  .pulso{fill:#9ff5ea;filter:drop-shadow(0 0 10px #17C3B2) drop-shadow(0 0 4px #fff)}
+  .fin{fill:#FF6B4A;filter:drop-shadow(0 0 14px rgba(255,107,74,.9))}
+  .halo{fill:none;stroke:#FF6B4A;stroke-width:3}
+
+  .tarjeta{position:absolute;left:0;top:0;transform-origin:50% 50%;will-change:transform,opacity}
+  .tarjeta .cuerpo{position:relative;background:rgba(244,247,250,.96);border-radius:12px;box-shadow:0 18px 40px rgba(2,8,18,.45),0 2px 6px rgba(2,8,18,.3);overflow:hidden}
+  .tachado{position:absolute;left:-4%;right:-4%;top:50%;height:5px;margin-top:-2px;background:#FF6B4A;border-radius:3px;transform-origin:0 50%;box-shadow:0 0 8px rgba(255,107,74,.6)}
+
+  /* planilla */
+  .xls .barra{display:flex;align-items:center;gap:7px;padding:9px 12px;background:#e3e8ee;font:600 15px/1 'Inter';color:#3a4552}
+  .xls .barra i{width:10px;height:10px;border-radius:50%;background:#c2cad3;display:block}
+  .xls .barra span{margin-left:6px}
+  .xls table{border-collapse:collapse;width:100%;font:500 13px/1 'Inter';color:#45515e}
+  .xls td{border:1px solid #d6dde5;height:24px;padding:0 6px;white-space:nowrap}
+  .xls td.h{background:#eef1f5;color:#8995a2;text-align:center;font-weight:600}
+  .xls td.b span{display:block;height:7px;border-radius:4px;background:#cfd7e0}
+  .xls td.ref{color:#c0392b;font-weight:700}
+  .xls td.v{color:#1f7a4d;font-weight:600}
+  /* chat */
+  .chat .cuerpo{padding:14px 16px 12px;border-radius:14px}
+  .chat small{display:block;font:600 13px/1.2 'Inter';color:#1f7a6d;margin-bottom:6px}
+  .chat p{font:500 18px/1.35 'Inter';color:#1d2733}
+  .chat em{display:block;text-align:right;font:500 12px/1 'Inter';color:#8a96a3;font-style:normal;margin-top:6px}
+  /* nota adhesiva */
+  .nota .cuerpo{background:#f3e9a8;border-radius:4px;padding:18px 18px 16px;font:600 19px/1.3 'Inter';color:#3b3418;box-shadow:0 18px 34px rgba(2,8,18,.45)}
+  .nota b{display:block;margin-top:8px;font:800 22px/1 'Inter';letter-spacing:.01em;color:#2b2510}
+  /* píldora (correo, atajos) */
+  .pild .cuerpo{display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;font:600 17px/1 'Inter';color:#2b3542;white-space:nowrap}
+  .pild svg{width:20px;height:20px;flex:none;color:#5a6776}
+  /* contactos */
+  .csv .cuerpo{padding:0}
+  .csv .barra{padding:9px 12px;background:#e3e8ee;font:600 15px/1 'Inter';color:#3a4552}
+  .csv ul{list-style:none;padding:8px 12px 10px}
+  .csv li{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #e3e8ee}
+  .csv li:last-child{border-bottom:0}
+  .csv li i{width:22px;height:22px;border-radius:50%;background:#cbd5df;flex:none;display:block}
+  .csv li span{height:8px;border-radius:4px;background:#cfd7e0;display:block}
+
+  /* los puntos de la línea */
+  .nodo{position:absolute;left:0;top:0;will-change:transform,opacity}
+  .nodo .pt{position:absolute;left:-12px;top:-12px;width:24px;height:24px;border-radius:50%;background:#17C3B2;box-shadow:0 0 0 6px rgba(23,195,178,.18),0 0 22px rgba(23,195,178,.85)}
+  .nodo .rot{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);white-space:nowrap;padding:9px 16px;border-radius:10px;background:rgba(8,27,48,.82);border:1.5px solid rgba(23,195,178,.55);font:600 21px/1 'Inter';color:#eaf6f5;box-shadow:0 10px 26px rgba(2,8,18,.4)}
+</style>
+</head>
+<body>
+<div id="lienzo">
+  <div id="reja"></div>
+  <svg class="capa" id="svg">
+    <path class="eje" id="eje"/>
+    <path class="trazo" id="trazo" pathLength="1" stroke-dasharray="1 1"/>
+    <circle class="halo" id="halo" r="20"/>
+    <circle class="fin" id="fin" r="16"/>
+    <g id="pulsos"></g>
+  </svg>
+</div>
+<script>
+(function () {
+  'use strict';
+  var q = new URLSearchParams(location.search), V = q.get('formato') === '9x16';
+  var W = V ? 1080 : 1920, H = V ? 1920 : 1080, T = 16;
+  var lienzo = document.getElementById('lienzo');
+  lienzo.style.width = W + 'px'; lienzo.style.height = H + 'px';
+
+  function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
+  function prog(t, a, b) { return clamp((t - a) / (b - a), 0, 1); }
+  function lerp(a, b, x) { return a + (b - a) * x; }
+  function eInOut(x) { return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
+  function eOut(x) { return 1 - Math.pow(1 - x, 3); }
+  var TAU = Math.PI * 2;
+
+  /* ── La línea: cinco puntos que suben como el isotipo y el punto coral al final ── */
+  var NODOS = V
+    ? [['Ventas', .17, .80], ['Inventario', .38, .69], ['Cobranza', .55, .74], ['Agenda', .70, .55], ['Clientes', .82, .61]]
+    : [['Ventas', .16, .76], ['Inventario', .32, .61], ['Cobranza', .47, .67], ['Agenda', .63, .46], ['Clientes', .77, .53]];
+  var FIN = V ? [.90, .38] : [.90, .26];
+  var EJE = V ? [[.08, .30], [.08, .90], [.94, .90]] : [[.07, .14], [.07, .89], [.95, .89]];
+  function px(p) { return [p[0] * W, p[1] * H]; }
+  var pts = NODOS.map(function (n) { return px([n[1], n[2]]); }).concat([px(FIN)]);
+  var d = 'M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L');
+  var trazo = document.getElementById('trazo'); trazo.setAttribute('d', d);
+  document.getElementById('eje').setAttribute('d', 'M' + EJE.map(function (p) { var q2 = px(p); return q2[0] + ' ' + q2[1]; }).join(' L'));
+  var fin = document.getElementById('fin'), halo = document.getElementById('halo');
+  fin.setAttribute('cx', pts[5][0]); fin.setAttribute('cy', pts[5][1]);
+  halo.setAttribute('cx', pts[5][0]); halo.setAttribute('cy', pts[5][1]);
+  var largo = (function () { var p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', d); document.getElementById('svg').appendChild(p); var l = p.getTotalLength(); p.remove(); return l; })();
+  var pulsos = [0, 1, 2].map(function () { var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('class', 'pulso'); c.setAttribute('r', 7); document.getElementById('pulsos').appendChild(c); return c; });
+
+  var nodos = NODOS.map(function (n) {
+    var e = document.createElement('div'); e.className = 'nodo';
+    e.innerHTML = '<span class="pt"></span><span class="rot">' + n[0] + '</span>';
+    lienzo.appendChild(e); return e;
+  });
+
+  /* ── El desorden: cada tarjeta, su lugar suelto, su vaivén y a qué punto de la línea va (o -1 si sobra) ── */
+  var ICO_MAIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
+  var ICO_COPIA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>';
+  var ICO_XLS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>';
+  function planilla(nombre, filas, marcas) {
+    var h = '<div class="barra"><i></i><i></i><i></i><span>' + nombre + '</span></div><table>';
+    h += '<tr><td class="h"></td><td class="h">A</td><td class="h">B</td><td class="h">C</td><td class="h">D</td></tr>';
+    for (var r = 1; r <= filas; r++) {
+      h += '<tr><td class="h">' + r + '</td>';
+      for (var c = 0; c < 4; c++) {
+        var m = marcas[r + ',' + c];
+        h += m ? '<td class="' + m[0] + '">' + m[1] + '</td>' : '<td class="b"><span style="width:' + (30 + ((r * 7 + c * 13) % 55)) + '%"></span></td>';
+      }
+      h += '</tr>';
+    }
+    return h + '</table>';
+  }
+  var TARJETAS = [
+    { cls: 'xls', w: 330, va: 0, html: planilla('ventas_FINAL_v7.xlsx', 6, { '2,2': ['v', '$86.500'], '4,1': ['ref', '#REF!'], '5,3': ['v', '$1.240.000'] }),
+      h: [.30, .27], v: [.30, .17], r: -5, z: 1 },
+    { cls: 'chat', w: 300, va: -1, html: '<small>Grupo Ventas</small><p>¿Quién tiene la última versión del Excel?</p><em>10:42</em>',
+      h: [.60, .17], v: [.72, .10], r: 3, z: 1 },
+    { cls: 'nota', w: 210, va: 3, html: 'Llamar al proveedor por el pedido de ayer<b>¡URGENTE!</b>',
+      h: [.18, .60], v: [.22, .44], r: -7, z: 1 },
+    { cls: 'pild', w: 0, va: 1, html: ICO_MAIL + 'RE: RE: RE: stock actualizado',
+      h: [.54, .82], v: [.60, .86], r: 2, z: 1 },
+    { cls: 'pild', w: 0, va: -1, html: ICO_COPIA + 'Copiar → Pegar → Repetir',
+      h: [.82, .40], v: [.74, .32], r: -3, z: .82 },
+    { cls: 'xls', w: 300, va: 2, html: planilla('cobranza_marzo (2).xlsx', 5, { '1,3': ['ref', '¿pagó?'], '3,2': ['v', '$420.000'] }),
+      h: [.74, .70], v: [.70, .60], r: 4, z: 1 },
+    { cls: 'chat', w: 300, va: -1, html: '<small>Juan · Bodega</small><p>Te lo reenvío por correo, no me llegó.</p><em>18:07</em>',
+      h: [.42, .48], v: [.36, .66], r: -2, z: 1 },
+    { cls: 'csv', w: 250, va: 4, html: '<div class="barra">clientes_contactos.csv</div><ul>' + [62, 48, 70, 54].map(function (x) { return '<li><i></i><span style="width:' + x + '%"></span></li>'; }).join('') + '</ul>',
+      h: [.89, .17], v: [.82, .92], r: 5, z: .82 },
+    { cls: 'pild', w: 0, va: -1, html: ICO_XLS + 'reporte_mensual (3).xlsx',
+      h: [.10, .17], v: [.20, .92], r: -4, z: .82 }
+  ];
+  TARJETAS.forEach(function (c, i) {
+    var e = document.createElement('div'); e.className = 'tarjeta ' + c.cls;
+    e.innerHTML = '<div class="cuerpo"' + (c.w ? ' style="width:' + c.w + 'px"' : '') + '>' + c.html + '</div>' + (c.va < 0 ? '<span class="tachado"></span>' : '');
+    lienzo.appendChild(e);
+    c.el = e; c.tach = e.querySelector('.tachado');
+    c.ancho = e.offsetWidth; c.alto = e.offsetHeight;
+    c.fase = i * 1.37; c.ax = 16 + (i * 7) % 14; c.ay = 12 + (i * 5) % 12;
+    if (c.z < 1) e.style.filter = 'blur(1.6px)';
+  });
+
+  /* ── El guion en el tiempo (ciclo de T = 16 s) ──
+     0–4.5 desorden · 3.4–4.4 se tachan los que sobran · 4.5–7.5 se ordenan en la línea · 7.5–12.5 corren los datos
+     · 12.5–15.5 se sueltan de nuevo · 15.5–16 desorden (igual al segundo 0) */
+  function cuadro(t) {
+    t = ((t % T) + T) % T;
+    var junta = eInOut(prog(t, 4.5, 7.5)) * (1 - eInOut(prog(t, 12.5, 15.5)));
+    var linea = prog(junta, .45, 1);
+    var tacha = eOut(prog(t, 3.4, 4.3)) * (t < 12.5 ? 1 : 0);
+    var vuelve = eOut(prog(t, 13.2, 15.6));
+
+    TARJETAS.forEach(function (c) {
+      var base = px(V ? c.v : c.h);
+      var a = TAU * t / T + c.fase;
+      var sx = base[0] + c.ax * Math.sin(a) + 10 * Math.sin(2 * a + 1), sy = base[1] + c.ay * Math.cos(a);
+      var rot = c.r + 2.2 * Math.sin(a + .7);
+      var x = sx, y = sy, s = c.z, op = c.z < 1 ? .78 : 1;
+      if (c.va >= 0) {
+        var n = pts[c.va];
+        x = lerp(sx, n[0], junta); y = lerp(sy, n[1], junta);
+        rot = lerp(rot, 0, junta); s = lerp(c.z, .38, junta);
+        op *= 1 - prog(junta, .5, .85);
+      } else {
+        // lo que sobra: se tacha, se encoge y se va; vuelve al soltarse todo
+        var va = t < 12.5 ? eInOut(prog(t, 4.6, 6.2)) : 1 - vuelve;
+        s *= 1 - .25 * va; op *= 1 - va;
+        y += 40 * va;
+        if (c.tach) c.tach.style.transform = 'scaleX(' + tacha.toFixed(3) + ')';
+      }
+      c.el.style.transform = 'translate(' + (x - c.ancho / 2).toFixed(1) + 'px,' + (y - c.alto / 2).toFixed(1) + 'px) rotate(' + rot.toFixed(2) + 'deg) scale(' + s.toFixed(3) + ')';
+      c.el.style.opacity = op.toFixed(3);
+    });
+
+    nodos.forEach(function (e, i) {
+      var p = pts[i], f = Math.sin(TAU * t / T * 2 + i) * 4;
+      var o = prog(junta, .6, 1);
+      e.style.transform = 'translate(' + p[0].toFixed(1) + 'px,' + (p[1] + f * o).toFixed(1) + 'px) scale(' + lerp(.6, 1, o).toFixed(3) + ')';
+      e.style.opacity = o.toFixed(3);
+    });
+
+    trazo.style.strokeDashoffset = (1 - linea).toFixed(4);
+    var finO = prog(linea, .92, 1);
+    fin.style.opacity = finO; fin.setAttribute('r', (16 * lerp(.4, 1, finO)).toFixed(2));
+    var hp = (t * .55) % 1;
+    halo.setAttribute('r', (18 + 34 * hp).toFixed(2)); halo.style.opacity = (finO * (1 - hp) * .8).toFixed(3);
+
+    // los datos corren por la línea mientras está armada
+    var corre = prog(t, 7.6, 8.4) * (1 - prog(t, 12.0, 12.6));
+    pulsos.forEach(function (c, j) {
+      var u = ((t - 7.6) * .32 + j / 3) % 1; if (u < 0) u += 1;
+      var pt = trazo.getPointAtLength(u * largo);
+      c.setAttribute('cx', pt.x.toFixed(1)); c.setAttribute('cy', pt.y.toFixed(1));
+      c.style.opacity = (corre * Math.min(1, u * 8, (1 - u) * 8)).toFixed(3);
+    });
+  }
+
+  // Las medidas de cada tarjeta, otra vez cuando ya cargaron las fuentes
+  var listo = document.fonts.ready.then(function () {
+    TARJETAS.forEach(function (c) { c.ancho = c.el.offsetWidth; c.alto = c.el.offsetHeight; });
+    cuadro(0);
+  });
+  window.FONDO = { cuadro: cuadro, total: T, ancho: W, alto: H, listo: listo };
+  cuadro(0);
+  if (q.has('ver')) { var t0 = performance.now(); (function bucle(ahora) { cuadro((ahora - t0) / 1000); requestAnimationFrame(bucle); })(t0); }
+})();
+</script>
+</body>
+</html>

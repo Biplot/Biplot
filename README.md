@@ -4,14 +4,21 @@ Sitio de BiPlot — automatización de procesos hecha a la medida.
 
 Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
 
-- `index.html` — sitio principal, contado como una sola historia: **el papel es el antes, la oficina es el ahora, la
-  línea es lo que los une y el punto coral es tu próximo paso**. Portada; «Seis décadas, la misma línea» (del papel al
-  genérico, y sus dos últimas láminas: la línea pasa por las diez fases de la oficina y termina en el local libre del
-  barrio); servicios; cómo trabajamos (el motor de diez fases con la cara de quien lleva cada una, sobre un riel que
-  sube como la línea del isotipo y termina en el punto coral); casos (Fundos 360, Haru 360 y Nu Home 360, cada uno con
-  el enlace a su sala); **BiPlot HQ** (la visita guiada con Plotty y lo que gana cada cliente); precios; preguntas y
-  contacto («Tu proceso es el próximo punto de esta línea», con la opción de partir conversando con Plotty). El coral
-  queda sólo para agendar el diagnóstico.
+- `index.html` — sitio principal, en la línea editorial de la propuesta de Fundos (https://fundos.biplot.cl/): títulos
+  en Cormorant Garamond con un remate en cursiva, texto en Mulish, secciones que alternan papel (claro) y tinta
+  (oscuro), kickers espaciados y columnas con filete. Los colores siguen siendo los de BiPlot: la línea cian y el
+  **punto coral, que queda sólo para agendar el diagnóstico**. Orden: portada (con el video de fondo, una
+  ficha para agendar por WhatsApp y una franja de datos); servicios y «lo que cambia con BiPlot»; casos (Fundos 360,
+  Haru 360 y Nu Home 360, cada uno con su video y el enlace a su sala); «Seis décadas, la misma línea» (del papel al
+  genérico, la línea por las diez fases de la oficina y el local libre del barrio); el motor de diez fases (con la
+  cara de quien lleva cada una, sobre la curva del isotipo que termina en el punto coral); **BiPlot HQ** (la visita
+  guiada con Plotty); precios; preguntas y contacto («Tu proceso es el próximo punto», con la opción de partir
+  conversando con Plotty). El fondo de la portada es un video sin
+  textos grandes de qué trata BiPlot (planillas y chats sueltos → se tachan los pasos que sobran → lo demás se
+  ordena en la línea del isotipo hasta el punto coral), en bucle: `assets/portada-fondo-h.mp4` y `-v.mp4` (celular),
+  con sus cuadros fijos `.jpg`. Se hace con `_herramientas/fondo-portada/` (`fondo.html` dibuja cada cuadro y
+  `node _herramientas/fondo-portada/grabar.mjs` lo graba con Playwright y ffmpeg). Los colores salen de las
+  variables al comienzo del `<style>` (azul BiPlot, cian y el coral sólo para agendar).
 - `plotline.html` — recorrido "Cómo pensamos la automatización": el papel, la terminal, el enredo y el genérico, y al
   final «Hoy · BiPlot HQ» (la línea con alguien a cargo de cada tramo) y «Tu turno» (el local libre del barrio).
 - `oficina/` — BiPlot HQ, la oficina virtual (el equipo, la calle con la sala de cada empresa y kit para Instagram). Ver `oficina/README.md`.
