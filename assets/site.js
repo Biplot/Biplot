@@ -148,6 +148,99 @@
     }, { threshold: 0.6 }).observe(aparte);
   })();
 
+  /* ============ EL ELEFANTE DE PASEO: de vez en cuando cruza la pantalla por abajo ============ */
+  (function initElePaseo() {
+    const p = document.getElementById('elePaseo');
+    const hero = document.getElementById('hero');
+    if (!p || !hero || !('IntersectionObserver' in window)) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const svg = p.querySelector('.ele-svg');
+    const dice = p.querySelector('.ele-burbuja');
+    const nav = document.getElementById('nav');
+    const lb = document.getElementById('vlightbox');
+    // Lo que dice según la sección a la vista: siempre desde lo personal, sin meterse en el negocio
+    const FRASES = {
+      servicios: ['Ellos ordenan empresas. Yo ordeno días.', 'psst… ¿y tu día?'],
+      casos: ['Qué ordenado quedó todo. ¿Y tu día?'],
+      historia: ['Seis décadas… yo voy en mi primera.'],
+      metodologia: ['Paso a paso. Yo, un bocado a la vez.'],
+      oficina: ['¿Me dejarán entrar a la oficina? 👀'],
+      precios: ['Esto es para tu empresa. Para tu día, estoy yo.'],
+      faq: ['¿Y para tu vida personal? Tócame.'],
+      contacto: ['Ellos te ayudan con la empresa. Yo, con tu día.'],
+      rumbo: ['¡Ese de ahí soy yo! 🐘']
+    };
+    const GENERICAS = ['psst… ¿y tu día?', 'Un bocado a la vez.'];
+    const azar = (a) => a[Math.floor(Math.random() * a.length)];
+    function frase() {
+      const mitad = innerHeight / 2;
+      for (const id in FRASES) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (r.top <= mitad && r.bottom >= mitad) return azar(FRASES[id]);
+      }
+      return azar(GENERICAS);
+    }
+    let decirT = null;
+    const decir = (txt, ms) => { dice.textContent = txt; dice.classList.add('ver'); clearTimeout(decirT); decirT = setTimeout(() => dice.classList.remove('ver'), ms); };
+    const reaccion = (cls) => { svg.classList.remove(cls); void svg.offsetWidth; svg.classList.add(cls); };
+    let huellasT = null, paso = 0;
+    function caminar(x, seg, listo) {
+      p.style.setProperty('--dur', seg + 's');
+      void p.offsetWidth;
+      p.classList.add('caminando');
+      p.style.setProperty('--x', x + 'px');
+      clearInterval(huellasT);
+      huellasT = setInterval(() => {
+        const r = p.getBoundingClientRect(), h = document.createElement('i');
+        h.className = 'ele-paseo-huella';
+        h.style.left = (r.left + r.width * (paso % 2 ? .3 : .55)) + 'px';
+        h.style.bottom = (paso++ % 2 ? 2 : 6) + 'px';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 2300);
+      }, 260);
+      setTimeout(() => { clearInterval(huellasT); p.classList.remove('caminando'); listo(); }, seg * 1000);
+    }
+    const VEL = 90, MAX = 5;
+    let veces = 0, activo = false, prox = null, heroVis = true, primera = true;
+    const programar = (ms) => { clearTimeout(prox); if (veces < MAX) prox = setTimeout(pasear, ms); };
+    const ocupado = () => document.hidden || heroVis
+      || document.documentElement.classList.contains('movimiento-pausado')
+      || (nav && nav.classList.contains('menu-open')) || (lb && lb.classList.contains('open'));
+    function pasear() {
+      if (activo) return;
+      if (ocupado()) return programar(12000);
+      activo = true; veces++;
+      p.classList.remove('caminando');
+      p.hidden = false;   // antes de medirlo: oculto mide 0 (y se pone fuera de la pantalla en esta misma vuelta, sin pintarse)
+      const W = innerWidth, w = p.offsetWidth, deIzq = Math.random() < .5;
+      const x0 = deIzq ? -w - 20 : W + 20, x2 = deIzq ? W + 20 : -w - 20;
+      const m = Math.min(W / 2, 150), x1 = Math.round(m + Math.random() * Math.max(0, W - 2 * m) - w / 2);
+      p.classList.toggle('izq', !deIzq);
+      p.style.setProperty('--x', x0 + 'px');
+      setTimeout(() => {
+        caminar(x1, Math.abs(x1 - x0) / VEL, () => {
+          reaccion('re-saluda');
+          decir(frase(), 3400);
+          setTimeout(() => {
+            caminar(x2, Math.abs(x2 - x1) / VEL, () => { p.hidden = true; activo = false; programar(45000 + Math.random() * 30000); });
+          }, 4000);
+        });
+      }, 60);
+    }
+    // Si lo tocas, salta y te lleva al aparte de Rumbo (por el mismo camino que el elefante de la barra, que hace celebrar al de allá)
+    p.addEventListener('click', () => {
+      reaccion('re-salta');
+      setTimeout(() => { const a = document.getElementById('eleNav'); if (a) a.click(); else location.hash = '#rumbo'; }, 450);
+    });
+    // La primera vez sale poco después de dejar la portada
+    new IntersectionObserver((entries) => {
+      heroVis = entries[0].isIntersecting;
+      if (!heroVis && primera) { primera = false; programar(4000); }
+    }, { rootMargin: '-30% 0px 0px 0px' }).observe(hero);   // la portada «se fue» cuando su borde baja pasa el primer tercio (la barra fija tapa el resto)
+  })();
+
   /* ============ FORMULARIOS: arman el mensaje y abren WhatsApp ============ */
   const WA_NUMBER = '56966275675';
   document.querySelectorAll('form[data-wa]').forEach((form) => {
