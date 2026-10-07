@@ -429,22 +429,26 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 #oficina{background:radial-gradient(ellipse 60% 55% at 15% 30%,rgba(var(--accent-rgb),.10),transparent 62%),var(--ink)}
 #oficina::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(var(--accent-rgb),.045) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--accent-rgb),.045) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent)}
 #oficina .container{position:relative}
-.hq{display:grid;grid-template-columns:1fr;gap:clamp(2rem,4vw,4rem);align-items:center}
+.hq{margin-top:clamp(2.5rem,5vw,3.5rem);display:grid;grid-template-columns:1fr;gap:clamp(2rem,4vw,3.5rem);align-items:center}
 .hq-frame{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:16/9;background:#0a1220;border:1px solid var(--line-dark);box-shadow:0 40px 90px -30px rgba(0,0,0,.6)}
 .hq-frame video{width:100%;height:100%;object-fit:cover;display:block}
 .hq-caption{margin-top:.8rem;font:700 .64rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--cream-55)}
-.hq-points{margin-top:2rem;display:grid;grid-template-columns:1fr;gap:.6rem}
-.hq-point{display:grid;grid-template-columns:38px 1fr;gap:.9rem;align-items:start;border:1px solid var(--line-dark);border-radius:var(--r-md);padding:.95rem 1rem;background:rgba(var(--paper-rgb),.025)}
-.hq-point h3{font-size:1.45rem;line-height:1.05}
-.hq-point p{margin-top:.3rem;font-size:.88rem;color:var(--cream-70);line-height:1.5}
-.hq-point .equipo-fila{margin-top:.6rem}
+.hq-points{display:grid;grid-template-columns:1fr;gap:.55rem}
+.hq-point{display:grid;grid-template-columns:38px 1fr;gap:.85rem;align-items:center;border:1px solid var(--line-dark);border-radius:var(--r-md);padding:.8rem 1rem;background:rgba(var(--paper-rgb),.025)}
+.hq-point h3{font-size:1.3rem;line-height:1.05}
+.hq-point p{margin-top:.25rem;font-size:.86rem;color:var(--cream-70);line-height:1.45}
 .hq-url{font-family:var(--mono);color:var(--accent);font-size:.78rem;word-break:break-all}
 
 .mstep-ico{width:38px;height:38px;border-radius:50%;border:1px solid rgba(var(--accent-rgb),.35);display:grid;place-items:center;color:var(--accent)}
 .mstep-ico svg{width:18px;height:18px}
 @media (min-width:560px) and (max-width:959px){.hq-points{grid-template-columns:1fr 1fr}}
-.hq .hero-actions{animation:none}
-@media (min-width:960px){.hq{grid-template-columns:1.12fr 1fr}}
+.hq .hero-actions{animation:none;margin-top:0}
+@media (min-width:960px){
+  .hq{grid-template-columns:1.3fr 1fr;grid-template-areas:"media lado" "acc lado";align-items:stretch;row-gap:1.6rem}
+  .hq-media{grid-area:media}.hq-acc{grid-area:acc;align-self:start}
+  .hq-lado{grid-area:lado;display:flex}
+  .hq-points{flex:1;align-content:space-between}
+}
 @media (max-width:700px){.hq-frame{aspect-ratio:9/16;max-width:360px;margin-inline:auto}.hq-caption{text-align:center}}
 .v-sound,.v-expand{position:absolute;bottom:14px;width:42px;height:42px;border-radius:50%;background:rgba(var(--ink-rgb),.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(var(--paper-rgb),.25);color:#fff;display:grid;place-items:center;z-index:2;transition:border-color .25s,color .25s}
 .v-sound{right:14px}
@@ -1050,9 +1054,15 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
   </section>
 
   <section class="section dark" id="oficina" aria-labelledby="oficina-h">
-    <div class="container hq">
-      <div class="hq-media reveal">
-        <div class="hq-frame" id="hqFrame" data-src-h="assets/oficina/visita-plotty-h.mp4" data-src-v="assets/oficina/visita-plotty-v.mp4" data-poster-h="assets/oficina/visita-plotty-h.jpg" data-poster-v="assets/oficina/visita-plotty-v.jpg">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">BiPlot HQ · La oficina virtual</span>
+        <h2 class="reveal" id="oficina-h">Tu proyecto, <em>con local en el barrio.</em></h2>
+        <p class="lead reveal">BiPlot HQ es nuestra oficina dibujada, abierta en el navegador. Adentro trabaja el equipo que lleva cada fase; afuera, en el barrio, cada cliente tiene su local y su sala. Y ahí lo seguimos acompañando después de la entrega.</p>
+      </div>
+      <div class="hq">
+        <div class="hq-media reveal">
+          <div class="hq-frame" id="hqFrame" data-src-h="assets/oficina/visita-plotty-h.mp4" data-src-v="assets/oficina/visita-plotty-v.mp4" data-poster-h="assets/oficina/visita-plotty-h.jpg" data-poster-v="assets/oficina/visita-plotty-v.jpg">
           <video id="hqVideo" poster="assets/oficina/visita-plotty-h.jpg" muted loop playsinline preload="none" aria-label="Visita guiada por BiPlot HQ con Plotty"></video>
           <button type="button" class="v-sound" id="hqSound" aria-pressed="false" aria-label="Activar sonido de la visita">
             <svg class="i off-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><line x1="16" y1="9" x2="21" y2="15"/><line x1="21" y1="9" x2="16" y2="15"/></svg>
@@ -1062,19 +1072,15 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
         </div>
         <p class="hq-caption">Visita guiada con Plotty · 79 s</p>
       </div>
-      <div>
-        <span class="kicker">BiPlot HQ · La oficina virtual</span>
-        <h2 class="reveal" id="oficina-h">Tu proyecto, <em>con local en el barrio.</em></h2>
-        <p class="lead reveal">BiPlot HQ es nuestra oficina dibujada, abierta en el navegador. Adentro trabaja el equipo que lleva cada fase; afuera, en el barrio, cada cliente tiene su local y su sala. Y ahí lo seguimos acompañando después de la entrega.</p>
-        <ul class="hq-points reveal-group">
+        <div class="hq-lado">
           <ul class="hq-points reveal-group">
-            <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4"/><circle cx="17" cy="9" r="2.5"/><path d="M15.8 14.7c2.4.2 4.3 2 4.8 4.8"/></svg></span><div><h3>El equipo, a la vista</h3><p>Diez integrantes, uno por parte del trabajo. Sabes quién lleva cada fase de tu proyecto.</p><span class="equipo-fila" aria-hidden="true"><img src="assets/oficina/caras/plotty.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/architect.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/engine.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/grilla.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/bucle.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/tamandua.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/faro.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/pepa.webp" alt="" width="34" height="34" loading="lazy"></span></div></li>
+            <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4"/><circle cx="17" cy="9" r="2.5"/><path d="M15.8 14.7c2.4.2 4.3 2 4.8 4.8"/></svg></span><div><h3>El equipo, a la vista</h3><p>Diez integrantes, uno por parte del trabajo. Sabes quién lleva cada fase de tu proyecto.</p></div></li>
             <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l2-6h14l2 6"/><path d="M3 10h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 14v6h14v-6"/><path d="M10 20v-4h4v4"/></svg></span><div><h3>Tu local, con tu marca</h3><p>Tu nombre y tu logo en el techo, y tus productos a la vista de quien pasa por el barrio.</p></div></li>
             <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg></span><div><h3>Tu sala, con un enlace</h3><p>Adentro, tus pantallas y tu historia. Un enlace para mostrarla a tus propios clientes: <span class="hq-url">biplot.cl/oficina/tu-empresa</span></p></div></li>
             <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg></span><div><h3>Seguimos contigo</h3><p>Soporte continuo, sistemas sanos y al día, y medición a los 30, 60 y 90 días.</p></div></li>
           </ul>
-        </ul>
-        <div class="hero-actions">
+        </div>
+        <div class="hero-actions hq-acc">
           <a href="oficina/" class="btn btn-teal">Entrar a la oficina <svg class="i i-go"><use href="#i-go"/></svg></a>
           <a href="oficina/#conversar" class="btn btn-ghost">Conversar con Plotty</a>
         </div>
