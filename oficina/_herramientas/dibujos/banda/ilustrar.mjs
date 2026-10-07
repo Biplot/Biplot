@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { TINTA } from './tinta.mjs';
 import { architect, DEFS as DEFS_ARCHITECT } from './architect.mjs';
-import { engine2 } from './engine.mjs';
+import { engine } from './engine.mjs';
 import { lupe } from './lupe.mjs';
 import { celda } from './celda.mjs';
 import { grillo } from './grillo.mjs';
@@ -23,7 +23,7 @@ const GLIFOS = JSON.parse(readFileSync(path.join(aqui, 'glifos.json'), 'utf8'));
 
 // Los once y las mascotas. The Architect y The Engine van sin la tinta a mano, como se aprobaron.
 const DIBUJOS = {
-  lupe: () => lupe(), architect: () => DEFS_ARCHITECT + architect(), celda: () => celda(), engine: () => engine2(),
+  lupe: () => lupe(), architect: () => DEFS_ARCHITECT + architect(), celda: () => celda(), engine: () => engine(),
   grilla: () => grillo(), bucle: () => bucle(), tamandua: () => tamandua(), faro: () => faro(), pepa: () => pepa(),
   plotty: () => plotty(), atlas: () => atlas()
 };

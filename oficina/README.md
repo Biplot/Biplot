@@ -25,6 +25,13 @@ reservado para "Agenda tu diagnóstico". Aby y Felipe, la dupla de PRENSA, sigue
 vestuario de gala para contenido y redes: su cabezón en `_herramientas/dibujos/cabezones/` y su ilustración en
 `ilustraciones.js` (`aby-elegante` y `felipe-elegante`).
 
+The Architect y The Engine tienen su diseño cerrado desde el 7 de octubre de 2026: el **científico de planos** (bata
+blanca con el 2 en el bolsillo, visor con su lupa y su antena, y un dron chico, para no competir con Atlas) y el
+**carpintero** (chaleco de lona, canana, lentes de seguridad, barba corta y el 4 en la hebilla de rodeo). Sus dibujos
+están en `banda/architect.mjs` y `banda/engine.mjs`, y sus cabezones en `cabezones/architect.mjs` y en `engine()` de
+`cabezones/equipo.mjs`. En la oficina, el 2 del bolsillo y el 4 de la hebilla van en su grupo `.pj-num`: si el personaje
+mira al otro lado, `oficina.css` los vuelve a dar vuelta para que se lean. Sus diseños anteriores están en El Archivo.
+
 | Integrante | Nombre | Rol | Placa | Dónde está | Frase |
 |---|---|---|---|---|---|
 | **Lupe** | Guadalupe Cifuentes | Diagnóstico | E1 | Sala de diagnóstico | «Lo que pides no siempre es lo que necesitas.» |
@@ -166,9 +173,16 @@ desarrollo en el orden en que llegaron a biplot.cl (la escritura de Fundos 360, 
 360, la huella de Eleven 360 y el elefante de Rumbo), cada una con su pantalla real y «Entrar a su sala». Termina en el
 punto coral del pedestal libre: tu turno, el único lugar con «Agenda tu diagnóstico». En los muros, la línea de tiempo de
 2026 (con las fechas del historial del sitio), el fichero con todos los casos por rubro y su buscador (también en la
-barra: «Todos los casos») y, entre el fichero y el primer plano, un cuadro con BiPlot HQ el día que abrió (el 25 de
-septiembre, con una sala por proyecto adentro; en la imagen, el letrero de una mesa va en blanco). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
-doce paradas, con cuatro visitas. Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
+barra: «Todos los casos»), entre el fichero y el primer plano, un cuadro con BiPlot HQ el día que abrió (el 25 de
+septiembre, con una sala por proyecto adentro; en la imagen, el letrero de una mesa va en blanco) y, donde termina el
+muro de la izquierda, **los diseños anteriores** de The Architect y The Engine (`media/salas/archivo-disenos-anteriores.webp`):
+el primer dibujo, del 25 de septiembre; el elenco redibujado, del 6 de octubre, y sus cabezones de la oficina, hasta que
+el 7 de octubre llegaron el científico de planos y el carpintero. En el muro del fondo, junto al fichero y donde parte la
+línea de tiempo, **la primera oficina** (`media/salas/archivo-primera-oficina.webp`): BiPlot HQ en dos pisos, la planta
+baja con el equipo y el piso 1 con una sala por proyecto, fotografiados sin interfaz desde su versión del 25 de septiembre
+(en el historial de git); la planta que estaba frente a ese tramo del muro pasó a la esquina. La línea de tiempo llega al 7 de
+octubre (BiPlot.TV y el dúo renovado). El piso no lleva textos: los años van en las cédulas. Lo cuida Pepa, que guía el recorrido de
+catorce paradas (los diseños anteriores y la primera oficina van después de hoy), con cuatro visitas. Su barra va en azul, con «Recorrer con Pepa» en cian, y sus tarjetas, como las cédulas de un museo.
 
 **La sala de ventas de BiPlot.** El local libre de la calle principal («Se arrienda · Tu proyecto aquí») también tiene su
 sala propia (su dibujo en `barrio/salas-propias/ventas.mjs`; sus textos en `datos.js`, en `proyectos` → `libre` →
@@ -271,7 +285,7 @@ que en la sala y desde ahí gira. Se pausa con «Pausar el giro», se gira a man
 un cuadro, una pantalla) no abre una tarjeta al costado: se abre de frente, derecho, en grande y completo, con la sala
 oscurecida detrás (se sigue viendo), y debajo (o al lado, si la imagen es angosta) va lo que cuenta su tarjeta, con sus
 botones. En el museo: el mural de las diez fases (el proceso completo, con quién lleva cada fase), la línea de tiempo de
-2026, el cuadro de BiPlot HQ el día que abrió y el primer plano; en Nu Home, las terminaciones y la pantalla real del
+2026, el cuadro de BiPlot HQ el día que abrió, el primer plano, la primera oficina y los diseños anteriores; en Nu Home, las terminaciones y la pantalla real del
 diseñador; en Fundos, los tres paisajes del ventanal y el letrero del equipo; en Haru, la pizarra de los rolls; en
 Eleven, el horario y el team; en Rumbo, la rueda de la vida, los hábitos, las recompensas y la noche; en BiPlot.TV,
 «Así se hace un capítulo» y la pantalla del centro. Lo que tiene su
