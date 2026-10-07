@@ -17,6 +17,10 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   la historia del negocio, a propósito; enlaza a rumbo.biplot.cl/conoce, que vive en el repositorio Biplot/rumbo). El
   guiño a Rumbo en la barra es su elefante: cruza la barra al llegar (una vez por visita, `sessionStorage` «rumbo-ele»),
   deja huellas, se sienta antes del botón y dice «psst… ¿y tu día?»; lleva a ese aparte, donde el otro elefante celebra.
+  Además, el mismo elefante sale a pasear de vez en cuando por abajo de la pantalla (después de la portada, cada 45 a
+  75 s, hasta 5 veces por visita): se detiene, saluda y dice algo según la sección, siempre desde lo personal («Ellos
+  ordenan empresas. Yo ordeno días.»), y sigue; si lo tocas, salta y lleva al aparte (`initElePaseo` en `assets/site.js`).
+  No sale con «reducir movimiento», con el movimiento en pausa, con el menú o el visor de video abiertos.
   Usa las animaciones de la app (`css/styles.css` de Biplot/rumbo); con «reducir movimiento» aparece ya sentado. El fondo de la portada es un video sin
   textos grandes de qué trata BiPlot (planillas y chats sueltos → se tachan los pasos que sobran → lo demás se
   ordena en la línea del isotipo hasta el punto coral), en bucle: `assets/portada-fondo-h.mp4` y `-v.mp4` (celular),

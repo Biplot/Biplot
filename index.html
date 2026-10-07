@@ -488,6 +488,26 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 @keyframes eleCamina{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-7%) rotate(-3deg)}75%{transform:translateY(-7%) rotate(3deg)}}
 @media (prefers-reduced-motion:no-preference){.ele-nav.caminando .ele-salto{animation:eleCamina .42s ease-in-out infinite!important}}
 .movimiento-pausado .ele-anim *{animation-play-state:paused!important}
+/* El mismo elefante sale a pasear de vez en cuando por abajo de la pantalla (después de la portada, cada 45 a 75 s,
+   hasta 5 veces): se detiene, saluda y dice algo, siempre desde el lado personal («Ellos ordenan empresas. Yo ordeno días.»),
+   y sigue. Si lo tocas, salta y lleva al aparte de Rumbo. No sale con «reducir movimiento», con el movimiento en pausa,
+   con el menú o el visor de video abiertos, ni con la pestaña oculta. */
+.ele-paseo{position:fixed;left:0;bottom:-5px;z-index:70;width:92px;height:85px;transform:translateX(var(--x,-120px));cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ele-paseo.caminando{transition:transform var(--dur,6s) linear}
+.ele-paseo .ele-svg{width:100%;height:100%}
+.ele-paseo.izq .ele-svg{transform:scaleX(-1)}
+.ele-paseo .ele-burbuja{left:50%;bottom:calc(100% + 4px);width:max-content;max-width:min(250px,78vw);padding:.55rem .8rem;border-radius:12px;font-size:.84rem;line-height:1.3;white-space:normal;text-align:center;box-shadow:0 14px 30px -12px rgba(var(--ink-rgb),.55),inset 0 0 0 1px rgba(var(--ink-rgb),.1);transform:translate(-50%,6px) scale(.9);transform-origin:50% 100%}
+.ele-paseo .ele-burbuja::after{content:"";position:absolute;left:50%;top:100%;margin-left:-7px;border:7px solid transparent;border-top-color:var(--paper)}
+.ele-paseo .ele-burbuja.ver{transform:translate(-50%,0)}
+.ele-paseo-huella{position:fixed;z-index:69;bottom:3px;width:9px;height:6px;border-radius:50%;background:rgba(124,145,171,.5);pointer-events:none;animation:eleHuella 2.2s ease-out forwards}
+.ele-svg .pata{transform-box:fill-box;transform-origin:50% 8%}
+@keyframes elePata{0%,100%{transform:rotate(14deg)}50%{transform:rotate(-14deg)}}
+@media (prefers-reduced-motion:no-preference){
+  .ele-paseo.caminando .ele-salto{animation:eleCamina .5s ease-in-out infinite!important}
+  .ele-paseo.caminando .pata-a{animation:elePata .5s ease-in-out infinite}
+  .ele-paseo.caminando .pata-b{animation:elePata .5s ease-in-out -.25s infinite}
+}
+@media (max-width:600px){.ele-paseo{width:68px;height:63px}}
 .aparte-vis{position:relative}
 .aparte-ele{position:absolute;right:-34px;bottom:-6px;width:84px;height:78px}
 .ele-svg .ele-ear, .ele-svg .ele-ojo, .ele-svg .ele-cab, .ele-svg .ele-salto, .ele-svg .ele-cola, .ele-svg .ele-breathe { transform-box: fill-box; }
@@ -1280,6 +1300,12 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
   <video id="vlightboxVideo" controls playsinline preload="none"></video>
 </div>
 
+<div class="ele-paseo" id="elePaseo" aria-hidden="true" hidden><span class="ele-svg ele-anim"><svg viewBox="0 0 260 240" xmlns="http://www.w3.org/2000/svg" focusable="false">
+  <ellipse cx="128" cy="224" rx="80" ry="8" fill="#0E2A47" opacity=".18"/>
+  <g class="ele-salto"><g class="ele-breathe">
+    <g class="ele-cola"><path d="M54 142 C40 148 34 162 38 172" stroke="#9FB2C8" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="38" cy="174" r="4.5" fill="#7C91AB"/></g><rect class="pata pata-b" x="80" y="166" width="26" height="50" rx="12" fill="#7C91AB"/><rect class="pata pata-a" x="138" y="166" width="26" height="50" rx="12" fill="#7C91AB"/><path d="M50 150 C50 104 92 92 126 95 C166 98 186 120 183 156 C181 186 150 196 115 196 C74 196 50 186 50 150 Z" fill="#9FB2C8"/><path d="M70 118 C92 102 130 100 152 108" stroke="#C3D1E0" stroke-width="7" fill="none" stroke-linecap="round" opacity=".7"/><path d="M62 184 C88 194 140 196 172 180" stroke="#7C91AB" stroke-width="8" fill="none" stroke-linecap="round" opacity=".45"/><rect class="pata pata-a" x="56" y="168" width="30" height="52" rx="14" fill="#9FB2C8"/><rect class="pata pata-b" x="148" y="168" width="30" height="52" rx="14" fill="#9FB2C8"/>
+    <g class="ele-cab"><g class="ele-ear"><path d="M152 58 C116 56 104 96 114 126 C121 150 152 152 164 132 Z" fill="#7C91AB"/><path d="M148 70 C126 72 120 100 126 120 C131 136 148 138 156 126 Z" fill="#E8B4BF" opacity=".85"/></g><circle cx="185" cy="95" r="44" fill="#9FB2C8"/><path d="M156 70 C166 58 182 54 196 56" stroke="#C3D1E0" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8"/><path d="M212 112 C229 132 233 160 223 179 C217 191 228 200 238 190" stroke="#9FB2C8" stroke-width="20" fill="none" stroke-linecap="round"/><path d="M219 140 l11 -3 M222 154 l11 -1 M221 167 l10 2" stroke="#7C91AB" stroke-width="2.2" stroke-linecap="round" opacity=".7"/><path d="M204 124 C209 133 218 136 224 133 C217 129 210 124 207 118 Z" fill="#FFF8EC"/><ellipse cx="211" cy="105" rx="7.5" ry="4.5" fill="#FF8FA3" opacity="0.75"/><g class="ele-ojo"><path d="M191 90 Q199 81 207 90" stroke="#1B2436" stroke-width="3.6" fill="none" stroke-linecap="round"/></g></g>
+  </g></g></svg></span><span class="ele-burbuja"></span></div>
 <script src="assets/site.js"></script>
 </body>
 </html>
