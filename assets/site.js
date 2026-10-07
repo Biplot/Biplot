@@ -66,10 +66,86 @@
         if (pausedByUser) vid.pause(); else play();
         const hero = document.getElementById('hero');
         if (hero) hero.classList.toggle('is-paused', pausedByUser);
+        document.documentElement.classList.toggle('movimiento-pausado', pausedByUser);
         btn.setAttribute('aria-pressed', String(pausedByUser));
         btn.setAttribute('aria-label', pausedByUser ? 'Reanudar el video de la portada' : 'Pausar el video de la portada');
       });
     }
+  })();
+
+  /* ============ EL ELEFANTE DE RUMBO EN LA BARRA ============ */
+  // Un guiño sin explicación: cruza la barra al llegar (una vez por visita), deja huellas, se sienta antes del botón y
+  // dice «psst… ¿y tu día?». Al tocarlo, la página baja al aparte de Rumbo y el elefante de ahí celebra.
+  (function initElefante() {
+    const ele = document.getElementById('eleNav');
+    const nav = document.getElementById('nav');
+    if (!ele || !nav) return;
+    const svg = ele.querySelector('.ele-svg');
+    const burbuja = ele.querySelector('.ele-burbuja');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let yaCruzo = false;
+    try { yaCruzo = sessionStorage.getItem('rumbo-ele') === '1'; } catch (e) {}
+    const reaccion = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
+    let burbujaT = null;
+    const decir = (ms) => { burbuja.classList.add('ver'); clearTimeout(burbujaT); burbujaT = setTimeout(() => burbuja.classList.remove('ver'), ms); };
+    // Dónde se sienta: antes del botón de agendar (o del botón del menú en pantallas angostas), con lugar para la burbuja
+    function destino() {
+      const ancla = [nav.querySelector('.nav-actions .btn-sm'), nav.querySelector('.nav-toggle')].find((x) => x && x.offsetParent);
+      const r = nav.getBoundingClientRect();
+      const borde = ancla ? ancla.getBoundingClientRect().left - r.left : r.width - 60;
+      return Math.max(12, Math.round(borde - ele.offsetWidth - (innerWidth < 600 ? 140 : 190)));
+    }
+    let caminando = false;
+    const sentar = (x) => { ele.classList.remove('caminando'); ele.style.setProperty('--ele-x', x + 'px'); };
+    ele.hidden = false;
+    if (yaCruzo || reduce) {
+      sentar(destino());
+    } else {
+      const x0 = -70;
+      sentar(x0);
+      setTimeout(() => {
+        const x1 = destino();
+        const dur = Math.min(6, Math.max(3, (x1 - x0) / 240));
+        caminando = true;
+        ele.style.setProperty('--ele-dur', dur + 's');
+        void ele.offsetWidth;
+        ele.classList.add('caminando');
+        ele.style.setProperty('--ele-x', x1 + 'px');
+        let paso = 0;
+        const huellas = setInterval(() => {
+          const h = document.createElement('i');
+          h.className = 'ele-huella';
+          h.style.left = (ele.getBoundingClientRect().left - nav.getBoundingClientRect().left + 16) + 'px';
+          h.style.bottom = (paso++ % 2 ? -31 : -36) + 'px';
+          nav.appendChild(h);
+          setTimeout(() => h.remove(), 2500);
+        }, 210);
+        setTimeout(() => {
+          clearInterval(huellas);
+          caminando = false;
+          ele.classList.remove('caminando');
+          reaccion(svg, 're-salta');
+          setTimeout(() => decir(4200), 450);
+          try { sessionStorage.setItem('rumbo-ele', '1'); } catch (e) {}
+        }, dur * 1000);
+      }, 1200);
+    }
+    let resizeT = null;
+    window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (!caminando) sentar(destino()); }, 150); });
+    ele.addEventListener('mouseenter', () => { reaccion(svg, 're-saluda'); decir(2600); });
+    ele.addEventListener('focus', () => decir(2600));
+
+    // Al llegar al aparte desde el elefante de la barra, el de ahí celebra
+    const aparte = document.getElementById('aparteEle');
+    if (!aparte) return;
+    const aparteSvg = aparte.querySelector('.ele-svg');
+    let pendiente = false;
+    ele.addEventListener('click', () => { pendiente = true; });
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && pendiente) { pendiente = false; setTimeout(() => reaccion(aparteSvg, 're-festeja'), 300); }
+      });
+    }, { threshold: 0.6 }).observe(aparte);
   })();
 
   /* ============ FORMULARIOS: arman el mensaje y abren WhatsApp ============ */
