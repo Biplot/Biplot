@@ -12,7 +12,8 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   Haru 360 y Nu Home 360, cada uno con su video y el enlace a su sala); «Seis décadas, la misma línea» (del papel al
   genérico, la línea por las diez fases de la oficina y el local libre del barrio); el motor de diez fases (sobre la curva del isotipo que termina en el
   punto coral; los personajes de la oficina no aparecen en el proceso, sólo el guiño «Conócelos en la oficina»); **BiPlot HQ** (la visita
-  guiada con Plotty); precios; preguntas y contacto («Tu proceso es el próximo punto», con la opción de partir
+  guiada con Plotty); **Rumbo** (la app de BiPlot, con su pantalla y el enlace a su página,
+  rumbo.biplot.cl/conoce, que vive en el repositorio Biplot/rumbo); precios; preguntas y contacto («Tu proceso es el próximo punto», con la opción de partir
   conversando con Plotty). El fondo de la portada es un video sin
   textos grandes de qué trata BiPlot (planillas y chats sueltos → se tachan los pasos que sobran → lo demás se
   ordena en la línea del isotipo hasta el punto coral), en bucle: `assets/portada-fondo-h.mp4` y `-v.mp4` (celular),
