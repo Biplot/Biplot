@@ -31,6 +31,8 @@ blanca con el 2 en el bolsillo, visor con su lupa y su antena, y un dron chico, 
 están en `banda/architect.mjs` y `banda/engine.mjs`, y sus cabezones en `cabezones/architect.mjs` y en `engine()` de
 `cabezones/equipo.mjs`. En la oficina, el 2 del bolsillo y el 4 de la hebilla van en su grupo `.pj-num`: si el personaje
 mira al otro lado, `oficina.css` los vuelve a dar vuelta para que se lean. Sus diseños anteriores están en El Archivo.
+El teaser del equipo, la visita con Plotty y los capítulos 08, 09 y 10 de BiPlot.TV ya los muestran así (sus versiones
+web, en `media/tv/` y `../assets/oficina/`).
 
 | Integrante | Nombre | Rol | Placa | Dónde está | Frase |
 |---|---|---|---|---|---|
