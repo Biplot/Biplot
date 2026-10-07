@@ -39,16 +39,37 @@
     document.querySelectorAll('main section[id]').forEach((s) => io.observe(s));
   })();
 
-  /* ============ PORTADA: pausar el movimiento del fondo ============ */
-  (function initHeroPause() {
-    const hero = document.getElementById('hero');
+  /* ============ PORTADA: el video de fondo (de qué trata BiPlot) ============ */
+  // Vertical en celular parado y horizontal en lo demás; con «reducir movimiento» queda el cuadro fijo.
+  // Se pausa fuera de la vista y con el botón (que recuerda la pausa del usuario).
+  (function initHeroVideo() {
+    const vid = document.getElementById('heroVideo');
     const btn = document.getElementById('heroPause');
-    if (!hero || !btn) return;
-    btn.addEventListener('click', () => {
-      const paused = hero.classList.toggle('is-paused');
-      btn.setAttribute('aria-pressed', String(paused));
-      btn.setAttribute('aria-label', paused ? 'Reanudar el movimiento de la portada' : 'Pausar el movimiento de la portada');
-    });
+    if (!vid) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const vertical = matchMedia('(max-width:900px) and (orientation:portrait)').matches;
+    // MP4 (H.264) donde se pueda; si no, el mismo video en WebM
+    const mp4 = vid.canPlayType('video/mp4; codecs="avc1.640028"') !== '';
+    const src = vertical ? vid.dataset.srcV : vid.dataset.srcH;
+    vid.src = mp4 ? src : src.replace(/\.mp4$/, '.webm');
+    vid.addEventListener('playing', () => vid.classList.add('is-playing'), { once: true });
+    let pausedByUser = false;
+    const play = () => { if (!pausedByUser) vid.play().catch(() => {}); };
+    play();
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) play(); else { try { vid.pause(); } catch (e) {} } });
+    }, { threshold: 0.1 }).observe(vid);
+    if (btn) {
+      btn.hidden = false;
+      btn.addEventListener('click', () => {
+        pausedByUser = !pausedByUser;
+        if (pausedByUser) vid.pause(); else play();
+        const hero = document.getElementById('hero');
+        if (hero) hero.classList.toggle('is-paused', pausedByUser);
+        btn.setAttribute('aria-pressed', String(pausedByUser));
+        btn.setAttribute('aria-label', pausedByUser ? 'Reanudar el video de la portada' : 'Pausar el video de la portada');
+      });
+    }
   })();
 
   /* ============ FORMULARIOS: arman el mensaje y abren WhatsApp ============ */
