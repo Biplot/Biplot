@@ -27,384 +27,304 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Mulish:wght@400;600;700;800&family=Space+Grotesk:wght@700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/portada-fondo-h.jpg" media="(min-width:901px), (orientation:landscape)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='1.7' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='11.5' cy='20.5' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='16' cy='17' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='23' cy='11' r='2.8' fill='%23FF6B4A'/%3E%3C/svg%3E">
 <style>
+/* =============================================================
+   BiPlot — sitio principal
+   Rediseño en la línea editorial de la propuesta de Fundos (fundos.biplot.cl): títulos en serif con un remate
+   en cursiva, secciones que alternan papel y tinta, kickers espaciados, columnas con filete y una franja de datos
+   bajo la portada. Los colores siguen siendo los de BiPlot: tinta azul, la línea cian y el punto coral, que queda
+   sólo para agendar el diagnóstico.
+   ============================================================= */
 :root{
-  --canvas:#0E2A47;
-  --canvas-deep:#081b30;
-  --panel:#132F4E;
-  --panel-2:#0f2740;
-  --accent:#17C3B2;
-  --accent-hover:#20D9C6;
-  --accent-muted:rgba(23,195,178,.22);
-  --warm:#FF6B4A;
-  --warm-hover:#FF8467;
-  --text-primary:#F2F4F7;
-  --text-secondary:#A9B7C6;
-  --text-on-light:#1C1C1E;
-  --line:rgba(169,183,198,.18);
-  --ease:cubic-bezier(.22,.9,.3,1);
-  --ease-in:cubic-bezier(.6,0,.4,1);
-  --tshadow:0 1px 2px rgba(5,8,15,.95),0 3px 12px rgba(5,8,15,.78),0 10px 44px rgba(5,8,15,.8);
-  --display:'Space Grotesk',Inter,sans-serif;
-  --body:'Inter',sans-serif;
-  --mono:'JetBrains Mono',monospace;
-}
-*{box-sizing:border-box}
-html,body{overflow-x:hidden;overflow-x:clip}
-html{scroll-behavior:auto}
-body{
-  margin:0;
-  background:var(--canvas);
-  color:var(--text-primary);
-  font-family:var(--body);
-  -webkit-font-smoothing:antialiased;
-}
-img{max-width:100%;display:block}
-a{color:inherit}
-h1,h2,h3{font-family:var(--display);margin:0;line-height:1.08;letter-spacing:-.01em}
-p{margin:0}
-.skip-link{position:absolute;left:8px;top:-60px;background:var(--accent);color:#04211d;padding:10px 16px;border-radius:8px;z-index:999;transition:top .25s var(--ease);font-family:var(--body);font-weight:600;text-decoration:none}
-.skip-link:focus{top:8px}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  /* La paleta completa sale de estas variables: cambiar aquí cambia todo el sitio */
+  --ink:#081B30;          --ink-rgb:8,27,48;        /* portada, oficina, pie */
+  --ink-2:#0E2A47;        --ink-2-rgb:14,42,71;     /* secciones oscuras */
+  --ink-3:#132F4E;        --ink-3-rgb:19,47,78;     /* paneles sobre oscuro */
+  --paper:#F5F2EC;        --paper-rgb:245,242,236;  /* secciones claras: el papel es el antes */
+  --sand:#ECE6DA;
+  --text:#0F1B28;         --text-rgb:15,27,40;
+  --muted:#56606A;                                  /* texto secundario sobre claro (AA) */
+  --accent:#17C3B2;       --accent-rgb:23,195,178;  /* la línea: kickers, cursivas y detalles sobre oscuro */
+  --accent-2:#3DD9C8;
+  --accent-ink:#0A7A6F;   --accent-ink-rgb:10,122,111; /* el acento para texto sobre claro (AA) */
+  --accent-text:#04211d;                            /* texto sobre un botón del acento */
+  --cta:#FF6B4A;          --cta-2:#FF8467;  --cta-text:#2b0f08; /* sólo para agendar el diagnóstico */
+  --point:#FF6B4A;        --point-rgb:255,107,74;   /* el punto coral al final de la línea */
+  --hero-filter:none;
+  --cream:var(--paper);
+  --cream-80:rgba(var(--paper-rgb),.82);
+  --cream-70:rgba(var(--paper-rgb),.72);
+  --cream-55:rgba(var(--paper-rgb),.58);
+  --line-dark:rgba(var(--paper-rgb),.14);
+  --line-light:rgba(var(--text-rgb),.12);
 
-/* ===== NAV ===== */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:80;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px clamp(20px,4vw,48px);
-  background:linear-gradient(to bottom, rgba(8,20,36,.75), transparent);
-  pointer-events:none;
-}
-.nav *{pointer-events:auto}
-.nav-mark{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.05rem;text-decoration:none;color:var(--text-primary)}
-.nav-mark svg{width:28px;height:28px}
-.nav-cta{
-  font-family:var(--body);font-weight:600;font-size:.9rem;
-  background:var(--warm);color:#2b0f08;padding:10px 20px;border-radius:999px;
-  text-decoration:none;transition:transform .3s var(--ease), background .3s var(--ease), box-shadow .3s var(--ease);
-  box-shadow:0 6px 20px rgba(255,107,74,.25);
-}
-.nav-cta:hover{background:var(--warm-hover);transform:translateY(-2px);box-shadow:0 10px 26px rgba(255,107,74,.35)}
-@media (pointer:coarse){.nav-cta{min-height:44px;display:inline-flex;align-items:center;justify-content:center}}
+  --serif:'Cormorant Garamond',Garamond,'Times New Roman',serif;
+  --sans:'Mulish',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --brand:'Space Grotesk','Mulish',sans-serif;
 
-/* ===== HERO ===== */
-.hero-pin{position:relative;height:600vh}
-.hero-stage{
-  position:sticky;top:0;left:0;width:100%;height:100vh;overflow:hidden;
-  background:radial-gradient(ellipse 140% 100% at 50% 30%, var(--canvas) 0%, var(--canvas-deep) 100%);
-}
-.hero-media{position:absolute;inset:0}
-.hero-media video, .hero-media .poster{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  will-change:transform;transform:translateZ(0);
-}
-.hero-media .poster{background-size:cover;background-position:center;opacity:1;transition:opacity .6s var(--ease)}
-.hero-media video{opacity:0;transition:opacity .6s var(--ease)}
-.hero-stage.video-ready .hero-media video{opacity:1}
-.hero-stage.video-ready .hero-media .poster{opacity:0}
-.hero-stage.video-failed .hero-media video{display:none}
-
-.scrim{position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse 120% 90% at 50% 45%,rgba(6,14,26,0) 30%,rgba(6,14,26,.6) 100%)}
-
-.hero-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;color:var(--accent);z-index:5}
-.hero-loading svg{width:100%;height:100%;transform:rotate(-90deg)}
-.hero-stage.video-ready .hero-loading, .hero-stage.video-failed .hero-loading{display:none}
-
-.band{
-  position:absolute;left:0;right:0;display:flex;padding:0 clamp(24px,6vw,80px);
-  pointer-events:none;opacity:0;
-}
-.band::before{content:"";position:absolute;inset:-6% -2%;pointer-events:none;
-  opacity:calc(.25 + .75*var(--k,1));
-  background:radial-gradient(ellipse 68% 60% at 50% 50%,rgba(4,9,18,.66) 0%,rgba(4,9,18,.42) 46%,rgba(4,9,18,0) 76%)}
-.band-inner{position:relative;max-width:620px;text-shadow:var(--tshadow)}
-.band .kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:block}
-.band h2{font-size:clamp(1.7rem,4.2vw,3rem);color:var(--text-primary)}
-.band p.sub{margin-top:16px;font-size:clamp(1rem,1.6vw,1.2rem);color:var(--text-secondary);max-width:46ch}
-
-#band-1{top:16%}
-#band-1 .band-inner{margin-left:0}
-#band-2{top:38%;justify-content:flex-end}
-#band-2 .band-inner{margin-right:0;text-align:right}
-#band-3{top:20%}
-#band-settle{top:0;height:100%;align-items:center;justify-content:center;text-align:center}
-#band-settle .band-inner{max-width:720px}
-#band-settle .cta-row{margin-top:34px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-
-/* word/char split engine */
-.split{display:inline}
-.w{display:inline-block;white-space:pre}
-.c{display:inline-block}
-.hero-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-
-/* scatter entrance (band 1: threads tangling apart) */
-#band-1 .c{
-  --kc:clamp(0,(var(--k,0) - var(--th,0))*2.6,1);
-  opacity:var(--kc);
-  transform:translate(calc((1 - var(--kc))*var(--jx,0px)),calc((1 - var(--kc))*var(--jy,0px))) rotate(calc((1 - var(--kc))*var(--jr,0deg)));
-}
-/* grid snap-align (band 2: things falling into order) */
-#band-2 .c{
-  --kc:clamp(0,(var(--k,0) - var(--th,0))*2.6,1);
-  opacity:var(--kc);
-  transform:translateX(calc((1 - var(--kc))*var(--jx,0px)));
-}
-/* word punch (band 3: clarity lands) */
-#band-3 .w{
-  --kc:clamp(0,(var(--k,0) - var(--th,0))*3,1);
-  --ks:clamp(0,(var(--k,0) - var(--th,0) - .1)*3.2,1);
-  opacity:var(--kc);
-  transform:scale(calc(0.6 + 0.52*var(--kc) - .12*var(--ks)));
-}
-/* settle: word rise + staged subline/cta */
-#band-settle h2 .w{
-  --kc:clamp(0,(var(--k,0) - var(--th,0))*2.8,1);
-  opacity:var(--kc);
-  transform:translateY(calc((1 - var(--kc))*22px));
-}
-#band-settle p.sub{
-  opacity:clamp(0,(var(--k,0) - .5)*4,1);
-  transform:translateY(calc((1 - clamp(0,(var(--k,0) - .5)*4,1))*14px));
-}
-#band-settle .cta-row{
-  opacity:clamp(0,(var(--k,0) - .68)*5,1);
-  transform:translateY(calc((1 - clamp(0,(var(--k,0) - .68)*5,1))*10px));
+  --ease:cubic-bezier(.16,1,.3,1);
+  --ease-soft:cubic-bezier(.25,.46,.45,.94);
+  --r-sm:5px;
+  --r-md:10px;
+  --r-lg:16px;
+  --nav-h:76px;
+  --gutter:clamp(16px,4vw,40px);
+  --section-y:clamp(4rem,8vw,7rem);
+  --shadow-card:0 1px 2px rgba(var(--ink-rgb),.05),0 18px 40px -22px rgba(var(--ink-rgb),.35);
 }
 
-.btn{
-  font-family:var(--body);font-weight:600;font-size:.95rem;text-decoration:none;
-  padding:14px 28px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
-  transition:transform .3s var(--ease), box-shadow .3s var(--ease), background .3s var(--ease);
-  text-shadow:none;
+*,*::before,*::after{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:70px;overflow-x:clip}
+body{background:var(--ink);color:var(--text);font-family:var(--sans);font-size:1rem;line-height:1.6;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip}
+img,svg,video{display:block;max-width:100%}
+img{height:auto}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:inherit;text-decoration:none}
+p{text-wrap:pretty}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:500;line-height:1.02;letter-spacing:-.01em;text-wrap:balance;font-variant-numeric:lining-nums}
+ul,ol{padding:0;list-style:none}
+::selection{background:var(--accent);color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+.light :focus-visible,.sand :focus-visible,.form-card :focus-visible{outline-color:var(--accent-ink)}
+[hidden]{display:none!important}
+.svg-defs{position:absolute;width:0;height:0;overflow:hidden}
+.skip-link{position:fixed;top:-100px;left:1rem;z-index:999;padding:.7rem 1.1rem;background:var(--accent);color:var(--ink);font-weight:700;border-radius:var(--r-sm)}
+.skip-link:focus{top:1rem}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.container{width:100%;max-width:1240px;margin-inline:auto;padding-inline:var(--gutter)}
+.i{width:1.25em;height:1.25em;flex:none}
+
+/* ===== Tipografía ===== */
+.kicker{display:block;font:700 .74rem/1.3 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:1rem}
+.dark .kicker,.hero .kicker{color:var(--accent)}
+h2{font-size:clamp(2.35rem,5.2vw,4.3rem)}
+h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
+.dark h2 em,.hero h1 em,.footer-claim em{color:var(--accent)}
+.lead{margin-top:1.4rem;font-size:clamp(1.04rem,1.35vw,1.2rem);line-height:1.6;color:var(--muted);max-width:60ch}
+.dark .lead{color:var(--cream-70)}
+
+/* ===== Secciones ===== */
+.section{padding-block:var(--section-y);position:relative}
+.light{background:var(--paper);color:var(--text)}
+.sand{background:var(--sand);color:var(--text)}
+.dark{background:var(--ink-2);color:var(--cream)}
+.dark.deep{background:var(--ink)}
+.sec-head{max-width:780px}
+
+/* ===== Botones: al pasar el cursor aparece un marco, como el cuadro del isotipo ===== */
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6em;min-height:48px;padding:.8em 1.35em;font:700 .93rem/1.1 var(--sans);letter-spacing:.01em;white-space:nowrap;border:1px solid transparent;border-radius:var(--r-sm);transition:background-color .3s var(--ease-soft),color .3s var(--ease-soft),border-color .3s var(--ease-soft),transform .35s var(--ease)}
+.btn .i{width:1.15em;height:1.15em;transition:transform .35s var(--ease)}
+.btn::after{content:"";position:absolute;inset:-5px;pointer-events:none;border:1px solid var(--accent);border-radius:calc(var(--r-sm) + 3px);opacity:0;transform:scale(.94);transition:opacity .3s var(--ease-soft),transform .45s var(--ease)}
+.btn:active{transform:translateY(1px)}
+@media (hover:hover){.btn:hover::after{opacity:.85;transform:scale(1)}.btn:hover .i-go{transform:translateX(3px)}}
+.btn-coral{background:var(--cta);color:var(--cta-text)}
+.btn-coral::after{border-color:var(--cta)}
+.btn-coral:hover{background:var(--cta-2)}
+.btn-teal{background:var(--accent);color:var(--accent-text)}
+.btn-teal:hover{background:var(--accent-2)}
+.btn-ink{background:var(--ink);color:var(--cream)}
+.btn-ink:hover{background:var(--ink-3)}
+.btn-ghost{background:transparent;color:inherit;border-color:rgba(var(--paper-rgb),.38)}
+.btn-ghost:hover{background:rgba(var(--paper-rgb),.08);border-color:rgba(var(--paper-rgb),.6)}
+.btn-line{background:transparent;color:var(--text);border-color:rgba(var(--text-rgb),.22)}
+.btn-line::after{border-color:var(--accent-ink)}
+.btn-line:hover{background:var(--sand);border-color:rgba(var(--text-rgb),.38)}
+.btn-lg{min-height:56px;padding:1em 1.6em;font-size:1rem}
+.btn-sm{min-height:40px;padding:.55em 1.05em;font-size:.86rem}
+.btn-sm::after{inset:-4px}
+.btn-block{width:100%}
+.link-go{display:inline-flex;align-items:center;gap:.4em;font-weight:700;color:var(--accent-ink);border-bottom:1px solid currentColor;padding-bottom:1px}
+.dark .link-go{color:var(--accent)}
+.link-go .i{width:1em;height:1em;transition:transform .35s var(--ease)}
+.link-go:hover .i{transform:translateX(3px)}
+
+/* ===== Isotipo y marca ===== */
+.brand{display:flex;align-items:center;gap:.7rem;flex:none;color:var(--cream)}
+.brand svg{width:40px;height:40px}
+.brand-word{font:700 1.3rem/1 var(--brand);letter-spacing:-.01em}
+.brand-word .plot{color:var(--accent)}
+.brand-word small{display:block;margin-top:.35rem;font:700 .5rem/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;color:var(--cream-70)}
+
+/* ===== Menú ===== */
+.nav{position:fixed;inset:0 0 auto 0;z-index:80;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-inline:max(var(--gutter),calc((100vw - 1240px)/2 + var(--gutter)));color:var(--cream);transition:background-color .4s var(--ease-soft),box-shadow .4s var(--ease-soft),height .4s var(--ease)}
+.nav::before{content:"";position:absolute;inset:0 0 -30px 0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(var(--ink-rgb),.75),rgba(var(--ink-rgb),0));transition:opacity .4s}
+.nav.is-solid{background:rgba(var(--ink-rgb),.94);box-shadow:0 1px 0 var(--line-dark);height:66px}
+@supports (backdrop-filter:blur(10px)){.nav.is-solid{background:rgba(var(--ink-rgb),.82);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%)}}
+.nav.is-solid::before{opacity:0}
+.nav-links{display:none;gap:clamp(1.1rem,2vw,2rem);align-items:center}
+.nav-links a{position:relative;white-space:nowrap;font-size:.9rem;font-weight:600;color:var(--cream-80);padding-block:.4rem;transition:color .25s;display:inline-flex;align-items:center;gap:.45rem}
+.nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:right;transition:transform .45s var(--ease)}
+.nav-links a:hover,.nav-links a.is-current{color:var(--cream)}
+.nav-links a:hover::after,.nav-links a.is-current::after{transform:scaleX(1);transform-origin:left}
+.tag-new{font:800 .56rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;background:var(--accent);color:var(--accent-text);padding:.3rem .45rem;border-radius:999px}
+.nav-actions{display:flex;align-items:center;gap:.6rem}
+.nav-plotty{display:none;align-items:center;gap:.45rem;white-space:nowrap;font-size:.88rem;font-weight:700;color:var(--cream-80);padding:.5rem .2rem}
+.nav-plotty:hover{color:var(--accent)}
+.nav-plotty img{width:24px;height:24px;border-radius:50%}
+.nav .btn-sm{display:none}
+.nav-toggle{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;border:1px solid rgba(var(--paper-rgb),.3);color:var(--cream)}
+.nav-toggle .i{width:22px;height:22px}
+.nav-toggle .i-close{display:none}
+.nav.menu-open .nav-toggle .i-open{display:none}
+.nav.menu-open .nav-toggle .i-close{display:block}
+.nav-menu{position:fixed;inset:var(--nav-h) 0 auto 0;z-index:79;background:rgba(var(--ink-rgb),.97);border-bottom:1px solid var(--line-dark);padding:.5rem var(--gutter) 1.5rem;display:none}
+.nav.is-solid + .nav-menu{top:66px}
+.nav-menu.open{display:block}
+.nav-menu a:not(.btn){display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.95rem 0;border-bottom:1px solid var(--line-dark);font-weight:600;color:var(--cream)}
+.nav-menu .btn{margin-top:1.2rem;width:100%}
+@media (min-width:600px){.nav .btn-sm{display:inline-flex}}
+@media (min-width:1100px){
+  .nav-links{display:flex}
+  .nav-toggle,.nav-menu,.nav-menu.open{display:none}
+  .nav-plotty{display:inline-flex}
 }
-.btn.primary{background:var(--warm);color:#2b0f08;box-shadow:0 8px 26px rgba(255,107,74,.3)}
-.btn.primary:hover{background:var(--warm-hover);transform:translateY(-3px);box-shadow:0 14px 30px rgba(255,107,74,.4)}
-.btn.ghost{background:rgba(242,244,247,.08);color:var(--text-primary);border:1px solid rgba(242,244,247,.28);backdrop-filter:blur(6px)}
-.btn.ghost:hover{background:rgba(242,244,247,.16);transform:translateY(-3px)}
-@media (pointer:coarse){.btn{min-height:44px}}
 
-.scroll-cue{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);color:var(--text-secondary);opacity:.8;
-  display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
-  animation:cueFloat 2.4s ease-in-out infinite;animation-delay:-1.2s}
-.scroll-cue svg{width:16px;height:16px}
-@keyframes cueFloat{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,8px)}}
-.hero-stage:not(.at-top) .scroll-cue{opacity:0;pointer-events:none}
+/* ===== Portada ===== */
+.hero{position:relative;isolation:isolate;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;color:var(--cream);background:var(--ink);overflow:hidden}
+.hero-art{position:absolute;inset:0;z-index:-1;overflow:hidden}
+/* El fondo: el video de qué trata BiPlot (del desorden a la línea), con su cuadro fijo debajo mientras carga */
+.hero-art img,.hero-art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 50%;filter:var(--hero-filter)}
+.hero-art video{opacity:0;transition:opacity 1.2s var(--ease-soft)}
+.hero-art video.is-playing{opacity:1}
+.hero-shade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(var(--ink-rgb),.93) 0%,rgba(var(--ink-rgb),.76) 34%,rgba(var(--ink-rgb),.2) 62%,rgba(var(--ink-rgb),.3) 100%),linear-gradient(0deg,rgba(var(--ink-rgb),.98) 0%,rgba(var(--ink-rgb),0) 34%),linear-gradient(180deg,rgba(var(--ink-rgb),.6) 0%,rgba(var(--ink-rgb),0) 22%)}
+.hero-pause{position:absolute;top:calc(var(--nav-h) + 14px);left:var(--gutter);z-index:2;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--cream);border:1px solid rgba(var(--paper-rgb),.3);background:rgba(var(--ink-rgb),.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:border-color .25s,background-color .25s}
+.hero-pause:hover{border-color:var(--accent)}
+.hero-pause .i{width:16px;height:16px}
+.hero-pause .i-play{display:none}
+.hero.is-paused .hero-pause .i-play{display:block}
+.hero.is-paused .hero-pause .i-pause{display:none}
+.hero-main{flex:1;display:flex;align-items:center;padding-top:calc(var(--nav-h) + 4.5rem);padding-bottom:3rem}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:2.5rem;align-items:center;width:100%}
+.hero-tags{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;margin-bottom:1.6rem;animation:fadeUp .9s var(--ease) .15s both}
+.hero-tags .tag-new{font-size:.62rem;padding:.42rem .7rem}
+.hero-tags a{font:700 .72rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+.hero-tags a:hover{text-decoration:underline;text-underline-offset:4px}
+.hero h1{font-size:clamp(3rem,7.6vw,6.6rem);font-weight:500;line-height:.93;letter-spacing:-.02em}
+.hero h1 .line{display:block;overflow:hidden;padding:0 .08em .09em 0;margin-bottom:-.09em}
+.hero h1 .line>span{display:inline-block;animation:lineUp 1.2s var(--ease) .25s both}
+.hero h1 .line+.line>span{animation-delay:.38s}
+.hero-sub{margin-top:1.6rem;max-width:46ch;font-size:clamp(1.02rem,1.4vw,1.2rem);color:var(--cream-80);animation:fadeUp 1s var(--ease) .6s both}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2.2rem;animation:fadeUp 1s var(--ease) .78s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes lineUp{from{transform:translateY(105%)}to{transform:none}}
 
-/* static hero (five gates) */
-.static-hero{display:none;position:absolute;inset:0;background-size:cover;background-position:center}
-.static-hero .scrim{background:radial-gradient(ellipse 120% 100% at 50% 40%,rgba(6,14,26,.25) 0%,rgba(6,14,26,.72) 100%)}
-.static-hero-content{position:relative;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 24px}
-.static-hero-content .inner{max-width:640px;text-shadow:var(--tshadow)}
-.static-hero-content .kicker{font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:14px}
-.static-hero-content h1{font-size:clamp(2rem,7vw,3.2rem)}
-.static-hero-content p{margin-top:16px;color:var(--text-secondary);font-size:1.05rem}
-.static-hero-content .cta-row{margin-top:30px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+/* La ficha de la portada: el diagnóstico, en vidrio */
+.hero-card{width:100%;max-width:420px;padding:1.5rem;border-radius:var(--r-lg);background:rgba(var(--ink-2-rgb),.58);border:1px solid rgba(var(--paper-rgb),.16);box-shadow:0 30px 70px -30px rgba(0,0,0,.6);animation:fadeUp 1s var(--ease) .9s both}
+@supports (backdrop-filter:blur(10px)){.hero-card{background:rgba(var(--ink-2-rgb),.42);-webkit-backdrop-filter:blur(16px) saturate(130%);backdrop-filter:blur(16px) saturate(130%)}}
+.hero-card .kicker{margin-bottom:.5rem;font-size:.66rem}
+.hero-card h2{font-size:1.75rem;line-height:1.1;margin-bottom:1.1rem}
+.hf{display:block;margin-bottom:.85rem}
+.hf span{display:block;font-size:.8rem;font-weight:700;margin-bottom:.35rem;color:var(--cream-80)}
+.hf input,.hf textarea{width:100%;min-height:46px;padding:.7rem .85rem;border-radius:var(--r-sm);border:1px solid rgba(var(--paper-rgb),.2);background:rgba(var(--ink-rgb),.45);color:var(--cream);font-size:.95rem;transition:border-color .25s}
+.hf textarea{min-height:76px;resize:vertical}
+.hf input::placeholder,.hf textarea::placeholder{color:var(--cream-55)}
+.hf input:focus,.hf textarea:focus{outline:none;border-color:var(--accent)}
+.hero-card .btn{margin-top:.35rem}
+.hero-card .fine{margin-top:.8rem;font-size:.78rem;color:var(--cream-70);text-align:center}
+.wa-ok{text-align:center;padding:1.2rem .5rem}
+.wa-ok .i{width:42px;height:42px;margin:0 auto .9rem;color:var(--accent)}
+.wa-ok h3{font-size:1.6rem}
+.wa-ok p{margin-top:.5rem;font-size:.92rem;color:var(--cream-70)}
+.form-card .wa-ok .i{color:var(--accent-ink)}
+.form-card .wa-ok p{color:var(--muted)}
 
-@media (max-width:720px), (orientation:portrait) and (max-width:1024px), (orientation:portrait) and (pointer:coarse), (orientation:landscape) and (pointer:coarse) and (max-height:560px), (prefers-reduced-motion:reduce){
-  .hero-pin{height:100vh}
-  .hero-stage{position:relative}
-  .band, .hero-loading, .scroll-cue, .hero-media{display:none}
-  .static-hero{display:block;background-image:url('assets/hero-ending.jpg')}
+/* La franja de datos bajo la portada */
+.hero-stats{border-top:1px solid var(--line-dark);display:grid;grid-template-columns:repeat(2,1fr);animation:fadeUp 1s var(--ease) 1s both}
+.hero-stats div{padding:1.1rem 0 1.3rem}
+.hero-stats div:nth-child(even){padding-left:1.2rem;border-left:1px solid var(--line-dark)}
+.hero-stats div:nth-child(n+3){border-top:1px solid var(--line-dark)}
+.hero-stats dt{font:700 .64rem/1.2 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:.45rem}
+.hero-stats dd{font:500 clamp(1.45rem,2.4vw,2rem)/1.05 var(--serif);color:var(--cream)}
+@media (min-width:980px){
+  .hero-grid{grid-template-columns:minmax(0,1fr) 400px;gap:4rem}
+  .hero-card{justify-self:end}
+  .hero-stats{grid-template-columns:repeat(4,1fr)}
+  .hero-stats div{padding:1.4rem 1.6rem 1.6rem}
+  .hero-stats div:first-child{padding-left:0}
+  .hero-stats div+div{border-left:1px solid var(--line-dark)}
+  .hero-stats div:nth-child(n+3){border-top:0}
 }
-@media (max-height:560px){.scroll-cue,.hud{display:none}}
+@media (max-width:979px){.hero-main{padding-top:calc(var(--nav-h) + 4rem)}.hero-card{max-width:none}}
+@media (max-width:560px){.hero-actions .btn{flex:1 1 auto}}
 
-/* ===== SECTIONS ===== */
-main{position:relative;background:var(--canvas);z-index:1}
-section{padding:clamp(72px,10vw,140px) clamp(20px,6vw,64px);position:relative}
-.wrap{max-width:1120px;margin:0 auto}
-.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:16px}
-h2.h-lg{font-size:clamp(1.8rem,4vw,2.7rem);max-width:18ch;text-wrap:balance}
-.lede{margin-top:18px;color:var(--text-secondary);font-size:clamp(1rem,1.6vw,1.15rem);max-width:60ch}
-
-/* ===== HERO B (rediseño: texto + video enmarcado) ===== */
-.cta-row{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap}
-.nav-links{display:flex;gap:24px;font-size:.9rem;font-family:var(--body)}
-.nav-links a{color:var(--text-secondary);text-decoration:none;transition:color .25s var(--ease);font-weight:500}
-.nav-links a:hover{color:var(--accent)}
-@media (max-width:880px){.nav-links{display:none}}
-.hero-b{padding:clamp(100px,13vh,156px) clamp(20px,6vw,64px) clamp(48px,7vw,90px);min-height:100vh;display:flex;align-items:center;background:radial-gradient(ellipse 90% 80% at 85% 15%,rgba(23,195,178,.10),transparent 55%),radial-gradient(ellipse 80% 70% at 5% 95%,rgba(255,107,74,.07),transparent 55%),linear-gradient(180deg,var(--canvas),var(--canvas-deep))}
-.hero-b-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,64px);align-items:center;width:100%}
-.hero-copy{max-width:560px}
-.hero-copy h1{font-family:var(--display);font-weight:700;line-height:1.05;letter-spacing:-.02em;font-size:clamp(2rem,4.6vw,3.4rem)}
-.hero-sub{margin-top:18px;color:var(--text-secondary);font-size:clamp(1rem,1.6vw,1.12rem);line-height:1.55;max-width:46ch}
-.hero-trust{margin-top:30px;display:flex;gap:28px;flex-wrap:wrap;font-size:.82rem;color:var(--text-secondary)}
-.hero-trust span{display:flex;flex-direction:column;gap:2px}
-.hero-trust b{color:var(--text-primary);font-family:var(--display);font-size:1.05rem;letter-spacing:-.01em}
-.hero-frame{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:16/9;background:#0a1220;box-shadow:0 40px 90px rgba(0,0,0,.5);border:1px solid var(--line)}
-.hero-frame video{width:100%;height:100%;object-fit:cover;display:block}
-.hero-sound{position:absolute;bottom:14px;right:14px;width:40px;height:40px;border-radius:50%;background:rgba(8,20,36,.6);backdrop-filter:blur(8px);border:1px solid var(--line);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .25s var(--ease),color .25s var(--ease);z-index:2}
-.hero-sound:hover{border-color:var(--accent);color:var(--accent)}
-.hero-sound svg{width:18px;height:18px}
-.hero-expand{position:absolute;bottom:14px;left:14px;width:40px;height:40px;border-radius:50%;background:rgba(8,20,36,.6);backdrop-filter:blur(8px);border:1px solid var(--line);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .25s var(--ease),color .25s var(--ease);z-index:3}
-.hero-expand:hover{border-color:var(--accent);color:var(--accent)}
-.hero-expand svg{width:17px;height:17px}
-.hero-sound .on-ic{display:none}
-.hero-sound.on .on-ic{display:block}
-.hero-sound.on .off-ic{display:none}
-@media (max-width:860px){.hero-b-grid{grid-template-columns:1fr}.hero-frame{order:-1}.hero-b{min-height:auto}}
-
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease)}
+/* ===== Revelado al hacer scroll ===== */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
 .reveal.in{opacity:1;transform:none}
+.reveal-group .part{opacity:0;transform:translateY(20px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
 .reveal-group.in .part{opacity:1;transform:none}
-.reveal-group .part{opacity:0;transform:translateY(20px);transition:opacity .7s var(--ease), transform .7s var(--ease)}
-.reveal-group.in .part:nth-child(1){transition-delay:0ms}
 .reveal-group.in .part:nth-child(2){transition-delay:90ms}
 .reveal-group.in .part:nth-child(3){transition-delay:180ms}
 .reveal-group.in .part:nth-child(4){transition-delay:270ms}
-body.motion-settled .reveal-group.in .part:nth-child(1),
-body.motion-settled .reveal-group.in .part:nth-child(2),
-body.motion-settled .reveal-group.in .part:nth-child(3),
-body.motion-settled .reveal-group.in .part:nth-child(4){transition-delay:0ms}
 
-/* problem section */
-.problem-grid{margin-top:56px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-.problem-card{background:var(--panel);padding:32px 28px}
-.problem-card .quote-mark{font-family:var(--display);font-size:2.4rem;color:var(--accent-muted);line-height:1}
-.problem-card p{margin-top:14px;font-size:1.02rem;color:var(--text-primary);line-height:1.5}
-.problem-card span.tag{display:block;margin-top:18px;font-family:var(--mono);font-size:.72rem;color:var(--text-secondary);letter-spacing:.06em;text-transform:uppercase}
-@media (max-width:820px){.problem-grid{grid-template-columns:1fr}}
+/* ===== Servicios: columnas con filete y la caja de lo que cambia ===== */
+.feat-grid{margin-top:clamp(2.5rem,5vw,3.75rem);display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem clamp(1.5rem,3vw,2.5rem)}
+.feat{border-top:1px solid rgba(var(--text-rgb),.22);padding-top:1.4rem}
+.feat .i{width:30px;height:30px;color:var(--accent-ink);stroke-width:1.5}
+.feat h3{margin-top:1rem;font-size:clamp(1.45rem,2vw,1.7rem);line-height:1.08}
+.feat p{margin-top:.6rem;font-size:.95rem;color:var(--muted)}
+.infra{margin-top:clamp(2.5rem,5vw,3.75rem);background:var(--sand);border-radius:var(--r-lg);padding:clamp(1.4rem,3vw,2.2rem)}
+.infra .kicker{font-size:.66rem;margin-bottom:1.3rem}
+.infra-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.4rem 2rem}
+.infra-item{display:grid;grid-template-columns:38px 1fr;gap:.9rem;align-items:start}
+.infra-ico{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--accent);display:grid;place-items:center}
+.infra-ico .i{width:18px;height:18px}
+.infra-item h3{font:800 .95rem/1.3 var(--sans);letter-spacing:0}
+.infra-item p{margin-top:.25rem;font-size:.87rem;color:var(--muted);line-height:1.5}
 
-/* method / horizontal steps */
-.method{margin-top:52px;position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
-.method-rail{position:absolute;left:9px;right:9px;top:9px;height:2px;background:var(--line)}
-.method-step{position:relative;padding-top:34px}
-.method-step .dot{position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:var(--panel);border:2px solid var(--line);transition:border-color .4s var(--ease), background .4s var(--ease), box-shadow .4s var(--ease)}
-.method-step.in .dot{border-color:var(--accent);background:var(--accent);box-shadow:0 0 0 6px var(--accent-muted)}
-.method-step .num{font-family:var(--mono);color:var(--accent);font-size:.78rem;letter-spacing:.1em}
-.method-step h3{margin-top:14px;font-size:1.12rem}
-.method-step p{margin-top:8px;color:var(--text-secondary);font-size:.92rem;line-height:1.5;max-width:none}
-.method-step .mstep-head{display:flex;align-items:center;gap:10px;margin-top:4px}
-@media (max-width:860px){
-  .method{grid-template-columns:1fr;gap:0}
-  .method-rail{left:9px;right:auto;top:8px;bottom:8px;width:2px;height:auto}
-  .method-step{padding-top:0;padding-left:44px;padding-bottom:36px}
-  .method-step:last-child{padding-bottom:0}
-}
-.mstep-ico{width:36px;height:36px;flex:none;border-radius:10px;display:grid;place-items:center;background:var(--panel-2);border:1px solid var(--line);color:var(--accent)}
-.mstep-ico svg{width:19px;height:19px}
-.method-step .num{margin:0}
-.mstep-deliver{margin-top:14px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:.92rem;color:var(--text-primary)}
-.mstep-deliver .lbl{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent-muted);padding:3px 9px;border-radius:999px;white-space:nowrap}
+/* ===== Casos: tarjetas con foto, como las postales ===== */
+.case-grid{margin-top:clamp(2.5rem,5vw,3.5rem);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:1.25rem}
+.case-card{display:flex;flex-direction:column;border-radius:var(--r-lg);overflow:hidden;background:var(--ink-3);border:1px solid var(--line-dark);transition:transform .5s var(--ease),border-color .4s}
+.case-card:hover{transform:translateY(-4px);border-color:rgba(var(--accent-rgb),.35)}
+.case-media{position:relative;aspect-ratio:16/10;overflow:hidden;background:#0a1220}
+.case-media img,.case-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 1.2s var(--ease),opacity .5s}
+.case-media video{opacity:0}
+.case-card.is-playing .case-media video{opacity:1}
+.case-card:hover .case-media img{transform:scale(1.04)}
+.case-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(var(--ink-rgb),0) 30%,rgba(var(--ink-rgb),.88) 100%);pointer-events:none}
+.case-cap{position:absolute;left:1.2rem;right:4.4rem;bottom:1rem;z-index:2}
+.case-cap .kicker{font-size:.6rem;letter-spacing:.2em;margin-bottom:.35rem;color:var(--accent)}
+.case-cap h3{font-size:clamp(1.8rem,2.6vw,2.2rem);color:var(--cream)}
+.case-play{position:absolute;right:1rem;bottom:1.1rem;z-index:3;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(var(--paper-rgb),.14);border:1px solid rgba(var(--paper-rgb),.4);color:var(--cream);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:background-color .25s,border-color .25s,transform .35s var(--ease)}
+.case-play:hover{background:var(--accent);border-color:var(--accent);color:var(--accent-text);transform:scale(1.06)}
+.case-play .i{width:18px;height:18px;margin-left:2px}
+.case-body{flex:1;display:flex;flex-direction:column;padding:1.3rem 1.3rem 1.4rem}
+.case-body>p{font-size:.93rem;color:var(--cream-70);line-height:1.6}
+.case-facts{margin-top:1.1rem;border-top:1px solid var(--line-dark)}
+.case-facts div{display:grid;grid-template-columns:8.5rem 1fr;gap:.8rem;padding:.6rem 0;border-bottom:1px solid var(--line-dark);font-size:.84rem}
+.case-facts dt{font-weight:800;color:var(--cream)}
+.case-facts dd{color:var(--cream-55)}
+.case-status{margin-top:1rem;display:inline-flex;align-items:center;gap:.55rem;font-size:.8rem;color:var(--cream-70)}
+.case-status::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(var(--accent-rgb),.2);flex:none}
+.case-actions{margin-top:auto;padding-top:1.3rem;display:flex;flex-wrap:wrap;gap:.6rem}
+.case-note{margin-top:1rem;font-size:.82rem;color:var(--cream-55)}
+.case-note a{color:var(--accent);font-weight:700}
+.case-note a:hover{text-decoration:underline}
+@media (max-width:420px){.case-facts div{grid-template-columns:1fr;gap:.15rem}}
 
-/* services */
-.services-grid{margin-top:56px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
-.service-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:30px 26px;transition:transform .35s var(--ease), border-color .35s var(--ease)}
-.service-card:hover{transform:translateY(-6px);border-color:var(--accent-muted)}
-.service-card .ico{width:40px;height:40px;color:var(--accent)}
-.service-card h3{margin-top:18px;font-size:1.15rem}
-.service-card p{margin-top:10px;color:var(--text-secondary);font-size:.96rem;line-height:1.5}
+/* La franja que invita, con borde */
+.promo{margin-top:clamp(2.5rem,5vw,3.5rem);display:grid;grid-template-columns:1fr;gap:1.4rem;align-items:center;padding:clamp(1.4rem,3vw,2.2rem);border:1px solid rgba(var(--accent-rgb),.32);border-radius:var(--r-lg);background:linear-gradient(120deg,rgba(var(--accent-rgb),.08),rgba(var(--paper-rgb),.02))}
+.promo .kicker{font-size:.66rem;margin-bottom:.7rem}
+.promo h3{font-size:clamp(1.6rem,2.8vw,2.2rem);line-height:1.12;max-width:30ch}
+.promo p{margin-top:.6rem;font-size:.92rem;color:var(--cream-70);max-width:62ch}
+@media (min-width:860px){.promo{grid-template-columns:1fr auto;gap:2.5rem}}
 
-/* differentiators - asymmetric band, avoids repeating services grid skeleton */
-.diff{margin-top:56px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
-.diff-list{display:flex;flex-direction:column;gap:26px}
-.diff-item{display:flex;gap:16px}
-.diff-item .n{font-family:var(--mono);color:var(--accent);font-size:.85rem;padding-top:3px}
-.diff-item h3{font-size:1.1rem}
-.diff-item p{margin-top:6px;color:var(--text-secondary);font-size:.95rem}
-.diff-visual{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:36px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
-@media (max-width:860px){.diff{grid-template-columns:1fr}.diff-visual{order:-1}}
-
-/* case study */
-.case{background:var(--panel);border-radius:24px;margin-top:56px;padding:clamp(32px,5vw,60px);display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;position:relative;overflow:hidden}
-.case::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 100% 0%,var(--accent-muted),transparent 60%);pointer-events:none;opacity:.5}
-.case-stat{display:flex;gap:28px;margin-top:26px;flex-wrap:wrap}
-.case-stat div b{font-family:var(--display);font-size:1.8rem;color:var(--accent);display:block}
-.case-stat div span{font-size:.82rem;color:var(--text-secondary)}
-.case-visual{border-radius:16px;overflow:hidden;background:var(--panel-2);aspect-ratio:4/3}
-.case-visual img{width:100%;height:100%;object-fit:cover}
-.case-visual.has-video{aspect-ratio:16/9;background:#0a1712}
-.case-visual video{width:100%;height:100%;display:block;object-fit:cover}
-@media (max-width:860px){.case{grid-template-columns:1fr}}
-
-/* portfolio: alternating cases + responsive H/V video */
-.casos-intro{max-width:60ch;margin-top:18px;color:var(--text-secondary);font-size:1.05rem;line-height:1.6}
-.case-alt .case-visual{order:-1}
-@media (max-width:860px){.case-alt .case-visual{order:0}}
-.case-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.case-head h3{font-family:var(--display);font-size:clamp(1.5rem,3.2vw,2rem);line-height:1.1}
-.case-rubro{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent-muted);padding:4px 11px;border-radius:999px;white-space:nowrap}
-.case-status{margin-top:22px;display:inline-flex;align-items:center;gap:9px;font-size:.85rem;color:var(--text-secondary);font-family:var(--mono);letter-spacing:.03em}
-.case-status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-muted);flex:none}
-@media (max-width:700px){.case-visual.has-video{aspect-ratio:9/16;max-width:330px;margin-inline:auto}}
-/* casos: paneles expansibles */
-.case-panels{margin-top:44px;display:flex;gap:10px;height:min(72vh,540px)}
-.panel{position:relative;flex:1 1 0;min-width:0;overflow:hidden;border-radius:18px;cursor:pointer;border:1px solid var(--line);background:#0a1220;padding:0;color:var(--text-primary);text-align:left;font-family:var(--body);transition:flex-grow .55s var(--ease)}
-.panel:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.panel.is-active{flex-grow:7}
-.panel-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.45;transition:opacity .5s var(--ease)}
-.panel.is-active .panel-vid{opacity:1}
-.panel-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,18,32,.1) 0%,rgba(8,18,32,.5) 55%,rgba(6,14,26,.94) 100%)}
-.panel-tab{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:var(--display);font-weight:700;font-size:1.12rem;letter-spacing:-.01em;white-space:nowrap;z-index:3;text-shadow:0 2px 10px rgba(0,0,0,.6);transition:opacity .3s var(--ease)}
-.panel.is-active .panel-tab{opacity:0;pointer-events:none}
-.panel-info{position:absolute;left:0;right:0;bottom:0;padding:26px 28px;z-index:3;opacity:0;transform:translateY(16px);transition:opacity .45s var(--ease) .12s,transform .45s var(--ease) .12s;pointer-events:none}
-.panel.is-active .panel-info{opacity:1;transform:none;pointer-events:auto}
-.pi-rubro{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block}
-.pi-title{margin-top:8px;font-family:var(--display);font-weight:700;font-size:clamp(1.5rem,2.6vw,2rem)}
-.pi-desc{margin-top:12px;color:var(--text-secondary);font-size:.96rem;line-height:1.55;max-width:60ch}
-.pi-stats{margin-top:16px;display:flex;gap:26px;flex-wrap:wrap}
-.pi-stats span{display:flex;flex-direction:column;gap:3px;font-size:.8rem;color:var(--text-secondary);max-width:24ch}
-.pi-stats b{color:var(--text-primary);font-family:var(--display);font-size:.98rem}
-.pi-status{margin-top:16px;display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.78rem;color:var(--text-secondary)}
-.pi-status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-muted);flex:none}
-.panel-play{margin-top:18px;display:inline-flex;align-items:center;gap:9px;background:var(--accent);color:#04211d;border:none;border-radius:999px;padding:11px 20px;font-family:var(--body);font-weight:600;font-size:.9rem;cursor:pointer;transition:transform .25s var(--ease),background .25s var(--ease)}
-.panel-play:hover{background:var(--accent-hover);transform:translateY(-2px)}
-.panel-play svg{width:15px;height:15px}
-.vlightbox{position:fixed;inset:0;z-index:200;background:rgba(4,10,20,.9);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s var(--ease)}
-.vlightbox.open{opacity:1;pointer-events:auto}
-.vlightbox video{width:min(1000px,92vw);max-height:86vh;border-radius:14px;background:#000;box-shadow:0 30px 90px rgba(0,0,0,.6)}
-.vlightbox-close{position:absolute;top:20px;right:22px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid var(--line);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .25s var(--ease)}
-.vlightbox-close:hover{background:rgba(255,255,255,.2)}
-.vlightbox-close svg{width:22px;height:22px}
-@media (max-width:860px){
-  .case-panels{flex-direction:column;height:auto;gap:12px}
-  .panel{flex:none;display:block}
-  .panel:not(.is-active){height:66px}
-  .panel-tab{writing-mode:horizontal-tb;transform:none;left:20px;top:20px;bottom:auto;font-size:1.05rem}
-  .panel.is-active{height:auto}
-  .panel.is-active .panel-tab{display:none}
-  .panel.is-active .panel-vid{position:relative;inset:auto;width:100%;height:210px;opacity:1}
-  .panel.is-active .panel-shade{display:none}
-  .panel.is-active .panel-info{position:relative;left:auto;right:auto;bottom:auto;opacity:1;transform:none;padding:20px}
-  .pi-desc{max-width:none}
-}
-
-/* brand teaser */
-.teaser-section .wrap{text-align:center}
-.teaser-frame{margin:38px auto 0;max-width:940px;border-radius:20px;overflow:hidden;background:#0a1220;aspect-ratio:16/9;box-shadow:0 30px 80px rgba(0,0,0,.35);border:1px solid var(--line)}
-.teaser-frame video{width:100%;height:100%;display:block;object-fit:cover}
-@media (max-width:700px){.teaser-frame{aspect-ratio:9/16;max-width:330px}}
-
-/* pricing */
-.pricing-grid{margin-top:56px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.price-card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:32px 26px;display:flex;flex-direction:column}
-.price-card.featured{border-color:var(--accent);position:relative;background:linear-gradient(180deg,var(--panel),var(--panel-2))}
-.price-card.featured::before{content:"Recomendado";position:absolute;top:-13px;left:26px;background:var(--accent);color:#04211d;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:999px}
-.price-card h3{font-size:1.1rem}
-.price-card .amount{font-family:var(--display);font-size:1.7rem;margin-top:12px;color:var(--text-primary)}
-.price-card .amount span{font-family:var(--body);font-size:.85rem;color:var(--text-secondary);font-weight:400}
-.price-card ul{list-style:none;padding:0;margin:20px 0 0;display:flex;flex-direction:column;gap:10px;flex:1}
-.price-card li{font-size:.92rem;color:var(--text-secondary);padding-left:22px;position:relative}
-.price-card li::before{content:"";position:absolute;left:0;top:6px;width:12px;height:12px;background:var(--accent);mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/contain no-repeat}
-.price-card .btn{margin-top:24px}
-@media (max-width:900px){.pricing-grid{grid-template-columns:1fr}}
-
-/* plotline teaser carousel */
-.pl-carousel-wrap{margin-top:56px;position:relative}
-.pl-viewport{overflow:hidden;border-radius:22px}
-.pl-track{display:flex;transition:transform .55s var(--ease)}
-.pl-slide{flex:0 0 100%;display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--panel);border:1px solid var(--line);min-height:380px}
-.pl-visual{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:28px}
-.pl-copy{padding:clamp(28px,4vw,52px);display:flex;flex-direction:column;justify-content:center}
-.pl-copy .pl-era{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;opacity:.65;margin-bottom:14px}
-.pl-copy h3{font-family:var(--display);font-size:clamp(1.3rem,2.6vw,1.7rem);color:var(--text-primary)}
-.pl-copy p{margin-top:14px;color:var(--text-secondary);font-size:.98rem;line-height:1.6;max-width:42ch}
+/* ===== Seis décadas: el carrusel, sobre papel ===== */
+.pl-carousel-wrap{margin-top:clamp(2.5rem,5vw,3.5rem);position:relative;border-radius:var(--r-lg)}
+.pl-viewport{overflow:hidden;border-radius:var(--r-lg);border:1px solid var(--line-light);background:#fff;box-shadow:var(--shadow-card)}
+.pl-track{display:flex;transition:transform .7s var(--ease)}
+.pl-slide{flex:0 0 100%;display:grid;grid-template-columns:1fr 1fr;min-height:400px}
+.pl-visual{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:clamp(16px,2.4vw,28px)}
+.pl-copy{padding:clamp(28px,4vw,56px);display:flex;flex-direction:column;justify-content:center}
+.pl-era{font:700 .7rem/1.3 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:1rem}
+.pl-copy h3{font-size:clamp(1.8rem,3vw,2.6rem);line-height:1.05;color:var(--text)}
+.pl-copy p{margin-top:1rem;color:var(--muted);font-size:1rem;line-height:1.65;max-width:42ch}
 @media (max-width:760px){.pl-slide{grid-template-columns:1fr;min-height:0}.pl-visual{min-height:220px}}
-
-/* era-specific mini visuals, contained so they never leak the design system elsewhere */
-.pl-era-box{width:100%;height:100%;min-height:220px;border-radius:14px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.pl-era-box{width:100%;height:100%;min-height:240px;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .pl-era-paper{background:#e8dfc8}
 .pl-era-paper .card{background:#f4ecd8;border:1px solid rgba(60,45,20,.18);box-shadow:0 10px 24px rgba(40,30,10,.16);padding:20px 22px;font-family:'Courier Prime',Courier,monospace;color:#332b1e;width:78%;transform:rotate(-1.2deg);font-size:.82rem;line-height:1.5}
 .pl-era-paper .card .redl{color:#a4241a;text-decoration:line-through}
@@ -415,283 +335,476 @@ body.motion-settled .reveal-group.in .part:nth-child(4){transition-delay:0ms}
 @keyframes plBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
 .pl-era-crt{background:linear-gradient(180deg,#150523 0%,#1c0a2e 60%,#06030b 100%)}
 .pl-era-crt::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.35) 0px,rgba(0,0,0,.35) 1px,transparent 1px,transparent 3px);opacity:.4;pointer-events:none}
-.pl-era-crt .msg{position:relative;color:#fff;font-family:var(--display);font-weight:600;font-size:1.15rem;text-align:center;padding:0 22px;text-shadow:2px 0 #00f6ff, -2px 0 #ff2e8b}
+.pl-era-crt .msg{position:relative;color:#fff;font:600 1.15rem/1.3 var(--brand);text-align:center;padding:0 22px;text-shadow:2px 0 #00f6ff,-2px 0 #ff2e8b}
 .pl-era-saas{background:#eef1f6}
 .pl-era-saas .cards{display:flex;gap:10px;padding:0 22px;flex-wrap:wrap;justify-content:center}
-.pl-era-saas .c{background:#fff;border:1px solid #dbe1e8;border-radius:8px;padding:12px 14px;font-family:Arial,Helvetica,sans-serif;font-size:.76rem;color:#28313d;width:118px}
-.pl-era-saas .c b{display:block;color:#2b57d6;font-size:.8rem;margin-bottom:4px}
-.pl-era-biplot{background:#081a2e}
-.pl-era-biplot img{width:100%;height:100%;object-fit:cover;border-radius:10px}
-/* hoy y tu turno: la oficina y el local libre, con la misma línea */
+.pl-era-saas .sc{background:#fff;border:1px solid #dbe1e8;border-radius:8px;padding:12px 14px;font-family:Arial,Helvetica,sans-serif;font-size:.76rem;color:#28313d;width:118px;line-height:1.4}
+.pl-era-saas .sc b{display:block;color:#2b57d6;font-size:.8rem;margin-bottom:4px}
 .pl-era-hq,.pl-era-local{background:transparent;display:block;min-height:0;height:auto}
-.pl-era-hq .lm,.pl-era-local .tu-local{box-shadow:none}
+.pl-controls{display:flex;align-items:center;justify-content:space-between;margin-top:1.4rem;gap:1rem 1.4rem;flex-wrap:wrap}
+.pl-dots{display:flex;gap:6px}
+.pl-dots button{width:30px;height:30px;padding:0;display:grid;place-items:center;border-radius:50%}
+.pl-dots button::before{content:"";width:8px;height:8px;border-radius:50%;background:rgba(var(--text-rgb),.22);transition:background-color .3s,transform .3s var(--ease)}
+.pl-dots button.active::before{background:var(--accent-ink);transform:scale(1.35)}
+.pl-arrows{display:flex;gap:.5rem}
+.pl-arrows button{width:44px;height:44px;border-radius:50%;border:1px solid rgba(var(--text-rgb),.22);color:var(--text);display:grid;place-items:center;transition:border-color .25s,background-color .25s}
+.pl-arrows button:hover{border-color:var(--accent-ink);background:#fff}
+.pl-arrows .i{width:18px;height:18px}
+@media (max-width:560px){.pl-controls .btn{order:3;width:100%}}
 
-.pl-controls{display:flex;align-items:center;justify-content:space-between;margin-top:22px;gap:20px;flex-wrap:wrap}
-.pl-dots{display:flex;gap:9px}
-.pl-dots button{width:9px;height:9px;border-radius:50%;border:none;background:var(--line);cursor:pointer;padding:0;transition:background .3s var(--ease),transform .3s var(--ease)}
-.pl-dots button.active{background:var(--accent);transform:scale(1.3)}
-.pl-arrows{display:flex;gap:10px}
-.pl-arrows button{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .3s var(--ease),background .3s var(--ease)}
-.pl-arrows button:hover{border-color:var(--accent);background:rgba(23,195,178,.08)}
-.pl-arrows svg{width:18px;height:18px}
-.pl-cta{margin-top:0}
-@media (prefers-reduced-motion:reduce){.pl-track{transition:none}.pl-era-terminal .cur{animation:none}}
-
-/* interactive: trace tu punto */
-.trace{background:var(--panel);border-radius:24px;padding:clamp(36px,6vw,72px);margin-top:56px;text-align:center;position:relative;overflow:hidden}
-.trace svg{width:100%;max-width:640px;height:auto;margin:36px auto 0;display:block}
-.trace-path{fill:none;stroke:var(--line);stroke-width:2.5}
-.trace-path-fill{fill:none;stroke:var(--accent);stroke-width:3;stroke-dasharray:600;stroke-dashoffset:600}
-.trace-dot{fill:var(--warm);r:0}
-.trace-hold{
-  margin-top:28px;width:180px;height:180px;border-radius:50%;border:2px solid var(--line);
-  display:flex;align-items:center;justify-content:center;margin-left:auto;margin-right:auto;position:relative;cursor:pointer;
-  -webkit-tap-highlight-color:transparent;user-select:none;background:var(--panel-2);
-}
-.trace-hold svg.ring{position:absolute;inset:-2px;transform:rotate(-90deg)}
-.trace-hold svg.ring circle{fill:none;stroke:var(--accent);stroke-width:3;stroke-dasharray:552;stroke-dashoffset:552;transition:stroke-dashoffset .05s linear}
-.trace-hold span{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);text-align:center;padding:0 20px}
-.trace.done .trace-hold span{color:var(--accent)}
-.trace-result{margin-top:22px;color:var(--text-secondary);font-size:.95rem;min-height:1.4em}
-
-/* faq */
-.faq-list{margin-top:48px;display:flex;flex-direction:column;border-top:1px solid var(--line)}
-.faq-item{border-bottom:1px solid var(--line)}
-.faq-q{width:100%;text-align:left;background:none;border:none;color:var(--text-primary);font-family:var(--body);font-weight:600;font-size:1.02rem;padding:22px 4px;display:flex;justify-content:space-between;align-items:center;gap:20px;cursor:pointer}
-.faq-q .plus{width:20px;height:20px;flex:none;position:relative}
-.faq-q .plus::before,.faq-q .plus::after{content:"";position:absolute;background:var(--accent);transition:transform .3s var(--ease)}
-.faq-q .plus::before{left:0;top:9px;width:20px;height:2px}
-.faq-q .plus::after{left:9px;top:0;width:2px;height:20px}
-.faq-item.open .plus::after{transform:rotate(90deg) translateX(0);opacity:0}
-.faq-a{max-height:0;overflow:hidden;transition:max-height .4s var(--ease)}
-.faq-a p{padding:0 4px 22px;color:var(--text-secondary);max-width:66ch;line-height:1.55}
-
-/* contact */
-.contact{background:var(--panel);border-radius:24px;padding:clamp(32px,6vw,64px);margin-top:0;display:grid;grid-template-columns:1fr 1fr;gap:48px}
-.contact-form{display:flex;flex-direction:column;gap:16px}
-.field label{display:block;font-size:.85rem;color:var(--text-secondary);margin-bottom:7px}
-.field input,.field textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;color:var(--text-primary);padding:13px 14px;font-family:var(--body);font-size:.95rem;transition:border-color .25s var(--ease)}
-.field input:focus,.field textarea:focus{border-color:var(--accent);outline:none}
-.field textarea{resize:vertical;min-height:110px}
-.form-success{display:none;text-align:center;padding:40px 10px}
-.form-success.show{display:block}
-.form-success svg{width:52px;height:52px;color:var(--accent);margin:0 auto 16px}
-form.hide{display:none}
-@media (max-width:860px){.contact{grid-template-columns:1fr}}
-
-footer{padding:48px clamp(20px,6vw,64px) 40px;border-top:1px solid var(--line)}
-.footer-grid{max-width:1120px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:24px;align-items:center}
-.footer-links{display:flex;gap:22px;flex-wrap:wrap;font-size:.88rem;color:var(--text-secondary)}
-.footer-links a{text-decoration:none;transition:color .25s var(--ease);padding:9px 2px;display:inline-block}
-.footer-links a:hover{color:var(--accent)}
-.footer-note{margin-top:22px;max-width:1120px;margin-left:auto;margin-right:auto;font-size:.78rem;color:var(--text-secondary);opacity:.7}
-
-/* ===== BiPlot HQ en el sitio: la oficina como apoyo de la marca ===== */
-.nav-links a.nav-hq{display:inline-flex;align-items:center;gap:7px}
-.nav-links a.nav-hq::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-muted)}
-.hero-news{display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;padding:5px 14px 5px 5px;border-radius:999px;border:1px solid rgba(23,195,178,.35);background:rgba(23,195,178,.08);color:var(--text-primary);font-size:.86rem;line-height:1.3;text-decoration:none;transition:border-color .25s var(--ease),background .25s var(--ease)}
-.hero-news:hover{border-color:var(--accent);background:rgba(23,195,178,.14)}
-.hero-news .hn-tag{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);color:#04211d;padding:4px 9px;border-radius:999px;flex:none}
-.hero-news svg{width:14px;height:14px;color:var(--accent);flex:none}
-.btn.accent{background:var(--accent);color:#04211d;box-shadow:0 8px 26px rgba(23,195,178,.22)}
-.btn.accent:hover{background:var(--accent-hover);transform:translateY(-3px);box-shadow:0 14px 30px rgba(23,195,178,.3)}
-
-/* el motor: las fases de cada paso y quién las lleva */
-.fases{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
-.fase{display:flex;align-items:center;gap:10px;font-size:.88rem;line-height:1.25}
-.f-cod{font-family:var(--mono);font-size:.68rem;font-weight:500;color:#04211d;background:var(--accent);border-radius:6px;padding:3px 6px;flex:none}
-.f-nom{color:var(--text-primary);font-weight:500;flex:1;min-width:0}
-.f-caras{display:flex;flex:none}
-.f-caras a{display:block;width:30px;height:30px;border-radius:50%;transition:transform .25s var(--ease)}
-.f-caras a + a{margin-left:-9px}
-.f-caras a:hover{transform:translateY(-2px)}
-.f-caras img{width:30px;height:30px}
-.method-more{margin-top:44px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--text-secondary);font-size:.95rem}
-.method-more a{color:var(--accent);font-weight:600;text-decoration:none}
-.method-more a:hover{text-decoration:underline}
-.equipo-fila{display:flex}
-.equipo-fila img{width:34px;height:34px}
-.equipo-fila img + img{margin-left:-10px}
-
-/* casos: pasar a la sala de cada uno */
-.panel-actions{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.panel-actions .panel-play{margin-top:0}
-.panel-sala{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;border:1px solid rgba(242,244,247,.3);background:rgba(242,244,247,.06);color:var(--text-primary);font-weight:600;font-size:.9rem;text-decoration:none;transition:border-color .25s var(--ease),transform .25s var(--ease)}
-.panel-sala:hover{border-color:var(--accent);transform:translateY(-2px)}
-.panel-sala svg{width:15px;height:15px;color:var(--accent)}
-.casos-mas{margin-top:22px;color:var(--text-secondary);font-size:.95rem}
-.casos-mas a{color:var(--accent);font-weight:600;text-decoration:none}
-.casos-mas a:hover{text-decoration:underline}
-
-/* la sección de la oficina: la cuadrícula del kit y un halo cian, para que se note que es otro lugar */
-#oficina{background:radial-gradient(ellipse 60% 55% at 85% 25%,rgba(23,195,178,.12),transparent 62%),linear-gradient(180deg,var(--canvas),var(--canvas-deep) 55%,var(--canvas))}
-#oficina::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(23,195,178,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(23,195,178,.05) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent)}
-#oficina .wrap{position:relative}
-.hq{margin-top:48px;display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(28px,4vw,56px);align-items:center}
-.hq-media{min-width:0}
-.hq-frame{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:16/9;background:#0a1220;border:1px solid var(--line);box-shadow:0 40px 90px rgba(0,0,0,.45)}
-.hq-frame video{width:100%;height:100%;object-fit:cover;display:block}
-.hq-caption{margin-top:12px;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}
-.hq-points{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:22px}
-.hq-point{display:grid;grid-template-columns:38px 1fr;gap:14px;align-items:start}
-.hq-point .mstep-ico{width:38px;height:38px}
-.hq-point h3{font-size:1.06rem}
-.hq-point p{margin-top:5px;color:var(--text-secondary);font-size:.93rem;line-height:1.5}
-.hq-url{font-family:var(--mono);color:var(--accent);font-size:.84rem;white-space:nowrap}
-.hq-point .equipo-fila{margin-top:10px}
-.hq .cta-row{margin-top:30px}
-@media (max-width:900px){.hq{grid-template-columns:1fr}}
-@media (max-width:700px){.hq-frame{aspect-ratio:9/16;max-width:340px;margin-inline:auto}.hq-caption{text-align:center}}
-
-/* La línea del motor: las diez fases, cada una con quien la lleva, sobre la foto de la oficina */
-.lm{position:relative;border-radius:18px;overflow:hidden;border:1px solid rgba(23,195,178,.25);background:#081a2e;box-shadow:0 24px 60px rgba(0,0,0,.4)}
-.lm-foto{position:relative;height:var(--lm-foto,24vh);min-height:130px}
+/* La línea del motor (lámina «Hoy») y el local libre (lámina «Tu turno») */
+.lm{position:relative;border-radius:12px;overflow:hidden;border:1px solid rgba(23,195,178,.25);background:#081a2e}
+.lm-foto{position:relative;aspect-ratio:2/1}
 .lm-foto img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;display:block}
 .lm-foto::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,26,46,0) 35%,rgba(8,26,46,.92) 88%,#081a2e)}
-.lm-pista{position:relative;margin:-58px 34px 0;padding:52px 0 46px}
+.lm-pista{position:relative;margin:-44px 22px 0;padding:44px 0 26px}
 .lm-via{position:relative;aspect-ratio:1000/60}
 .lm-via svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 6px rgba(23,195,178,.55))}
-.lm-trazo{fill:none;stroke:#17C3B2;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s cubic-bezier(.22,.9,.3,1) .2s}
-.lm.in .lm-trazo,.in .lm .lm-trazo,.pl-active .lm .lm-trazo{stroke-dashoffset:0}
+.lm-trazo{fill:none;stroke:#17C3B2;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s var(--ease) .2s}
+.pl-active .lm .lm-trazo{stroke-dashoffset:0}
 .lm-fases{list-style:none;margin:0;padding:0;position:absolute;inset:0}
-.lm-fases li{position:absolute;transform:translate(-50%,-47px);display:flex;flex-direction:column;align-items:center;text-align:center;width:88px}
-.lm-caras{display:flex;height:34px}
-.lm-caras img{width:34px;height:34px;display:block}
-.lm-caras img + img{margin-left:-12px}
+.lm-fases li{position:absolute;transform:translate(-50%,-39px);display:flex;flex-direction:column;align-items:center;text-align:center;width:88px}
+.lm-caras{display:flex;height:26px}
+.lm-caras img{width:26px;height:26px;display:block}
+.lm-caras img+img{display:none}
 .lm-fases i{width:12px;height:12px;margin-top:7px;border-radius:50%;background:#17C3B2;box-shadow:0 0 0 3px #081a2e,0 0 12px rgba(23,195,178,.8)}
-.lm-fases b{margin-top:7px;font:700 .7rem/1 'JetBrains Mono',monospace;color:#17C3B2;letter-spacing:.04em}
-.lm-nom{margin-top:3px;font:500 .72rem/1.2 'Inter',sans-serif;color:#A9B7C6}
+.lm-fases b{margin-top:7px;font:700 .7rem/1 var(--mono);color:#17C3B2;letter-spacing:.04em}
+.lm-nom{display:none}
 .lm-fin{position:absolute;width:16px;height:16px;border-radius:50%;background:#FF6B4A;transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(255,107,74,.25),0 0 18px rgba(255,107,74,.7)}
-.lm-compacto .lm-foto{height:auto;aspect-ratio:2/1;min-height:0}
-.lm-compacto .lm-pista{margin:-44px 22px 0;padding:44px 0 26px}
-.lm-compacto .lm-nom{display:none}
-.lm-compacto .lm-fases li{transform:translate(-50%,-39px)}
-.lm-compacto .lm-caras,.lm-compacto .lm-caras img{height:26px;width:26px}
-.lm-compacto .lm-caras img + img{display:none}
 @media (max-width:700px){
   .lm-pista{margin:-40px 16px 0;padding:42px 0 26px}
-  .lm-nom{display:none}
   .lm-fases li{transform:translate(-50%,-37px)}
-  .lm-caras,.lm-caras img{height:24px;width:24px}
-  .lm-caras img + img{display:none}
+  .lm-caras,.lm-caras img{height:22px;width:22px}
   .lm-fases i{width:9px;height:9px;margin-top:6px}
   .lm-fases b{font-size:.58rem;margin-top:5px}
 }
-/* El local libre: la línea termina en su puerta, en el punto coral */
-.tu-local{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:1px solid rgba(23,195,178,.25);box-shadow:0 24px 60px rgba(0,0,0,.4);background:#081a2e}
+.tu-local{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid rgba(23,195,178,.25);background:#081a2e}
 .tu-local img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .tu-local svg{position:absolute;inset:0;width:100%;height:100%}
-.tu-local .curve-draw{fill:none;stroke:#17C3B2;stroke-width:9;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;filter:drop-shadow(0 0 8px rgba(23,195,178,.7));transition:stroke-dashoffset 1.6s cubic-bezier(.22,.9,.3,1)}
-.tu-local.in .curve-draw,.in .tu-local .curve-draw,.pl-active .tu-local .curve-draw,.tu-local .curve-draw.in{stroke-dashoffset:0}
+.tu-local .curve-draw{fill:none;stroke:#17C3B2;stroke-width:9;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;filter:drop-shadow(0 0 8px rgba(23,195,178,.7));transition:stroke-dashoffset 1.6s var(--ease)}
+.pl-active .tu-local .curve-draw{stroke-dashoffset:0}
 .tl-halo{fill:rgba(255,107,74,.25);transform-box:fill-box;transform-origin:center;animation:tlHalo 2.2s ease-out infinite}
 @keyframes tlHalo{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.9);opacity:0}}
-@media (prefers-reduced-motion:reduce){.lm-trazo,.tu-local .curve-draw{transition:none;stroke-dashoffset:0}.tl-halo{animation:none}}
 
-/* el riel de las diez fases: la curva del isotipo, que sube de paso en paso y termina en el punto coral */
-.method-step:last-child .dot{border-color:var(--warm)}
-.method-step:last-child.in .dot{background:var(--warm);border-color:var(--warm);box-shadow:0 0 0 6px rgba(255,107,74,.22)}
+/* ===== El motor: diez fases, dentro de un panel ===== */
+.motor{margin-top:clamp(2.5rem,5vw,3.5rem);border:1px solid var(--line-dark);border-radius:calc(var(--r-lg) + 4px);background:linear-gradient(180deg,rgba(var(--ink-3-rgb),.75),rgba(var(--ink-2-rgb),.75));padding:clamp(1.2rem,3vw,2.4rem)}
+.method{position:relative;display:grid;grid-template-columns:1fr;gap:0}
+.method-rail{position:absolute;left:9px;top:8px;bottom:8px;width:2px;background:var(--line-dark)}
+.method-step{position:relative;padding:0 0 2.2rem 44px}
+.method-step:last-of-type{padding-bottom:0}
+.method-step .dot{position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--ink-3);border:2px solid var(--line-dark);transition:border-color .4s var(--ease),background-color .4s var(--ease),box-shadow .4s var(--ease)}
+.method-step.in .dot{border-color:var(--accent);background:var(--accent);box-shadow:0 0 0 6px rgba(var(--accent-rgb),.2)}
+.method-step:last-of-type .dot{border-color:var(--point)}
+.method-step:last-of-type.in .dot{background:var(--point);border-color:var(--point);box-shadow:0 0 0 6px rgba(var(--point-rgb),.22)}
+.mstep-num{font:700 .68rem/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+.method-step h3{margin-top:.6rem;font-size:clamp(1.55rem,2.2vw,1.85rem);line-height:1.05}
+.method-step>p{margin-top:.6rem;color:var(--cream-70);font-size:.92rem;line-height:1.55}
+.fases{margin:1.1rem 0 0;border-top:1px solid var(--line-dark)}
+.fase{display:flex;align-items:center;gap:.6rem;font-size:.86rem;line-height:1.25;padding:.5rem 0;border-bottom:1px solid var(--line-dark)}
+.f-cod{font:600 .66rem/1 var(--mono);color:var(--accent-text);background:var(--accent);border-radius:4px;padding:4px 6px;flex:none}
+.f-nom{color:var(--cream);font-weight:600;flex:1;min-width:0}
+.f-caras{display:flex;flex:none}
+.f-caras a{display:block;width:28px;height:28px;border-radius:50%;transition:transform .25s var(--ease)}
+.f-caras a+a{margin-left:-9px}
+.f-caras a:hover{transform:translateY(-2px)}
+.f-caras img{width:28px;height:28px}
+.mstep-deliver{margin-top:.9rem;font-size:.86rem;color:var(--cream-80);line-height:1.5}
+.mstep-deliver b{display:block;font:700 .62rem/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.35rem}
 .method-curva{display:none}
-@media (min-width:861px){
-  .method{padding-top:44px}
+.motor-foot{margin-top:clamp(1.6rem,3vw,2.2rem);padding-top:1.3rem;border-top:1px solid var(--line-dark);display:flex;align-items:center;gap:.8rem 1.1rem;flex-wrap:wrap;font-size:.92rem;color:var(--cream-70)}
+.equipo-fila{display:flex}
+.equipo-fila img{width:32px;height:32px}
+.equipo-fila img+img{margin-left:-10px}
+@media (min-width:900px){
+  .method{grid-template-columns:repeat(4,1fr);gap:1.6rem;padding-top:44px}
   .method-rail{display:none}
+  .method-step{padding:76px 0 0}
   .method-step .dot{top:var(--alto,0px)}
-  .method-step{padding-top:74px}
+  /* el primer paso es el segundo div: el riel va antes */
   .method-step:nth-of-type(2){--alto:50px}
   .method-step:nth-of-type(3){--alto:24px}
   .method-step:nth-of-type(4){--alto:34px}
   .method-step:nth-of-type(5){--alto:0px}
   .method-curva{display:block;position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-  .method-curva path{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease);filter:drop-shadow(0 0 5px rgba(23,195,178,.5))}
+  .method-curva path{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease);filter:drop-shadow(0 0 5px rgba(var(--accent-rgb),.5))}
   .method.in .method-curva path{stroke-dashoffset:0}
 }
 
-/* contacto: la línea que termina en el punto coral */
-.contacto-linea{display:block;width:min(600px,100%);height:auto;margin-bottom:22px;overflow:visible}
-.contacto-linea path{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease);filter:drop-shadow(0 0 6px rgba(23,195,178,.55))}
+/* ===== BiPlot HQ: el video a un lado y los datos en tarjetas ===== */
+#oficina{background:radial-gradient(ellipse 60% 55% at 15% 30%,rgba(var(--accent-rgb),.10),transparent 62%),var(--ink)}
+#oficina::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(var(--accent-rgb),.045) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--accent-rgb),.045) 1px,transparent 1px);background-size:56px 56px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent)}
+#oficina .container{position:relative}
+.hq{display:grid;grid-template-columns:1fr;gap:clamp(2rem,4vw,4rem);align-items:center}
+.hq-frame{position:relative;border-radius:var(--r-lg);overflow:hidden;aspect-ratio:16/9;background:#0a1220;border:1px solid var(--line-dark);box-shadow:0 40px 90px -30px rgba(0,0,0,.6)}
+.hq-frame video{width:100%;height:100%;object-fit:cover;display:block}
+.hq-caption{margin-top:.8rem;font:700 .64rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--cream-55)}
+.hq-points{margin-top:2rem;display:grid;grid-template-columns:1fr;gap:.6rem}
+.hq-point{display:grid;grid-template-columns:38px 1fr;gap:.9rem;align-items:start;border:1px solid var(--line-dark);border-radius:var(--r-md);padding:.95rem 1rem;background:rgba(var(--paper-rgb),.025)}
+.hq-point h3{font-size:1.45rem;line-height:1.05}
+.hq-point p{margin-top:.3rem;font-size:.88rem;color:var(--cream-70);line-height:1.5}
+.hq-point .equipo-fila{margin-top:.6rem}
+.hq-url{font-family:var(--mono);color:var(--accent);font-size:.78rem;word-break:break-all}
+
+.mstep-ico{width:38px;height:38px;border-radius:50%;border:1px solid rgba(var(--accent-rgb),.35);display:grid;place-items:center;color:var(--accent)}
+.mstep-ico svg{width:18px;height:18px}
+@media (min-width:560px) and (max-width:959px){.hq-points{grid-template-columns:1fr 1fr}}
+.hq .hero-actions{animation:none}
+@media (min-width:960px){.hq{grid-template-columns:1.12fr 1fr}}
+@media (max-width:700px){.hq-frame{aspect-ratio:9/16;max-width:360px;margin-inline:auto}.hq-caption{text-align:center}}
+.v-sound,.v-expand{position:absolute;bottom:14px;width:42px;height:42px;border-radius:50%;background:rgba(var(--ink-rgb),.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(var(--paper-rgb),.25);color:#fff;display:grid;place-items:center;z-index:2;transition:border-color .25s,color .25s}
+.v-sound{right:14px}
+.v-expand{left:14px}
+.v-sound:hover,.v-expand:hover{border-color:var(--accent);color:var(--accent)}
+.v-sound .i,.v-expand .i{width:18px;height:18px}
+.v-sound .on-ic{display:none}
+.v-sound.on .on-ic{display:block}
+.v-sound.on .off-ic{display:none}
+
+/* ===== Precios: tarjetas sobre arena ===== */
+.price-grid{margin-top:clamp(2.5rem,5vw,3.5rem);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:1.25rem;align-items:stretch}
+.price-card{display:flex;flex-direction:column;background:#fff;border-radius:var(--r-lg);padding:clamp(1.4rem,2.6vw,2rem);box-shadow:var(--shadow-card);border:1px solid var(--line-light)}
+.price-card .kicker{font-size:.62rem;margin-bottom:.6rem}
+.price-card h3{font-size:clamp(1.9rem,2.6vw,2.3rem)}
+.price-amount{margin-top:1.1rem;padding:.9rem 0;border-top:1px solid var(--line-light);border-bottom:1px solid var(--line-light);display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+.price-amount b{font:500 1.9rem/1 var(--serif)}
+.price-amount span{font-size:.84rem;color:var(--muted)}
+.price-card ul{margin-top:1.1rem;display:flex;flex-direction:column;gap:.6rem;flex:1}
+.price-card li{position:relative;padding-left:1.6rem;font-size:.92rem;color:var(--muted);line-height:1.45}
+.price-card li::before{content:"";position:absolute;left:0;top:.28em;width:14px;height:14px;background:var(--accent-ink);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center/contain no-repeat}
+.price-card .btn{margin-top:1.5rem}
+.price-card.featured{background:var(--ink-2);color:var(--cream);border-color:rgba(var(--accent-rgb),.4);box-shadow:0 30px 60px -30px rgba(var(--ink-rgb),.6)}
+.price-card.featured .kicker{color:var(--accent)}
+.price-card.featured .price-amount{border-color:var(--line-dark)}
+.price-card.featured .price-amount span,.price-card.featured li{color:var(--cream-70)}
+.price-card.featured li::before{background:var(--accent)}
+.price-note{margin-top:1.2rem;font-size:.82rem;color:var(--muted)}
+
+/* ===== Preguntas: título a la izquierda, acordeón a la derecha ===== */
+.faq-wrap{display:grid;grid-template-columns:1fr;gap:2.5rem}
+.faq-aside .note{margin-top:2rem;display:flex;gap:.9rem;align-items:center;padding:1rem 1.1rem;border-radius:var(--r-md);background:var(--sand)}
+.faq-aside .note img{width:44px;height:44px;flex:none}
+.faq-aside .note p{font-size:.9rem;color:var(--muted);line-height:1.5}
+.faq-aside .note a{color:var(--accent-ink);font-weight:700}
+.faq-aside .note a:hover{text-decoration:underline}
+.faq-list{border-top:1px solid rgba(var(--text-rgb),.18)}
+.faq-item{border-bottom:1px solid rgba(var(--text-rgb),.18)}
+.faq-q{width:100%;text-align:left;color:var(--text);font:500 clamp(1.25rem,1.8vw,1.5rem)/1.25 var(--serif);padding:1.25rem .2rem;display:flex;justify-content:space-between;align-items:center;gap:1.2rem}
+.faq-q .plus{width:18px;height:18px;flex:none;position:relative}
+.faq-q .plus::before,.faq-q .plus::after{content:"";position:absolute;background:var(--accent-ink);transition:transform .35s var(--ease),opacity .35s}
+.faq-q .plus::before{left:0;top:8px;width:18px;height:2px}
+.faq-q .plus::after{left:8px;top:0;width:2px;height:18px}
+.faq-item.open .plus::after{transform:rotate(90deg);opacity:0}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .45s var(--ease)}
+.faq-a p{padding:0 .2rem 1.3rem;color:var(--muted);max-width:66ch;line-height:1.6}
+.faq-a a{color:var(--accent-ink);font-weight:700}
+@media (min-width:900px){.faq-wrap{grid-template-columns:.85fr 1.15fr;gap:4rem}.faq-aside{position:sticky;top:100px;align-self:start}}
+
+/* ===== Contacto ===== */
+.contact{display:grid;grid-template-columns:1fr;gap:clamp(2rem,4vw,4rem);align-items:start}
+.contacto-linea{display:block;width:min(420px,100%);height:auto;margin-bottom:1.6rem;overflow:visible}
+.contacto-linea path{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.6s var(--ease);filter:drop-shadow(0 0 6px rgba(var(--accent-rgb),.55))}
 .contacto-linea.in path{stroke-dashoffset:0}
-.contacto-linea circle{fill:var(--warm)}
-.contacto-linea .cl-halo{fill:rgba(255,107,74,.25);transform-box:fill-box;transform-origin:center;animation:tlHalo 2.2s ease-out infinite}
-@media (prefers-reduced-motion:reduce){.method-curva path,.contacto-linea path{transition:none;stroke-dashoffset:0}.contacto-linea .cl-halo{animation:none}}
+.contacto-linea circle{fill:var(--point)}
+.contacto-linea .cl-halo{fill:rgba(var(--point-rgb),.25);transform-box:fill-box;transform-origin:center;animation:tlHalo 2.2s ease-out infinite}
+.who{margin-top:1.8rem;display:flex;align-items:center;gap:.9rem;font-size:.9rem;color:var(--cream-80)}
+.who .equipo-fila img{width:38px;height:38px;border:2px solid var(--ink-2);border-radius:50%;background:var(--ink-3)}
+.who .equipo-fila img+img{margin-left:-12px}
+.c-list{margin-top:1.8rem;display:flex;flex-direction:column;gap:1.1rem}
+.c-list li{display:grid;grid-template-columns:42px 1fr;gap:.9rem;align-items:center}
+.c-ico{width:42px;height:42px;border-radius:50%;border:1px solid var(--line-dark);display:grid;place-items:center;color:var(--accent)}
+.c-ico .i{width:18px;height:18px}
+.c-list small{display:block;font:700 .6rem/1.2 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--cream-55);margin-bottom:.2rem}
+.c-list a,.c-list span{font-weight:700;color:var(--cream)}
+.c-list a:hover{color:var(--accent)}
+.form-card{background:var(--paper);color:var(--text);border-radius:var(--r-lg);padding:clamp(1.4rem,3vw,2.2rem);box-shadow:0 40px 80px -40px rgba(0,0,0,.6)}
+.form-row{display:grid;grid-template-columns:1fr;gap:0 1rem}
+@media (min-width:560px){.form-row{grid-template-columns:1fr 1fr}}
+.ff{display:block;margin-bottom:1rem}
+.ff span{display:flex;justify-content:space-between;font-size:.84rem;font-weight:800;margin-bottom:.4rem}
+.ff span small{font-weight:600;font-size:.72rem;color:var(--muted)}
+.ff input,.ff textarea{width:100%;min-height:48px;padding:.75rem .9rem;border-radius:var(--r-sm);border:1px solid rgba(var(--text-rgb),.25);background:#fff;color:var(--text);font-size:.95rem;transition:border-color .25s,box-shadow .25s}
+.ff textarea{min-height:120px;resize:vertical}
+.ff input::placeholder,.ff textarea::placeholder{color:#8a9097}
+.ff input:focus,.ff textarea:focus{outline:none;border-color:var(--accent-ink);box-shadow:0 0 0 3px rgba(var(--accent-ink-rgb),.15)}
+.form-card .fine{margin-top:.8rem;font-size:.8rem;color:var(--muted);text-align:center}
+@media (min-width:960px){.contact{grid-template-columns:1fr 1.05fr}}
 
-/* contacto: partir con Plotty */
-.plotty-alt{margin-top:30px;display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:14px;background:var(--panel-2);border:1px solid var(--line)}
-.plotty-alt img{width:46px;height:46px;flex:none}
-.plotty-alt p{font-size:.92rem;line-height:1.5;color:var(--text-secondary)}
-.plotty-alt a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap}
-.plotty-alt a:hover{text-decoration:underline}
+/* ===== Pie ===== */
+.footer{background:var(--ink);color:var(--cream-80);padding-top:clamp(3.5rem,6vw,5rem);border-top:1px solid var(--line-dark)}
+.footer-grid{display:grid;grid-template-columns:1fr;gap:2.5rem}
+.footer-claim{margin-top:1.4rem;font:500 clamp(1.6rem,2.4vw,2rem)/1.08 var(--serif);color:var(--cream)}
+.footer h4{font:700 .64rem/1.2 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin-bottom:1.1rem}
+.footer-col a{display:block;padding:.4rem 0;font-size:.92rem;transition:color .25s}
+.footer-col a:hover{color:var(--accent)}
+.footer-bottom{margin-top:clamp(2.5rem,5vw,4rem);padding-block:1.6rem;border-top:1px solid var(--line-dark);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.78rem;color:var(--cream-55)}
+@media (min-width:760px){.footer-grid{grid-template-columns:1.3fr 1fr 1fr 1fr}}
 
-/* sound toggle */
-.sound-toggle{position:fixed;bottom:20px;left:20px;z-index:80;width:44px;height:44px;border-radius:50%;background:rgba(19,47,78,.7);backdrop-filter:blur(8px);border:1px solid var(--line);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .3s var(--ease),color .3s var(--ease)}
-.sound-toggle:hover{border-color:var(--accent);color:var(--accent)}
-.sound-toggle svg{width:18px;height:18px}
-@media (max-width:720px){.sound-toggle{display:none}}
+/* ===== Visor de video ===== */
+.vlightbox{position:fixed;inset:0;z-index:200;background:rgba(var(--ink-rgb),.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s var(--ease-soft)}
+.vlightbox.open{opacity:1;pointer-events:auto}
+.vlightbox video{width:min(1000px,92vw);max-height:86vh;border-radius:12px;background:#000;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.vlightbox-close{position:absolute;top:20px;right:22px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid var(--line-dark);color:#fff;display:grid;place-items:center;transition:background-color .25s}
+.vlightbox-close:hover{background:rgba(255,255,255,.2)}
+.vlightbox-close .i{width:22px;height:22px}
 
+@media (pointer:coarse){.btn{min-height:46px}}
 @media (prefers-reduced-motion:reduce){
-  *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important;scroll-behavior:auto !important}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  .lm-trazo,.tu-local .curve-draw,.method-curva path,.contacto-linea path{stroke-dashoffset:0!important}
 }
-body.paused *, body.paused *::before, body.paused *::after{animation-play-state:paused !important}
+body.paused *,body.paused *::before,body.paused *::after{animation-play-state:paused!important}
 </style>
 </head>
 <body>
+<svg class="svg-defs" aria-hidden="true">
+  <defs>
+    <linearGradient id="bp-sq" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#143a63"/><stop offset="1" stop-color="#0b1f39"/></linearGradient>
+    <symbol id="isotipo" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="url(#bp-sq)"/><path d="M9 8 V24 H25" fill="none" stroke="#3f6da0" stroke-width="1.7" stroke-linecap="round"/><polyline points="10.5,20.5 15,16.5 19,18 23,11" fill="none" stroke="#17C3B2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><circle cx="10.5" cy="20.5" r="1.8" fill="#17C3B2"/><circle cx="15" cy="16.5" r="1.8" fill="#17C3B2"/><circle cx="19" cy="18" r="1.8" fill="#17C3B2"/><circle cx="23" cy="11" r="2.3" fill="#FF6B4A"/></symbol>
+    <symbol id="i-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm0 18.02c-1.52 0-3.01-.41-4.3-1.18l-.31-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.04c0-4.54 3.7-8.23 8.24-8.23 4.54 0 8.23 3.69 8.23 8.23 0 4.54-3.69 8.13-8.23 8.13Zm4.5-6.14c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.98-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.02 0 1.19.87 2.35.99 2.51.12.16 1.71 2.61 4.15 3.66.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M8 12.3l2.7 2.7L16.2 9.4"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></symbol>
+  </defs>
+</svg>
 <a href="#main" class="skip-link">Saltar al contenido</a>
 
-<nav class="nav">
-  <a href="#main" class="nav-mark" aria-label="BiPlot, inicio">
-    <svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="hm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#143a63"/><stop offset="1" stop-color="#0b1f39"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#hm)"/><path d="M9 8 V24 H25" fill="none" stroke="#3f6da0" stroke-width="1.7" stroke-linecap="round"/><polyline points="10.5,20.5 15,16.5 19,18 23,11" fill="none" stroke="#17C3B2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><circle cx="10.5" cy="20.5" r="1.8" fill="#17C3B2"/><circle cx="15" cy="16.5" r="1.8" fill="#17C3B2"/><circle cx="19" cy="18" r="1.8" fill="#17C3B2"/><circle cx="23" cy="11" r="2.3" fill="#FF6B4A"/></svg>
-    BiPlot
+<header class="nav" id="nav">
+  <a href="#hero" class="brand" aria-label="BiPlot, inicio">
+    <svg aria-hidden="true"><use href="#isotipo"/></svg>
+    <span class="brand-word">Bi<span class="plot">Plot</span><small>Automatización a la medida</small></span>
   </a>
-  <div class="nav-links">
+  <nav class="nav-links" aria-label="Secciones">
     <a href="#servicios">Servicios</a>
-    <a href="#metodologia">Cómo trabajamos</a>
     <a href="#casos">Casos</a>
-    <a href="#oficina" class="nav-hq">BiPlot HQ</a>
+    <a href="#metodologia">Cómo trabajamos</a>
+    <a href="#oficina">BiPlot HQ <span class="tag-new">Nuevo</span></a>
     <a href="#precios">Precios</a>
-  </div>
-  <a href="https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20agendar%20un%20diagn%C3%B3stico." target="_blank" rel="noopener" class="nav-cta">Agenda un diagnóstico</a>
-</nav>
-
-<header class="hero-b" id="hero">
-  <div class="wrap hero-b-grid">
-    <div class="hero-copy">
-      <a href="#oficina" class="hero-news"><span class="hn-tag">Nuevo</span>BiPlot HQ: pasa a nuestra oficina virtual<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      <h1>Automatización hecha a la medida de tu negocio.</h1>
-      <p class="hero-sub">Diagnosticamos tu proceso real, lo automatizamos a tu medida y nos quedamos después de la entrega.</p>
-      <div class="cta-row">
-        <a href="https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20agendar%20un%20diagn%C3%B3stico." target="_blank" rel="noopener" class="btn primary">Agenda un diagnóstico</a>
-        <a href="#casos" class="btn ghost">Ver casos reales</a>
-      </div>
-      <div class="hero-trust">
-        <span><b>Fundos 360</b>Inmobiliaria</span>
-        <span><b>Haru 360</b>Restaurante</span>
-        <span><b>Nu Home 360</b>Casas modulares</span>
-        <span><b>&lt;48h</b>Respuesta</span>
-      </div>
-    </div>
-    <div class="hero-frame">
-      <video id="heroVideo" src="assets/casos/teaser-biplot-h.mp4" poster="assets/casos/teaser-biplot-h.jpg" autoplay muted loop playsinline aria-label="Teaser de BiPlot"></video>
-      <button class="hero-sound" id="heroSound" aria-pressed="false" aria-label="Activar sonido del video">
-        <svg class="off-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><line x1="16" y1="9" x2="21" y2="15"/><line x1="21" y1="9" x2="16" y2="15"/></svg>
-        <svg class="on-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18 6a9 9 0 0 1 0 12"/></svg>
-      </button>
-      <button type="button" class="hero-expand js-openvid" data-src="assets/casos/teaser-biplot-h.mp4" aria-label="Ver el video en grande">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-      </button>
-    </div>
+  </nav>
+  <div class="nav-actions">
+    <a href="oficina/#conversar" class="nav-plotty"><img src="assets/oficina/caras/plotty.webp" alt="" width="24" height="24">Conversar con Plotty</a>
+    <a href="https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20agendar%20un%20diagn%C3%B3stico." target="_blank" rel="noopener" class="btn btn-coral btn-sm">Agenda un diagnóstico</a>
+    <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Abrir el menú">
+      <svg class="i i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></svg>
+      <svg class="i i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
   </div>
 </header>
+<div class="nav-menu" id="navMenu">
+  <a href="#servicios">Servicios</a>
+  <a href="#casos">Casos</a>
+  <a href="#metodologia">Cómo trabajamos</a>
+  <a href="#oficina">BiPlot HQ <span class="tag-new">Nuevo</span></a>
+  <a href="#precios">Precios</a>
+  <a href="#faq">Preguntas frecuentes</a>
+  <a href="oficina/#conversar">Conversar con Plotty</a>
+  <a href="#contacto" class="btn btn-coral">Agenda un diagnóstico</a>
+</div>
+
+<section class="hero" id="hero" aria-labelledby="hero-h">
+  <div class="hero-art" aria-hidden="true">
+    <picture>
+      <source media="(max-width:900px) and (orientation:portrait)" srcset="assets/portada-fondo-v.jpg">
+      <img src="assets/portada-fondo-h.jpg" alt="" width="1920" height="1080" fetchpriority="high">
+    </picture>
+    <video id="heroVideo" muted loop playsinline preload="none" data-src-h="assets/portada-fondo-h.mp4" data-src-v="assets/portada-fondo-v.mp4"></video>
+  </div>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <button type="button" class="hero-pause" id="heroPause" aria-pressed="false" aria-label="Pausar el video de la portada" hidden>
+    <svg class="i i-pause"><use href="#i-pause"/></svg><svg class="i i-play"><use href="#i-play"/></svg>
+  </button>
+
+  <div class="hero-main">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-tags">
+          <span class="tag-new">Nuevo</span>
+          <a href="#oficina">BiPlot HQ · pasa a nuestra oficina virtual</a>
+        </div>
+        <h1 id="hero-h"><span class="line"><span>Automatización</span></span><span class="line"><span><em>a la medida.</em></span></span></h1>
+        <p class="hero-sub">Diagnosticamos tu proceso real, lo automatizamos a tu medida y nos quedamos después de la entrega.</p>
+        <div class="hero-actions">
+          <a href="#casos" class="btn btn-teal btn-lg">Ver casos reales <svg class="i i-go"><use href="#i-go"/></svg></a>
+          <button type="button" class="btn btn-ghost btn-lg js-openvid" data-src="assets/casos/teaser-biplot-h.mp4" data-src-v="assets/casos/teaser-biplot-v.mp4"><svg class="i"><use href="#i-play"/></svg> Ver el teaser</button>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-labelledby="hero-card-h">
+        <form class="wa-form" data-wa novalidate>
+          <span class="kicker">Diagnóstico sin costo</span>
+          <h2 id="hero-card-h">Cuéntanos tu proceso</h2>
+          <label class="hf"><span>Nombre</span><input name="name" type="text" autocomplete="name" placeholder="Tu nombre" required></label>
+          <label class="hf"><span>¿Qué te quita más tiempo hoy?</span><textarea name="message" placeholder="Ej: armamos el reporte mensual cruzando 4 planillas a mano" required></textarea></label>
+          <button type="submit" class="btn btn-coral btn-block"><svg class="i"><use href="#i-wa"/></svg> Agenda tu diagnóstico</button>
+          <p class="fine">Te responde una persona del equipo en menos de 48 horas.</p>
+        </form>
+        <div class="wa-ok" hidden>
+          <svg class="i"><use href="#i-check"/></svg>
+          <h3>Te abrimos WhatsApp</h3>
+          <p>Solo presiona enviar. Te respondemos dentro de 48 horas hábiles.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="container">
+    <dl class="hero-stats">
+      <div><dt>Diagnóstico</dt><dd>Desde $0</dd></div>
+      <div><dt>Respuesta</dt><dd>&lt; 48 horas</dd></div>
+      <div><dt>El motor</dt><dd>10 fases</dd></div>
+      <div><dt>Medición</dt><dd>Días 30 · 60 · 90</dd></div>
+    </dl>
+  </div>
+</section>
 
 <main id="main" tabindex="-1">
 
-  <section id="historia" aria-labelledby="historia-h">
-    <div class="wrap">
-      <span class="eyebrow">Cómo pensamos la automatización</span>
-      <h2 class="h-lg reveal" id="historia-h">Seis décadas, la misma línea</h2>
-      <p class="lede reveal">Antes de BiPlot, un proceso de negocio pasó por el papel, el terminal, el software genérico y el ruido de mil herramientas. La línea es la misma en todas las épocas: hoy pasa por nuestra oficina, y lo que sigue es tu proceso.</p>
+  <section class="section light" id="servicios" aria-labelledby="servicios-h">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">Lo que hacemos, en concreto</span>
+        <h2 class="reveal" id="servicios-h">Tu proceso real, <em>sin plantillas.</em></h2>
+        <p class="lead reveal">Cada servicio nace del diagnóstico. Nada se vende suelto sin entender primero cómo trabaja tu equipo hoy: qué planillas usan, dónde se traba la información y quién carga con qué.</p>
+      </div>
+      <div class="feat-grid reveal-group">
+        <article class="feat part">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17V7l8-4 8 4v10l-8 4-8-4Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+          <h3>Integración de sistemas</h3>
+          <p>Conectamos las herramientas que ya usas para que dejen de vivir aisladas entre sí.</p>
+        </article>
+        <article class="feat part">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v4H4zM4 10h10v4H4zM4 16h7v4H4z"/></svg>
+          <h3>Automatización de procesos</h3>
+          <p>Tareas repetitivas de cobranza, reportes o seguimiento, hechas por el sistema, no por una persona.</p>
+        </article>
+        <article class="feat part">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+          <h3>Dashboards a medida</h3>
+          <p>Un panel que responde las preguntas que tu negocio realmente hace, no las que trae la plantilla.</p>
+        </article>
+        <article class="feat part">
+          <svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 3v9l6 3"/></svg>
+          <h3>Acompañamiento continuo</h3>
+          <p>Ajustamos el sistema a medida que tu negocio cambia, y medimos a los 30, 60 y 90 días. No es una entrega única.</p>
+        </article>
+      </div>
 
-      <div class="pl-carousel-wrap reveal">
+      <div class="infra reveal">
+        <span class="kicker">Lo que cambia cuando trabajas con BiPlot</span>
+        <div class="infra-grid">
+          <div class="infra-item">
+            <span class="infra-ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.8 3.6-6 7-6s6.2 2.2 7 6"/></svg></span>
+            <div><h3>Una persona a cargo</h3><p>Tú hablas con una persona; cada fase tiene a alguien del equipo detrás.</p></div>
+          </div>
+          <div class="infra-item">
+            <span class="infra-ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg></span>
+            <div><h3>Con lo que ya usas</h3><p>Nos apoyamos en las herramientas que tu equipo conoce, sin curvas de aprendizaje forzadas.</p></div>
+          </div>
+          <div class="infra-item">
+            <span class="infra-ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M6 16v-4M11 16V8M16 16v-6M20 16V5"/></svg></span>
+            <div><h3>Medido de verdad</h3><p>Partimos de una línea base y la comparamos a los 30, 60 y 90 días.</p></div>
+          </div>
+          <div class="infra-item">
+            <span class="infra-ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l2-6h14l2 6"/><path d="M3 10h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 14v6h14v-6"/></svg></span>
+            <div><h3>Tu local en BiPlot HQ</h3><p>Tu proyecto se muda al barrio de la oficina, con su sala y un enlace para compartirla.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" id="casos" aria-labelledby="casos-h">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">Portafolio</span>
+        <h2 class="reveal" id="casos-h">Casos reales, <em>hechos a la medida.</em></h2>
+        <p class="lead reveal">Cada proyecto parte del proceso real del negocio. Estos son algunos sistemas que diseñamos y construimos de punta a punta.</p>
+      </div>
+
+      <div class="case-grid reveal-group">
+        <article class="case-card part" data-preview="assets/casos/fundos-360-h.mp4">
+          <div class="case-media">
+            <img src="assets/casos/fundos-360-h.jpg" alt="" width="1920" height="1080" loading="lazy">
+            <div class="case-cap"><span class="kicker">Inmobiliaria · venta de parcelas</span><h3>Fundos 360</h3></div>
+            <button type="button" class="case-play js-openvid" data-src="assets/casos/fundos-360-h.mp4" data-src-v="assets/casos/fundos-360-v.mp4" aria-label="Ver video de Fundos 360"><svg class="i"><use href="#i-play"/></svg></button>
+          </div>
+          <div class="case-body">
+            <p>Un ciclo de venta largo —lead, reserva, escritura, facturación al inversionista, posventa y comisiones— vivía disperso en planillas, WhatsApp y papel. Construimos Fundos OS: una plataforma a su medida que digitaliza el ciclo completo con permisos por rol.</p>
+            <dl class="case-facts">
+              <div><dt>Ciclo completo</dt><dd>CRM, escrituras y comisiones conectados</dd></div>
+              <div><dt>Por rol</dt><dd>datos financieros visibles solo a quien corresponde</dd></div>
+              <div><dt>Multiproyecto</dt><dd>escala a Marchigüe y Malalcahuello</dd></div>
+            </dl>
+            <div class="case-actions">
+              <a class="btn btn-ghost btn-sm" href="oficina/fundos/" aria-label="Pasar a la sala de Fundos 360 en BiPlot HQ">Pasa a su sala <svg class="i i-go"><use href="#i-go"/></svg></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="case-card part" data-preview="assets/casos/haru-360-h.mp4">
+          <div class="case-media">
+            <img src="assets/casos/haru-360-h.jpg" alt="" width="1920" height="1080" loading="lazy">
+            <div class="case-cap"><span class="kicker">Restaurante · cocina japonesa</span><h3>Haru 360</h3></div>
+            <button type="button" class="case-play js-openvid" data-src="assets/casos/haru-360-h.mp4" data-src-v="assets/casos/haru-360-v.mp4" aria-label="Ver video de Haru 360"><svg class="i"><use href="#i-play"/></svg></button>
+          </div>
+          <div class="case-body">
+            <p>Haru Isidora (Arica) operaba con caja, máquinas de pago, apps de delivery y una planilla a mano: totales que no cuadraban y sin costo real por plato. Diseñamos Haru 360, un sistema a su medida que centraliza ventas, cocina, delivery, inventario y caja.</p>
+            <dl class="case-facts">
+              <div><dt>Todo en uno</dt><dd>ventas, cocina, delivery, inventario y caja</dd></div>
+              <div><dt>Costo por plato</dt><dd>margen real por producto y por canal</dd></div>
+              <div><dt>Multicanal</dt><dd>local, delivery, apps y menús a empresas</dd></div>
+            </dl>
+            <span class="case-status">Sistema diseñado a la medida · en implementación</span>
+            <div class="case-actions">
+              <a class="btn btn-ghost btn-sm" href="oficina/haru/" aria-label="Pasar a la sala de Haru 360 en BiPlot HQ">Pasa a su sala <svg class="i i-go"><use href="#i-go"/></svg></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="case-card part" data-preview="oficina/media/nuhome-360-h.mp4">
+          <div class="case-media">
+            <img src="assets/casos/nuhome-360-h.jpg" alt="" width="1280" height="720" loading="lazy">
+            <div class="case-cap"><span class="kicker">Construcción · casas modulares</span><h3>Nu Home 360</h3></div>
+            <button type="button" class="case-play js-openvid" data-src="oficina/media/nuhome-360-h.mp4" data-src-v="oficina/media/nuhome-360-v.mp4" aria-label="Ver video de Nu Home 360"><svg class="i"><use href="#i-play"/></svg></button>
+          </div>
+          <div class="case-body">
+            <p>Nu Home fabrica casas modulares. Nu Home 360 junta en una sola plataforma todo lo que pasa entre el primer contacto y la entrega de la casa: ventas, cotizaciones, fábrica, bodega, pagos y un portal para cada cliente.</p>
+            <dl class="case-facts">
+              <div><dt>Cotizador en línea</dt><dd>el cliente arma su casa sobre su terreno</dd></div>
+              <div><dt>Fábrica a la vista</dt><dd>producción con carta Gantt y alertas tempranas</dd></div>
+              <div><dt>Portal del cliente</dt><dd>cada cliente sigue su casa sin llamar</dd></div>
+            </dl>
+            <span class="case-status">Plataforma a la medida · en desarrollo</span>
+            <div class="case-actions">
+              <a class="btn btn-ghost btn-sm" href="oficina/nuhome/" aria-label="Pasar a la sala de Nu Home 360 en BiPlot HQ">Pasa a su sala <svg class="i i-go"><use href="#i-go"/></svg></a>
+            </div>
+          </div>
+        </article>
+      </div>
+      <p class="case-note reveal">Cada proyecto tiene su local y su sala en BiPlot HQ, con sus pantallas y un enlace para compartirla. <a href="oficina/">Recorre el barrio →</a></p>
+
+      <div class="promo reveal">
+        <div>
+          <span class="kicker">Tu proceso, el próximo caso</span>
+          <h3>Cada uno de estos sistemas partió con un diagnóstico sin costo.</h3>
+          <p>Una sesión corta para entender tu proceso. Si no hay algo real que automatizar, te lo decimos de frente.</p>
+        </div>
+        <a href="#contacto" class="btn btn-coral btn-lg">Agenda tu diagnóstico <svg class="i i-go"><use href="#i-go"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section light" id="historia" aria-labelledby="historia-h">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">Cómo pensamos la automatización</span>
+        <h2 class="reveal" id="historia-h">Seis décadas, <em>la misma línea.</em></h2>
+        <p class="lead reveal">Antes de BiPlot, un proceso de negocio pasó por el papel, el terminal, el software genérico y el ruido de mil herramientas. La línea es la misma en todas las épocas: hoy pasa por nuestra oficina, y lo que sigue es tu proceso.</p>
+      </div>
+      <div class="pl-carousel-wrap reveal" aria-roledescription="carrusel" aria-label="Seis décadas, la misma línea">
         <div class="pl-viewport">
           <div class="pl-track" id="plTrack">
-
             <div class="pl-slide pl-active" data-slide="0">
               <div class="pl-visual">
                 <div class="pl-era-box pl-era-paper">
@@ -735,8 +848,8 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
               <div class="pl-visual">
                 <div class="pl-era-box pl-era-saas">
                   <div class="cards">
-                    <div class="c"><b>Escalable</b>Para cualquier negocio.</div>
-                    <div class="c"><b>Innovador</b>Con IA de punta.</div>
+                    <div class="sc"><b>Escalable</b>Para cualquier negocio.</div>
+                    <div class="sc"><b>Innovador</b>Con IA de punta.</div>
                   </div>
                 </div>
               </div>
@@ -799,79 +912,45 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
                 <p>Del papel al pixel, la línea nunca dejó de trazarse. Ahora te toca a ti: en el barrio de BiPlot HQ hay un local esperando tu proyecto.</p>
               </div>
             </div>
-
           </div>
         </div>
         <div class="pl-controls">
           <div class="pl-dots" id="plDots"></div>
-          <a href="plotline.html" class="btn ghost pl-cta">Ver el recorrido completo</a>
+          <a href="plotline.html" class="btn btn-line">Ver el recorrido completo <svg class="i i-go"><use href="#i-go"/></svg></a>
           <div class="pl-arrows">
-            <button id="plPrev" aria-label="Época anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
-            <button id="plNext" aria-label="Época siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+            <button type="button" id="plPrev" aria-label="Época anterior"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button type="button" id="plNext" aria-label="Época siguiente"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="servicios" aria-labelledby="servicios-h">
-    <div class="wrap">
-      <span class="eyebrow">Servicios</span>
-      <h2 class="h-lg reveal" id="servicios-h">Lo que hacemos, en concreto</h2>
-      <p class="lede reveal">Cada servicio nace del diagnóstico. Nada se vende suelto sin entender primero tu proceso.</p>
-      <div class="services-grid reveal-group">
-        <div class="service-card part">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 17V7l8-4 8 4v10l-8 4-8-4Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
-          <h3>Integración de sistemas</h3>
-          <p>Conectamos las herramientas que ya usas para que dejen de vivir aisladas entre sí.</p>
-        </div>
-        <div class="service-card part">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 4h16v4H4zM4 10h10v4H4zM4 16h7v4H4z"/></svg>
-          <h3>Automatización de procesos</h3>
-          <p>Tareas repetitivas de cobranza, reportes o seguimiento, hechas por el sistema, no por una persona.</p>
-        </div>
-        <div class="service-card part">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
-          <h3>Dashboards a medida</h3>
-          <p>Un panel que responde las preguntas que tu negocio realmente hace, no las que trae la plantilla.</p>
-        </div>
-        <div class="service-card part">
-          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 3v9l6 3"/></svg>
-          <h3>Acompañamiento continuo</h3>
-          <p>Ajustamos y mejoramos el sistema a medida que tu negocio cambia, y medimos a los 30, 60 y 90 días. No es una entrega única.</p>
-        </div>
+  <section class="section dark" id="metodologia" aria-labelledby="metodologia-h">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">Cómo trabajamos</span>
+        <h2 class="reveal" id="metodologia-h">Diez fases, <em>un solo motor.</em></h2>
+        <p class="lead reveal">Sin plantillas: el proceso real, primero. Todo proyecto pasa por el mismo motor, con alguien del equipo a cargo de cada fase. Tú hablas con una persona; el motor hace el resto.</p>
       </div>
-    </div>
-  </section>
-
-  <section id="metodologia" aria-labelledby="metodologia-h">
-    <div class="wrap">
-      <span class="eyebrow">Cómo trabajamos</span>
-      <h2 class="h-lg reveal" id="metodologia-h">Diez fases, un solo motor</h2>
-      <p class="lede reveal">Sin plantillas: el proceso real, primero. Todo proyecto pasa por el mismo motor, con alguien del equipo a cargo de cada fase. Tú hablas con una persona; el motor hace el resto.</p>
-      <div class="method">
-        <div class="method-rail"></div>
-        <svg class="method-curva" aria-hidden="true"><path pathLength="1"/></svg>
+      <div class="motor reveal">
+        <div class="method">
+          <div class="method-rail"></div>
+          <svg class="method-curva" aria-hidden="true"><path pathLength="1"/></svg>
         <div class="method-step" data-step>
           <div class="dot"></div>
-          <div class="mstep-head">
-            <span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
-            <span class="num">01</span>
-          </div>
+          <span class="mstep-num">Paso 01</span>
           <h3>Diagnóstico del proceso real</h3>
           <p>Observamos cómo trabaja tu equipo hoy: qué planillas usan, dónde se traba la información, quién carga con qué. Sin apurar la solución.</p>
           <ul class="fases" aria-label="Fases del paso 01">
             <li class="fase"><span class="f-cod">E0</span><span class="f-nom">Calificación</span><span class="f-caras"><a href="oficina/#plotty" aria-label="Plotty, en BiPlot HQ" title="Plotty"><img src="assets/oficina/caras/plotty.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
             <li class="fase"><span class="f-cod">E1</span><span class="f-nom">Diagnóstico</span><span class="f-caras"><a href="oficina/#lupe" aria-label="Lupe, en BiPlot HQ" title="Lupe"><img src="assets/oficina/caras/lupe.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
           </ul>
-          <p class="mstep-deliver"><span class="lbl">Entregable</span> Mapa de tu proceso, dónde se pierde tiempo y la línea base.</p>
+          <p class="mstep-deliver"><b>Entregable</b>Mapa de tu proceso, dónde se pierde tiempo y la línea base.</p>
         </div>
         <div class="method-step" data-step>
           <div class="dot"></div>
-          <div class="mstep-head">
-            <span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>
-            <span class="num">02</span>
-          </div>
+          <span class="mstep-num">Paso 02</span>
           <h3>Diseño a la medida</h3>
           <p>Trazamos el proceso ideal para tu operación, no para una plantilla genérica: qué ordenar, qué automatizar y qué construir, en ese orden.</p>
           <ul class="fases" aria-label="Fases del paso 02">
@@ -879,28 +958,22 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
             <li class="fase"><span class="f-cod">E3</span><span class="f-nom">Datos</span><span class="f-caras"><a href="oficina/#celda" aria-label="Celda, en BiPlot HQ" title="Celda"><img src="assets/oficina/caras/celda.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
             <li class="fase"><span class="f-cod">E4</span><span class="f-nom">Modelo y permisos</span><span class="f-caras"><a href="oficina/#engine" aria-label="The Engine, en BiPlot HQ" title="The Engine"><img src="assets/oficina/caras/engine.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
           </ul>
-          <p class="mstep-deliver"><span class="lbl">Entregable</span> El flujo ideal dibujado para tu operación.</p>
+          <p class="mstep-deliver"><b>Entregable</b>El flujo ideal dibujado para tu operación.</p>
         </div>
         <div class="method-step" data-step>
           <div class="dot"></div>
-          <div class="mstep-head">
-            <span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 6h10M6.6 7.7l4.5 8.6M17.4 7.7l-4.5 8.6"/></svg></span>
-            <span class="num">03</span>
-          </div>
+          <span class="mstep-num">Paso 03</span>
           <h3>Construcción e integración</h3>
           <p>Conectamos las herramientas que ya usas, en rebanadas cortas que funcionan solas. Cada una se prueba con uso real antes de aceptarla.</p>
           <ul class="fases" aria-label="Fases del paso 03">
             <li class="fase"><span class="f-cod">E5</span><span class="f-nom">Construcción</span><span class="f-caras"><a href="oficina/#grilla" aria-label="Grillo, en BiPlot HQ" title="Grillo"><img src="assets/oficina/caras/grilla.webp" alt="" width="30" height="30" loading="lazy"></a><a href="oficina/#bucle" aria-label="Bucle, en BiPlot HQ" title="Bucle"><img src="assets/oficina/caras/bucle.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
             <li class="fase"><span class="f-cod">E6</span><span class="f-nom">Validación</span><span class="f-caras"><a href="oficina/#tamandua" aria-label="Tamandúa, en BiPlot HQ" title="Tamandúa"><img src="assets/oficina/caras/tamandua.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
           </ul>
-          <p class="mstep-deliver"><span class="lbl">Entregable</span> Tus herramientas conectadas y funcionando.</p>
+          <p class="mstep-deliver"><b>Entregable</b>Tus herramientas conectadas y funcionando.</p>
         </div>
         <div class="method-step" data-step>
           <div class="dot"></div>
-          <div class="mstep-head">
-            <span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
-            <span class="num">04</span>
-          </div>
+          <span class="mstep-num">Paso 04</span>
           <h3>Puesta en marcha y después</h3>
           <p>Publicamos, enseñamos y acompañamos. A los 30, 60 y 90 días medimos contra la línea base, y lo que sirve se guarda para el próximo proyecto.</p>
           <ul class="fases" aria-label="Fases del paso 04">
@@ -908,142 +981,71 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
             <li class="fase"><span class="f-cod">E8</span><span class="f-nom">Medición</span><span class="f-caras"><a href="oficina/#lupe" aria-label="Lupe, en BiPlot HQ" title="Lupe"><img src="assets/oficina/caras/lupe.webp" alt="" width="30" height="30" loading="lazy"></a><a href="oficina/#celda" aria-label="Celda, en BiPlot HQ" title="Celda"><img src="assets/oficina/caras/celda.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
             <li class="fase"><span class="f-cod">E9</span><span class="f-nom">Cosecha</span><span class="f-caras"><a href="oficina/#pepa" aria-label="Pepa, en BiPlot HQ" title="Pepa"><img src="assets/oficina/caras/pepa.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
           </ul>
-          <p class="mstep-deliver"><span class="lbl">Entregable</span> La medición del día 30, 60 y 90, contra tu línea base.</p>
+          <p class="mstep-deliver"><b>Entregable</b>La medición del día 30, 60 y 90, contra tu línea base.</p>
         </div>
       </div>
-      <p class="method-more reveal"><span class="equipo-fila" aria-hidden="true"><img src="assets/oficina/caras/plotty.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/architect.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/engine.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/grilla.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/bucle.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/tamandua.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/faro.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/pepa.webp" alt="" width="34" height="34" loading="lazy"></span><span>Cada fase tiene a alguien a cargo, y todos trabajan en BiPlot HQ.</span><a href="oficina/#oficina">Conócelos en la oficina →</a></p>
+        </div>
+        <p class="motor-foot"><span class="equipo-fila" aria-hidden="true"><img src="assets/oficina/caras/plotty.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/lupe.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/architect.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/celda.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/engine.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/grilla.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/bucle.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/tamandua.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/faro.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/pepa.webp" alt="" width="32" height="32" loading="lazy"></span><span>Cada fase tiene a alguien a cargo, y todos trabajan en BiPlot HQ.</span><a class="link-go" href="oficina/#oficina">Conócelos en la oficina <svg class="i"><use href="#i-go"/></svg></a></p>
+      </div>
     </div>
   </section>
 
-  <section id="casos" aria-labelledby="casos-h">
-    <div class="wrap">
-      <span class="eyebrow">Portafolio</span>
-      <h2 class="h-lg reveal" id="casos-h" style="max-width:none">Casos reales, hechos a la medida</h2>
-      <p class="casos-intro reveal">Cada proyecto parte del proceso real del negocio. Estos son algunos sistemas que diseñamos y construimos de punta a punta.</p>
-
-      <div class="case-panels reveal" id="casePanels">
-
-        <div class="panel is-active" data-idx="0" role="button" tabindex="0" aria-expanded="true" aria-label="Caso Fundos 360">
-          <video class="panel-vid" src="assets/casos/fundos-360-h.mp4" poster="assets/casos/fundos-360-h.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
-          <span class="panel-shade"></span>
-          <span class="panel-tab">Fundos 360</span>
-          <div class="panel-info">
-            <span class="pi-rubro">Inmobiliaria · venta de parcelas</span>
-            <h3 class="pi-title">Fundos 360</h3>
-            <p class="pi-desc">Un ciclo de venta largo —lead, reserva, escritura, facturación al inversionista, posventa y comisiones— vivía disperso en planillas, WhatsApp y papel. Construimos Fundos OS: una plataforma a su medida que digitaliza el ciclo completo con permisos por rol.</p>
-            <div class="pi-stats">
-              <span><b>Ciclo completo</b>CRM, escrituras y comisiones conectados</span>
-              <span><b>Por rol</b>datos financieros visibles solo a quien corresponde</span>
-              <span><b>Multiproyecto</b>escala a Marchigüe y Malalcahuello</span>
-            </div>
-            <div class="panel-actions">
-              <button type="button" class="panel-play js-openvid" data-src="assets/casos/fundos-360-h.mp4" aria-label="Ver video de Fundos 360"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Ver video</button>
-              <a class="panel-sala" href="oficina/fundos/" aria-label="Pasar a la sala de Fundos 360 en BiPlot HQ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Pasa a su sala</a>
-            </div>
-          </div>
+  <section class="section dark" id="oficina" aria-labelledby="oficina-h">
+    <div class="container hq">
+      <div class="hq-media reveal">
+        <div class="hq-frame" id="hqFrame" data-src-h="assets/oficina/visita-plotty-h.mp4" data-src-v="assets/oficina/visita-plotty-v.mp4" data-poster-h="assets/oficina/visita-plotty-h.jpg" data-poster-v="assets/oficina/visita-plotty-v.jpg">
+          <video id="hqVideo" poster="assets/oficina/visita-plotty-h.jpg" muted loop playsinline preload="none" aria-label="Visita guiada por BiPlot HQ con Plotty"></video>
+          <button type="button" class="v-sound" id="hqSound" aria-pressed="false" aria-label="Activar sonido de la visita">
+            <svg class="i off-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><line x1="16" y1="9" x2="21" y2="15"/><line x1="21" y1="9" x2="16" y2="15"/></svg>
+            <svg class="i on-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18 6a9 9 0 0 1 0 12"/></svg>
+          </button>
+          <button type="button" class="v-expand js-openvid" data-src="assets/oficina/visita-plotty-h.mp4" data-src-v="assets/oficina/visita-plotty-v.mp4" aria-label="Ver la visita en grande"><svg class="i"><use href="#i-expand"/></svg></button>
         </div>
-
-        <div class="panel" data-idx="1" role="button" tabindex="0" aria-expanded="false" aria-label="Caso Haru 360">
-          <video class="panel-vid" src="assets/casos/haru-360-h.mp4" poster="assets/casos/haru-360-h.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
-          <span class="panel-shade"></span>
-          <span class="panel-tab">Haru 360</span>
-          <div class="panel-info">
-            <span class="pi-rubro">Restaurante · cocina japonesa</span>
-            <h3 class="pi-title">Haru 360</h3>
-            <p class="pi-desc">Haru Isidora (Arica) operaba con caja, máquinas de pago, apps de delivery y una planilla a mano: totales que no cuadraban y sin costo real por plato. Diseñamos Haru 360, un sistema a su medida que centraliza ventas, cocina, delivery, inventario y caja.</p>
-            <div class="pi-stats">
-              <span><b>Todo en uno</b>ventas, cocina, delivery, inventario y caja</span>
-              <span><b>Costo por plato</b>margen real por producto y por canal</span>
-              <span><b>Multicanal</b>local, delivery, apps y menús a empresas</span>
-            </div>
-            <span class="pi-status">Sistema diseñado a la medida · en implementación</span>
-            <div class="panel-actions">
-              <button type="button" class="panel-play js-openvid" data-src="assets/casos/haru-360-h.mp4" aria-label="Ver video de Haru 360"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Ver video</button>
-              <a class="panel-sala" href="oficina/haru/" aria-label="Pasar a la sala de Haru 360 en BiPlot HQ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Pasa a su sala</a>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel" data-idx="2" role="button" tabindex="0" aria-expanded="false" aria-label="Caso Nu Home 360">
-          <video class="panel-vid" src="oficina/media/nuhome-360-h.mp4" poster="assets/casos/nuhome-360-h.jpg" muted loop playsinline preload="none" aria-hidden="true"></video>
-          <span class="panel-shade"></span>
-          <span class="panel-tab">Nu Home 360</span>
-          <div class="panel-info">
-            <span class="pi-rubro">Construcción · casas modulares</span>
-            <h3 class="pi-title">Nu Home 360</h3>
-            <p class="pi-desc">Nu Home fabrica casas modulares. Nu Home 360 junta en una sola plataforma todo lo que pasa entre el primer contacto y la entrega de la casa: ventas, cotizaciones, fábrica, bodega, pagos y un portal para cada cliente.</p>
-            <div class="pi-stats">
-              <span><b>Cotizador en línea</b>el cliente arma su casa sobre su terreno</span>
-              <span><b>Fábrica a la vista</b>producción con carta Gantt y alertas tempranas</span>
-              <span><b>Portal del cliente</b>cada cliente sigue su casa sin llamar</span>
-            </div>
-            <span class="pi-status">Plataforma a la medida · en desarrollo</span>
-            <div class="panel-actions">
-              <button type="button" class="panel-play js-openvid" data-src="oficina/media/nuhome-360-h.mp4" aria-label="Ver video de Nu Home 360"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Ver video</button>
-              <a class="panel-sala" href="oficina/nuhome/" aria-label="Pasar a la sala de Nu Home 360 en BiPlot HQ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Pasa a su sala</a>
-            </div>
-          </div>
-        </div>
-
+        <p class="hq-caption">Visita guiada con Plotty · 79 s</p>
       </div>
-      <p class="casos-mas reveal">Cada proyecto tiene su local y su sala en BiPlot HQ, con sus pantallas y un enlace para compartirla. <a href="oficina/">Recorre el barrio →</a></p>
-    </div>
-  </section>
-
-  <section id="oficina" aria-labelledby="oficina-h">
-    <div class="wrap">
-      <span class="eyebrow">BiPlot HQ · La oficina virtual</span>
-      <h2 class="h-lg reveal" id="oficina-h">Tu proyecto, con local en el barrio</h2>
-      <p class="lede reveal">BiPlot HQ es nuestra oficina dibujada, abierta en el navegador. Adentro trabaja el equipo que lleva cada fase; afuera, en el barrio, cada cliente tiene su local y su sala. Y ahí lo seguimos acompañando después de la entrega.</p>
-      <div class="hq">
-        <div class="hq-media reveal">
-          <div class="hq-frame" id="hqFrame" data-src-h="assets/oficina/visita-plotty-h.mp4" data-src-v="assets/oficina/visita-plotty-v.mp4" data-poster-h="assets/oficina/visita-plotty-h.jpg" data-poster-v="assets/oficina/visita-plotty-v.jpg">
-            <video id="hqVideo" poster="assets/oficina/visita-plotty-h.jpg" muted loop playsinline preload="none" aria-label="Visita guiada por BiPlot HQ con Plotty"></video>
-            <button class="hero-sound" id="hqSound" aria-pressed="false" aria-label="Activar sonido de la visita">
-              <svg class="off-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><line x1="16" y1="9" x2="21" y2="15"/><line x1="21" y1="9" x2="16" y2="15"/></svg>
-              <svg class="on-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18 6a9 9 0 0 1 0 12"/></svg>
-            </button>
-            <button type="button" class="hero-expand js-openvid" data-src="assets/oficina/visita-plotty-h.mp4" aria-label="Ver la visita en grande">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-            </button>
-          </div>
-          <p class="hq-caption">Visita guiada con Plotty · 79 s</p>
-        </div>
-        <div>
+      <div>
+        <span class="kicker">BiPlot HQ · La oficina virtual</span>
+        <h2 class="reveal" id="oficina-h">Tu proyecto, <em>con local en el barrio.</em></h2>
+        <p class="lead reveal">BiPlot HQ es nuestra oficina dibujada, abierta en el navegador. Adentro trabaja el equipo que lleva cada fase; afuera, en el barrio, cada cliente tiene su local y su sala. Y ahí lo seguimos acompañando después de la entrega.</p>
+        <ul class="hq-points reveal-group">
           <ul class="hq-points reveal-group">
             <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c.6-3.4 3-5.4 6-5.4s5.4 2 6 5.4"/><circle cx="17" cy="9" r="2.5"/><path d="M15.8 14.7c2.4.2 4.3 2 4.8 4.8"/></svg></span><div><h3>El equipo, a la vista</h3><p>Diez integrantes, uno por parte del trabajo. Sabes quién lleva cada fase de tu proyecto.</p><span class="equipo-fila" aria-hidden="true"><img src="assets/oficina/caras/plotty.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/architect.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/engine.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/grilla.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/bucle.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/tamandua.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/faro.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/pepa.webp" alt="" width="34" height="34" loading="lazy"></span></div></li>
             <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l2-6h14l2 6"/><path d="M3 10h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 14v6h14v-6"/><path d="M10 20v-4h4v4"/></svg></span><div><h3>Tu local, con tu marca</h3><p>Tu nombre y tu logo en el techo, y tus productos a la vista de quien pasa por el barrio.</p></div></li>
             <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.2 1.2"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.2-1.2"/></svg></span><div><h3>Tu sala, con un enlace</h3><p>Adentro, tus pantallas y tu historia. Un enlace para mostrarla a tus propios clientes: <span class="hq-url">biplot.cl/oficina/tu-empresa</span></p></div></li>
             <li class="hq-point part"><span class="mstep-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg></span><div><h3>Seguimos contigo</h3><p>Soporte continuo, sistemas sanos y al día, y medición a los 30, 60 y 90 días.</p></div></li>
           </ul>
-          <div class="cta-row">
-            <a href="oficina/" class="btn accent">Entrar a la oficina</a>
-            <a href="oficina/#conversar" class="btn ghost">Conversar con Plotty</a>
-          </div>
+        </ul>
+        <div class="hero-actions">
+          <a href="oficina/" class="btn btn-teal">Entrar a la oficina <svg class="i i-go"><use href="#i-go"/></svg></a>
+          <a href="oficina/#conversar" class="btn btn-ghost">Conversar con Plotty</a>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="precios" aria-labelledby="precios-h">
-    <div class="wrap">
-      <span class="eyebrow">Modelo de ingresos</span>
-      <h2 class="h-lg reveal" id="precios-h">Precios claros, sin letra chica</h2>
-      <p class="lede reveal">El diagnóstico define el alcance real antes de cualquier número. Estos son los tres caminos más comunes.</p>
-      <div class="pricing-grid reveal-group">
-        <div class="price-card part">
+  <section class="section sand" id="precios" aria-labelledby="precios-h">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">Modelo de ingresos</span>
+        <h2 class="reveal" id="precios-h">Precios claros, <em>sin letra chica.</em></h2>
+        <p class="lead reveal">El diagnóstico define el alcance real antes de cualquier número. Estos son los tres caminos más comunes.</p>
+      </div>
+      <div class="price-grid reveal-group">
+        <article class="price-card part">
+          <span class="kicker">Para empezar</span>
           <h3>Diagnóstico</h3>
-          <div class="amount">Desde $0<span> / primera sesión</span></div>
+          <div class="price-amount"><b>Desde $0</b><span>primera sesión</span></div>
           <ul>
             <li>Revisión de tu proceso actual</li>
             <li>Mapa de dónde se pierde tiempo, con la línea base</li>
             <li>Propuesta de alcance, sin compromiso</li>
           </ul>
-          <a href="#contacto" class="btn primary">Agendar</a>
-        </div>
-        <div class="price-card featured part">
+          <a href="#contacto" class="btn btn-coral">Agendar <svg class="i i-go"><use href="#i-go"/></svg></a>
+        </article>
+        <article class="price-card featured part">
+          <span class="kicker">Recomendado</span>
           <h3>Proyecto a medida</h3>
-          <div class="amount">Cotizado<span> / según alcance</span></div>
+          <div class="price-amount"><b>Cotizado</b><span>según alcance</span></div>
           <ul>
             <li>Automatización diseñada para tu proceso</li>
             <li>Integración con tus herramientas actuales</li>
@@ -1051,26 +1053,33 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
             <li>Medición a los 30, 60 y 90 días</li>
             <li>Tu local y tu sala en BiPlot HQ</li>
           </ul>
-          <a href="https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20cotizar%20un%20proyecto." target="_blank" rel="noopener" class="btn accent">Cotizar proyecto</a>
-        </div>
-        <div class="price-card part">
+          <a href="https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20cotizar%20un%20proyecto." target="_blank" rel="noopener" class="btn btn-teal">Cotizar proyecto <svg class="i i-go"><use href="#i-go"/></svg></a>
+        </article>
+        <article class="price-card part">
+          <span class="kicker">Después de la entrega</span>
           <h3>Soporte continuo</h3>
-          <div class="amount">Mensual<span> / desde el mes 2</span></div>
+          <div class="price-amount"><b>Mensual</b><span>desde el mes 2</span></div>
           <ul>
             <li>Ajustes cuando tu proceso cambia</li>
             <li>Monitoreo de las automatizaciones activas</li>
             <li>Canal directo de soporte</li>
           </ul>
-          <a href="#contacto" class="btn ghost">Conversar plan</a>
-        </div>
+          <a href="#contacto" class="btn btn-line">Conversar plan</a>
+        </article>
       </div>
     </div>
   </section>
 
-  <section id="faq" aria-labelledby="faq-h">
-    <div class="wrap">
-      <span class="eyebrow">Preguntas frecuentes</span>
-      <h2 class="h-lg reveal" id="faq-h">Antes de que preguntes</h2>
+  <section class="section light" id="faq" aria-labelledby="faq-h">
+    <div class="container faq-wrap">
+      <div class="faq-aside">
+        <span class="kicker">Preguntas frecuentes</span>
+        <h2 class="reveal" id="faq-h">Antes de <em>que preguntes.</em></h2>
+        <div class="note">
+          <img src="assets/oficina/caras/plotty.webp" alt="" width="44" height="44" loading="lazy">
+          <p>¿Otra duda? Plotty te atiende en la recepción de BiPlot HQ. <a href="oficina/#conversar">Conversar con Plotty →</a></p>
+        </div>
+      </div>
       <div class="faq-list">
         <div class="faq-item" data-faq>
           <button class="faq-q" aria-expanded="false">¿Mi equipo va a tener que aprender un sistema nuevo y complicado?<span class="plus" aria-hidden="true"></span></button>
@@ -1082,7 +1091,7 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
         </div>
         <div class="faq-item" data-faq>
           <button class="faq-q" aria-expanded="false">¿Qué es BiPlot HQ?<span class="plus" aria-hidden="true"></span></button>
-          <div class="faq-a"><p>Es nuestra oficina virtual: un dibujo que se recorre en el navegador, sin instalar nada. Adentro está el equipo que lleva cada fase del motor; afuera, el barrio, con el local y la sala de cada proyecto. En la recepción te atiende Plotty: tres preguntas y te dice por dónde partir. <a href="oficina/" style="color:var(--accent)">Pasa a la oficina</a>.</p></div>
+          <div class="faq-a"><p>Es nuestra oficina virtual: un dibujo que se recorre en el navegador, sin instalar nada. Adentro está el equipo que lleva cada fase del motor; afuera, el barrio, con el local y la sala de cada proyecto. En la recepción te atiende Plotty: tres preguntas y te dice por dónde partir. <a href="oficina/">Pasa a la oficina</a>.</p></div>
         </div>
         <div class="faq-item" data-faq>
           <button class="faq-q" aria-expanded="false">¿Mi empresa aparece en la oficina?<span class="plus" aria-hidden="true"></span></button>
@@ -1100,73 +1109,85 @@ body.paused *, body.paused *::before, body.paused *::after{animation-play-state:
     </div>
   </section>
 
-  <section id="contacto" aria-labelledby="contacto-h">
-    <div class="wrap">
-      <svg class="contacto-linea reveal" viewBox="0 0 600 90" aria-hidden="true"><path pathLength="1" d="M4 80 C 90 80, 140 44, 230 50 S 380 84, 460 58 S 560 20, 586 14"/><circle class="cl-halo" cx="586" cy="14" r="13"/><circle cx="586" cy="14" r="7"/></svg>
-      <span class="eyebrow">Hablemos</span>
-      <h2 class="h-lg reveal" id="contacto-h">Agenda tu diagnóstico</h2>
-      <p class="lede reveal">Tu proceso es el próximo punto de esta línea. Cuéntanos cómo trabaja tu equipo hoy; nosotros te decimos qué se puede automatizar y cuánto tomaría.</p>
-      <div class="contact reveal">
-        <div>
-          <p style="color:var(--text-secondary);line-height:1.6">Una sesión corta, sin costo, para entender tu proceso. Si no hay algo real que automatizar, te lo decimos de frente.</p>
-          <div class="case-stat" style="margin-top:30px">
-            <div><b>1</b><span>sesión de diagnóstico</span></div>
-            <div><b>&lt;48h</b><span>tiempo de respuesta</span></div>
-          </div>
-          <div class="plotty-alt">
-            <img src="assets/oficina/caras/plotty.webp" alt="" width="46" height="46" loading="lazy">
-            <p>¿Prefieres partir con tres preguntas? Plotty te atiende en la recepción de BiPlot HQ. <a href="oficina/#conversar">Conversar con Plotty →</a></p>
-          </div>
+  <section class="section dark deep" id="contacto" aria-labelledby="contacto-h">
+    <div class="container contact">
+      <div>
+        <svg class="contacto-linea reveal" viewBox="0 0 600 90" aria-hidden="true"><path pathLength="1" d="M4 80 C 90 80, 140 44, 230 50 S 380 84, 460 58 S 560 20, 586 14"/><circle class="cl-halo" cx="586" cy="14" r="13"/><circle cx="586" cy="14" r="7"/></svg>
+        <span class="kicker">Hablemos</span>
+        <h2 class="reveal" id="contacto-h">Tu proceso es <em>el próximo punto.</em></h2>
+        <p class="lead reveal">Cuéntanos cómo trabaja tu equipo hoy; nosotros te decimos qué se puede automatizar y cuánto tomaría. Una sesión corta, sin costo.</p>
+        <div class="who">
+          <span class="equipo-fila" aria-hidden="true"><img src="assets/oficina/caras/plotty.webp" alt="" width="38" height="38" loading="lazy"><img src="assets/oficina/caras/lupe.webp" alt="" width="38" height="38" loading="lazy"><img src="assets/oficina/caras/architect.webp" alt="" width="38" height="38" loading="lazy"><img src="assets/oficina/caras/faro.webp" alt="" width="38" height="38" loading="lazy"></span>
+          <span>Te responde una persona del equipo, en horario hábil.</span>
         </div>
-        <form class="contact-form" id="contactForm">
-          <div class="field">
-            <label for="name">Nombre</label>
-            <input id="name" name="name" type="text" required autocomplete="name">
+        <ul class="c-list">
+          <li><span class="c-ico"><svg class="i"><use href="#i-wa"/></svg></span><div><small>WhatsApp</small><a href="https://wa.me/56966275675" target="_blank" rel="noopener">+56 9 6627 5675</a></div></li>
+          <li><span class="c-ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><small>Respuesta</small><span>Menos de 48 horas hábiles</span></div></li>
+          <li><span class="c-ico"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l2-6h14l2 6"/><path d="M3 10h18v2a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0z"/><path d="M5 14v6h14v-6"/></svg></span><div><small>BiPlot HQ</small><a href="oficina/#conversar">Parte conversando con Plotty</a></div></li>
+        </ul>
+      </div>
+
+      <div class="form-card reveal">
+        <form class="wa-form" id="contactForm" data-wa novalidate>
+          <div class="form-row">
+            <label class="ff"><span>Nombre</span><input name="name" type="text" required autocomplete="name" placeholder="Tu nombre"></label>
+            <label class="ff"><span>Correo <small>(opcional)</small></span><input name="email" type="email" autocomplete="email" placeholder="tucorreo@empresa.cl"></label>
           </div>
-          <div class="field">
-            <label for="email">Correo</label>
-            <input id="email" name="email" type="email" required autocomplete="email">
-          </div>
-          <div class="field">
-            <label for="message">Cuéntanos tu proceso</label>
-            <textarea id="message" name="message" required placeholder="Ej: hoy armamos el reporte mensual cruzando 4 planillas a mano..."></textarea>
-          </div>
-          <button type="submit" class="btn primary">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true" style="vertical-align:-3px;margin-right:8px"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm0 18.02c-1.52 0-3.01-.41-4.3-1.18l-.31-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.04c0-4.54 3.7-8.23 8.24-8.23 4.54 0 8.23 3.69 8.23 8.23 0 4.54-3.69 8.13-8.23 8.13Zm4.5-6.14c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.98-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.02 0 1.19.87 2.35.99 2.51.12.16 1.71 2.61 4.15 3.66.58.25 1.03.4 1.38.51.58.18 1.11.16 1.53.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.11-.22-.17-.47-.29Z"/></svg>Enviar por WhatsApp</button>
-          <div class="form-success" id="formSuccess">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
-            <p style="color:var(--text-primary);font-weight:600">Te abrimos WhatsApp con tu mensaje.</p>
-            <p style="color:var(--text-secondary);margin-top:8px">Solo presiona enviar en WhatsApp. Te respondemos dentro de 48 horas hábiles.</p>
-          </div>
+          <label class="ff"><span>Cuéntanos tu proceso</span><textarea name="message" required placeholder="Ej: hoy armamos el reporte mensual cruzando 4 planillas a mano..."></textarea></label>
+          <button type="submit" class="btn btn-coral btn-lg btn-block"><svg class="i"><use href="#i-wa"/></svg> Enviar por WhatsApp</button>
+          <p class="fine">Antes de enviarlo verás tu mensaje completo en WhatsApp.</p>
         </form>
+        <div class="wa-ok" hidden>
+          <svg class="i"><use href="#i-check"/></svg>
+          <h3>Te abrimos WhatsApp con tu mensaje</h3>
+          <p>Solo presiona enviar en WhatsApp. Te respondemos dentro de 48 horas hábiles.</p>
+        </div>
       </div>
     </div>
   </section>
 
 </main>
 
-<footer>
-  <div class="footer-grid">
-    <a href="#main" class="nav-mark" style="font-size:.95rem">
-      <svg viewBox="0 0 32 32" width="24" height="24" aria-hidden="true"><defs><linearGradient id="fm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#143a63"/><stop offset="1" stop-color="#0b1f39"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#fm)"/><path d="M9 8 V24 H25" fill="none" stroke="#3f6da0" stroke-width="1.7" stroke-linecap="round"/><polyline points="10.5,20.5 15,16.5 19,18 23,11" fill="none" stroke="#17C3B2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><circle cx="10.5" cy="20.5" r="1.8" fill="#17C3B2"/><circle cx="15" cy="16.5" r="1.8" fill="#17C3B2"/><circle cx="19" cy="18" r="1.8" fill="#17C3B2"/><circle cx="23" cy="11" r="2.3" fill="#FF6B4A"/></svg>
-      BiPlot
-    </a>
-    <div class="footer-links">
-      <a href="#servicios">Servicios</a>
-      <a href="#metodologia">Cómo trabajamos</a>
-      <a href="#casos">Casos</a>
-      <a href="oficina/">BiPlot HQ, la oficina</a>
-      <a href="#precios">Precios</a>
-      <a href="#contacto">Contacto</a>
-      <a href="plotline.html">Cómo pensamos la automatización</a>
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="#hero" class="brand" aria-label="BiPlot, inicio"><svg aria-hidden="true"><use href="#isotipo"/></svg><span class="brand-word">Bi<span class="plot">Plot</span><small>Automatización a la medida</small></span></a>
+        <p class="footer-claim">Del papel al proceso,<br><em>la misma línea.</em></p>
+      </div>
+      <div class="footer-col">
+        <h4>El sitio</h4>
+        <a href="#servicios">Servicios</a>
+        <a href="#casos">Casos</a>
+        <a href="#metodologia">Cómo trabajamos</a>
+        <a href="#precios">Precios</a>
+        <a href="#faq">Preguntas frecuentes</a>
+      </div>
+      <div class="footer-col">
+        <h4>BiPlot HQ</h4>
+        <a href="oficina/">La oficina</a>
+        <a href="oficina/fundos/">Sala de Fundos 360</a>
+        <a href="oficina/haru/">Sala de Haru 360</a>
+        <a href="oficina/nuhome/">Sala de Nu Home 360</a>
+        <a href="oficina/#conversar">Conversar con Plotty</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contacto</h4>
+        <a href="https://wa.me/56966275675" target="_blank" rel="noopener">+56 9 6627 5675</a>
+        <a href="#contacto">Agenda un diagnóstico</a>
+        <a href="plotline.html">Cómo pensamos la automatización</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="year"></span> BiPlot. Todas las imágenes de este sitio son generadas para representar conceptos, no fotografías de clientes o instalaciones reales.</p>
+      <p>biplot.cl</p>
     </div>
   </div>
-  <p class="footer-note">© <span id="year"></span> BiPlot. Todas las imágenes de este sitio son generadas para representar conceptos, no fotografías de clientes o instalaciones reales.</p>
 </footer>
 
 <!-- El visor de videos va fuera de <main>, para quedar por encima del menú fijo -->
 <div class="vlightbox" id="vlightbox" role="dialog" aria-modal="true" aria-label="Video">
-  <button class="vlightbox-close" id="vlightboxClose" aria-label="Cerrar video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <button type="button" class="vlightbox-close" id="vlightboxClose" aria-label="Cerrar video"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   <video id="vlightboxVideo" controls playsinline preload="none"></video>
 </div>
 

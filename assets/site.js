@@ -4,10 +4,122 @@
   const yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+  /* ============ MENÚ: sólido al bajar, sección actual y menú de celular ============ */
+  (function initNav() {
+    const nav = document.getElementById('nav');
+    if (!nav) return;
+    const solid = () => nav.classList.toggle('is-solid', window.scrollY > 40);
+    solid();
+    window.addEventListener('scroll', solid, { passive: true });
+
+    const toggle = document.getElementById('navToggle');
+    const menu = document.getElementById('navMenu');
+    if (toggle && menu) {
+      const set = (open) => {
+        menu.classList.toggle('open', open);
+        nav.classList.toggle('menu-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Cerrar el menú' : 'Abrir el menú');
+      };
+      toggle.addEventListener('click', () => set(!menu.classList.contains('open')));
+      menu.addEventListener('click', (e) => { if (e.target.closest('a')) set(false); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && menu.classList.contains('open')) { set(false); toggle.focus(); } });
+    }
+
+    const links = [...nav.querySelectorAll('.nav-links a[href^="#"]')];
+    const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        links.forEach((a) => a.classList.remove('is-current'));
+        const a = byId.get(entry.target.id);
+        if (a) a.classList.add('is-current');
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('main section[id]').forEach((s) => io.observe(s));
+  })();
+
+  /* ============ PORTADA: el video de fondo (de qué trata BiPlot) ============ */
+  // Vertical en celular parado y horizontal en lo demás; con «reducir movimiento» queda el cuadro fijo.
+  // Se pausa fuera de la vista y con el botón (que recuerda la pausa del usuario).
+  (function initHeroVideo() {
+    const vid = document.getElementById('heroVideo');
+    const btn = document.getElementById('heroPause');
+    if (!vid) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const vertical = matchMedia('(max-width:900px) and (orientation:portrait)').matches;
+    // MP4 (H.264) donde se pueda; si no, el mismo video en WebM
+    const mp4 = vid.canPlayType('video/mp4; codecs="avc1.640028"') !== '';
+    const src = vertical ? vid.dataset.srcV : vid.dataset.srcH;
+    vid.src = mp4 ? src : src.replace(/\.mp4$/, '.webm');
+    vid.addEventListener('playing', () => vid.classList.add('is-playing'), { once: true });
+    let pausedByUser = false;
+    const play = () => { if (!pausedByUser) vid.play().catch(() => {}); };
+    play();
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) play(); else { try { vid.pause(); } catch (e) {} } });
+    }, { threshold: 0.1 }).observe(vid);
+    if (btn) {
+      btn.hidden = false;
+      btn.addEventListener('click', () => {
+        pausedByUser = !pausedByUser;
+        if (pausedByUser) vid.pause(); else play();
+        const hero = document.getElementById('hero');
+        if (hero) hero.classList.toggle('is-paused', pausedByUser);
+        btn.setAttribute('aria-pressed', String(pausedByUser));
+        btn.setAttribute('aria-label', pausedByUser ? 'Reanudar el video de la portada' : 'Pausar el video de la portada');
+      });
+    }
+  })();
+
+  /* ============ FORMULARIOS: arman el mensaje y abren WhatsApp ============ */
+  const WA_NUMBER = '56966275675';
+  document.querySelectorAll('form[data-wa]').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      const val = (n) => { const el = form.elements.namedItem(n); return el && el.value ? el.value.trim() : ''; };
+      const name = val('name'), email = val('email'), message = val('message');
+      let text = 'Hola BiPlot 👋';
+      if (name) text += ', soy ' + name;
+      text += '. Quiero agendar un diagnóstico.';
+      if (message) text += '\n\nMi proceso: ' + message;
+      if (email) text += '\n\nMi correo: ' + email;
+      window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
+      const ok = form.nextElementSibling;
+      if (ok && ok.classList.contains('wa-ok')) { form.hidden = true; ok.hidden = false; }
+    });
+  });
+
+  /* ============ CASOS: al pasar el cursor, la tarjeta muestra su video en silencio ============ */
+  (function initCasePreviews() {
+    if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('.case-card[data-preview]').forEach((card) => {
+      const media = card.querySelector('.case-media');
+      let vid = null;
+      card.addEventListener('mouseenter', () => {
+        if (!vid) {
+          vid = document.createElement('video');
+          vid.muted = true; vid.loop = true; vid.playsInline = true;
+          vid.setAttribute('aria-hidden', 'true');
+          vid.src = card.dataset.preview;
+          media.insertBefore(vid, media.querySelector('.case-cap'));
+          vid.addEventListener('playing', () => card.classList.add('is-playing'));
+        }
+        vid.play().catch(() => {});
+      });
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('is-playing');
+        if (vid) { try { vid.pause(); } catch (e) {} }
+      });
+    });
+  })();
+
   /* ============ SCROLL REVEALS ============ */
   const revealIO = new IntersectionObserver((entries) => {
     entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('in'); revealIO.unobserve(entry.target); } });
-  }, { threshold: 0.18 });
+  }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
   document.querySelectorAll('.reveal, .reveal-group').forEach(el => revealIO.observe(el));
 
   /* ============ METHOD STEPS (light dots on view) ============ */
@@ -69,22 +181,6 @@
     });
   });
 
-  /* ============ HERO VIDEO: autoplay muted + unmute toggle ============ */
-  const heroVid = document.getElementById('heroVideo');
-  const heroSound = document.getElementById('heroSound');
-  if (heroVid && heroSound) {
-    // ensure autoplay kicks in on browsers that need a nudge
-    heroVid.play().catch(() => {});
-    heroSound.addEventListener('click', () => {
-      heroVid.muted = !heroVid.muted;
-      const on = !heroVid.muted;
-      heroSound.classList.toggle('on', on);
-      heroSound.setAttribute('aria-pressed', String(on));
-      heroSound.setAttribute('aria-label', on ? 'Silenciar el video' : 'Activar sonido del video');
-      if (on) heroVid.play().catch(() => {});
-    });
-  }
-
   /* ============ BiPlot HQ: la visita guiada con Plotty ============ */
   // Vertical en pantallas angostas y horizontal en las demás; se descarga recién cuando la sección está a la vista,
   // se reproduce muda mientras se ve (salvo con "reducir movimiento") y se pausa al salir.
@@ -118,51 +214,7 @@
     });
   })();
 
-  /* ============ CONTACT FORM (WhatsApp) ============ */
-  const WA_NUMBER = '56966275675';
-  const form = document.getElementById('contactForm');
-  const formSuccess = document.getElementById('formSuccess');
-  if (form) form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const val = (id) => { const el = form.querySelector('#' + id); return el && el.value ? el.value.trim() : ''; };
-    const name = val('name'), email = val('email'), message = val('message');
-    let text = 'Hola BiPlot 👋';
-    if (name) text += ', soy ' + name;
-    text += '. Quiero agendar un diagnóstico.';
-    if (message) text += '\n\nMi proceso: ' + message;
-    if (email) text += '\n\nMi correo: ' + email;
-    window.open('https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(text), '_blank', 'noopener');
-    form.classList.add('hide');
-    if (formSuccess) formSuccess.classList.add('show');
-  });
-
-  /* ============ CASES: expanding panels ============ */
-  (function initCasePanels() {
-    const wrap = document.getElementById('casePanels');
-    if (!wrap) return;
-    const panels = [...wrap.querySelectorAll('.panel')];
-    if (!panels.length) return;
-    const fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
-    function setActive(i) {
-      panels.forEach((p, pi) => {
-        const on = pi === i;
-        p.classList.toggle('is-active', on);
-        p.setAttribute('aria-expanded', String(on));
-        const v = p.querySelector('video');
-        if (v) { if (on) { v.play().catch(() => {}); } else { try { v.pause(); } catch (e) {} } }
-      });
-    }
-    panels.forEach((p, i) => {
-      p.addEventListener('click', () => setActive(i));
-      p.addEventListener('focus', () => setActive(i));
-      p.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActive(i); } });
-      if (fine) p.addEventListener('mouseenter', () => setActive(i));
-    });
-    setActive(0);
-
-  })();
-
-  /* ============ VIDEO LIGHTBOX (casos + hero) ============ */
+  /* ============ VISOR DE VIDEO (portada, casos y la visita) ============ */
   (function initLightbox() {
     const lb = document.getElementById('vlightbox');
     const lbVid = document.getElementById('vlightboxVideo');
@@ -183,7 +235,11 @@
       document.body.style.overflow = '';
     }
     document.querySelectorAll('.js-openvid').forEach((btn) => {
-      btn.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); openLB(btn.dataset.src); });
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); e.preventDefault();
+        const vertical = btn.dataset.srcV && window.matchMedia('(max-width:700px) and (orientation:portrait)').matches;
+        openLB(vertical ? btn.dataset.srcV : btn.dataset.src);
+      });
     });
     if (lbClose) lbClose.addEventListener('click', closeLB);
     lb.addEventListener('click', (e) => { if (e.target === lb) closeLB(); });
