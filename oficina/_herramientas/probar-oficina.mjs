@@ -11,9 +11,10 @@
 // El Archivo, el museo de BiPlot: sus épocas (del papel a hoy) con su capítulo, las diez fases, sus casos con su sala, el
 // fichero con su buscador, el pedestal libre y el recorrido con Pepa. La vista de frente: lo que es una imagen (un mural,
 // una pizarra, un cuadro, una pantalla) se abre derecho, en grande y completo, con la sala oscurecida detrás (las diez
-// fases, la línea de tiempo y el cuadro de BiPlot HQ del museo, una pieza de cada sala, el diseñador de Nu Home con un
-// clic de verdad, la foto de una tarjeta y las pantallas del rincón de BiPlot) y el recorrido sigue detrás. Las vitrinas
-// del museo se abren en 3D, girando sobre su pedestal (se pausan y se giran a mano; con movimiento reducido, quietas).
+// fases, la línea de tiempo, el cuadro de BiPlot HQ, la primera oficina y los diseños anteriores del dúo en el museo, una
+// pieza de cada sala, el diseñador de Nu Home con un clic de verdad, la foto de una tarjeta y las pantallas del rincón de
+// BiPlot) y el recorrido sigue detrás. Las vitrinas del museo se abren en 3D, girando sobre su pedestal (se pausan y se
+// giran a mano; con movimiento reducido, quietas).
 // La sala de ventas de BiPlot, en el local libre: se entra desde la calle, la lista de precios de frente con «Agenda tu
 // diagnóstico», las diez fases con Atlas, la ventana a los vecinos, la mesa de Lupe, Atlas que habla y el recorrido con Plotty.
 // BiPlot.TV, el canal de BiPlot, en su edificio de la plaza: un clic sobre el edificio abre su vista previa con la
@@ -506,6 +507,9 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
         entera: !!rr && Math.abs(rr.width / rr.height - im.naturalWidth / im.naturalHeight) < 0.02 && rr.left >= 0 && rr.right <= innerWidth + 1 && rr.top >= 0 && rr.width >= Math.min(innerWidth * 0.8, 600),
         hq: !!f.querySelector('[data-hq]'), sala: !!f.querySelector('[data-sala-ir]'), desborde: document.documentElement.scrollWidth > innerWidth }; };
     await abre('apertura'); r.apertura = await completa(); await cierra();
+    // y los dos cuadros de la historia del equipo: la primera oficina, en dos pisos, y los diseños anteriores del dúo
+    await abre('primera'); r.primera = await completa(); await cierra();
+    await abre('disenos'); r.disenos = await completa(); await cierra();
     await abre('fundos');
     const img = f.querySelector('.frente-texto .tarjeta-img img');
     if (img && !(img.complete && img.naturalWidth)) await new Promise((listo) => { img.onload = img.onerror = listo; setTimeout(listo, 4000); });
@@ -559,19 +563,23 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   const hoyOk = ar.hoy.frente && ar.hoy.vb === '0 0 1000 440' && ar.hoy.detras && ar.hoy.cabe && ar.hoy.foco === 'sala-frente-t' && ar.hoy.exp === 'true' && !ar.hoy.desborde;
   ok(hoyOk, 'el mural de las diez fases se abre de frente y en grande, con la sala oscurecida detrás' + (hoyOk ? '' : ' ' + JSON.stringify(ar.hoy)));
   ok(ar.hoy.fases === 10 && ar.hoy.caras >= 10 && ar.hoy.hq && ar.hoy.cierra, 'debajo, quién lleva cada fase y «Pasar a BiPlot HQ»; Escape lo cierra sin salir del museo');
-  ok(ar.linea.t === 'Así creció BiPlot' && ar.linea.vb === '0 0 1280 290' && ar.linea.hitos === 8 && ar.linea.lista === !!movil && ar.linea.entera && !ar.linea.desborde,
-    'la línea de tiempo se abre de frente y entera, con sus 8 fechas' + (movil ? ' también en texto, debajo' : ''));
+  ok(ar.linea.t === 'Así creció BiPlot' && ar.linea.vb === '0 0 1280 290' && ar.linea.hitos === 10 && ar.linea.lista === !!movil && ar.linea.entera && !ar.linea.desborde,
+    'la línea de tiempo se abre de frente y entera, con sus 10 fechas' + (movil ? ' también en texto, debajo' : ''));
   ok(ar.apertura.abierta && /media\/salas\/archivo-hq-apertura\.webp$/.test(ar.apertura.img) && ar.apertura.carga && ar.apertura.entera && ar.apertura.t === 'Así abrió BiPlot HQ' &&
     ar.apertura.pie === 'BiPlot HQ · 25 sep 2026' && ar.apertura.hq && !ar.apertura.desborde, 'el cuadro de BiPlot HQ el día que abrió se abre de frente y completo, con «Pasar a BiPlot HQ»');
+  ok(ar.primera.abierta && /media\/salas\/archivo-primera-oficina\.webp$/.test(ar.primera.img) && ar.primera.carga && ar.primera.entera && ar.primera.t === 'BiPlot HQ, en dos pisos' &&
+    ar.primera.pie === 'BiPlot HQ · 25 sep 2026' && ar.primera.hq && !ar.primera.desborde, 'la primera oficina, en dos pisos, se abre de frente y completa, con «Pasar a BiPlot HQ»');
+  ok(ar.disenos.abierta && /media\/salas\/archivo-disenos-anteriores\.webp$/.test(ar.disenos.img) && ar.disenos.carga && ar.disenos.entera && ar.disenos.t === 'The Architect y The Engine, antes' &&
+    ar.disenos.pie === 'The Architect y The Engine · 25 sep – 7 oct 2026' && ar.disenos.hq && !ar.disenos.desborde, 'los diseños anteriores de The Architect y The Engine se abren de frente y completos');
   ok(ar.fundos.t === 'La escritura inscrita' && /media\/salas\/fundos-5-postventa\.webp$/.test(ar.fundos.img) && ar.fundos.carga && /^Fundos 360 · Postventa/.test(ar.fundos.pie) && ar.fundos.sala && ar.fundos.tres,
     'la escritura de Fundos 360 gira en 3D, con su pantalla real y «Entrar a su sala»');
   ok(ar.fundosFoto.abierta && /media\/salas\/fundos-5-postventa\.webp$/.test(ar.fundosFoto.img) && ar.fundosFoto.carga && ar.fundosFoto.entera && ar.fundosFoto.t === 'La escritura inscrita' &&
     /datos de ejemplo/.test(ar.fundosFoto.pie) && ar.fundosFoto.sala && !ar.fundosFoto.desborde && ar.fundosFoto.cierra, 'al tocar su pantalla real, se abre en grande y completa, con su tarjeta al lado, y Escape vuelve al museo');
   ok(ar.fichero.t === 'Todos los casos tienen su carpeta' && ar.fichero.n === 5 && ar.fichero.vis === 'Haru 360', 'el fichero, desde la barra, lista los 5 casos por rubro y los busca (' + ar.fichero.vis + ')');
   ok(/^https:\/\/wa\.me\/\d+\?text=/.test(ar.turno.cta) && ar.turno.chat && ar.turno.tres, 'el pedestal libre gira en 3D y lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
-  ok(ar.rec.p1.n === '1 de 12' && ar.rec.p1.t === 'La entrada' && ar.rec.p2.t === '1985 · La libreta' && ar.rec.p1.guia === ar.rec.esperado[0] && ar.rec.p2.guia === ar.rec.esperado[1] && ar.rec.fin,
+  ok(ar.rec.p1.n === '1 de 14' && ar.rec.p1.t === 'La entrada' && ar.rec.p2.t === '1985 · La libreta' && ar.rec.p1.guia === ar.rec.esperado[0] && ar.rec.p2.guia === ar.rec.esperado[1] && ar.rec.fin,
     '«Recorrer con Pepa» va de la entrada a la libreta, Pepa habla en cada parada y Escape lo termina');
-  ok(ar.rec.enHoy.frente && ar.rec.enHoy.n === (ar.rec.iHoy + 1) + ' de 12' && ar.rec.enHoy.sigue, '«Ver más» en la parada de las diez fases las abre de frente, y al cerrarla el recorrido sigue en la misma parada');
+  ok(ar.rec.enHoy.frente && ar.rec.enHoy.n === (ar.rec.iHoy + 1) + ' de 14' && ar.rec.enHoy.sigue, '«Ver más» en la parada de las diez fases las abre de frente, y al cerrarla el recorrido sigue en la misma parada');
   ok(await js(`(async () => { const z = document.querySelector('.zona-sala[data-zona="fundos"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
       document.querySelector('#sala-frente [data-sala-ir="fundos"]').click(); await ${W(700)};
       return location.hash === '#fundos' && document.querySelector('#sala-nombre').textContent === 'Fundos 360' && document.body.classList.contains('en-sala-propia'); })()`), '«Entrar a su sala» pasa del museo a la sala de Fundos 360');

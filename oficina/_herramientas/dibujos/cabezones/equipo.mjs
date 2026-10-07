@@ -506,58 +506,106 @@ export function pepa() {
 }
 
 // ───────── The Engine · Ejecución y sistemas ─────────
+// El carpintero pistolero: jopo, lentes de seguridad naranjos, barba corta y definida; polera carbón con el cuello
+// naranjo, el chaleco de lona abierto, la canana cruzada y el cinturón pistolero con la hebilla de rodeo y el 4; la
+// mezclilla con rodilleras y las botas. En alto, el taladro; en la otra mano, la tablet con funda de madera. Aserrín a
+// los pies.
 export function engine(opc = {}) {
   const K = {
-    s: '#D49A6A', S: '#B67C4D', ba: '#9A7052', h: '#3A2A20', hs: '#22170F', hl: '#5A4434', or: '#F5883A', ors: '#C9661F', hb: '#2A3040',
-    t: '#343A41', ts: '#23282E', tl: '#454D56', ca: '#4B5140', cas: '#363B2E', cal: '#5E6650', bo: '#2B2622', bos: '#171412',
-    tab: '#1B222B', pan: '#0C3A48', ci: '#17C3B2', eg: '#B9C8D8', egs: '#6B7A8C', egc: '#35679A', cin: '#3A2E26', heb: '#B9C8D8', boca: '#6B2E2A'
+    s: '#D49A6A', S: '#B67C4D', h: '#3A2A20', hs: '#22170F', hl: '#5A4434', ra: '#8F6A50',
+    b: '#4A2E1C', B: '#2E1C10', bl: '#6E4729', or: '#F5883A', ors: '#C9661F', orl: '#FFB57E', mica: '#F7A33A',
+    t: '#343A41', ts: '#23282E', tl: '#454D56', lo: '#A08B5F', los: '#7A6A47', lol: '#BFA878',
+    me: '#2D3E5C', mes: '#1E2B42', mel: '#41587E', ro: '#26354F', bo: '#6E4629', bos: '#25201C',
+    cu: '#7A4E2E', cus: '#52331C', cul: '#A87444', pl: '#D3DAE2', pls: '#8E99A6', br: '#D2A54C', fi: '#3B4049',
+    ma: '#C8955A', mas: '#9A6A3A', vi: '#EBC48E', pan: '#0E2A47', ci: '#17C3B2', boca: '#6B2E2A'
   };
   const f = figura();
-  // Engranaje a los pies
-  if (opc.engranaje !== false) {
-    f.forma(engranaje(29.6, 46.6, 2.7, 3.5, 8), K.eg, { w: 0.45 });
-    f.mancha('M31.4 44.4A2.9 2.9 0 0 1 30.9 49.2L30.3 48.3A1.8 1.8 0 0 0 30.8 45.4Z', K.egs);
-    f.forma(elipse(29.6, 46.6, 1.1, 1.1), K.egc, { w: 0.35, sil: false });
+  // Un montoncito de aserrín a los pies
+  if (opc.aserrin !== false) {
+    f.forma('M26.4 50.4Q28 47.8 30.2 47.6Q32.4 47.8 33.8 50.4Z', K.vi, { w: 0.4 });
+    f.linea('M28.2 48.4Q29.2 47.2 30.6 47.7', 0.45, K.mas);
   }
-  // Cargo con bolsillos y botas con cordones naranjos
-  f.forma('M10 36.6H23L22.9 38.6H10.1Z', K.ca);
-  piernas(f, 37.6, 46.4, K.ca, K.cas, [10.2, 15.6], [17, 22.6]);
-  f.forma(rr(8.8, 39.2, 2.4, 3.8, 0.4), K.cal, { w: 0.4 }); f.forma(rr(22, 39.2, 2.4, 3.8, 0.4), K.cal, { w: 0.4 });
-  f.linea('M8.9 40H11.1M22.1 40H24.3', 0.4, K.cas);
+  // La mezclilla con rodilleras y bolsillos de fuelle; las botas con cordones naranjos
+  f.forma('M10 36.6H23L22.9 38.6H10.1Z', K.me);
+  piernas(f, 37.6, 46.4, K.me, K.mes, [10.2, 15.6], [17, 22.6]);
+  f.mancha(rr(10.6, 41.6, 4.2, 1.8, 0.3), K.ro); f.mancha(rr(17.4, 41.6, 4.4, 1.8, 0.3), K.ro);
+  f.forma(rr(8.8, 39.2, 2.4, 3.8, 0.4), K.mel, { w: 0.4 }); f.forma(rr(22, 39.2, 2.4, 3.8, 0.4), K.mel, { w: 0.4 });
+  f.linea('M8.9 40H11.1M22.1 40H24.3', 0.4, K.mes);
   zapatillas(f, 46.1, K.bo, K.bos, K.or);
-  // Polera carbón de manga corta con el motor naranjo
+  // La polera carbón de manga corta, con el cuello naranjo
   f.forma('M9.4 23.8C11.4 22.9 22.2 22.9 24.2 23.8L27.6 25Q28.2 25.4 28 26.4L27.8 28.8H24.6L24.2 35.9H9.8L9.4 28.8H6.2L6 26.4Q5.8 25.4 6.4 25Z', K.t);
   f.mancha('M22.4 23.6Q24 23.7 24.2 23.8L27.6 25Q28.2 25.4 28 26.4L27.8 28.7H24.6L24.2 35.8H22.6Z', K.ts);
-  f.linea('M13.6 23.5Q17 25.2 20.4 23.5', 0.6, K.tl);
-  f.forma(rr(14.1, 26.8, 5.8, 2.6, 0.5), K.or, { w: 0.35, sil: false });
-  f.forma(rr(15.5, 25.8, 3, 1.1, 0.3), K.or, { w: 0.3, sil: false });
-  f.forma(rr(13.1, 27.4, 1.1, 1.4, 0.2), K.or, { w: 0.3, sil: false }); f.forma(rr(19.8, 27.4, 1.1, 1.4, 0.2), K.or, { w: 0.3, sil: false });
-  f.mancha(elipse(17, 28.1, 0.6, 0.6), K.ors);
-  // Brazos a la vista sosteniendo la tableta
-  f.tubo('M7.6 28.4Q8 31.4 10.4 32.4', K.s, 2);
-  f.tubo('M26.4 28.4Q26 31.4 23.6 32.4', K.s, 2);
-  f.forma(rr(10.6, 29.6, 12.8, 6.3, 0.6), K.tab);
-  f.mancha(rr(11.6, 30.6, 10.8, 4.3, 0.3), K.pan);
-  f.linea('M12.6 33.6L14.6 33.6L16 32.4L17.6 33.3L19.2 31.6L21 32.2', 0.5, K.ci);
-  f.forma(elipse(10.7, 32.5, 1.3, 1.2), K.s, { w: 0.4 }); f.forma(elipse(23.3, 32.5, 1.3, 1.2), K.s, { w: 0.4 });
-  f.forma(rr(9.8, 35.6, 14.4, 1.3, 0.3), K.cin, { w: 0.4 });
-  f.forma(rr(16, 35.5, 2, 1.5, 0.3), K.heb, { w: 0.3, sil: false });
-  // Audífonos naranjos al cuello
-  f.linea('M10.6 22.8Q17 20.6 23.4 22.8', 0.7, T);
-  f.forma(rr(9, 21.6, 2.8, 3.8, 1), K.or, { w: 0.45 }); f.forma(rr(22.2, 21.6, 2.8, 3.8, 1), K.or, { w: 0.45 });
-  f.mancha(rr(9.9, 22.4, 1, 2.2, 0.4), K.hb); f.mancha(rr(23.1, 22.4, 1, 2.2, 0.4), K.hb);
-  // Cara: mirada tranquila, barba de pocos días y jopo
-  cara(f, { piel: K.s, sombra: K.S, ojos: null, boca: 'media', labio: K.boca, cejas: K.hs, cejasY: 12 });
-  f.mancha(elipse(9, 14.4, 0.85, 0.78), T, { cab: true }); f.mancha(elipse(14, 14.4, 0.8, 0.78), T, { cab: true });
-  f.mancha(elipse(8.75, 14.1, 0.26, 0.26), BLANCO, { cab: true }); f.mancha(elipse(13.75, 14.1, 0.24, 0.26), BLANCO, { cab: true });
-  f.mancha('M3.1 16.2C3.6 19.9 6.9 22.2 10.7 22.2C14.3 22.1 16.8 19.8 17 16C16.2 18.8 13.8 20.8 10.8 20.9C7.6 20.9 4.4 19.2 3.1 16.2Z', K.ba, { cab: true, op: 0.55 });
-  f.mancha(puntos([[4.6, 18.4], [6.2, 19.8], [8.2, 20.8], [10.4, 21.2], [12.6, 20.8], [14.4, 19.8], [15.8, 18.2], [9.4, 19.6], [11.6, 19.8]], 0.26), K.ba, { cab: true });
-  // Pelo corto con jopo: sube adelante y se enrolla hacia la frente; los lados más cortos
+  f.mancha('M6.3 27.7H9.5V28.8H6.3Z M24.5 27.7H27.8V28.8H24.5Z', K.or);
+  f.forma('M13.4 23.4Q17 25.4 20.6 23.4L20.2 24.4Q17 26.4 13.8 24.4Z', K.or, { w: 0.3, sil: false });
+  // El chaleco de lona, abierto, con sus bolsillos
+  f.forma('M9.6 24.2Q11.6 23.6 13.6 23.8L14.4 30L14.2 35.8H9.8L9.5 29Q9.2 25.6 9.6 24.2Z', K.lo);
+  f.mancha('M9.5 25Q10 24.2 10.6 24.1L10.2 35.7H9.8L9.5 29Z', K.lol);
+  f.forma('M24 24.2Q22 23.6 20 23.8L19.4 30L19.6 35.8H24.2L24.4 29Q24.6 25.6 24 24.2Z', K.lo);
+  f.mancha('M22.2 23.8Q23.6 23.9 24 24.2Q24.6 25.6 24.4 29L24.2 35.7H22.4Z', K.los);
+  f.forma(rr(10.4, 31, 3, 2.2, 0.25), K.lo, { w: 0.3, sil: false }); f.mancha(rr(10.4, 31, 3, 0.7, 0.2), K.lol);
+  f.forma(rr(20.4, 31, 3, 2.2, 0.25), K.lo, { w: 0.3, sil: false }); f.mancha(rr(20.4, 31, 3, 0.7, 0.2), K.los);
+  f.forma(rr(21, 29.6, 0.6, 1.6, 0.2), K.or, { w: 0.25, sil: false });
+  // La canana: del hombro de la tablet a la cadera del taladro, con brocas y tornillos
+  f.forma('M10.4 24.4L11.9 23.8L23.8 34.6L22.6 35.8Z', K.cu, { w: 0.4 });
+  f.mancha('M11.2 24.6L11.9 23.8L23.8 34.6L23.1 35.3Z', K.cus);
+  for (const [x, y, broca] of [[13.2, 26.2, true], [15.2, 28, false], [17.2, 29.8, true], [19.2, 31.6, true], [21.2, 33.4, false]]) {
+    if (broca) f.mancha(`M${x - 0.25} ${y - 1.3}H${x + 0.25}V${y + 0.3}H${x - 0.25}Z`, K.pl);
+    else f.mancha(`M${x - 0.45} ${y - 1}H${x + 0.45}V${y - 0.6}H${x + 0.15}V${y + 0.3}H${x - 0.15}V${y - 0.6}H${x - 0.45}Z`, K.br);
+  }
+  // El cinturón pistolero, las cartucheras con el mango naranjo de cada taladro y la hebilla de rodeo con el 4
+  f.forma(rr(9.6, 35.4, 14.8, 1.6, 0.3), K.cu, { w: 0.4 });
+  f.forma(rr(8.4, 36.4, 2.6, 4, 0.4), K.cu, { w: 0.4 }); f.forma(rr(8.8, 35, 1.8, 1.8, 0.4), K.or, { w: 0.35 });
+  f.forma(rr(23, 36.4, 2.6, 4, 0.4), K.cu, { w: 0.4 }); f.forma(rr(23.4, 35, 1.8, 1.8, 0.4), K.or, { w: 0.35 });
+  f.forma(elipse(17, 36.2, 2.1, 1.4), K.pl, { w: 0.4 });
+  f.mancha('M15.4 35.7Q16 35 17 34.9', K.pls);
+  // El 4 va en su grupo: si el personaje mira al otro lado, oficina.css lo vuelve a dar vuelta para que se lea
+  f.raw(`<g class="pj-num"><path d="M17.2 35.4L16.4 36.6H17.8M17.4 35.5V37.1" fill="none" stroke="${K.or}" stroke-width=".38" stroke-linecap="round" stroke-linejoin="round"/></g>`);
+  // El llavero, al lado de la hebilla
+  f.linea('M19.6 37.1V38.6M20.2 37.1L20.8 38.4M19 37.1L18.6 38.3', 0.4, K.pl, { sil: true });
+  f.forma(elipse(19.6, 37, 0.45, 0.45), K.pl, { w: 0.25 });
+  // El brazo de la tablet: la tablet con funda de madera y el plano del mueble en la pantalla
+  f.tubo('M7.6 28.4Q7 31.4 7.8 33.6', K.s, 2);
+  f.forma(rr(3.6, 31.4, 4.8, 6.4, 0.5), K.ma, { w: 0.45 });
+  f.mancha(rr(7.4, 31.6, 0.9, 6, 0.3), K.mas);
+  f.forma(rr(4.2, 32.1, 3.6, 5, 0.3), K.pan, { w: 0.25, sil: false });
+  f.linea('M4.8 33H7.2V36.4H4.8Z M4.8 34.1H7.2M4.8 35.2H7.2', 0.28, K.ci);
+  f.linea('M5.7 33.55H6.3M5.7 34.65H6.3M5.7 35.8H6.3', 0.32, K.ci);
+  f.forma(elipse(7.9, 33.9, 1.3, 1.2), K.s, { w: 0.4 });
+  // El brazo del taladro, en alto, como una pistola; con el aserrín que salta de la broca
+  f.tubo('M26.4 28.2Q27.8 30 28.8 31.6', K.s, 2);
+  f.tubo('M28.8 31.6Q29 29.2 28.6 26.6', K.s, 2);
+  f.linea('M27.2 20.4V17.6', 0.5, K.pl, { sil: true });
+  f.mancha('M26.95 17.8L27.2 17L27.45 17.8Z', K.pls);
+  f.forma(rr(26.6, 20.2, 1.2, 1.2, 0.2), K.pl, { w: 0.3 });
+  f.forma(rr(25.8, 21.2, 2.8, 4.2, 0.6), K.or, { w: 0.45 });
+  f.mancha(rr(27.6, 21.4, 0.9, 3.9, 0.3), K.ors); f.mancha(rr(25.95, 21.4, 0.5, 3.9, 0.2), K.orl);
+  f.forma(rr(28.2, 24.2, 2.2, 1.3, 0.3), K.fi, { w: 0.35 });
+  f.forma(rr(29.8, 23.6, 1.4, 2.6, 0.3), K.fi, { w: 0.35 });
+  f.mancha(rr(30.05, 24.1, 0.9, 0.35, 0.1), K.ci);
+  f.forma(elipse(28.4, 25.6, 1.3, 1.25), K.s, { w: 0.4 });
+  f.forma('M26.4 16.4L26.85 15.95L27.3 16.4L26.85 16.85Z M28 15.3L28.4 14.9L28.8 15.3L28.4 15.7Z M26.9 14.3L27.25 13.95L27.6 14.3L27.25 14.65Z', K.vi, { w: 0.2, sil: false });
+  // Cabeza: barba corta y definida, media sonrisa, lentes de seguridad y el jopo
+  cara(f, { piel: K.s, sombra: K.S, ojos: null, boca: null, cejas: null });
+  f.mancha('M3.1 15.6C3.4 19.8 6.9 22.3 10.7 22.3C14.4 22.2 17 19.6 17.1 15.4L16.2 16Q15.8 18.2 14.6 18.4Q13 17.9 11.2 18.3Q9.4 17.8 7.8 18.4Q5.2 18.6 4 16.2Z', K.b, { cab: true });
+  f.mancha('M14.8 18.2Q16.6 17.6 17 15.8Q16.9 20 13.8 21.6Q15.8 19.8 14.8 18.2Z', K.B, { cab: true });
+  f.mancha('M9.8 17.6Q11.8 16.9 13.8 17.5Q14.6 17.9 14.4 18.3Q12 17.9 9.6 18.4Q9.4 17.9 9.8 17.6Z', K.b, { cab: true });
+  f.linea('M10.2 19.3Q12 19.9 13.8 19', 0.5, K.boca, { cab: true });
+  f.linea('M13.8 19L14.3 18.6', 0.4, K.boca, { cab: true });
+  f.linea(CONTORNO_CARA_E, 0.5, T, { cab: true });
+  // Los lentes de seguridad: una sola mica naranja envolvente, con el puente oscuro y la patilla a la oreja
+  f.forma('M2.2 12.8Q10 11.8 18.4 12.4Q19 12.6 18.9 13.4L18.6 15.2Q18.4 15.9 17.6 15.9Q15.6 16 14 15.4Q12.6 15 11.4 15.5Q9.6 16.1 7.8 16Q4.2 16.1 2.6 15.6Q1.9 15.3 1.9 14.4L1.9 13.3Q1.9 12.9 2.2 12.8Z', K.mica, { cab: true, w: 0.55 });
+  f.mancha('M2.3 14.6Q10 14.2 18.6 14.4L18.5 15.2Q18.3 15.8 17.6 15.8Q15.6 15.9 14 15.3Q12.6 14.9 11.4 15.4Q9.6 16 7.8 15.9Q4.2 16 2.6 15.5Q2.1 15.3 2.1 14.7Z', K.ors, { cab: true });
+  f.mancha('M4.2 15.2L5.8 12.8H6.6L5 15.3Z M13.8 15L15.2 12.7H15.8L14.4 15.1Z', BLANCO, { cab: true, op: 0.7 });
+  f.mancha('M2.1 12.4Q10 11.3 18.6 12Q18.9 12.2 18.8 12.8Q10 12.2 2.1 13.2Z', K.fi, { cab: true });
+  f.linea('M18.8 13.4L19.4 14.2', 0.5, K.fi, { cab: true });
+  // El jopo: sube adelante y se enrolla hacia la frente; los lados rapados
   f.forma('M2.2 11C1.4 7.4 1.6 4.4 3.4 2.6Q5.4 0.6 8.6 0.2Q10.6 -1.6 13.8 -1.8Q17 -1.8 18.7 0.2Q19.3 1.4 18.4 2.3Q17.8 2.6 17.3 2.4Q18.6 3.6 18.5 5.6Q18.4 8.4 17.8 10.6L17 10.8L16.8 8.6Q12 7.4 6.6 7.8L4.4 8.6L3.4 11.2Z', K.h, { cab: true });
-  f.mancha('M1.9 6.4C1.6 8 1.8 9.6 2.3 10.8L3.4 11.1L4.2 8.8C3.6 8 2.8 7 1.9 6.4Z', '#6B5646', { cab: true });
+  f.mancha('M1.9 6.4C1.6 8 1.8 9.6 2.3 10.8L3.4 11.1L4.2 8.8C3.6 8 2.8 7 1.9 6.4Z', K.ra, { cab: true });
   f.mancha('M16.8 3C18.2 4.2 18.6 6.8 17.8 10.5L17.1 10.6L16.9 8.6C17.3 6.6 17.2 4.6 16.8 3Z', K.hs, { cab: true });
   f.linea('M6.4 2.6Q10.4 -0.4 15.2 -0.8Q17.4 -0.8 18 0.4', 0.6, K.hl, { cab: true });
   f.linea('M8 4.6Q11.6 3 15.6 3.6', 0.4, K.hl, { cab: true });
   f.linea('M12.4 1.6Q14.4 2.6 16.4 2.4', 0.35, K.hs, { cab: true });
   return f;
 }
+// Contorno de la mandíbula de The Engine, para devolverle el borde que tapa la barba.
+const CONTORNO_CARA_E = 'M3.1 15.3C3.1 19.5 6.6 22.2 10.7 22.2C14.3 22.1 17 19.4 17 15.2';

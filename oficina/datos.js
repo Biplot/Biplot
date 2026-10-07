@@ -36,9 +36,9 @@
         id: 'architect', nombre: 'The Architect', genero: 'm', rol: 'Estrategia y proyectos', placa: 'E2', fases: ['E2'],
         vive: 'planos', lema: 'El que traza el mapa.',
         resumen: 'Toma la radiografía de Lupe y traza el mapa: qué ordenar, qué automatizar y qué construir, en ese orden. Lleva la Sala de planos, donde ves tu proceso dibujado en vivo y te llevas «tu plano».',
-        rasgos: ['Ve la oficina entera antes de mover una pieza.', 'Dibuja en cualquier superficie.', 'No acepta reuniones sin pizarra.'],
+        rasgos: ['Ve la oficina entera antes de mover una pieza.', 'Dibuja en cualquier superficie; si no hay, su dron la proyecta.', 'No acepta reuniones sin pizarra.'],
         frase: 'Si no se puede dibujar, no se puede construir.',
-        look: 'Altísimo y desgarbado: visor cian, barba corta, polerón carbón abierto con la «A» sobre la polera con el 2, jeans con cadena y zapatillas de caña.',
+        look: 'El científico de planos, altísimo y desgarbado: pelo disparado, visor cian con su lupa y su antena, barba corta con canas, bata blanca con manchas de tinta y el 2 en el bolsillo, pantalón gris con cadena, zapatillas de caña y un dron chico que proyecta los planos.',
         ahora: ['Dibujando el plano de un proceso de venta.', 'Proyectando un mapa con Atlas.', 'Pasándole un plano a The Engine.']
       },
       {
@@ -56,7 +56,7 @@
         resumen: 'Arma el esqueleto: el modelo de datos, quién ve qué y cómo se conectan los sistemas. Después deja corriendo las automatizaciones que trabajan solas, de noche y en feriado. Muestra las demos técnicas desde la tablet.',
         rasgos: ['Nunca apaga nada un viernes.', 'Tiene una llave para cada integración.', 'Si algo funciona solo, lo da por bien hecho.'],
         frase: 'Lo que se repite, se automatiza.',
-        look: 'Alto y de espalda ancha: jopo, audífonos naranjos al cuello, polera carbón con el 4, cinturón de herramientas, cargo con rodilleras, botas, la tablet y la llave al hombro.',
+        look: 'El carpintero, alto y de espalda ancha: jopo, lentes de seguridad naranjos, barba corta, chaleco de lona, la canana de brocas, el cinturón con dos taladros y la hebilla de rodeo con el 4, mezclilla con rodilleras, botas, la tablet de madera y el taladro en alto.',
         ahora: ['Conectando dos sistemas que no se hablaban.', 'Dejando corriendo una automatización de noche.', 'Mostrando una demo desde la tablet.']
       },
       {
@@ -257,16 +257,23 @@
               texto: 'Aquí está cada caso, también los que no muestran su nombre o ya terminaron. Pepa los ordena por rubro, y cuando llega un rubro nuevo se abre su calle.',
               fichero: true },
             apertura: { nombre: 'BiPlot HQ, el día que abrió', ceja: 'BiPlot HQ · 25 sep 2026', titulo: 'Así abrió BiPlot HQ',
-              texto: 'La primera oficina: el equipo en su muro, la estantería del núcleo, el motor en la pared y una sala por proyecto adentro. Al día siguiente, cada proyecto se fue a su local en la calle.',
+              texto: 'El personal en su muro, la estantería del núcleo, el motor en la pared y una sala por proyecto adentro. Al día siguiente, cada proyecto se fue a su local en la calle.',
               botones: [{ hq: true, texto: 'Pasar a BiPlot HQ' }] },
             plano: { nombre: 'El primer plano', ceja: 'BiPlot HQ · 25 sep 2026', titulo: 'El primer plano de la oficina',
               texto: 'Así se dibujó BiPlot HQ antes de abrir: una oficina donde cada fase del motor tiene su lugar y su gente.',
               botones: [{ hq: true, texto: 'Pasar a BiPlot HQ' }] },
+            primera: { nombre: 'La primera oficina', ceja: 'BiPlot HQ · 25 sep 2026', titulo: 'BiPlot HQ, en dos pisos',
+              texto: 'La primera oficina tenía dos pisos. Abajo, el equipo: la recepción con Plotty, el muro del equipo, la mesa de dos, el set y el tubo a producción. Arriba, una sala para cada proyecto (Nu Home 360, Fundos 360, Haru 360, Eleven 360 y Rumbo) y una libre. Al día siguiente, los proyectos bajaron a la calle, cada uno a su local.',
+              botones: [{ hq: true, texto: 'Pasar a BiPlot HQ' }] },
+            disenos: { nombre: 'Los diseños anteriores', ceja: 'El equipo · 25 sep – 7 oct 2026', titulo: 'The Architect y The Engine, antes',
+              texto: 'Así se vieron hasta el 7 de octubre. Primero, el dibujo con que llegaron a la oficina: el polerón con la «A» y la polera con el motor. Después, el elenco redibujado: el polerón abierto con el 2 y el constructor con la llave al hombro. Hoy, The Architect es el científico de planos, con su dron, y The Engine, el carpintero que arma los muebles.',
+              botones: [{ hq: true, texto: 'Pasar a BiPlot HQ' }] },
             linea: { nombre: 'Así creció BiPlot', ceja: '2026', titulo: 'Así creció BiPlot',
-              texto: 'Las fechas del sitio, del día en que nació biplot.cl a una sala por empresa.',
+              texto: 'Las fechas del sitio, del día en que nació biplot.cl al dúo renovado.',
               hitos: [['8 sep', 'Nace biplot.cl', 'Seis décadas, la misma línea'], ['10 sep', 'Fundos 360', 'el primer caso, en video'], ['15 sep', 'Haru 360', 'llega al portafolio'],
                 ['25 sep', 'Abre BiPlot HQ', 'la oficina y su equipo'], ['25 sep', 'Nu Home, Eleven y Rumbo', 'llegan a la oficina'], ['26 sep', 'La calle', 'un local por proyecto'],
-                ['28 sep', 'La visita de Plotty', 'en video'], ['29 sep', 'Una sala por empresa', 'cada una en su estilo']] }
+                ['28 sep', 'La visita de Plotty', 'en video'], ['29 sep', 'Una sala por empresa', 'cada una en su estilo'], ['1 oct', 'BiPlot.TV', 'el canal de BiPlot'],
+                ['7 oct', 'El dúo, renovado', 'el científico y el carpintero']] }
           },
           recorrido: [
             { zona: 'recepcion', titulo: 'La entrada', texto: '¡Bienvenido al Archivo! Sigue la línea del piso: parte color papel, como en 1985. Te acompaño.' },
@@ -275,6 +282,8 @@
             { zona: 'software', titulo: '1998 · El software', texto: 'Luego llegó el software de caja: una herramienta más que nadie aprendía a usar.' },
             { zona: 'generico', titulo: '2015 · Tres palabras', texto: 'Y las plantillas genéricas: escalable, innovador y centrado en el cliente.' },
             { zona: 'hoy', titulo: 'Hoy · Diez fases', texto: 'Hoy la misma línea pasa por BiPlot HQ: diez fases, con alguien a cargo de cada una.' },
+            { zona: 'disenos', titulo: 'Los diseños anteriores', texto: 'Aquí guardamos cómo eran The Architect y The Engine antes de ser el científico de planos y el carpintero.' },
+            { zona: 'primera', titulo: 'La primera oficina', texto: 'Y la primera oficina, en dos pisos: abajo el equipo; arriba, una sala por proyecto.' },
             { zona: 'fundos', titulo: 'Fundos 360', texto: 'El primer caso que llegó al sitio: la escritura, inscrita a nombre de quien compró.' },
             { zona: 'haru', titulo: 'Haru 360', texto: 'En Haru se pide con el QR de la mesa, y la comanda llega a la cocina sin papel.' },
             { zona: 'nuhome', titulo: 'Nu Home 360', texto: 'Un módulo de Nu Home, a escala: así se diseña su casa.' },

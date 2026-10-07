@@ -6,7 +6,9 @@
 // por la fila de atrás, con una pieza de cada desarrollo en el orden en que llegaron a biplot.cl (la escritura de Fundos
 // 360, el QR de la mesa de Haru 360, el módulo de Nu Home 360, la huella de Eleven 360 y el elefante de Rumbo). Termina en
 // el punto coral, frente al pedestal libre: tu turno. En los muros, la línea de tiempo de 2026 y el nombre del museo; a la
-// izquierda, el fichero con todos los casos por rubro. Lo cuida Pepa (Cosecha): «Lo que sirve dos veces se guarda». Sus
+// izquierda, el fichero con todos los casos por rubro, BiPlot HQ el día que abrió, el primer plano de la oficina y los
+// diseños anteriores de The Architect y The Engine; en el fondo, junto al fichero, la primera oficina, en dos pisos. Lo
+// cuida Pepa (Cosecha): «Lo que sirve dos veces se guarda». Sus
 // textos (tarjetas, burbujas y recorrido) están en datos.js (salas.archivo.salaPropia).
 import { montar, base, registrar, planoXen, plantaAlta, txt, mono, PELO, Z, PIEL, EA, r1 } from './comun.mjs';
 import { ETAPAS } from './elefantes.mjs';
@@ -156,7 +158,9 @@ const HITOS = [
   ['25 SEP', 'Nu Home, Eleven y Rumbo', 'llegan a la oficina'],
   ['26 SEP', 'La calle', 'un local por proyecto'],
   ['28 SEP', 'La visita de Plotty', 'en video'],
-  ['29 SEP', 'Una sala por empresa', 'cada una en su estilo']
+  ['29 SEP', 'Una sala por empresa', 'cada una en su estilo'],
+  ['1 OCT', 'BiPlot.TV', 'el canal de BiPlot'],
+  ['7 OCT', 'El dúo, renovado', 'el científico y el carpintero']
 ];
 // La línea de tiempo, de frente: las mismas fechas, con aire y cada una centrada en su punto (la del muro se sale por los bordes)
 const TIEMPO_FRENTE = (() => {
@@ -232,8 +236,8 @@ export function salaArchivo(o = {}) {
       mono(2, 78, 'MUSEO DE BIPLOT', 15, CIAN, ' letter-spacing="3"') + `<rect x="2" y="94" width="64" height="4" fill="${CIAN}"/>` +
       txt(2, 128, '«Lo que sirve dos veces', 15, TINTA, ' font-weight="500"') + txt(2, 148, 'se guarda.»', 15, TINTA, ' font-weight="500"') + mono(2, 168, 'PEPA · COSECHA', 10, GRIS, ' letter-spacing="1"'), -39);
 
-    // ── El muro de la izquierda: el fichero con todos los casos por rubro, BiPlot HQ el día que abrió y, donde la línea da
-    // la vuelta, el primer plano de la oficina ──
+    // ── El muro de la izquierda: el fichero con todos los casos por rubro, BiPlot HQ el día que abrió, donde la línea da
+    // la vuelta el primer plano de la oficina y, al final, los diseños anteriores del dúo ──
     L.caja(0.06, 1.1, 0, 0.64, 2.8, 1.18, ROBLE, 1.2);
     L.caja(0.04, 1.08, 1.18, 0.68, 2.84, 0.05, NOGAL, 1.25);
     planoXen(L, 0.701, 3.9, 1.12, 280, 108, `<rect width="280" height="108" fill="#B99A70"/>` +
@@ -262,6 +266,21 @@ export function salaArchivo(o = {}) {
     L.planoX(yp, 0.62, 300, 20, mono(0, 14, 'EL PRIMER PLANO DE LA OFICINA', 11, GRIS, ' letter-spacing="1.2"'), -38.5);
     zona('plano', { formas: [{ plano: [[0.03, yp, 0.7], [0.03, yp - 3, 0.7], [0.03, yp - 3, 2.3], [0.03, yp, 2.3]] }], lugar: [0.05, yp - 1.5, 2.5], guia: [2.1, yp - 1.5],
       frente: { svg: PLANO_HQ, ancho: 300, alto: 160 } });
+
+    // Los diseños anteriores de The Architect y The Engine (el primer dibujo, el elenco redibujado y sus cabezones de la
+    // oficina), donde termina el muro: se abre de frente completo
+    const yd = 13.48;
+    L.planoX(yd, 2.38, 260, 164, `<rect width="260" height="164" fill="${AZUL}"/><image href="§M§archivo-disenos-anteriores.webp" x="5" y="5" width="250" height="154" preserveAspectRatio="xMidYMid meet"/>`, -38.8);
+    L.planoX(yd, 0.56, 260, 20, mono(0, 14, 'LOS DISEÑOS ANTERIORES', 11, GRIS, ' letter-spacing="1.2"'), -38.5);
+    zona('disenos', { formas: [{ plano: [[0.03, yd, 0.74], [0.03, yd - 2.6, 0.74], [0.03, yd - 2.6, 2.38], [0.03, yd, 2.38]] }], lugar: [0.05, yd - 1.3, 2.58], guia: [2.1, yd - 1.3],
+      frente: { img: 'archivo-disenos-anteriores', ancho: 1400, alto: 860, alt: 'The Architect y The Engine antes de hoy: el primer dibujo, del 25 de septiembre de 2026 (el polerón con la «A» y el plóter; la polera con el motor y la tablet), el elenco redibujado del 6 de octubre (el polerón abierto con el 2; el constructor con la llave y el 4) y sus cabezones de la oficina', pie: 'The Architect y The Engine · 25 sep – 7 oct 2026' } });
+
+    // ── El muro del fondo, junto al fichero: la primera oficina, en dos pisos, donde empieza la línea de tiempo ──
+    const xo = 0.95;
+    L.planoY(xo, 0.02, 2.38, 220, 133, `<rect width="220" height="133" fill="${AZUL}"/><image href="§M§archivo-primera-oficina.webp" x="5" y="5" width="210" height="123" preserveAspectRatio="xMidYMid meet"/>`, -39);
+    L.planoY(xo, 0.02, 0.86, 220, 20, mono(0, 14, 'LA PRIMERA OFICINA', 11, GRIS, ' letter-spacing="1.2"'), -38.9);
+    zona('primera', { formas: [{ plano: [[xo, 0.03, 1.05], [xo + 2.2, 0.03, 1.05], [xo + 2.2, 0.03, 2.38], [xo, 0.03, 2.38]] }], lugar: [xo + 1.1, 0.05, 2.58], guia: [xo + 1.1, 1.5],
+      frente: { img: 'archivo-primera-oficina', ancho: 1400, alto: 820, alt: 'La primera oficina de BiPlot HQ, el 25 de septiembre de 2026, en isométrico y en dos pisos: abajo, el equipo (la recepción con Plotty, el muro del equipo, la mesa de dos, el set y el tubo a producción); arriba, una sala por proyecto (Nu Home 360, Fundos 360, Haru 360, Eleven 360 y Rumbo) y la sala libre', pie: 'BiPlot HQ · 25 sep 2026' } });
 
     // ── Adelante, las épocas: la misma línea, contada con herramientas distintas ──
     // 1985 · El papel: la libreta abierta sobre su atril, con el lápiz al lado
@@ -390,7 +409,7 @@ export function salaArchivo(o = {}) {
     zona('recepcion', { formas: [{ piso: [[18.9, LF - 0.3], [19.6, LF - 0.3], [19.6, LF + 0.3], [18.9, LF + 0.3]], alto: 1.1 }], lugar: [19.25, LF, 1.35], guia: [18.4, 12.5] });
     // (en celular se entra viendo de cerca este punto: la libreta, la terminal y el atril)
     lugar('entrada', 16.2, 11.0, 0.9);
-    plantaAlta(L, 0.95, 12.9, 1.05, ['#FFFFFF', '#DCDFD9']);
+    plantaAlta(L, 0.6, 0.55, 1.05, ['#FFFFFF', '#DCDFD9']);
 
     // Pepa cuida el museo y guía el recorrido: camina por el pasillo del medio, entre las dos filas
     camina('pepa', o.pepa ? [[...o.pepa, 4], [17.2, 8.4, 2], [...o.pepa]] : [[17.2, 8.4, 3], [10.2, 8.4, 3], [2.8, 8.4, 3], [10.2, 8.4], [17.2, 8.4]], { vel: 0.45 });
