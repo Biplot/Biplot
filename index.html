@@ -54,6 +54,7 @@
   --cta:#FF6B4A;          --cta-2:#FF8467;  --cta-text:#2b0f08; /* sólo para agendar el diagnóstico */
   --point:#FF6B4A;        --point-rgb:255,107,74;   /* el punto coral al final de la línea */
   --hero-filter:none;
+  --hero-veil:rgba(0,0,0,.6);                       /* la capa negra transparente sobre el video de la portada */
   --cream:var(--paper);
   --cream-80:rgba(var(--paper-rgb),.82);
   --cream-70:rgba(var(--paper-rgb),.72);
@@ -156,16 +157,19 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 .nav.is-solid{background:rgba(var(--ink-rgb),.94);box-shadow:0 1px 0 var(--line-dark);height:66px}
 @supports (backdrop-filter:blur(10px)){.nav.is-solid{background:rgba(var(--ink-rgb),.82);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%)}}
 .nav.is-solid::before{opacity:0}
-.nav-links{display:none;gap:clamp(1.1rem,2vw,2rem);align-items:center}
+.nav-links{display:none;gap:clamp(1rem,1.7vw,1.6rem);align-items:center}
 .nav-links a{position:relative;white-space:nowrap;font-size:.9rem;font-weight:600;color:var(--cream-80);padding-block:.4rem;transition:color .25s;display:inline-flex;align-items:center;gap:.45rem}
 .nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:right;transition:transform .45s var(--ease)}
 .nav-links a:hover,.nav-links a.is-current{color:var(--cream)}
 .nav-links a:hover::after,.nav-links a.is-current::after{transform:scaleX(1);transform-origin:left}
 .tag-new{font:800 .56rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;background:var(--accent);color:var(--accent-text);padding:.3rem .45rem;border-radius:999px}
 .nav-actions{display:flex;align-items:center;gap:.6rem}
-.nav-plotty{display:none;align-items:center;gap:.45rem;white-space:nowrap;font-size:.88rem;font-weight:700;color:var(--cream-80);padding:.5rem .2rem}
-.nav-plotty:hover{color:var(--accent)}
-.nav-plotty img{width:24px;height:24px;border-radius:50%}
+/* Plotty en la barra: sólo su cara (el guiño), y el texto al pasar el cursor o con el teclado */
+.nav-plotty{display:none;position:relative;flex:none;width:42px;height:42px;border-radius:50%;align-items:center;justify-content:center;border:1px solid rgba(var(--paper-rgb),.25);transition:border-color .25s}
+.nav-plotty:hover,.nav-plotty:focus-visible{border-color:var(--accent)}
+.nav-plotty img{width:28px;height:28px;border-radius:50%}
+.nav-plotty .tip{position:absolute;top:calc(100% + 10px);left:50%;transform:translate(-50%,-4px);white-space:nowrap;padding:.45rem .7rem;border-radius:6px;background:var(--ink);border:1px solid var(--line-dark);font-size:.78rem;font-weight:700;color:var(--cream);opacity:0;pointer-events:none;transition:opacity .25s,transform .35s var(--ease)}
+.nav-plotty:hover .tip,.nav-plotty:focus-visible .tip{opacity:1;transform:translate(-50%,0)}
 .nav .btn-sm{display:none}
 .nav-toggle{display:inline-grid;place-items:center;width:46px;height:46px;border-radius:50%;border:1px solid rgba(var(--paper-rgb),.3);color:var(--cream)}
 .nav-toggle .i{width:22px;height:22px}
@@ -178,7 +182,7 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 .nav-menu a:not(.btn){display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.95rem 0;border-bottom:1px solid var(--line-dark);font-weight:600;color:var(--cream)}
 .nav-menu .btn{margin-top:1.2rem;width:100%}
 @media (min-width:600px){.nav .btn-sm{display:inline-flex}}
-@media (min-width:1100px){
+@media (min-width:1240px){
   .nav-links{display:flex}
   .nav-toggle,.nav-menu,.nav-menu.open{display:none}
   .nav-plotty{display:inline-flex}
@@ -191,7 +195,7 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 .hero-art img,.hero-art video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 50%;filter:var(--hero-filter)}
 .hero-art video{opacity:0;transition:opacity 1.2s var(--ease-soft)}
 .hero-art video.is-playing{opacity:1}
-.hero-shade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(var(--ink-rgb),.93) 0%,rgba(var(--ink-rgb),.76) 34%,rgba(var(--ink-rgb),.2) 62%,rgba(var(--ink-rgb),.3) 100%),linear-gradient(0deg,rgba(var(--ink-rgb),.98) 0%,rgba(var(--ink-rgb),0) 34%),linear-gradient(180deg,rgba(var(--ink-rgb),.6) 0%,rgba(var(--ink-rgb),0) 22%)}
+.hero-shade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(var(--ink-rgb),.93) 0%,rgba(var(--ink-rgb),.76) 34%,rgba(var(--ink-rgb),.2) 62%,rgba(var(--ink-rgb),.3) 100%),linear-gradient(0deg,rgba(var(--ink-rgb),.98) 0%,rgba(var(--ink-rgb),0) 34%),linear-gradient(180deg,rgba(var(--ink-rgb),.6) 0%,rgba(var(--ink-rgb),0) 22%),linear-gradient(var(--hero-veil),var(--hero-veil))}
 .hero-pause{position:absolute;top:calc(var(--nav-h) + 14px);left:var(--gutter);z-index:2;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--cream);border:1px solid rgba(var(--paper-rgb),.3);background:rgba(var(--ink-rgb),.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:border-color .25s,background-color .25s}
 .hero-pause:hover{border-color:var(--accent)}
 .hero-pause .i{width:16px;height:16px}
@@ -363,19 +367,15 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 .lm-trazo{fill:none;stroke:#17C3B2;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s var(--ease) .2s}
 .pl-active .lm .lm-trazo{stroke-dashoffset:0}
 .lm-fases{list-style:none;margin:0;padding:0;position:absolute;inset:0}
-.lm-fases li{position:absolute;transform:translate(-50%,-39px);display:flex;flex-direction:column;align-items:center;text-align:center;width:88px}
-.lm-caras{display:flex;height:26px}
-.lm-caras img{width:26px;height:26px;display:block}
-.lm-caras img+img{display:none}
-.lm-fases i{width:12px;height:12px;margin-top:7px;border-radius:50%;background:#17C3B2;box-shadow:0 0 0 3px #081a2e,0 0 12px rgba(23,195,178,.8)}
+.lm-fases li{position:absolute;transform:translate(-50%,-6px);display:flex;flex-direction:column;align-items:center;text-align:center;width:88px}
+.lm-fases i{width:12px;height:12px;border-radius:50%;background:#17C3B2;box-shadow:0 0 0 3px #081a2e,0 0 12px rgba(23,195,178,.8)}
 .lm-fases b{margin-top:7px;font:700 .7rem/1 var(--mono);color:#17C3B2;letter-spacing:.04em}
 .lm-nom{display:none}
 .lm-fin{position:absolute;width:16px;height:16px;border-radius:50%;background:#FF6B4A;transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(255,107,74,.25),0 0 18px rgba(255,107,74,.7)}
 @media (max-width:700px){
   .lm-pista{margin:-40px 16px 0;padding:42px 0 26px}
-  .lm-fases li{transform:translate(-50%,-37px)}
-  .lm-caras,.lm-caras img{height:22px;width:22px}
-  .lm-fases i{width:9px;height:9px;margin-top:6px}
+  .lm-fases li{transform:translate(-50%,-4.5px)}
+  .lm-fases i{width:9px;height:9px}
   .lm-fases b{font-size:.58rem;margin-top:5px}
 }
 .tu-local{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;border:1px solid rgba(23,195,178,.25);background:#081a2e}
@@ -403,11 +403,6 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 .fase{display:flex;align-items:center;gap:.6rem;font-size:.86rem;line-height:1.25;padding:.5rem 0;border-bottom:1px solid var(--line-dark)}
 .f-cod{font:600 .66rem/1 var(--mono);color:var(--accent-text);background:var(--accent);border-radius:4px;padding:4px 6px;flex:none}
 .f-nom{color:var(--cream);font-weight:600;flex:1;min-width:0}
-.f-caras{display:flex;flex:none}
-.f-caras a{display:block;width:28px;height:28px;border-radius:50%;transition:transform .25s var(--ease)}
-.f-caras a+a{margin-left:-9px}
-.f-caras a:hover{transform:translateY(-2px)}
-.f-caras img{width:28px;height:28px}
 .mstep-deliver{margin-top:.9rem;font-size:.86rem;color:var(--cream-80);line-height:1.5}
 .mstep-deliver b{display:block;font:700 .62rem/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.35rem}
 .method-curva{display:none}
@@ -583,7 +578,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
     <a href="#precios">Precios</a>
   </nav>
   <div class="nav-actions">
-    <a href="oficina/#conversar" class="nav-plotty"><img src="assets/oficina/caras/plotty.webp" alt="" width="24" height="24">Conversar con Plotty</a>
+    <a href="oficina/#conversar" class="nav-plotty" aria-label="Conversar con Plotty"><img src="assets/oficina/caras/plotty.webp" alt="" width="28" height="28"><span class="tip" aria-hidden="true">Conversar con Plotty</span></a>
     <a href="https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20agendar%20un%20diagn%C3%B3stico." target="_blank" rel="noopener" class="btn btn-coral btn-sm">Agenda un diagnóstico</a>
     <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Abrir el menú">
       <svg class="i i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></svg>
@@ -868,17 +863,17 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
                     <div class="lm-pista">
                       <div class="lm-via">
                         <svg viewBox="0 0 1000 60" preserveAspectRatio="none" aria-hidden="true"><polyline class="lm-trazo" pathLength="1" points="0,52 50,50 150,43 250,46 350,37 450,40 550,31 650,34 750,25 850,28 950,19 1000,7"/></svg>
-                        <ol class="lm-fases" aria-label="Las diez fases del motor y quién lleva cada una">
-                        <li style="left:5%;top:83.3%" title="E0 · Calificación: Plotty"><span class="lm-caras"><img src="assets/oficina/caras/plotty.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E0</b><span class="lm-nom">Calificación</span></li>
-                        <li style="left:15%;top:71.7%" title="E1 · Diagnóstico: Lupe"><span class="lm-caras"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E1</b><span class="lm-nom">Diagnóstico</span></li>
-                        <li style="left:25%;top:76.7%" title="E2 · Camino: The Architect"><span class="lm-caras"><img src="assets/oficina/caras/architect.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E2</b><span class="lm-nom">Camino</span></li>
-                        <li style="left:35%;top:61.7%" title="E3 · Datos: Celda"><span class="lm-caras"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E3</b><span class="lm-nom">Datos</span></li>
-                        <li style="left:45%;top:66.7%" title="E4 · Modelo y permisos: The Engine"><span class="lm-caras"><img src="assets/oficina/caras/engine.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E4</b><span class="lm-nom">Modelo y permisos</span></li>
-                        <li style="left:55%;top:51.7%" title="E5 · Construcción: Grillo y Bucle"><span class="lm-caras"><img src="assets/oficina/caras/grilla.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/bucle.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E5</b><span class="lm-nom">Construcción</span></li>
-                        <li style="left:65%;top:56.7%" title="E6 · Validación: Tamandúa"><span class="lm-caras"><img src="assets/oficina/caras/tamandua.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E6</b><span class="lm-nom">Validación</span></li>
-                        <li style="left:75%;top:41.7%" title="E7 · Puesta en marcha: Faro"><span class="lm-caras"><img src="assets/oficina/caras/faro.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E7</b><span class="lm-nom">Puesta en marcha</span></li>
-                        <li style="left:85%;top:46.7%" title="E8 · Medición: Lupe y Celda"><span class="lm-caras"><img src="assets/oficina/caras/lupe.webp" alt="" width="34" height="34" loading="lazy"><img src="assets/oficina/caras/celda.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E8</b><span class="lm-nom">Medición</span></li>
-                        <li style="left:95%;top:31.7%" title="E9 · Cosecha: Pepa"><span class="lm-caras"><img src="assets/oficina/caras/pepa.webp" alt="" width="34" height="34" loading="lazy"></span><i></i><b>E9</b><span class="lm-nom">Cosecha</span></li>
+                        <ol class="lm-fases" aria-label="Las diez fases del motor">
+                        <li style="left:5%;top:83.3%" title="E0 · Calificación"><i></i><b>E0</b><span class="lm-nom">Calificación</span></li>
+                        <li style="left:15%;top:71.7%" title="E1 · Diagnóstico"><i></i><b>E1</b><span class="lm-nom">Diagnóstico</span></li>
+                        <li style="left:25%;top:76.7%" title="E2 · Camino"><i></i><b>E2</b><span class="lm-nom">Camino</span></li>
+                        <li style="left:35%;top:61.7%" title="E3 · Datos"><i></i><b>E3</b><span class="lm-nom">Datos</span></li>
+                        <li style="left:45%;top:66.7%" title="E4 · Modelo y permisos"><i></i><b>E4</b><span class="lm-nom">Modelo y permisos</span></li>
+                        <li style="left:55%;top:51.7%" title="E5 · Construcción"><i></i><b>E5</b><span class="lm-nom">Construcción</span></li>
+                        <li style="left:65%;top:56.7%" title="E6 · Validación"><i></i><b>E6</b><span class="lm-nom">Validación</span></li>
+                        <li style="left:75%;top:41.7%" title="E7 · Puesta en marcha"><i></i><b>E7</b><span class="lm-nom">Puesta en marcha</span></li>
+                        <li style="left:85%;top:46.7%" title="E8 · Medición"><i></i><b>E8</b><span class="lm-nom">Medición</span></li>
+                        <li style="left:95%;top:31.7%" title="E9 · Cosecha"><i></i><b>E9</b><span class="lm-nom">Cosecha</span></li>
                         </ol>
                         <span class="lm-fin" style="left:100%;top:11.7%" aria-hidden="true"></span>
                       </div>
@@ -943,8 +938,8 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
           <h3>Diagnóstico del proceso real</h3>
           <p>Observamos cómo trabaja tu equipo hoy: qué planillas usan, dónde se traba la información, quién carga con qué. Sin apurar la solución.</p>
           <ul class="fases" aria-label="Fases del paso 01">
-            <li class="fase"><span class="f-cod">E0</span><span class="f-nom">Calificación</span><span class="f-caras"><a href="oficina/#plotty" aria-label="Plotty, en BiPlot HQ" title="Plotty"><img src="assets/oficina/caras/plotty.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
-            <li class="fase"><span class="f-cod">E1</span><span class="f-nom">Diagnóstico</span><span class="f-caras"><a href="oficina/#lupe" aria-label="Lupe, en BiPlot HQ" title="Lupe"><img src="assets/oficina/caras/lupe.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
+            <li class="fase"><span class="f-cod">E0</span><span class="f-nom">Calificación</span></li>
+            <li class="fase"><span class="f-cod">E1</span><span class="f-nom">Diagnóstico</span></li>
           </ul>
           <p class="mstep-deliver"><b>Entregable</b>Mapa de tu proceso, dónde se pierde tiempo y la línea base.</p>
         </div>
@@ -954,9 +949,9 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
           <h3>Diseño a la medida</h3>
           <p>Trazamos el proceso ideal para tu operación, no para una plantilla genérica: qué ordenar, qué automatizar y qué construir, en ese orden.</p>
           <ul class="fases" aria-label="Fases del paso 02">
-            <li class="fase"><span class="f-cod">E2</span><span class="f-nom">Camino</span><span class="f-caras"><a href="oficina/#architect" aria-label="The Architect, en BiPlot HQ" title="The Architect"><img src="assets/oficina/caras/architect.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
-            <li class="fase"><span class="f-cod">E3</span><span class="f-nom">Datos</span><span class="f-caras"><a href="oficina/#celda" aria-label="Celda, en BiPlot HQ" title="Celda"><img src="assets/oficina/caras/celda.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
-            <li class="fase"><span class="f-cod">E4</span><span class="f-nom">Modelo y permisos</span><span class="f-caras"><a href="oficina/#engine" aria-label="The Engine, en BiPlot HQ" title="The Engine"><img src="assets/oficina/caras/engine.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
+            <li class="fase"><span class="f-cod">E2</span><span class="f-nom">Camino</span></li>
+            <li class="fase"><span class="f-cod">E3</span><span class="f-nom">Datos</span></li>
+            <li class="fase"><span class="f-cod">E4</span><span class="f-nom">Modelo y permisos</span></li>
           </ul>
           <p class="mstep-deliver"><b>Entregable</b>El flujo ideal dibujado para tu operación.</p>
         </div>
@@ -966,8 +961,8 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
           <h3>Construcción e integración</h3>
           <p>Conectamos las herramientas que ya usas, en rebanadas cortas que funcionan solas. Cada una se prueba con uso real antes de aceptarla.</p>
           <ul class="fases" aria-label="Fases del paso 03">
-            <li class="fase"><span class="f-cod">E5</span><span class="f-nom">Construcción</span><span class="f-caras"><a href="oficina/#grilla" aria-label="Grillo, en BiPlot HQ" title="Grillo"><img src="assets/oficina/caras/grilla.webp" alt="" width="30" height="30" loading="lazy"></a><a href="oficina/#bucle" aria-label="Bucle, en BiPlot HQ" title="Bucle"><img src="assets/oficina/caras/bucle.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
-            <li class="fase"><span class="f-cod">E6</span><span class="f-nom">Validación</span><span class="f-caras"><a href="oficina/#tamandua" aria-label="Tamandúa, en BiPlot HQ" title="Tamandúa"><img src="assets/oficina/caras/tamandua.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
+            <li class="fase"><span class="f-cod">E5</span><span class="f-nom">Construcción</span></li>
+            <li class="fase"><span class="f-cod">E6</span><span class="f-nom">Validación</span></li>
           </ul>
           <p class="mstep-deliver"><b>Entregable</b>Tus herramientas conectadas y funcionando.</p>
         </div>
@@ -977,15 +972,15 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
           <h3>Puesta en marcha y después</h3>
           <p>Publicamos, enseñamos y acompañamos. A los 30, 60 y 90 días medimos contra la línea base, y lo que sirve se guarda para el próximo proyecto.</p>
           <ul class="fases" aria-label="Fases del paso 04">
-            <li class="fase"><span class="f-cod">E7</span><span class="f-nom">Puesta en marcha</span><span class="f-caras"><a href="oficina/#faro" aria-label="Faro, en BiPlot HQ" title="Faro"><img src="assets/oficina/caras/faro.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
-            <li class="fase"><span class="f-cod">E8</span><span class="f-nom">Medición</span><span class="f-caras"><a href="oficina/#lupe" aria-label="Lupe, en BiPlot HQ" title="Lupe"><img src="assets/oficina/caras/lupe.webp" alt="" width="30" height="30" loading="lazy"></a><a href="oficina/#celda" aria-label="Celda, en BiPlot HQ" title="Celda"><img src="assets/oficina/caras/celda.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
-            <li class="fase"><span class="f-cod">E9</span><span class="f-nom">Cosecha</span><span class="f-caras"><a href="oficina/#pepa" aria-label="Pepa, en BiPlot HQ" title="Pepa"><img src="assets/oficina/caras/pepa.webp" alt="" width="30" height="30" loading="lazy"></a></span></li>
+            <li class="fase"><span class="f-cod">E7</span><span class="f-nom">Puesta en marcha</span></li>
+            <li class="fase"><span class="f-cod">E8</span><span class="f-nom">Medición</span></li>
+            <li class="fase"><span class="f-cod">E9</span><span class="f-nom">Cosecha</span></li>
           </ul>
           <p class="mstep-deliver"><b>Entregable</b>La medición del día 30, 60 y 90, contra tu línea base.</p>
         </div>
       </div>
         </div>
-        <p class="motor-foot"><span class="equipo-fila" aria-hidden="true"><img src="assets/oficina/caras/plotty.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/lupe.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/architect.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/celda.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/engine.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/grilla.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/bucle.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/tamandua.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/faro.webp" alt="" width="32" height="32" loading="lazy"><img src="assets/oficina/caras/pepa.webp" alt="" width="32" height="32" loading="lazy"></span><span>Cada fase tiene a alguien a cargo, y todos trabajan en BiPlot HQ.</span><a class="link-go" href="oficina/#oficina">Conócelos en la oficina <svg class="i"><use href="#i-go"/></svg></a></p>
+        <p class="motor-foot"><span>Cada fase tiene a alguien a cargo, y todos trabajan en BiPlot HQ.</span><a class="link-go" href="oficina/#oficina">Conócelos en la oficina <svg class="i"><use href="#i-go"/></svg></a></p>
       </div>
     </div>
   </section>
