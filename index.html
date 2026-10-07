@@ -157,7 +157,7 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 .nav.is-solid{background:rgba(var(--ink-rgb),.94);box-shadow:0 1px 0 var(--line-dark);height:66px}
 @supports (backdrop-filter:blur(10px)){.nav.is-solid{background:rgba(var(--ink-rgb),.82);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%)}}
 .nav.is-solid::before{opacity:0}
-.nav-links{display:none;gap:clamp(.9rem,1.5vw,1.4rem);align-items:center}
+.nav-links{display:none;gap:clamp(1rem,1.7vw,1.6rem);align-items:center}
 .nav-links a{position:relative;white-space:nowrap;font-size:.9rem;font-weight:600;color:var(--cream-80);padding-block:.4rem;transition:color .25s;display:inline-flex;align-items:center;gap:.45rem}
 .nav-links a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--accent);transform:scaleX(0);transform-origin:right;transition:transform .45s var(--ease)}
 .nav-links a:hover,.nav-links a.is-current{color:var(--cream)}
@@ -455,17 +455,16 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 .v-sound.on .on-ic{display:block}
 .v-sound.on .off-ic{display:none}
 
-/* ===== Rumbo, la app de BiPlot: texto a un lado y su pantalla de inicio al otro ===== */
-.rumbo{display:grid;grid-template-columns:1fr;gap:clamp(2.5rem,5vw,4rem);align-items:center}
-.rumbo-pts{margin-top:1.6rem;display:grid;gap:.7rem}
-.rumbo-pts li{position:relative;padding-left:1.8rem;color:var(--cream-80)}
-.rumbo-pts li::before{content:"";position:absolute;left:0;top:.3em;width:16px;height:16px;border-radius:50%;background:rgba(var(--accent-rgb),.18);box-shadow:inset 0 0 0 1.5px var(--accent)}
-.rumbo .hero-actions{animation:none}
-.rumbo-vis{position:relative;justify-self:center}
-.rumbo-fono{width:min(280px,72vw);border-radius:40px;padding:9px;background:#1C2D40;box-shadow:0 40px 80px -30px rgba(0,0,0,.7),inset 0 0 0 1.5px rgba(255,255,255,.12);transform:rotate(-3deg)}
-.rumbo-fono img{width:100%;height:auto;border-radius:31px}
-.rumbo-icono{position:absolute;right:-18px;top:28px;width:72px;height:72px;border-radius:18px;box-shadow:0 16px 30px -10px rgba(0,0,0,.6)}
-@media (min-width:900px){.rumbo{grid-template-columns:1.1fr .9fr}}
+/* ===== Rumbo, un aparte al final: la app personal de BiPlot, fuera de la historia del negocio ===== */
+.aparte{background:var(--paper);color:var(--text);padding-block:clamp(3rem,6vw,4.5rem);border-top:1px solid var(--line-light)}
+.aparte-grid{display:grid;grid-template-columns:1fr;gap:2rem;align-items:center;max-width:960px}
+.aparte-copy h2{font-size:clamp(1.9rem,3.4vw,2.8rem)}
+.aparte-copy p{margin-top:1rem;color:var(--muted);max-width:56ch}
+.aparte-copy .link-go{margin-top:1.4rem}
+.aparte-vis{justify-self:center}
+.rumbo-fono{width:170px;border-radius:30px;padding:7px;background:#1C2D40;box-shadow:0 30px 60px -30px rgba(var(--ink-rgb),.55),inset 0 0 0 1.5px rgba(255,255,255,.12);transform:rotate(-4deg)}
+.rumbo-fono img{width:100%;height:auto;border-radius:24px}
+@media (min-width:760px){.aparte-grid{grid-template-columns:auto 1fr;gap:3rem}}
 
 /* ===== Precios: tarjetas sobre arena ===== */
 .price-grid{margin-top:clamp(2.5rem,5vw,3.5rem);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:1.25rem;align-items:stretch}
@@ -544,7 +543,8 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
 .footer-col a{display:block;padding:.4rem 0;font-size:.92rem;transition:color .25s}
 .footer-col a:hover{color:var(--accent)}
 .footer-bottom{margin-top:clamp(2.5rem,5vw,4rem);padding-block:1.6rem;border-top:1px solid var(--line-dark);display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;font-size:.78rem;color:var(--cream-55)}
-@media (min-width:760px){.footer-grid{grid-template-columns:1.3fr 1fr 1fr 1fr}}
+@media (min-width:760px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media (min-width:1024px){.footer-grid{grid-template-columns:1.6fr repeat(4,1fr)}}
 
 /* ===== Visor de video ===== */
 .vlightbox{position:fixed;inset:0;z-index:200;background:rgba(var(--ink-rgb),.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .3s var(--ease-soft)}
@@ -586,8 +586,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
     <a href="#servicios">Servicios</a>
     <a href="#casos">Casos</a>
     <a href="#metodologia">Cómo trabajamos</a>
-    <a href="#oficina">BiPlot HQ</a>
-    <a href="#rumbo">Rumbo</a>
+    <a href="#oficina">BiPlot HQ <span class="tag-new">Nuevo</span></a>
     <a href="#precios">Precios</a>
   </nav>
   <div class="nav-actions">
@@ -603,8 +602,7 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
   <a href="#servicios">Servicios</a>
   <a href="#casos">Casos</a>
   <a href="#metodologia">Cómo trabajamos</a>
-  <a href="#oficina">BiPlot HQ</a>
-  <a href="#rumbo">Rumbo, nuestra app <span class="tag-new">App</span></a>
+  <a href="#oficina">BiPlot HQ <span class="tag-new">Nuevo</span></a>
   <a href="#precios">Precios</a>
   <a href="#faq">Preguntas frecuentes</a>
   <a href="oficina/#conversar">Conversar con Plotty</a>
@@ -1032,28 +1030,6 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
     </div>
   </section>
 
-  <section class="section dark" id="rumbo" aria-labelledby="rumbo-h">
-    <div class="container rumbo">
-      <div class="rumbo-copy">
-        <span class="kicker">Nuestra app</span>
-        <h2 class="reveal" id="rumbo-h">Rumbo: <em>tu día, un bocado a la vez.</em></h2>
-        <p class="lead reveal">También hacemos productos propios. Rumbo junta tareas, hábitos, diario y metas en una sola app, con un elefante que crece contigo. Se empieza gratis y sin suscripción.</p>
-        <ul class="rumbo-pts reveal-group">
-          <li class="part">Abre tu día en la mañana y ciérralo en la noche</li>
-          <li class="part">Hábitos, finanzas, salud y lecturas en el mismo lugar</li>
-          <li class="part">En el celular y el computador</li>
-        </ul>
-        <div class="hero-actions">
-          <a href="https://rumbo.biplot.cl/conoce/" class="btn btn-teal">Conoce Rumbo <svg class="i i-go"><use href="#i-go"/></svg></a>
-        </div>
-      </div>
-      <div class="rumbo-vis reveal" aria-hidden="true">
-        <div class="rumbo-fono"><img src="assets/rumbo/inicio.jpg" alt="" width="390" height="844" loading="lazy"></div>
-        <img class="rumbo-icono" src="assets/rumbo/icono.png" alt="" width="72" height="72" loading="lazy">
-      </div>
-    </div>
-  </section>
-
   <section class="section sand" id="precios" aria-labelledby="precios-h">
     <div class="container">
       <div class="sec-head">
@@ -1177,6 +1153,20 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
     </div>
   </section>
 
+  <aside class="aparte" id="rumbo" aria-labelledby="rumbo-h">
+    <div class="container aparte-grid">
+      <div class="aparte-vis" aria-hidden="true">
+        <div class="rumbo-fono"><img src="assets/rumbo/inicio.jpg" alt="" width="390" height="844" loading="lazy"></div>
+      </div>
+      <div class="aparte-copy">
+        <span class="kicker">Un proyecto aparte</span>
+        <h2 id="rumbo-h">¿Y para tu vida personal? <em>Rumbo.</em></h2>
+        <p>Esto no es para tu empresa. Rumbo es una app de organización personal que hicimos en BiPlot: tareas, hábitos, diario y metas en un solo lugar, con un elefante que crece contigo. Se empieza gratis.</p>
+        <a href="https://rumbo.biplot.cl/conoce/" class="link-go">Conoce Rumbo <svg class="i"><use href="#i-go"/></svg></a>
+      </div>
+    </div>
+  </aside>
+
 </main>
 
 <footer class="footer">
@@ -1193,7 +1183,6 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
         <a href="#metodologia">Cómo trabajamos</a>
         <a href="#precios">Precios</a>
         <a href="#faq">Preguntas frecuentes</a>
-        <a href="https://rumbo.biplot.cl/conoce/">Rumbo, nuestra app</a>
       </div>
       <div class="footer-col">
         <h4>BiPlot HQ</h4>
@@ -1208,6 +1197,11 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
         <a href="https://wa.me/56966275675" target="_blank" rel="noopener">+56 9 6627 5675</a>
         <a href="#contacto">Agenda un diagnóstico</a>
         <a href="plotline.html">Cómo pensamos la automatización</a>
+      </div>
+      <div class="footer-col">
+        <h4>Para tu vida personal</h4>
+        <a href="https://rumbo.biplot.cl/conoce/">Rumbo, nuestra app</a>
+        <a href="https://rumbo.biplot.cl/">Abrir Rumbo</a>
       </div>
     </div>
     <div class="footer-bottom">
