@@ -68,6 +68,8 @@ button { font: inherit; color: inherit; }
 .escena:focus-visible { box-shadow: inset 0 0 0 3px rgba(23, 195, 178, .6); }
 #svg-escena { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .5s ease; }
 .lista #svg-escena { opacity: 1; }
+/* Mientras la oficina espera al CRM antes de dibujar (crm.js, a lo más 3 segundos), lo que todavía no responde no se ve */
+.esperando-crm .intro, .esperando-crm .recorrer, .esperando-crm .controles { visibility: hidden; }
 .resalte { fill: rgba(23, 195, 178, .07); stroke: #17C3B2; stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
 .resalte-suelo { fill: rgba(23, 195, 178, .12); stroke: none; }
 .resalte-actor { fill: rgba(23, 195, 178, .22); stroke: #17C3B2; stroke-width: 2; vector-effect: non-scaling-stroke; }
@@ -414,7 +416,7 @@ button { font: inherit; color: inherit; }
 .en-sala-propia .sala-dibujo-caja.arrastrando { cursor: grabbing; }
 .en-sala-propia .sala-dibujo-caja.sobre { cursor: pointer; }
 .en-sala-propia .sala-dibujo-caja:focus-visible { box-shadow: inset 0 0 0 3px rgba(var(--p-brillo), .75); }
-.en-sala-propia .sala-ayuda { display: none; }
+.en-sala-propia .sala-ayuda, .sala-avances .sala-ayuda { display: none; }
 .en-sala-propia .sala-vecinos { top: 16px; bottom: auto; right: 16px; }
 .en-sala-propia .sala-volver { left: var(--volver-izq, 16px); }
 .en-sala-propia .controles { display: flex; }
@@ -547,6 +549,20 @@ button { font: inherit; color: inherit; }
 .tira-bp button:hover { border-color: var(--bp-acento); }
 .tira-bp button[aria-pressed="true"] { border-color: var(--bp-acento); box-shadow: 0 0 0 2px var(--bp-acento); color: var(--bp-texto); }
 .tira-bp button[aria-pressed="true"] img { opacity: 1; }
+/* Los avances del CRM (crm.js) en la tarjeta de BiPlot: una barra discreta con el porcentaje, quién lo lleva, los módulos
+   liberados (su imagen entera, sea de pantalla o de celular) y la línea de cada integrante. En cian, nunca en coral */
+.avance-fila { display: flex; align-items: center; gap: 12px; margin: 10px 0 8px; }
+.avance-barra { flex: 1; min-width: 0; height: 6px; border-radius: 99px; background: rgba(242, 244, 247, .12); overflow: hidden; }
+.avance-barra i { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--bp-acento); }
+.avance-pct { flex: none; font: 700 15px/1 var(--bp-f-mono); color: var(--bp-texto); }
+.oficina p.avance-quien { display: flex; align-items: center; gap: 8px; margin: 0 0 4px; font: 500 13.5px/1.35 var(--bp-f-texto); color: var(--bp-texto-2); }
+.avance-quien .cod { flex: none; }
+.modulos-crm .visor { margin-top: 10px; }
+.visor img.crm { object-fit: contain; }
+.equipo-avance { display: grid; gap: 10px; }
+.equipo-avance li { display: grid; gap: 5px; min-width: 0; }
+.equipo-avance a { justify-self: start; }
+.oficina .equipo-avance p.ahora-linea { margin: 0; padding-left: 2px; font-size: 13.5px; line-height: 1.4; color: var(--bp-texto-2); }
 /* En el museo (El Archivo): las diez fases o la línea de tiempo en una tarjeta, y el fichero con su buscador, en los colores de la sala */
 .tarjeta-fases { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 5px; }
 .tarjeta-fases li { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 4px 8px 4px 10px; border-radius: 10px; background: var(--p-fondo-2); }

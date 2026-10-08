@@ -335,6 +335,7 @@ sólo para su vitrina.
 |---|---|
 | `index.html` | La página: barra de marca, escena, «Salir a la calle», la sala de cada empresa, menú "Recorre la oficina", la mini tele, controles, bienvenida, recorrido guiado, panel y la tele de BiPlot.TV |
 | `datos.js` | **Lo único que hay que tocar para cambiar textos y sumar casos**: equipo, mascotas, fases, lugares, proyectos (con los puntos de cada sala, o su `salaPropia`), calles del barrio, casos de referencia, vitrina y Plotty |
+| `crm.js` | La conexión con el CRM: antes de dibujar, trae lo que liberaron los socios para cada sala (a lo más 3 segundos, sólo desde biplot.cl), lo revisa y lo deja en su proyecto (ver «Conexión con el CRM») |
 | `escena.js` | La oficina isométrica y su barrio: arma la calle principal, las calles por rubro (con el techo de cada caso) y El Archivo desde `datos.js`; la oficina cerrada que se abre, los locales que se abren al tocarlos, zonas, vitrina, los recorridos del equipo y la gente que camina (por la vereda, dentro de un local abierto y en las salas) |
 | `oficina.js` | Interfaz: cámara (arrastrar, rueda, pellizco, teclado), entrar y salir de la oficina, menú con el barrio y su buscador, el local abierto con su vista previa, la sala de cada empresa, El Archivo, recorrido guiado, paneles, chat, videos (la tele de BiPlot.TV) y enlaces directos |
 | `oficina.css` | Estilos con los tokens oscuros de la marca y todas las animaciones |
@@ -366,7 +367,8 @@ camina sólo mientras se ve.
   `fase`, `permiso`, `acento`, su `logo` si lo tiene (un archivo en `media/salas/`) y sus textos (el formato está en el
   comentario de `proyectos`). La oficina lo ubica en la
   calle de su rubro (y la abre si es el primero), elige la plantilla y muestra la fase. Para cambiar de fase, se cambia
-  `fase`. Mientras el CRM no esté conectado, es la forma de cargar casos.
+  `fase` (si el proyecto ya usa avances en el CRM, su fase la manda el CRM). Es la forma de cargar casos: el CRM sólo
+  trae los avances de cada sala.
 - **Un proyecto destacado, con sala hecha a mano**: se suben su logo y sus pantallas a `media/salas/`; en
   `_herramientas/dibujos/barrio/barrio.mjs` se agregan su logo a `LOGO`, su nombre a `LETRERO`, su lugar a `PRINCIPAL` y
   lo que se ve al abrir su local a `ADENTRO` (su interior chico, su gente y quien camina); se dibuja su sala grande en
@@ -465,6 +467,11 @@ node oficina/_herramientas/probar-oficina.mjs
 ```
 
 Con otro Chromium: `NAVEGADOR=/ruta/al/chrome node oficina/_herramientas/probar-oficina.mjs`.
+
+Desde un archivo o un servidor local la oficina no le pregunta al CRM (sólo lo hace desde biplot.cl), así que estas
+pruebas ven siempre lo de `datos.js`. Para ver una sala con avances antes de publicarlos, la página tiene que pedirse como
+`https://biplot.cl/oficina/` y el CRM tiene que responder con avances: en un navegador sin interfaz se logra con el
+protocolo de DevTools (`Fetch.requestPaused`), sirviendo los archivos y un JSON de prueba con su permiso de CORS.
 
 ## Accesibilidad
 
@@ -593,16 +600,47 @@ ffmpeg -ss 4.3 -i visita-plotty-16x9.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 a
 
 ## Conexión con el CRM
 
-La oficina queda lista para conectarse al CRM de BiPlot sin cambiar su código:
+La oficina ya está conectada al CRM de BiPlot: la sala de cada cliente muestra lo que los socios liberaron en el CRM
+(«Avances para el cliente») y nada más. Lo demás sigue saliendo de `datos.js`. El código está en `crm.js` (la pregunta y
+la revisión de lo que llega) y en `oficina.js` («Los avances del CRM»); sus estilos, en `oficina.css` (`.avance-…` y
+`.equipo-avance`).
 
-1. **Un solo contrato de datos.** Todo lo que muestra la oficina sale de `window.OFICINA_DATOS` (`datos.js`). El CRM
-   exportaría el mismo objeto como `oficina.json`, sólo con campos públicos, y la oficina lo leería con un `fetch`.
-2. **Proyectos = locales.** Cada proyecto con la marca "mostrar en la oficina" aporta nombre, rubro (`calle`), fase,
-   permiso (con nombre, sólo el rubro o sólo en El Archivo), plantilla, esencia, resumen, puntos, enlaces y sus versiones
-   liberadas (videos y demos con datos ilustrativos) como `media`. La fase del CRM cambia sola cómo se ve el local.
-3. **Equipo = roles.** Cada integrante corresponde a un rol del motor; el CRM arma el campo `equipo` de cada sala y las
-   líneas "Ahora: …" de cada ficha. Nunca tareas, notas, horas ni costos.
-4. **Plotty = entrada al CRM.** Las tres respuestas de Plotty son las de la calificación (E0): hoy viajan en el mensaje
-   de WhatsApp; con el CRM, entrarían como solicitud.
-5. **Sin datos de personas.** Ni en el JSON público ni en la oficina: sólo el nombre del proyecto y del cliente, con su
-   autorización.
+- **Qué lee.** Antes de dibujar, `crm.js` pide `https://biplot-crm.vercel.app/api/publico/oficina` (la constante
+  `CRM_OFICINA`, la única que hay que cambiar cuando el CRM pase a `https://crm.biplot.cl`). El CRM devuelve una sala por
+  proyecto que el cliente autorizó publicar: `sala` (el `id` del proyecto en `datos.js`), `etapa`, `integrante`,
+  `placa`, `fase`, `porcentaje`, `equipo` (el `id` de cada integrante del motor y su `linea`) y `modulos` (los liberados
+  de Grillo y Bucle: `titulo`, `texto` e `imagen`). Con `porcentaje: null` el proyecto todavía no usa avances y su sala
+  sigue como siempre, con lo de `datos.js`.
+- **Qué cambia en una sala con avances.** Su proyecto recibe `avances` (lo que llegó, revisado), `fase` (la del CRM:
+  manda cómo se ve su local; sin fase pendiente, todo está entregado y queda en E9) y `equipo` (el del CRM). En la sala:
+  - La tarjeta del rincón de BiPlot trae sólo lo del CRM: la etapa en su etiqueta («En construcción»), «Tu avance» (una
+    barra discreta con el porcentaje y la placa de quien lo lleva: «E5 · Grillo y Bucle»), «Lo que construimos» (los
+    módulos liberados, cada uno con su imagen del CRM, que se abre en grande con su forma, o sólo su texto) y «Tu
+    equipo» (cada integrante con su línea: «Ahora: Lupe terminó tu diagnóstico»), y como siempre «Pasar a BiPlot HQ»,
+    «Comparte esta sala» y «Agenda tu diagnóstico». No van los pines, el video, lo que resolvimos, los enlaces ni los
+    resultados de `datos.js`.
+  - Quien está en el rincón de BiPlot dice su línea del CRM («Ahora: Faro va a poner en marcha tu sistema»); si no es
+    del equipo de la sala, no habla.
+  - Las pantallas fijas del proyecto (las de sus pines y la portada de su video) no aparecen: las tarjetas de la sala se
+    abren sin ellas y en el dibujo quedan apagadas.
+  - Lo de la empresa no cambia: su dibujo, su gente, sus zonas y sus textos, su barra y su recorrido.
+  - Una sala sin `salaPropia` muestra lo mismo en su panel, sin sus puntos.
+- **Fuera de la sala.** Sólo cambian la fase de su local y su equipo (en «Quién trabajó aquí» y en el «Trabajó en» de
+  cada ficha). Lo demás de la calle (la vista previa de cada local, el menú y el directorio), El Archivo y BiPlot.TV
+  siguen con lo de `datos.js`.
+- **Si el CRM no responde.** Se le espera a lo más 3 segundos (`PLAZO`); mientras tanto la escena, la bienvenida, el
+  menú y los controles no se ven, como antes de dibujar. Si falla, no responde a tiempo o algo viene raro (un porcentaje
+  que no es un número, una fase que no existe, un integrante desconocido, una imagen que no es del CRM, un texto
+  demasiado largo), la oficina sigue con lo de `datos.js`: esa sala, o ese dato, queda como siempre y sin errores. Lo que
+  llega después del plazo no se usa. Si el CRM retira un módulo, su imagen deja de cargar y queda sólo su texto.
+- **Sólo desde biplot.cl.** El CRM sólo le responde a `https://biplot.cl` y a `https://www.biplot.cl` (`ORIGENES`, los
+  mismos de su `LEADS_ORIGINS`). Desde un archivo, una vista previa de Vercel o las pruebas, la oficina no le pregunta y
+  arranca al tiro con lo de `datos.js` (por eso `probar-oficina.mjs` sigue igual).
+- **Seguridad.** Lo que viene del CRM nunca se escribe como HTML: va como texto (`textContent`) o como atributo. Las
+  imágenes se piden siempre al mismo CRM de `CRM_OFICINA`: de la URL que manda el CRM sólo se usa el id del módulo.
+- **Sin datos de personas ni cifras de clientes.** El CRM sólo publica lo liberado de los proyectos autorizados (nunca
+  montos, contactos, notas, fechas ni lo que no se ha liberado) y la oficina no muestra nada más. Ojo: lo liberado
+  (también las imágenes de los módulos) queda a la vista de cualquiera en biplot.cl, así que conviene que no traiga datos
+  reales del cliente.
+- **Pendiente: Plotty como entrada al CRM.** Las tres respuestas de Plotty son las de la calificación (E0): hoy viajan
+  en el mensaje de WhatsApp; con el CRM, entrarían como solicitud.
