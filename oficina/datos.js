@@ -2,7 +2,8 @@
  * Oficina BiPlot · datos
  * El equipo, las fases del motor, las salas de la oficina, los proyectos y el barrio, la vitrina y las preguntas de Plotty.
  * Es lo único que hay que tocar para cambiar textos, enlaces o quién trabajó en qué.
- * A futuro lo genera el CRM de BiPlot (ver README.md, "Conexión con el CRM"): mismo formato.
+ * El CRM de BiPlot no lo reemplaza: antes de dibujar, crm.js le suma lo que liberaron los socios para cada sala (su fase,
+ * su equipo y sus avances; ver README.md, "Conexión con el CRM").
  * Reglas: sólo datos públicos y sin cifras de clientes. Los textos hablan de integrantes, todos con placa y con el mismo trato.
  */
 (function () {

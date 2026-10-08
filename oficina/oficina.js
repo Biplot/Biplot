@@ -4,8 +4,9 @@
  * paneles, la oficina que se abre al entrar, la vista previa de cada local y la sala de cada empresa (salas.js, se carga
  * con el primer local), El Archivo, el chat de Plotty y los enlaces directos.
  * Todo lo que se puede hacer con el mouse en la escena también se puede hacer desde el menú con teclado.
+ * Arranca cuando crm.js trajo lo que liberaron los socios para cada sala (o al tiro, con lo de datos.js, si no hay CRM).
  */
-(function () {
+(window.OficinaCRM ? window.OficinaCRM.listo : function (arrancar) { arrancar(); })(function () {
   'use strict';
 
   var D = window.OFICINA_DATOS, E = window.Elenco;
@@ -531,6 +532,8 @@
     if (ru) { e.preventDefault(); verRubro(ru.getAttribute('data-rubro'), true); return; }
     var pi = e.target.closest('[data-pin]');
     if (pi) { elegirPin(+pi.getAttribute('data-pin'), false); return; }
+    var mo = e.target.closest('[data-modulo]');
+    if (mo && enSala && PROYECTOS[enSala] && PROYECTOS[enSala].avances) { elegirModulo(panelCuerpo, PROYECTOS[enSala], +mo.getAttribute('data-modulo')); return; }
     var cp = e.target.closest('.copiar'); if (cp) { copiar(cp); return; }
     var co = e.target.closest('.compartir'); if (co) { compartir(co); return; }
     var go = e.target.closest('[data-golpe]');
@@ -554,8 +557,8 @@
     var interno = /^(\.\.\/|casos\/)/.test(url);
     return '<a class="bp-btn" href="' + esc(url) + '"' + (interno ? '' : ' target="_blank" rel="noopener"') + '>' + esc(t) + (interno ? '' : '<span class="ico" aria-hidden="true">' + icono('afuera') + '</span><span class="sr">(se abre en otra pestaña)</span>') + '</a>';
   }
-  function chipsEquipo(ids) {
-    return '<ul class="equipo">' + ids.map(function (id) {
+  function chipsEquipo(ids, clase) {
+    return '<ul class="equipo' + (clase ? ' ' + clase : '') + '">' + ids.map(function (id) {
       var p = PERSONAL[id];
       return '<li><a href="#" data-abrir="actor:' + id + '">' + avatar(id) + '<span><b>' + esc(p.nombre) + '</b>' + esc(p.rol) + '</span></a></li>';
     }).join('') + '</ul>';
@@ -908,7 +911,17 @@
   function conLocales(fn) { cargar('locales.js', 'Locales', fn || function () {}); }
   function conSalas(fn) { if (window.Salas) fn(); else conLocales(function () { cargar('salas.js', 'Salas', fn); }); }
   function urlSala(id) { return 'https://biplot.cl/oficina/' + id + '/'; }
+  // El panel de una sala sin salaPropia; con avances del CRM, sólo lo que liberaron los socios (lo llena llenarAvances)
+  function ponerPanelSala(pr) {
+    panelCuerpo.innerHTML = htmlSala(pr);
+    if (pr.avances) { llenarAvances(panelCuerpo, pr); elegirModulo(panelCuerpo, pr, 0); }
+  }
   function htmlSala(pr) {
+    if (pr.avances) {
+      return '<div class="sala-cab" style="--acento:' + esc(pr.acento) + '"><p class="bp-etiqueta">' + esc(pr.rubro) + '</p>' +
+        '<h2 id="panel-titulo" tabindex="-1">' + esc(pr.nombre) + '</h2><p class="sala-cliente">' + esc(pr.cliente) + '</p><span class="chip" data-crm="etapa"></span></div>' +
+        '<p class="esencia">' + esc(pr.esencia) + '</p>' + htmlAvances(pr, 'h3', 'sala-bloque') + htmlComparte(pr, 'h3', 'sala-bloque');
+    }
     var pines = pr.pines || [], conImg = pines.some(function (p) { return p[3]; });
     return '<div class="sala-cab" style="--acento:' + esc(pr.acento) + '"><p class="bp-etiqueta">' + esc(pr.rubro) + '</p>' +
       '<h2 id="panel-titulo" tabindex="-1">' + esc(pr.nombre) + '</h2><p class="sala-cliente">' + esc(pr.cliente) + '</p><span class="chip">' + esc(pr.corto || pr.estado) + '</span></div>' +
@@ -925,7 +938,11 @@
       }).join('') + '</section>' : '') +
       '<section class="sala-bloque"><h3>El equipo que lo hizo</h3>' + chipsEquipo(pr.equipo) + '</section>' +
       '<section class="sala-bloque"><h3>Resultados</h3><ol class="medicion"><li><b>Día 30</b><span>Pendiente</span></li><li><b>Día 60</b><span>Pendiente</span></li><li><b>Día 90</b><span>Pendiente</span></li></ol><p class="nota">' + esc(pr.medicion || '') + '</p></section>' +
-      '<section class="sala-bloque sala-comparte"><h3>Comparte esta sala</h3><div class="enlace-copia"><code>' + esc(urlSala(pr.id).replace(/^https:\/\/|\/$/g, '')) + '</code><button type="button" class="copiar" data-url="' + esc(urlSala(pr.id)) + '">Copiar</button></div>' +
+      htmlComparte(pr, 'h3', 'sala-bloque');
+  }
+  // El final del panel de una sala y de la tarjeta de BiPlot: el enlace para compartirla y «Agenda tu diagnóstico»
+  function htmlComparte(pr, h, clase) {
+    return '<section class="' + clase + ' sala-comparte"><' + h + '>Comparte esta sala</' + h + '><div class="enlace-copia"><code>' + esc(urlSala(pr.id).replace(/^https:\/\/|\/$/g, '')) + '</code><button type="button" class="copiar" data-url="' + esc(urlSala(pr.id)) + '">Copiar</button></div>' +
       (navigator.share ? '<button type="button" class="bp-btn compartir" data-url="' + esc(urlSala(pr.id)) + '"><span class="ico" aria-hidden="true">' + icono('compartir') + '</span>Compartir</button>' : '') +
       '<p class="nota">Abre la oficina directo en esta sala, y al pegarlo en un chat se ve su imagen.</p></section>' +
       '<div class="sala-final"><p>¿Tu negocio se parece a este?</p><div class="acciones"><a class="bp-cta" href="' + whatsapp('Hola BiPlot, vi la sala de ' + pr.nombre + ' en la oficina y quiero agendar un diagnóstico.') + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>' + botonChat() + '</div></div>';
@@ -965,7 +982,7 @@
       $('#panel-cerrar').setAttribute('aria-label', 'Cerrar');
     } else {
       // El panel con todo lo de la empresa
-      panelCuerpo.innerHTML = htmlSala(pr);
+      ponerPanelSala(pr);
       panel.hidden = false; panel.classList.add('panel-sala'); panel.classList.remove('panel-local'); document.body.classList.add('panel-abierto');
       $('#panel-nombre').textContent = tituloPanel({ tipo: 'sala', id: id });
       $('#panel-cerrar').setAttribute('aria-label', 'Volver a la calle');
@@ -998,17 +1015,21 @@
       // En una sala propia, lo que se toca brilla (un halo dorado difuso bajo el contorno punteado)
       (conPropia ? '<defs><filter id="sala-brillo" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="6"/></filter></defs>' : '') +
       '<g id="sala-dibujo" class="sala-dibujo' + (reducido ? ' quieto' : '') + '"></g></svg>';
-    // La sala en capas, con quienes caminan entre los muebles (quietos con la animación pausada)
-    vivaSala = window.Escena.maqueta(salaCaja.querySelector('#sala-dibujo'), S, { pintar: conMedios });
+    // La sala en capas, con quienes caminan entre los muebles (quietos con la animación pausada). Con avances del CRM,
+    // sus pantallas fijas quedan apagadas
+    vivaSala = window.Escena.maqueta(salaCaja.querySelector('#sala-dibujo'), S, { pintar: pr.avances ? sinPantallasFijas(pr) : conMedios });
     vivaSala.mover(!quieta() && !reducido);
     if (conPropia) montarPropia(id, S);
     else if (esPropia(id)) {
       // Una sala propia cuyo dibujo todavía no trae zonas (salas.js sin regenerar) se ve como las demás, con su panel
       document.body.classList.remove('en-sala-propia');
-      panelCuerpo.innerHTML = htmlSala(pr); panel.hidden = false; panel.classList.add('panel-sala'); document.body.classList.add('panel-abierto');
+      ponerPanelSala(pr); panel.hidden = false; panel.classList.add('panel-sala'); document.body.classList.add('panel-abierto');
       $('#panel-nombre').textContent = tituloPanel({ tipo: 'sala', id: id }); $('#panel-cerrar').setAttribute('aria-label', 'Volver a la calle');
     }
+    // (con avances del CRM no van sus puntos fijos, ni la ayuda que los nombra: los módulos son los que liberaron los socios)
+    document.body.classList.toggle('sala-avances', !!pr.avances);
     salaCaja.querySelectorAll('.pin').forEach(function (g) {
+      if (pr.avances) { g.remove(); return; }
       var p = (pr.pines || [])[g.getAttribute('data-pin') - 1];
       g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
       g.setAttribute('aria-label', p ? g.getAttribute('data-pin') + '. ' + p[0] + ': ' + p[1] : 'Punto ' + g.getAttribute('data-pin'));
@@ -1024,7 +1045,7 @@
   }
   // Un punto de la sala: la pantalla real de ese módulo (o, si no hay, el rincón de la sala donde está)
   function elegirPin(n, mover, inicial) {
-    var pr = PROYECTOS[enSala], p = pr && (pr.pines || [])[n - 1]; if (!p) return;
+    var pr = PROYECTOS[enSala], p = pr && !pr.avances && (pr.pines || [])[n - 1]; if (!p) return;
     pinActual = n;
     var visor = panelCuerpo.querySelector('.visor'); if (!visor) return;
     var S = window.Salas && window.Salas.salas[enSala], pin = S && S.pines.filter(function (x) { return x.n === n; })[0];
@@ -1048,7 +1069,7 @@
     if (vivaSala) { vivaSala.destruir(); vivaSala = null; }
     cerrarLocal();
     salaEl.classList.remove('visible'); salaEl.hidden = true; salaCaja.innerHTML = '';
-    document.body.classList.remove('en-sala', 'en-sala-propia');
+    document.body.classList.remove('en-sala', 'en-sala-propia', 'sala-avances');
     detenerMedios();
     panel.hidden = true; panel.classList.remove('panel-sala'); abierto = null; document.body.classList.remove('panel-abierto');
     $('#panel-cerrar').setAttribute('aria-label', 'Cerrar');
@@ -1117,7 +1138,14 @@
     pintarColores(salaEl, PP.colores); pintarColores(frenteEl, PP.colores); pintarColores(barraSala, PP.coloresBarra);
     [['--p-serif', f.familia], ['--p-peso', f.peso], ['--p-espacio', f.espacio], ['--p-caja', f.caja], ['--p-titulo-tam', f.titulo], ['--p-sub-letra', f.sub]
     ].forEach(function (t) { salaEl.style.setProperty(t[0], t[1] || ''); frenteEl.style.setProperty(t[0], t[1] || ''); });
-    (S.zonas || []).forEach(function (z) { propia.zonas[z.id] = { z: z, pts: puntosDe(z.silueta), d: (PP.zonas || {})[z.id] }; });
+    // Con avances del CRM, las pantallas fijas del proyecto no aparecen en su sala: ni en sus tarjetas ni de frente
+    var fuera = pr.avances ? pantallasFijas(pr) : null;
+    (S.zonas || []).forEach(function (z) {
+      var d = (PP.zonas || {})[z.id];
+      if (fuera && z.frente && fuera[claveImagen(z.frente.img)]) z = copia(z, { frente: null });
+      if (fuera && d && fuera[claveImagen(d.imagen)]) d = copia(d, { imagen: null });
+      propia.zonas[z.id] = { z: z, pts: puntosDe(z.silueta), d: d };
+    });
     var h = '<g class="sala-resalte" aria-hidden="true"></g><g class="sala-anillo" aria-hidden="true"></g><g class="sala-toques">';
     Object.keys(PP.zonas || {}).forEach(function (zid) {
       var z = propia.zonas[zid], d = PP.zonas[zid]; if (!z) return;
@@ -1126,12 +1154,19 @@
     });
     (PP.burbujas || []).forEach(function (b) {
       var g = S.gente && S.gente[b.quien]; if (!g) return;
+      // Con avances, quien está en el rincón de BiPlot dice su línea del CRM (si no es del equipo de la sala, no habla)
+      if (b.biplot && pr.avances) { b = lineaDeBiplot(b, pr.avances); if (!b) return; }
       propia.hablan.push(b);
       var w = Math.max(26, g[2] * 0.46);
-      h += '<g class="quien-sala" data-quien="' + esc(b.quien) + '" role="button" tabindex="0" aria-label="' + esc(b.nombre + ' dice: «' + b.texto + '»') + '">' +
+      h += '<g class="quien-sala" data-quien="' + esc(b.quien) + '" role="button" tabindex="0" aria-label="' + esc(b.crm ? b.nombre : b.nombre + ' dice: «' + b.texto + '»') + '">' +
         '<rect x="' + (g[0] - w / 2) + '" y="' + (g[1] - g[2]) + '" width="' + w + '" height="' + (g[2] + 6) + '"/></g>';
     });
     svgS.insertAdjacentHTML('beforeend', h + '</g>');
+    // (lo que dice según el CRM se pone como texto, nunca como HTML)
+    propia.hablan.forEach(function (b) {
+      var q = b.crm && svgS.querySelector('.quien-sala[data-quien="' + b.quien + '"]');
+      if (q) q.setAttribute('aria-label', b.nombre + ' dice: «' + b.texto + '»');
+    });
     // La sala es una región que se recorre con teclado
     salaCaja.setAttribute('tabindex', '0'); salaCaja.setAttribute('role', 'region'); salaCaja.setAttribute('aria-roledescription', 'sala interactiva');
     salaCaja.setAttribute('aria-label', nombreSala(id) + '. Arrastra o usa las flechas para moverte, + y − para acercarte y 0 para ver toda la sala. Toca o elige lo que quieras conocer.');
@@ -1333,9 +1368,11 @@
       }
       callarSala(ya, true);
     }
-    var el = document.createElement('div');
+    var el = document.createElement('div'), dice = document.createElement('span');
     el.className = 'burbuja' + (b.biplot ? ' bp' : '') + (o.guia ? ' de-guia' : '') + (!b.rol && b.texto.length < 24 ? ' corta' : '');
-    el.innerHTML = (b.rol ? '<small>' + esc(b.rol) + '</small>' : '') + '<span>' + esc(b.texto) + '</span>';
+    // (como texto: lo que dice quien está en el rincón de BiPlot puede venir del CRM)
+    if (b.rol) { var rol = document.createElement('small'); rol.textContent = b.rol; el.appendChild(rol); }
+    dice.textContent = b.texto; el.appendChild(dice);
     capaSala.appendChild(el);
     var x = { quien: b.quien, texto: b.texto, el: el, sola: !!o.sola, fija: !!o.fija, foco: !!o.foco, hasta: o.fija || o.foco ? Infinity : performance.now() + (o.dura || 6000) };
     propia.burbujas.push(x);
@@ -1487,10 +1524,7 @@
       }).join('') + '</section>' : '') +
       '<section class="tarjeta-bloque"><h4>El equipo que lo hizo</h4>' + chipsEquipo(pr.equipo) + '</section>' +
       '<section class="tarjeta-bloque"><h4>Resultados</h4><ol class="medicion"><li><b>Día 30</b><span>Pendiente</span></li><li><b>Día 60</b><span>Pendiente</span></li><li><b>Día 90</b><span>Pendiente</span></li></ol><p class="nota">' + esc(pr.medicion || '') + '</p></section>' +
-      '<section class="tarjeta-bloque sala-comparte"><h4>Comparte esta sala</h4><div class="enlace-copia"><code>' + esc(urlSala(pr.id).replace(/^https:\/\/|\/$/g, '')) + '</code><button type="button" class="copiar" data-url="' + esc(urlSala(pr.id)) + '">Copiar</button></div>' +
-      (navigator.share ? '<button type="button" class="bp-btn compartir" data-url="' + esc(urlSala(pr.id)) + '"><span class="ico" aria-hidden="true">' + icono('compartir') + '</span>Compartir</button>' : '') +
-      '<p class="nota">Abre la oficina directo en esta sala, y al pegarlo en un chat se ve su imagen.</p></section>' +
-      '<div class="sala-final"><p>¿Tu negocio se parece a este?</p><div class="acciones"><a class="bp-cta" href="' + whatsapp('Hola BiPlot, vi la sala de ' + pr.nombre + ' en la oficina y quiero agendar un diagnóstico.') + '" target="_blank" rel="noopener">Agenda tu diagnóstico<span class="sr"> (se abre WhatsApp en otra pestaña)</span></a>' + botonChat() + '</div></div></div>';
+      htmlComparte(pr, 'h4', 'tarjeta-bloque') + '</div>';
   }
   // Una pantalla real de la tira de la tarjeta de BiPlot
   function elegirPantalla(i) {
@@ -1498,6 +1532,111 @@
     v.innerHTML = (p[3] ? botonFoto(MEDIOS + p[3] + '.webp', pr.nombre + ', ' + nombreModulo(p[0]) + ': ' + p[1], 'data-ver-pantalla="' + i + '"') : '') +
       '<div class="visor-txt"><span class="mod">' + esc(nombreModulo(p[0])) + '</span><b>' + esc(p[1]) + '</b><span>' + esc(p[2]) + '</span></div>';
     tarjeta.querySelectorAll('[data-pantalla]').forEach(function (b) { b.setAttribute('aria-pressed', +b.getAttribute('data-pantalla') === i ? 'true' : 'false'); });
+  }
+
+  // ── Los avances del CRM (crm.js): una sala cuyo proyecto trae `avances` muestra sólo lo que liberaron los socios ──
+  // En la tarjeta de BiPlot (y en el panel de una sala sin salaPropia): la etapa, la barra del avance con quién lo lleva,
+  // los módulos liberados (con su imagen del CRM o sólo su texto) y su equipo, cada uno con su línea («Ahora: …»). No
+  // van sus pines, su video, lo que resolvimos, sus enlaces ni sus resultados de datos.js; en la sala, sus pantallas
+  // fijas quedan apagadas y quien está en el rincón de BiPlot dice su línea. Lo que viene del CRM se pone como texto
+  // (textContent) o como atributo: nunca como HTML. Aquí sólo se arma el esqueleto, con lo de datos.js.
+  function htmlTarjetaAvances(pr) {
+    return CERRAR_T + '<div class="tarjeta-cuerpo"><p class="ceja">' + esc((pr.salaPropia && pr.salaPropia.cejaBiplot) || 'Hecho con BiPlot') + '</p>' +
+      '<h3 id="sala-tarjeta-t" tabindex="-1">' + esc(pr.nombre) + ' <span class="chip" data-crm="etapa"></span></h3>' +
+      '<p class="tarjeta-sub">' + esc(pr.cliente) + ' · ' + esc(pr.rubro) + '</p>' +
+      '<div class="tarjeta-botones"><button type="button" class="bp-btn primario" data-hq="1"><span class="ico" aria-hidden="true">' + icono('entrar') + '</span>Pasar a BiPlot HQ</button></div>' +
+      htmlAvances(pr, 'h4', 'tarjeta-bloque') + htmlComparte(pr, 'h4', 'tarjeta-bloque') + '</div>';
+  }
+  function htmlAvances(pr, h, clase) {
+    var av = pr.avances, t = function (x) { return '<' + h + '>' + x + '</' + h + '>'; };
+    return '<section class="' + clase + ' avance">' + t('Tu avance') +
+        '<div class="avance-fila"><span class="avance-barra" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="' + esc('Avance de ' + pr.nombre) + '"><i></i></span><b class="avance-pct"></b></div>' +
+        '<p class="avance-quien"><span class="cod"></span><span></span></p></section>' +
+      '<section class="' + clase + ' modulos-crm">' + t('Lo que construimos') + (av.modulos.length ?
+        '<div class="visor" aria-live="polite"></div><div class="tira-bp" role="group" aria-label="' + esc('Módulos de ' + pr.nombre) + '"></div>' :
+        '<p class="nota">Aquí van a aparecer los módulos de ' + esc(pr.nombre) + ' a medida que los entreguemos.</p>') + '</section>' +
+      (av.equipo.length ? '<section class="' + clase + '">' + t('Tu equipo') + chipsEquipo(av.equipo.map(function (m) { return m.id; }), 'equipo-avance') + '</section>' : '');
+  }
+  // Lo que viene del CRM, como texto: la etapa, el porcentaje, quién lo lleva, los módulos y la línea de cada integrante
+  function llenarAvances(caja, pr) {
+    var av = pr.avances, barra = caja.querySelector('.avance-barra'), quien = caja.querySelector('.avance-quien'), tira = caja.querySelector('.modulos-crm .tira-bp');
+    caja.querySelectorAll('[data-crm="etapa"]').forEach(function (c) { c.textContent = av.etapa; });
+    barra.setAttribute('aria-valuenow', av.porcentaje); barra.firstChild.style.width = av.porcentaje + '%';
+    caja.querySelector('.avance-pct').textContent = av.porcentaje + '\u00a0%';
+    if (av.placa) { quien.firstChild.textContent = av.placa; quien.lastChild.textContent = av.integrante; } else quien.remove();
+    if (tira) av.modulos.forEach(function (m, i) {
+      var b = document.createElement('button'), s = document.createElement('span');
+      b.type = 'button'; b.setAttribute('data-modulo', i); b.setAttribute('aria-pressed', 'false');
+      if (m.imagen) b.appendChild(imagenCrm(m.imagen, '', true));
+      s.textContent = m.titulo; b.appendChild(s);
+      tira.appendChild(b);
+    });
+    caja.querySelectorAll('.equipo-avance > li').forEach(function (li, i) {
+      var l = document.createElement('p'); l.className = 'ahora-linea'; l.textContent = 'Ahora: ' + av.equipo[i].linea; li.appendChild(l);
+    });
+  }
+  // Una imagen de un módulo (la URL ya viene revisada por crm.js); si el CRM ya no la da, queda sólo su texto
+  function imagenCrm(src, alt, mini) {
+    var img = document.createElement('img');
+    img.className = 'crm'; img.alt = alt; img.width = mini ? 160 : 1280; img.height = mini ? 90 : 720;
+    if (mini) img.loading = 'lazy';
+    img.onerror = function () { var b = img.closest('.ver-foto'); (b || img).remove(); };
+    img.src = src;
+    return img;
+  }
+  // Un módulo en el visor: su imagen (en la tarjeta, se toca para verla en grande) y su texto
+  function elegirModulo(caja, pr, i) {
+    var m = pr.avances.modulos[i], v = caja.querySelector('.modulos-crm .visor'); if (!m || !v) return;
+    v.textContent = '';
+    if (m.imagen && caja === tarjeta) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'ver-foto'; b.setAttribute('data-ver-modulo', i); b.setAttribute('aria-label', 'Ver en grande: ' + pr.nombre + ', ' + m.titulo);
+      b.appendChild(imagenCrm(m.imagen, '')); b.insertAdjacentHTML('beforeend', ICONO_VER);
+      v.appendChild(b);
+    } else if (m.imagen) v.appendChild(imagenCrm(m.imagen, pr.nombre + ': ' + m.titulo));
+    var txt = document.createElement('div'), titulo = document.createElement('b');
+    txt.className = 'visor-txt'; titulo.textContent = m.titulo; txt.appendChild(titulo);
+    if (m.texto) { var s = document.createElement('span'); s.textContent = m.texto; txt.appendChild(s); }
+    v.appendChild(txt);
+    caja.querySelectorAll('[data-modulo]').forEach(function (x) { x.setAttribute('aria-pressed', +x.getAttribute('data-modulo') === i ? 'true' : 'false'); });
+  }
+  // La imagen de un módulo en grande, de frente (con su forma: una pantalla de celular queda angosta)
+  function verModulo(i) {
+    var pr = propia && propia.pr, m = pr && pr.avances && pr.avances.modulos[i]; if (!m || !m.imagen || !propia.tarjeta) return;
+    var vista = tarjeta.querySelector('.modulos-crm .visor img'), an = (vista && vista.naturalWidth) || 1280, al = (vista && vista.naturalHeight) || 720;
+    abrirFrente(propia.tarjeta, { frente: { svg: '', ancho: an, alto: al }, datos: {}, bp: true, llenar: function (f) {
+      var marco = f.querySelector('.frente-marco'), foto = imagenCrm(m.imagen, pr.nombre + ': ' + m.titulo), h = f.querySelector('#sala-frente-t');
+      foto.width = an; foto.height = al; marco.textContent = ''; marco.appendChild(foto);
+      f.querySelector('.frente-cuerpo .ceja').textContent = pr.nombre + ' · Lo que construimos';
+      h.textContent = m.titulo;
+      if (m.texto) { var p = document.createElement('p'); p.textContent = m.texto; h.parentNode.insertBefore(p, h.nextSibling); }
+    } });
+  }
+  // Quien está en el rincón de BiPlot dice su línea del CRM, si es del equipo de la sala
+  function lineaDeBiplot(b, av) {
+    var m = av.equipo.filter(function (x) { return x.id === b.quien; })[0];
+    return m ? { quien: b.quien, nombre: b.nombre, rol: b.rol, texto: 'Ahora: ' + m.linea, biplot: true, crm: true } : null;
+  }
+  // Las pantallas fijas de un proyecto: las de sus pines y la portada de su video, por su archivo (sin «recorte-»)
+  function claveImagen(src) { return src ? String(src).split('/').pop().replace(/\.\w+$/, '').replace(/^recorte-/, '') : ''; }
+  function pantallasFijas(pr) {
+    var fuera = {};
+    (pr.pines || []).forEach(function (p) { if (p[3]) fuera[claveImagen(p[3])] = true; });
+    if (pr.media && pr.media.poster) fuera[claveImagen(pr.media.poster)] = true;
+    return fuera;
+  }
+  // El dibujo de la sala con esas pantallas apagadas (queda el vidrio oscuro de cada una)
+  function sinPantallasFijas(pr) {
+    var fuera = pantallasFijas(pr);
+    return function (s) {
+      return conMedios(s.replace(/<image\b[^>]*?\bhref="§M§([^"]*)"[^>]*\/>/g, function (todo, src) { return fuera[claveImagen(src)] ? '' : todo; }));
+    };
+  }
+  function copia(o, cambios) {
+    var c = {}, k;
+    for (k in o) if (Object.prototype.hasOwnProperty.call(o, k)) c[k] = o[k];
+    for (k in cambios) c[k] = cambios[k];
+    return c;
   }
   function abrirTarjeta(id, o) {
     o = o || {};
@@ -1512,15 +1651,17 @@
     else { propia.origen = o.desde || document.activeElement; propia.volver = { x: c0.x, y: c0.y, z: c0.z }; propia.aMano = false; }
     propia.tarjeta = id;
     callarSolas(); anillo(null);
-    var hoja = hojaSala(), d = z.d;
+    var hoja = hojaSala(), d = z.d, avances = d.biplot && propia.pr.avances;
     tarjeta.className = 'sala-tarjeta ' + (d.biplot ? 'bp' : 'empresa') + (hoja ? ' hoja' : '');
-    tarjeta.innerHTML = d.biplot ? htmlTarjetaBiplot(propia.pr) : htmlTarjetaZona(d);
+    // (con avances del CRM, la tarjeta de BiPlot trae sólo lo que liberaron los socios)
+    tarjeta.innerHTML = avances ? htmlTarjetaAvances(propia.pr) : d.biplot ? htmlTarjetaBiplot(propia.pr) : htmlTarjetaZona(d);
+    if (avances) { llenarAvances(tarjeta, propia.pr); elegirModulo(tarjeta, propia.pr, 0); }
     if (d.fichero) iniciarArchivo(tarjeta);
     tarjeta.hidden = false;
     document.body.classList.toggle('sala-hoja', hoja);
     marcarZona(id, true);
     resaltarZona(id);
-    if (d.biplot) { elegirPantalla(0); activarMedios(tarjeta); }
+    if (d.biplot && !avances) { elegirPantalla(0); activarMedios(tarjeta); }
     else if (d.video) activarMedios(tarjeta);
     // La cámara deja la zona al lado de la tarjeta (en celular, arriba de la hoja); la tarjeta aparece al llegar
     var l = libreSala(), t = tamSala();
@@ -1559,6 +1700,8 @@
   function accionSala(b, e) {
     if (b.hasAttribute('data-recorrer')) { e.preventDefault(); iniciarRecorrido(0); return; }
     if (b.hasAttribute('data-pantalla')) { elegirPantalla(+b.getAttribute('data-pantalla')); return; }
+    if (b.hasAttribute('data-modulo')) { elegirModulo(tarjeta, propia.pr, +b.getAttribute('data-modulo')); return; }
+    if (b.hasAttribute('data-ver-modulo')) { e.preventDefault(); verModulo(+b.getAttribute('data-ver-modulo')); return; }
     if (b.hasAttribute('data-ver-foto')) { e.preventDefault(); verFoto(propia.frente || propia.tarjeta); return; }
     if (b.hasAttribute('data-ver-pantalla')) { e.preventDefault(); verPantalla(+b.getAttribute('data-ver-pantalla')); return; }
     if (b.hasAttribute('data-hq')) { e.preventDefault(); entrarOficina({ boton: $('#recorrer-toggle') }); return; }
@@ -1629,6 +1772,8 @@
     callarSolas(); anillo(null);
     if (propia.giro) { propia.giro.detener(); propia.giro = null; }
     frenteEl.innerHTML = htmlFrente(fr, o.datos || z.d || {}, o);
+    // (lo que viene del CRM, como la imagen de un módulo y su texto, se pone después, como elementos y texto)
+    if (o.llenar) o.llenar(frenteEl);
     if (fr.modelo && window.Vitrina3D) {
       propia.giro = window.Vitrina3D.montar(frenteEl.querySelector('.v3d'), fr.modelo, { quieta: reducido || quieta(), medios: conMedios });
       if (propia.giro.pausada()) marcarGiro(true);
@@ -2467,4 +2612,4 @@
   setTimeout(function () { desdeHash(); document.documentElement.classList.add('navegado'); }, 60);
   window.addEventListener('popstate', desdeHash);
   window.addEventListener('hashchange', desdeHash);
-})();
+});
