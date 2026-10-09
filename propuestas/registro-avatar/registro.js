@@ -117,9 +117,12 @@ async function montar(nombre) {
   $('#placa').textContent = info.placa;
   $('#frase').textContent = info.frase;
   for (const b of document.querySelectorAll('[data-avatar]')) b.setAttribute('aria-pressed', String(b.dataset.avatar === datos));
-  const url = new URL(location.href);
-  if (datos === 'plotty') url.searchParams.delete('avatar'); else url.searchParams.set('avatar', datos);
-  history.replaceState(null, '', url);
+  try {
+    const url = new URL(location.href);
+    if (datos === 'plotty') url.searchParams.delete('avatar'); else url.searchParams.set('avatar', datos);
+    url.hash = '';
+    history.replaceState(null, '', url);
+  } catch { /* en un marco aislado la dirección no se puede cambiar: no importa */ }
   if (estado === 'error' || estado === 'success') estado = base();
   aplicar();
 }
@@ -320,4 +323,5 @@ $('#otra-vez').addEventListener('click', () => {
 
 sinMovimiento.addEventListener?.('change', () => { if (sinMovimiento.matches) inclina.style.transform = ''; else apuntar(); });
 
-montar(new URLSearchParams(location.search).get('avatar'));
+// ?avatar=atlas o #atlas (donde la dirección no lleva parámetros)
+montar(new URLSearchParams(location.search).get('avatar') ?? location.hash.slice(1));

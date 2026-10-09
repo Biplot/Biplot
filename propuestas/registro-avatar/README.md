@@ -6,7 +6,7 @@ y celebra en verde cuando la cuenta queda creada. Sigue la guía «Avatar intera
 (avatares hechos en Avatar Lab, avatars.bible-strong.app), adaptada al sitio: sin React ni build, con
 `@bible-strong/avatar-web`, el paquete para JavaScript sin React.
 
-- Dirección: `/propuestas/registro-avatar/` (no indexada). Es una propuesta: el envío se simula con 1 s de espera, no hay
+- Dirección: `/propuestas/registro-avatar/` (no indexada); con Atlas, `?avatar=atlas` o `#atlas`. Es una propuesta: el envío se simula con 1 s de espera, no hay
   backend y no se guarda nada.
 - Para probarla en local: `npx http-server . -p 8080` en la raíz del repo y abrir
   http://localhost:8080/propuestas/registro-avatar/ (como archivo suelto no carga: el avatar se pide con `fetch`).
