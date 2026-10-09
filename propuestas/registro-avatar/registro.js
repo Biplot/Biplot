@@ -1,45 +1,41 @@
-// Registro con avatar (propuesta). El avatar es Plotty o Atlas, hechos para Avatar Lab (avatars.bible-strong.app) y
-// pintados con @bible-strong/avatar-web (avatar-web.js, empaquetado sin cambios). Sólo se usa su API documentada:
-// createAvatar(destino, { definition, size, ariaLabel, onAnimationEnd, onError }) y play(clave) / destroy().
+// Registro con avatar (propuesta). El avatar es Plotty o Atlas en 3D, con sus colores reales y calcados de sus dibujos
+// de la oficina (avatar3d.js, con Three.js). Se maneja igual que un avatar de Avatar Lab: crearAvatar3D(destino,
+// { personaje, ariaLabel, onAnimationEnd }) y play(clave) / destroy(); además, orientar(x, y) lo gira hacia el cursor.
 //
 // Estados: idle (en reposo; con el cursor lejos mira hacia él con look-left/right/up/down), typing (mientras escribes;
 // vuelve a idle tras 1,2 s sin teclear), error (un campo o el envío no validan), success (registro listo), shy (en las
 // contraseñas hace como que no mira) y thinking (el segundo que tarda el envío simulado). error y success son «once»:
 // al terminar quedan quietos, así que onAnimationEnd los devuelve al estado que corresponda.
-import { createAvatar } from './avatar-web.js';
+import { crearAvatar3D } from './avatar3d.js';
 
 const AVATARES = {
   plotty: {
-    archivo: 'plotty.avatar.json',
     etiqueta: 'Plotty, la recepción de BiPlot HQ, te mira mientras te registras',
     placa: 'E0 · Recepción',
     frase: '«Tres preguntas. Prometo que no es un formulario.»'
   },
   atlas: {
-    archivo: 'atlas.avatar.json',
     etiqueta: 'Atlas, la mascota de The Architect, te mira mientras te registras',
     placa: '360° · Sala de planos',
     frase: '«Desde aquí arriba se ve todo.»'
   }
 };
-const NECESARIAS = ['idle', 'typing', 'error', 'success'];
 const MIRADAS = { left: 'look-left', right: 'look-right', up: 'look-up', down: 'look-down' };
 const PAUSA_TECLEO = 1200;      // ms sin teclear para volver a idle
 const ENVIO = 1000;             // ms del envío simulado
-const INCLINACION = 12;         // grados, como máximo
 
 const raiz = document.documentElement;
 const $ = (s) => document.querySelector(s);
 const montaje = $('#avatar'), inclina = $('#inclina'), rebota = $('#rebota');
-const form = $('#formulario'), boton = $('#enviar'), aviso = $('#aviso');
+const form = $('#formulario'), boton = $('#enviar');
 const sinMovimiento = matchMedia('(prefers-reduced-motion: reduce)');
 const celular = matchMedia('(max-width: 900px)');
 const conCursor = matchMedia('(hover: hover) and (pointer: fine)');
 
 // ── El avatar: cargar, revisar las animaciones y reproducir sólo cuando cambia el estado ──
-let avatar = null, definicion = null, cual = null, sonando = null;
+let avatar = null, cual = null, sonando = null;
 let estado = 'idle', zona = null, tecleo = null;
-const tiene = (clave) => Boolean(definicion?.animations?.[clave]);
+const tiene = (clave) => avatar?.tiene(clave) ?? false;
 const tieneMiradas = () => Object.values(MIRADAS).every(tiene);
 
 function sonar(clave, { otraVez = false } = {}) {
@@ -75,45 +71,22 @@ function alTerminar(clave) {
   if (clave === 'success' && estado === 'success') ir('idle');
 }
 
-let pedido = 0;
-async function montar(nombre) {
+function montar(nombre) {
   const datos = AVATARES[nombre] ? nombre : 'plotty';
-  const info = AVATARES[datos], este = ++pedido;
-  let def;
-  try {
-    const r = await fetch(info.archivo);
-    if (!r.ok) throw new Error(`${info.archivo}: ${r.status}`);
-    def = await r.json();
-  } catch (e) {
-    mostrarAviso(`No se pudo cargar el avatar (${e.message}). Abre la página desde un servidor, no como archivo.`);
-    return;
-  }
-  if (este !== pedido) return;          // se eligió otro mientras cargaba
-  const faltan = NECESARIAS.filter((k) => !def.animations?.[k]);
-  if (faltan.length) {
-    mostrarAviso(`Al .avatar.json de ${def.name ?? datos} le faltan las animaciones: ${faltan.join(', ')}.`);
-    console.error(`[registro] faltan animaciones en ${info.archivo}: ${faltan.join(', ')}`);
-  } else ocultarAviso();
+  const info = AVATARES[datos];
   avatar?.destroy();
-  avatar = null;
-  definicion = def;
   cual = datos;
   sonando = null;
-  try {
-    avatar = createAvatar(montaje, {
-      definition: def,
-      size: '100%',
-      ariaLabel: info.etiqueta,
-      onAnimationEnd: alTerminar,
-      onError: (e) => console.warn(`[registro] ${e.message}`)
-    });
-  } catch (e) {
-    mostrarAviso(`El .avatar.json de ${def.name ?? datos} no es válido: ${e.message}`);
-    return;
-  }
-  // La paleta sale del .avatar.json
-  raiz.style.setProperty('--cuerpo', def.colors.body);
-  raiz.style.setProperty('--ojos', def.colors.eyes);
+  avatar = crearAvatar3D(montaje, {
+    personaje: datos,
+    ariaLabel: info.etiqueta,
+    onAnimationEnd: alTerminar,
+    reducido: () => sinMovimiento.matches
+  });
+  avatar.orientar(pos.x, pos.y);
+  // La paleta sale de los colores del personaje
+  raiz.style.setProperty('--cuerpo', avatar.colores.cuerpo);
+  raiz.style.setProperty('--ojos', avatar.colores.ojos);
   $('#placa').textContent = info.placa;
   $('#frase').textContent = info.frase;
   for (const b of document.querySelectorAll('[data-avatar]')) b.setAttribute('aria-pressed', String(b.dataset.avatar === datos));
@@ -131,7 +104,7 @@ for (const b of document.querySelectorAll('[data-avatar]')) {
   b.addEventListener('click', () => { if (b.dataset.avatar !== cual) montar(b.dataset.avatar); });
 }
 
-// ── La inclinación hacia el cursor (o hacia el campo activo): un resorte en requestAnimationFrame ──
+// ── El giro hacia el cursor (o hacia el campo activo): un resorte en requestAnimationFrame que orienta al personaje ──
 const objetivo = { x: 0, y: 0 }, pos = { x: 0, y: 0 }, vel = { x: 0, y: 0 };
 let cuadro = null, ultimo = 0, cursor = null;
 const limitar = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -156,7 +129,7 @@ function apuntar() {
   else { objetivo.x = 0; objetivo.y = 0; arrancar(); }
 }
 function arrancar() {
-  if (sinMovimiento.matches) { inclina.style.transform = ''; return; }
+  if (sinMovimiento.matches) { avatar?.orientar(0, 0); return; }
   if (cuadro === null) { ultimo = performance.now(); cuadro = requestAnimationFrame(paso); }
 }
 function paso(ahora) {
@@ -167,7 +140,7 @@ function paso(ahora) {
     vel[e] = (vel[e] + (objetivo[e] - pos[e]) * 0.045) * 0.84;
     pos[e] += vel[e];
   }
-  inclina.style.transform = `rotateX(${(-pos.y * INCLINACION).toFixed(2)}deg) rotateY(${(pos.x * INCLINACION).toFixed(2)}deg)`;
+  avatar?.orientar(pos.x, pos.y);
   const quieto = Math.abs(objetivo.x - pos.x) + Math.abs(objetivo.y - pos.y) + Math.abs(vel.x) + Math.abs(vel.y) < 0.002;
   cuadro = quieto ? null : requestAnimationFrame(paso);
 }
@@ -228,8 +201,6 @@ function sacudir(input) {
   control.classList.add('sacude');
 }
 for (const c of document.querySelectorAll('.control')) c.addEventListener('animationend', () => c.classList.remove('sacude'));
-function mostrarAviso(texto) { aviso.textContent = texto; aviso.hidden = false; }
-function ocultarAviso() { aviso.hidden = true; aviso.textContent = ''; }
 
 // Escribir: typing (salvo en las contraseñas, donde sigue tímido) y, si el campo tenía error, se revisa de nuevo
 form.addEventListener('input', (ev) => {
@@ -321,7 +292,8 @@ $('#otra-vez').addEventListener('click', () => {
   campos.nombre.focus();
 });
 
-sinMovimiento.addEventListener?.('change', () => { if (sinMovimiento.matches) inclina.style.transform = ''; else apuntar(); });
+sinMovimiento.addEventListener?.('change', () => { if (sinMovimiento.matches) avatar?.orientar(0, 0); else apuntar(); });
 
-// ?avatar=atlas o #atlas (donde la dirección no lleva parámetros)
+// ?avatar=atlas o #atlas (donde la dirección no lleva parámetros), también si cambia con la página abierta
 montar(new URLSearchParams(location.search).get('avatar') ?? location.hash.slice(1));
+addEventListener('hashchange', () => { const h = location.hash.slice(1); if (AVATARES[h] && h !== cual) montar(h); });

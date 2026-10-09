@@ -4,20 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Crea tu cuenta · BiPlot HQ</title>
-<meta name="description" content="Propuesta: registro con Plotty (o Atlas) como protagonista, un avatar que te mira y reacciona a lo que haces.">
+<meta name="description" content="Propuesta: registro con Plotty (o Atlas) en 3D como protagonista, un avatar que te mira y reacciona a lo que haces.">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#F5F2EC">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='23' cy='11' r='2.6' fill='%2317C3B2'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Mulish:wght@400;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
-<link rel="modulepreload" href="avatar-web.js">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Mulish:wght@400;600;700;800&family=Space+Grotesk:wght@700&family=Alfa+Slab+One&display=swap" rel="stylesheet">
+<link rel="modulepreload" href="three/three.module.min.js">
+<link rel="modulepreload" href="three/three.core.min.js">
+<link rel="modulepreload" href="avatar3d.js">
 <style>
 /* =============================================================
    Registro con avatar (propuesta). La línea editorial del sitio: títulos en serif con remate en cursiva, kickers
-   espaciados, papel y tinta. La paleta sale del .avatar.json de quien recibe: --cuerpo y --ojos los pone
-   registro.js; la tinta es el color del cuerpo oscurecido y el acento, el de los ojos. Sin coral: sigue reservado para
-   «Agenda tu diagnóstico».
+   espaciados, papel y tinta. El avatar es Plotty o Atlas en 3D, con sus colores reales. La paleta sale de quien recibe:
+   --cuerpo y --ojos los pone registro.js; la tinta es el color del cuerpo oscurecido y el acento, el de los ojos. Sin
+   coral: sigue reservado para «Agenda tu diagnóstico».
    ============================================================= */
 @property --brillo{syntax:'<color>';inherits:true;initial-value:#17c3b2}
 :root{
@@ -69,10 +71,11 @@ a{color:inherit}
 .rebota.salta{animation:rebote .38s var(--resorte)}
 @keyframes rebote{0%{translate:0 0}40%{translate:0 -16px}100%{translate:0 0}}
 .avatar{display:block;width:var(--tam);aspect-ratio:1;transition:width .3s var(--suave-in)}
-.avatar .bs-avatar{width:100%!important;height:100%!important}
-.sombra{position:absolute;left:50%;top:calc(50% + var(--tam) * .44);width:calc(var(--tam) * .62);height:calc(var(--tam) * .06);translate:-50% 0;border-radius:50%;
-  background:radial-gradient(closest-side,rgba(15,27,40,.22),transparent);pointer-events:none;animation:sombra 9s ease-in-out infinite}
-@keyframes sombra{0%,100%{scale:1}50%{scale:.92}}
+.avatar3d{position:relative;width:100%;height:100%}
+.avatar3d canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;opacity:0;transition:opacity .35s var(--suave-in)}
+.avatar3d-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .35s var(--suave-in)}
+.avatar3d.dibujado canvas{opacity:1}
+.avatar3d.dibujado .avatar3d-poster{opacity:0}
 
 .presenta{display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
 .kicker{display:block;font:700 .7rem/1.3 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:var(--acento-papel);margin:0 0 .45rem}
@@ -136,8 +139,6 @@ h1 em,h2 em{font-style:italic;color:var(--ojos)}
 @keyframes aparece{from{opacity:0;translate:0 10px}to{opacity:1;translate:0}}
 :root[data-pantalla="listo"] .listo .kicker{color:var(--ok)}
 
-.aviso{margin:0 0 1rem;padding:.75rem 1rem;border-left:3px solid var(--error);background:rgba(255,143,163,.08);font:600 .85rem/1.4 var(--sans);color:var(--error)}
-.aviso[hidden]{display:none}
 
 /* ── Celular: el avatar arriba ── */
 @media (max-width:900px){
@@ -152,7 +153,7 @@ h1 em,h2 em{font-style:italic;color:var(--ojos)}
   /* Con el foco en un campo, el avatar se achica y queda fijo arriba: así sigue mirando lo que escribes */
   :root[data-foco] .escenario{position:sticky;top:0;z-index:5;flex-direction:row;align-items:center;gap:.9rem;padding:.35rem 1rem;
     background:var(--papel);box-shadow:0 1px 0 rgba(15,27,40,.12)}
-  :root[data-foco] .marca,:root[data-foco] .elige,:root[data-foco] .sombra{display:none}
+  :root[data-foco] .marca,:root[data-foco] .elige{display:none}
   :root[data-foco] .zona{--tam:84px;flex:none;padding:0}
   :root[data-foco] .brillo{width:150px}
   :root[data-foco] .presenta{flex:1}
@@ -161,10 +162,10 @@ h1 em,h2 em{font-style:italic;color:var(--ojos)}
 }
 
 @media (prefers-reduced-motion:reduce){
-  .brillo,.sombra{animation:none}
+  .brillo{animation:none}
   .rebota.salta,.sacude,:root[data-pantalla="listo"] .listo{animation:none}
   .enviar[aria-busy="true"]::after{animation:none;width:100%;opacity:.25}
-  .brillo,.panel,.campo input,.elige button,.avatar{transition:none}
+  .brillo,.panel,.campo input,.elige button,.avatar,.avatar3d canvas,.avatar3d-poster{transition:none}
 }
 </style>
 </head>
@@ -177,7 +178,6 @@ h1 em,h2 em{font-style:italic;color:var(--ojos)}
     </a>
     <div class="zona" id="zona">
       <div class="brillo" aria-hidden="true"></div>
-      <div class="sombra" aria-hidden="true"></div>
       <div class="inclina" id="inclina"><span class="rebota" id="rebota"><span class="avatar" id="avatar"></span></span></div>
     </div>
     <div class="presenta">
@@ -199,7 +199,6 @@ h1 em,h2 em{font-style:italic;color:var(--ojos)}
         <span class="kicker">Crea tu cuenta</span>
         <h1>Pasa, <em>te estábamos esperando.</em></h1>
         <p class="bajada">Con tu cuenta entras a BiPlot HQ y sigues tu proyecto desde su sala.</p>
-        <p class="aviso" id="aviso" role="alert" hidden></p>
         <form id="formulario" novalidate>
           <div class="campo">
             <label for="nombre">Nombre</label>

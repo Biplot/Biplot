@@ -602,8 +602,9 @@ ffmpeg -ss 4.3 -i visita-plotty-16x9.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 a
 
 Atlas y Plotty también existen como avatares animados para **Avatar Lab** (avatars.bible-strong.app), el estudio de
 avatares 2D de Bible Strong: un cuerpo armado con figuras 3D, dos ojos, expresiones y animaciones. Están en
-`_herramientas/avatares/`: `atlas.avatar.json` y `plotty.avatar.json`, y `vista.png` con todas sus expresiones. Los usa
-la propuesta de registro con avatar (`propuestas/registro-avatar/`, ver su README).
+`_herramientas/avatares/`: `atlas.avatar.json` y `plotty.avatar.json`, y `vista.png` con todas sus expresiones. La
+propuesta de registro con avatar (`propuestas/registro-avatar/`) no los usa: ahí van en 3D, con sus colores reales y
+calcados de sus dibujos (ver su README).
 
 - **Para usarlos**: el estudio está en inglés, francés o chino. En la lista de avatares, el «+» → «Import a
   .avatar.json» → «Import». Quedan en la biblioteca de ese navegador con sus expresiones y animaciones; de ahí se sacan
@@ -622,7 +623,7 @@ la propuesta de registro con avatar (`propuestas/registro-avatar/`, ver su READM
   corazón de plasma ni la placa 360° de Atlas: se reconocen por la silueta y los ojos. El rojo del error (`#ff4d6d`) y
   el verde del éxito (`#4ade80`) van sólo en los ojos; coral no aparece.
 - Se arman con `node oficina/_herramientas/avatares/construir.mjs`, desde `atlas.mjs` y `plotty.mjs` (las figuras, las
-  expresiones y las animaciones) y `comun.mjs`; deja una copia en `propuestas/registro-avatar/`. Las medidas del cuerpo
+  expresiones y las animaciones) y `comun.mjs`. Las medidas del cuerpo
   van en el marco del estudio, de -150 a 150, y los ojos nunca bajan de 10 (el estudio no importa ojos más chicos). La
   expresión `neutral` va sin giro ni movimiento, como la pide el estudio. A Atlas no conviene inclinarle la cabeza hacia
   arriba: el anillo se abre y tapa el orbe.
