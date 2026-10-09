@@ -598,6 +598,28 @@ ffmpeg -ss 4.3 -i visita-plotty-16x9.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 a
 
 (y lo mismo con `visita-plotty-9x16.mp4` y `scale=720:1280` para `-v`).
 
+## Avatares para Avatar Lab
+
+Atlas y Plotty también existen como avatares animados para **Avatar Lab** (avatars.bible-strong.app), el estudio de
+avatares 2D de Bible Strong: un cuerpo armado con figuras 3D, dos ojos, expresiones y animaciones. Están en
+`_herramientas/avatares/`: `atlas.avatar.json` y `plotty.avatar.json`, y `vista.png` con todas sus expresiones.
+
+- **Para usarlos**: el estudio está en inglés, francés o chino. En la lista de avatares, el «+» → «Import a
+  .avatar.json» → «Import». Quedan en la biblioteca de ese navegador con sus expresiones y animaciones; de ahí se sacan
+  fotos (SVG o PNG, con fondo o transparente, en «Photo Mode») o el paquete para React o JavaScript («Export»).
+- **Plotty** (cuerpo `#224b78`, ojos `#17c3b2`): la cabeza es el cuadrado del isotipo, con los ojos de LED, los dos
+  rotores y la antena. Doce expresiones (feliz, guiño, atento, pensando, curioso, procesando…) y seis animaciones: En
+  reposo, Saludo, Escuchando, Pensando, Contento y Durmiendo.
+- **Atlas** (cuerpo `#1d5c92`, ojos `#7fd8cf`): el orbe con su anillo en órbita y los dos satélites, ojos anchos de
+  párpado pesado. Once expresiones (de reojo, escaneando, proyectando, que enciende los ojos en blanco plasma, sospecha…)
+  y seis animaciones: Observando, Escaneando, Proyectando, No convencido, Satisfecho y Durmiendo.
+- El estudio pinta todo el cuerpo de un solo color y no dibuja boca, así que no llevan la carcasa blanca de Plotty, el
+  corazón de plasma ni la placa 360° de Atlas: se reconocen por la silueta y los ojos. Coral tampoco aparece.
+- Se arman con `node oficina/_herramientas/avatares/construir.mjs`, desde `atlas.mjs` y `plotty.mjs` (las figuras, las
+  expresiones y las animaciones) y `comun.mjs`. Las medidas del cuerpo van en el marco del estudio, de -150 a 150, y los
+  ojos nunca bajan de 10 (el estudio no importa ojos más chicos). La expresión `neutral` va sin giro ni movimiento, como
+  la pide el estudio. A Atlas no conviene inclinarle la cabeza hacia arriba: el anillo se abre y tapa el orbe.
+
 ## Conexión con el CRM
 
 La oficina ya está conectada al CRM de BiPlot: la sala de cada cliente muestra lo que los socios liberaron en el CRM

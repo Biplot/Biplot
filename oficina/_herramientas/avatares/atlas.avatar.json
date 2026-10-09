@@ -1,0 +1,623 @@
+{
+  "schema": "bible-strong/avatar-definition",
+  "schemaVersion": 1,
+  "name": "Atlas",
+  "body": {
+    "primary": {
+      "type": "sphere",
+      "width": 160,
+      "height": 160,
+      "depth": 160,
+      "roundness": 1
+    },
+    "nodes": [
+      {
+        "surface": {
+          "type": "cylinder",
+          "width": 248,
+          "height": 6,
+          "depth": 248,
+          "roundness": 1,
+          "morphRoundness": 0
+        },
+        "position": [
+          0,
+          8,
+          0
+        ],
+        "rotation": [
+          15,
+          0,
+          -9
+        ]
+      },
+      {
+        "surface": {
+          "type": "sphere",
+          "width": 24,
+          "height": 24,
+          "depth": 24,
+          "roundness": 1
+        },
+        "position": [
+          -122.47,
+          27.4,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "surface": {
+          "type": "sphere",
+          "width": 24,
+          "height": 24,
+          "depth": 24,
+          "roundness": 1
+        },
+        "position": [
+          122.47,
+          -11.4,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "colors": {
+    "body": "#1d5c92",
+    "eyes": "#7fd8cf"
+  },
+  "expressions": {
+    "neutral": {
+      "head": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 34,
+          "height": 22,
+          "x": 0,
+          "y": -6,
+          "angle": 0
+        },
+        "right": {
+          "width": 34,
+          "height": 22,
+          "x": 0,
+          "y": -6,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "de-reojo": {
+      "head": {
+        "x": -6,
+        "y": -10,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 34,
+          "height": 18,
+          "x": -12,
+          "y": -1,
+          "angle": 0
+        },
+        "right": {
+          "width": 34,
+          "height": 18,
+          "x": -12,
+          "y": -1,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "microSaccades",
+        "body": "slowDrift"
+      }
+    },
+    "mira-abajo": {
+      "head": {
+        "x": -16,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 34,
+          "height": 18,
+          "x": 0,
+          "y": 2,
+          "angle": 0
+        },
+        "right": {
+          "width": 34,
+          "height": 18,
+          "x": 0,
+          "y": 2,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "slowDrift"
+      }
+    },
+    "mira-arriba": {
+      "head": {
+        "x": 3,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 32,
+          "height": 24,
+          "x": 0,
+          "y": -16,
+          "angle": 0
+        },
+        "right": {
+          "width": 32,
+          "height": 24,
+          "x": 0,
+          "y": -16,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "slowDrift"
+      }
+    },
+    "escanea-izquierda": {
+      "head": {
+        "x": -4,
+        "y": -28,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 36,
+          "height": 16,
+          "x": -10,
+          "y": -6,
+          "angle": 0
+        },
+        "right": {
+          "width": 36,
+          "height": 16,
+          "x": -10,
+          "y": -6,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "microSaccades",
+        "body": "slowDrift"
+      }
+    },
+    "escanea-derecha": {
+      "head": {
+        "x": -4,
+        "y": 28,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 36,
+          "height": 16,
+          "x": 10,
+          "y": -6,
+          "angle": 0
+        },
+        "right": {
+          "width": 36,
+          "height": 16,
+          "x": 10,
+          "y": -6,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "microSaccades",
+        "body": "slowDrift"
+      }
+    },
+    "proyectando": {
+      "head": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 38,
+          "height": 30,
+          "x": 0,
+          "y": -8,
+          "angle": 0
+        },
+        "right": {
+          "width": 38,
+          "height": 30,
+          "x": 0,
+          "y": -8,
+          "angle": 0
+        },
+        "spacing": 64
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "slowDrift"
+      },
+      "colors": {
+        "eyes": "#e9fffc"
+      }
+    },
+    "sospecha": {
+      "head": {
+        "x": -4,
+        "y": 8,
+        "z": 7
+      },
+      "eyes": {
+        "left": {
+          "width": 34,
+          "height": 22,
+          "x": 2,
+          "y": -6,
+          "angle": 0
+        },
+        "right": {
+          "width": 34,
+          "height": 11,
+          "x": 2,
+          "y": -9,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "slowDrift"
+      }
+    },
+    "sorpresa": {
+      "head": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 32,
+          "height": 34,
+          "x": 0,
+          "y": -10,
+          "angle": 0
+        },
+        "right": {
+          "width": 32,
+          "height": 34,
+          "x": 0,
+          "y": -10,
+          "angle": 0
+        },
+        "spacing": 64
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "slowDrift"
+      }
+    },
+    "satisfecho": {
+      "head": {
+        "x": -4,
+        "y": 0,
+        "z": -6
+      },
+      "eyes": {
+        "left": {
+          "width": 36,
+          "height": 11,
+          "x": 0,
+          "y": -4,
+          "angle": 0
+        },
+        "right": {
+          "width": 36,
+          "height": 11,
+          "x": 0,
+          "y": -4,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "slowDrift"
+      }
+    },
+    "dormido": {
+      "head": {
+        "x": -14,
+        "y": 0,
+        "z": 5
+      },
+      "eyes": {
+        "left": {
+          "width": 34,
+          "height": 10,
+          "x": 0,
+          "y": 2,
+          "angle": 0
+        },
+        "right": {
+          "width": 34,
+          "height": 10,
+          "x": 0,
+          "y": 2,
+          "angle": 0
+        },
+        "spacing": 62
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "slowDrift"
+      }
+    }
+  },
+  "expressionOrder": [
+    "neutral",
+    "de-reojo",
+    "mira-abajo",
+    "mira-arriba",
+    "escanea-izquierda",
+    "escanea-derecha",
+    "proyectando",
+    "sospecha",
+    "sorpresa",
+    "satisfecho",
+    "dormido"
+  ],
+  "animations": {
+    "observando": {
+      "playbackMode": "loop",
+      "steps": [
+        {
+          "expression": "neutral",
+          "holdMs": 3200,
+          "transitionMs": 700,
+          "transition": "smooth"
+        },
+        {
+          "expression": "de-reojo",
+          "holdMs": 2600,
+          "transitionMs": 700,
+          "transition": "smooth"
+        },
+        {
+          "expression": "neutral",
+          "holdMs": 2400,
+          "transitionMs": 700,
+          "transition": "smooth"
+        },
+        {
+          "expression": "mira-abajo",
+          "holdMs": 2200,
+          "transitionMs": 800,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 4800,
+        "minIntervalMs": 6500,
+        "maxIntervalMs": 9500,
+        "durationMs": 420
+      },
+      "metadata": {
+        "label": "Observando",
+        "description": "Desde aquí arriba se ve todo: flota y mira de reojo.",
+        "group": "Atlas"
+      }
+    },
+    "escaneando": {
+      "playbackMode": "pingPong",
+      "steps": [
+        {
+          "expression": "escanea-izquierda",
+          "holdMs": 1400,
+          "transitionMs": 900,
+          "transition": "smooth"
+        },
+        {
+          "expression": "neutral",
+          "holdMs": 500,
+          "transitionMs": 700,
+          "transition": "smooth"
+        },
+        {
+          "expression": "escanea-derecha",
+          "holdMs": 1400,
+          "transitionMs": 900,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 3200,
+        "minIntervalMs": 4800,
+        "maxIntervalMs": 7200,
+        "durationMs": 300
+      },
+      "metadata": {
+        "label": "Escaneando",
+        "description": "Recorre el plano de un lado al otro.",
+        "group": "Atlas"
+      }
+    },
+    "proyectando": {
+      "playbackMode": "loop",
+      "steps": [
+        {
+          "expression": "mira-arriba",
+          "holdMs": 900,
+          "transitionMs": 600,
+          "transition": "smooth"
+        },
+        {
+          "expression": "proyectando",
+          "holdMs": 2600,
+          "transitionMs": 500,
+          "transition": "spring"
+        },
+        {
+          "expression": "neutral",
+          "holdMs": 1400,
+          "transitionMs": 700,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 3200,
+        "minIntervalMs": 4800,
+        "maxIntervalMs": 7200,
+        "durationMs": 300
+      },
+      "metadata": {
+        "label": "Proyectando",
+        "description": "Enciende el corazón de plasma y proyecta el mapa.",
+        "group": "Atlas"
+      }
+    },
+    "no-convencido": {
+      "playbackMode": "loop",
+      "steps": [
+        {
+          "expression": "neutral",
+          "holdMs": 1400,
+          "transitionMs": 500,
+          "transition": "smooth"
+        },
+        {
+          "expression": "sospecha",
+          "holdMs": 2200,
+          "transitionMs": 450,
+          "transition": "spring"
+        },
+        {
+          "expression": "de-reojo",
+          "holdMs": 1600,
+          "transitionMs": 600,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 2600,
+        "minIntervalMs": 4800,
+        "maxIntervalMs": 7200,
+        "durationMs": 300
+      },
+      "metadata": {
+        "label": "No convencido",
+        "description": "Si no se puede dibujar, no se puede construir.",
+        "group": "Atlas"
+      }
+    },
+    "satisfecho": {
+      "playbackMode": "loop",
+      "steps": [
+        {
+          "expression": "satisfecho",
+          "holdMs": 2400,
+          "transitionMs": 500,
+          "transition": "spring"
+        },
+        {
+          "expression": "neutral",
+          "holdMs": 1600,
+          "transitionMs": 600,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 3200,
+        "minIntervalMs": 6500,
+        "maxIntervalMs": 9500,
+        "durationMs": 420
+      },
+      "metadata": {
+        "label": "Satisfecho",
+        "description": "Cuando el plano cuadra.",
+        "group": "Atlas"
+      }
+    },
+    "durmiendo": {
+      "playbackMode": "loop",
+      "steps": [
+        {
+          "expression": "dormido",
+          "holdMs": 4000,
+          "transitionMs": 1200,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": false,
+        "initialDelayMs": 4800,
+        "minIntervalMs": 6500,
+        "maxIntervalMs": 9500,
+        "durationMs": 420
+      },
+      "metadata": {
+        "label": "Durmiendo",
+        "description": "El orbe en reposo, sin perder la órbita.",
+        "group": "Atlas"
+      }
+    }
+  },
+  "animationOrder": [
+    "observando",
+    "escaneando",
+    "proyectando",
+    "no-convencido",
+    "satisfecho",
+    "durmiendo"
+  ]
+}
