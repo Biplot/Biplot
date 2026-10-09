@@ -639,7 +639,7 @@ async function iniciar() {
   atlas = crearAvatar3D($('#atlas'), { personaje: 'atlas', ariaLabel: 'Atlas', reducido: () => sinMovimiento.matches, onAnimationEnd: alTerminarReaccion });
   aplicarAjustes();
   reaccion('idle');
-  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('/sw.js').catch(() => {});
+  if (!globalThis.ATLAS_DEMO && 'serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('/sw.js').catch(() => {});
   try {
     const s = await api('/api/sesion');
     if (s.ok) entrarAAtlas({ conToque: true, modoSimulado: s.simulado });

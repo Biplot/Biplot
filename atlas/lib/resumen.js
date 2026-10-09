@@ -1,6 +1,6 @@
 // El resumen del día, sin gastar en Claude: lo último del registro (log.md) y lo que espera en «Pendientes abiertos».
 // Devuelve lo que Atlas dice (en partes, cada una con su reacción) y las cifras de la tarjeta.
-import { encontrarPagina, normalizar } from './boveda.js';
+import { encontrarPagina, normalizar } from './paginas.js';
 import { hoyChile, horaChile, diasEntre } from './fecha.js';
 
 const sinEnlaces = (s) => s.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2').replace(/\[\[([^\]]+)\]\]/g, '$1').replace(/[*_`]/g, '');

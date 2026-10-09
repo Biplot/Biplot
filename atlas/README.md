@@ -27,7 +27,10 @@ Sonnet 5.5 y las 22 reacciones de `propuestas/reacciones-atlas/`.
 ```
 public/  la página (HTML, CSS y JS sin compilar) + Atlas en 3D (se copia de assets/avatares3d al armar)
 api/     las funciones de Vercel: entrar, salir, sesion, resumen, charla (la conversación), pagina, guardar
-lib/     boveda (leer, buscar, cambiar y guardar), atlas (Claude y sus herramientas), resumen, sesion, simulado
+lib/     lo del servidor: boveda (GitHub o carpeta local, y guardar con un commit), atlas (Claude), sesion
+         y lo que corre igual en el navegador: paginas (buscar, leer, armar cambios), herramientas (las de Atlas,
+         su prompt y el tono), resumen y simulado (el Atlas de prueba)
+demo/    el demo sin servidor: un servidor de mentira en el navegador y páginas extra para la bóveda de ejemplo
 ```
 
 1. **La bóveda** (`lib/boveda.js`): baja la copia de GitHub de una vez (el `.tar.gz` del último commit) y la tiene en
@@ -91,6 +94,13 @@ npm test                              # las pruebas (con una bóveda de prueba y
 
 Con `BOVEDA_LOCAL` lee la bóveda de una carpeta en vez de GitHub; para que Guardar escriba ahí, `BOVEDA_LOCAL_ESCRIBIR=1`
 (mejor en una copia). Sin `ATLAS_SIMULADO` y con `ANTHROPIC_API_KEY`, habla con Claude de verdad.
+
+## El demo (sin servidor)
+
+`node scripts/armar-demo.mjs <carpeta>` arma una página suelta (`atlas-demo.html` y lo que necesita al lado) con la
+página de verdad, el Atlas de prueba y una bóveda de ejemplo (la de las pruebas más `demo/boveda-extra/`): las rutas
+`/api/…` las atiende `demo/servidor.js` dentro del navegador. Sirve para mostrar Atlas sin Vercel; no usa Claude ni
+toca la bóveda de verdad, y lo que se guarda vive sólo en esa pestaña.
 
 ## Lo que viene
 
