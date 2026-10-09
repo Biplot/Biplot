@@ -1,8 +1,9 @@
 // El avatar en 3D: monta a Plotty o a Atlas en un lienzo WebGL y expone lo mismo que un avatar de Avatar Lab:
 // play(clave) con los estados de cada uno (idle, typing, error, success, shy, thinking y look-*; Plotty además greeting,
 // listening, happy, surprised y califica), onAnimationEnd cuando termina uno de los que corren una vez, y tiene(clave).
-// orientar(x, y) lo gira hacia el cursor o el campo (de -1 a 1). Mientras carga, y si el navegador no tiene WebGL, se
-// ve el dibujo de la banda (plotty.svg o atlas.svg, junto a este archivo).
+// orientar(x, y) lo gira hacia el cursor o el campo (de -1 a 1). ajustar({ intensidad, nivel }) cambia cuánto se mueve
+// el cuerpo (1 expresivo, 0,5 sobrio) y el nivel de la voz (de 0 a 1; null: simulada) para escuchando y hablando. Mientras
+// carga, y si el navegador no tiene WebGL, se ve el dibujo de la banda (plotty.svg o atlas.svg, junto a este archivo).
 import { THREE, liberar } from './kit3d.js';
 import * as Plotty from './plotty3d.js';
 import * as Atlas from './atlas3d.js';
@@ -27,7 +28,7 @@ export function crearAvatar3D(destino, { personaje = 'plotty', ariaLabel = '', o
   host.append(poster);
   destino.append(host);
 
-  let estado = 'idle', desde = performance.now(), fin = null, destruido = false;
+  let estado = 'idle', desde = performance.now(), fin = null, destruido = false, intensidad = 1, nivel = null;
   const mirar = { x: 0, y: 0 };
   const control = {
     colores: elegido.colores,
@@ -40,6 +41,10 @@ export function crearAvatar3D(destino, { personaje = 'plotty', ariaLabel = '', o
       return { ok: true };
     },
     orientar(x, y) { mirar.x = x; mirar.y = y; },
+    ajustar(opciones = {}) {
+      if ('intensidad' in opciones) intensidad = opciones.intensidad;
+      if ('nivel' in opciones) nivel = opciones.nivel;
+    },
     destroy() { destruido = true; clearTimeout(fin); host.remove(); }
   };
 
@@ -80,7 +85,7 @@ export function crearAvatar3D(destino, { personaje = 'plotty', ariaLabel = '', o
     const dt = Math.min(0.05, Math.max(0, (ahora - previo) / 1000));
     previo = Math.max(previo, ahora);
     if (!visible || document.hidden) return;
-    p.actualizar(ahora / 1000, dt, { estado, desde: (ahora - desde) / 1000, mirar, quieto: reducido() });
+    p.actualizar(ahora / 1000, dt, { estado, desde: (ahora - desde) / 1000, mirar, quieto: reducido(), intensidad, nivel });
     renderer.render(escena, camara);
     if (primero) { primero = false; host.classList.add('dibujado'); }
   };

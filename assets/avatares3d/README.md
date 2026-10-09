@@ -1,8 +1,9 @@
 # Plotty y Atlas en 3D
 
 Plotty y Atlas en 3D, con sus colores reales y calcados de sus dibujos de la banda
-(`oficina/_herramientas/dibujos/banda/`), para usarlos en cualquier página del sitio. Hoy los usan dos propuestas:
-`propuestas/tres-preguntas/` (Plotty) y `propuestas/registro-avatar/` (Plotty o Atlas).
+(`oficina/_herramientas/dibujos/banda/`), para usarlos en cualquier página del sitio. Hoy los usan tres propuestas:
+`propuestas/tres-preguntas/` (Plotty), `propuestas/registro-avatar/` (Plotty o Atlas) y `propuestas/reacciones-atlas/`
+(las reacciones de Atlas para su página con voz).
 
 ```js
 import { crearAvatar3D } from '/assets/avatares3d/avatar3d.js';   // o con la ruta relativa desde la página
@@ -16,6 +17,8 @@ const avatar = crearAvatar3D(document.querySelector('#avatar'), {
 avatar.play('greeting');                     // { ok: true } o { ok: false, error }
 avatar.orientar(0.4, -0.1);                  // hacia dónde mira, de -1 a 1 (el cursor, un campo, un botón)
 avatar.tiene('califica');                    // si el personaje sabe hacerlo
+avatar.ajustar({ intensidad: 0.5 });         // cuánto se mueve el cuerpo: 1 expresivo (de siempre), 0,5 sobrio
+avatar.ajustar({ nivel: 0.8 });              // el nivel de la voz, de 0 a 1, para escuchando y hablando (null: simulada)
 avatar.colores;                              // { cuerpo, ojos }: para la paleta de la página
 avatar.destroy();
 ```
@@ -40,11 +43,33 @@ ve el dibujo de la banda (`plotty.svg` o `atlas.svg`); la página pone los estil
 | `surprised` | Ojos grandes, boca de «o» y las manos arriba | — | 1,3 s |
 | `califica` | La antena se pone coral, saluda y apunta con la otra mano (a «Agenda tu diagnóstico») | — | Siempre |
 
+Además, Atlas tiene las reacciones de su página con voz (ver `propuestas/reacciones-atlas/`):
+
+| Estado | Atlas | Corre |
+|---|---|---|
+| `despertar` | Se enciende: el plasma prende desde el centro, los anillos arrancan y frenan, abre los ojos y se calibra | 2,8 s |
+| `dormir` | Cierra los ojos, el plasma respira tenue y los anillos casi se detienen | Siempre |
+| `atento` | Ojos muy abiertos, un saltito y un tirón del anillo | 0,7 s |
+| `escuchando` | Se inclina hacia ti, pupilas grandes, el anillo ladeado y el plasma que late con la voz | Siempre |
+| `asentir` | Dos cabeceos y un parpadeo | 1 s |
+| `hablando` | El plasma y los filamentos laten con cada sílaba; la placa se mece | Siempre |
+| `duda` | Una «ceja» arriba y el otro ojo entrecerrado, ladeado; el plasma baja | 2,2 s |
+| `buscando` | Un escáner de luz recorre el orbe, el globo gira rápido y los ojos van de lado a lado | Siempre |
+| `leyendo` | Los ojos recorren renglones | Siempre |
+| `encontrado` | Ojos muy abiertos, los satélites destellan, el plasma estalla y un saltito | 1,1 s |
+| `esperando` | Cejas arriba, el anillo detenido y los satélites que laten despacio | Siempre |
+| `alerta` | Plasma, ojos y satélites en ámbar, la mirada seria y el anillo derecho | Siempre |
+| `alegre` | Ojos que sonríen (el párpado de abajo sube en arco) y tres botecitos | 1,5 s |
+| `celebrar` | Salta, da una vuelta entera (sobrio: un meneo), el anillo gira rápido y todo en verde | 2,6 s |
+
+`escuchando` y `hablando` laten con `ajustar({ nivel })` (el micrófono, o cada palabra de la voz); sin nivel, con una
+voz simulada.
+
 También responden a `look-left`, `look-right`, `look-up` y `look-down` (como `idle`: en 3D los ojos siguen a `orientar`
 todo el tiempo). Los que tienen duración avisan con `onAnimationEnd` y quedan quietos hasta el siguiente `play`.
 El coral de la antena es el de «Agenda tu diagnóstico»: el único lugar donde Plotty lo usa. Los LED y las lentes van en
-cian, rojo y verde. Con «reducir movimiento» no flotan ni giran, los rotores y anillos se quedan quietos y no hay
-sacudidas: sólo cambian las caras.
+cian, rojo y verde (y ámbar en la alerta de Atlas). Con «reducir movimiento» no flotan, no saltan ni giran, los rotores
+y anillos se quedan quietos y no hay sacudidas: sólo cambian las caras y los colores.
 
 ## Archivos
 
