@@ -14,6 +14,9 @@ const C = {
   anillo: '#B9C8D8', anilloS: '#7F93A8', anilloL: '#E1E9F1', sat: '#35679A', satS: '#1F4673', placa: '#F2F4F7', placaS: '#C4D2E0', azul: '#0E2A47'
 };
 const IRIS = { idle: '#17C3B2', error: '#FF4D6D', success: '#4ADE80' };          // nunca coral
+// Lo que sabe hacer; error y success corren una vez y avisan al terminar
+export const ESTADOS = ['idle', 'typing', 'error', 'success', 'shy', 'thinking', 'look-left', 'look-right', 'look-up', 'look-down'];
+export const DURACION = { error: 1900, success: 2600 };
 const R = 1.64, CENTRO = Y(292);                                                  // el orbe
 const G = { y: Y(338), r: 1.08 };                                                 // el globo de líneas y el plasma
 
@@ -241,8 +244,7 @@ export function atlas() {
 
   return {
     grupo: raiz, colores: COLORES, marco: { centro: -0.52, tam: 6.0 },
-    estados: ['idle', 'typing', 'error', 'success', 'shy', 'thinking', 'look-left', 'look-right', 'look-up', 'look-down'],
-    duracion: { error: 1900, success: 2600 },
+    estados: ESTADOS, duracion: DURACION,
     actualizar: (t, dt, ctx) => actualizar(t, dt, { ...ctx, estado: ctx.estado.startsWith('look-') ? 'idle' : ctx.estado })
   };
 }

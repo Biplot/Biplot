@@ -942,7 +942,8 @@
       }
     },
 
-    /* Las tres preguntas de Plotty (E0). Califica con 5 horas o más a la semana, o si no lo sabe. */
+    /* Las tres preguntas de Plotty (E0). Califica con 5 horas o más a la semana, o si no lo sabe.
+       También las usa propuestas/tres-preguntas/ (con la vitrina, el WhatsApp y el texto de `cta`). */
     plotty: {
       saludo: 'Hola, soy Plotty. Te hago tres preguntas y te digo por dónde partir. Prometo que no es un formulario.',
       preguntas: [

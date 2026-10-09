@@ -1,24 +1,27 @@
-// El avatar en 3D: monta a Plotty o a Atlas en un lienzo WebGL y expone lo mismo que usaba la página con Avatar Lab:
-// play(clave) con las animaciones idle, typing, error, success, shy, thinking y look-*, y onAnimationEnd cuando
-// terminan error y success (que corren una vez). orientar(x, y) lo gira hacia el cursor o el campo (de -1 a 1).
-// Mientras carga, y si el navegador no tiene WebGL, se ve el dibujo de la banda (plotty.svg o atlas.svg).
+// El avatar en 3D: monta a Plotty o a Atlas en un lienzo WebGL y expone lo mismo que un avatar de Avatar Lab:
+// play(clave) con los estados de cada uno (idle, typing, error, success, shy, thinking y look-*; Plotty además greeting,
+// listening, happy, surprised y califica), onAnimationEnd cuando termina uno de los que corren una vez, y tiene(clave).
+// orientar(x, y) lo gira hacia el cursor o el campo (de -1 a 1). Mientras carga, y si el navegador no tiene WebGL, se
+// ve el dibujo de la banda (plotty.svg o atlas.svg, junto a este archivo).
 import { THREE, liberar } from './kit3d.js';
-import { plotty, COLORES as COLORES_PLOTTY } from './plotty3d.js';
-import { atlas, COLORES as COLORES_ATLAS } from './atlas3d.js';
+import * as Plotty from './plotty3d.js';
+import * as Atlas from './atlas3d.js';
 
-const PERSONAJES = { plotty: { crear: plotty, colores: COLORES_PLOTTY }, atlas: { crear: atlas, colores: COLORES_ATLAS } };
-const ESTADOS = ['idle', 'typing', 'error', 'success', 'shy', 'thinking', 'look-left', 'look-right', 'look-up', 'look-down'];
-const DURACION = { error: 1900, success: 2600 };
+const PERSONAJES = {
+  plotty: { crear: Plotty.plotty, colores: Plotty.COLORES, estados: Plotty.ESTADOS, duracion: Plotty.DURACION },
+  atlas: { crear: Atlas.atlas, colores: Atlas.COLORES, estados: Atlas.ESTADOS, duracion: Atlas.DURACION }
+};
 const FOV = 20;
 
 export function crearAvatar3D(destino, { personaje = 'plotty', ariaLabel = '', onAnimationEnd, reducido = () => false } = {}) {
-  const elegido = PERSONAJES[personaje] ?? PERSONAJES.plotty;
+  const nombre = personaje in PERSONAJES ? personaje : 'plotty', elegido = PERSONAJES[nombre];
+  const { estados: ESTADOS, duracion: DURACION } = elegido;
   const host = document.createElement('div');
   host.className = 'avatar3d';
   host.setAttribute('role', 'img');
   host.setAttribute('aria-label', ariaLabel);
   const poster = new Image();
-  poster.src = `${personaje in PERSONAJES ? personaje : 'plotty'}.svg`;
+  poster.src = new URL(`${nombre}.svg`, import.meta.url).href;
   poster.alt = '';
   poster.className = 'avatar3d-poster';
   host.append(poster);

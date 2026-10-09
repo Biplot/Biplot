@@ -37,8 +37,12 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   `node oficina/_herramientas/fotografiar-adentro.mjs <salida.png>` y se pasa a WebP con calidad 78) y `local-libre.webp`
   (el local «Tu proyecto aquí»).
 - `propuestas/fundos-inmobiliaria/` — propuesta de sitio para Fundos Inmobiliaria (no indexada; ver su README).
+- `propuestas/tres-preguntas/` — propuesta de las tres preguntas de Plotty en una página propia, con Plotty en 3D que
+  reacciona a cada respuesta y, si calificas, te invita a agendar el diagnóstico (no indexada; ver su README).
 - `propuestas/registro-avatar/` — propuesta de registro con Plotty (o Atlas) en 3D, con sus colores reales, como avatar
   interactivo que te mira y reacciona a lo que haces (no indexada; ver su README).
+- `assets/avatares3d/` — Plotty y Atlas en 3D (Three.js), calcados de sus dibujos de la oficina, para usarlos en
+  cualquier página: `crearAvatar3D`, sus estados y cómo están hechos, en su README.
 
 ## Desarrollo local
 

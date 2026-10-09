@@ -1,12 +1,12 @@
 // Registro con avatar (propuesta). El avatar es Plotty o Atlas en 3D, con sus colores reales y calcados de sus dibujos
-// de la oficina (avatar3d.js, con Three.js). Se maneja igual que un avatar de Avatar Lab: crearAvatar3D(destino,
+// de la oficina (assets/avatares3d/, con Three.js). Se maneja igual que un avatar de Avatar Lab: crearAvatar3D(destino,
 // { personaje, ariaLabel, onAnimationEnd }) y play(clave) / destroy(); además, orientar(x, y) lo gira hacia el cursor.
 //
 // Estados: idle (en reposo; con el cursor lejos mira hacia él con look-left/right/up/down), typing (mientras escribes;
 // vuelve a idle tras 1,2 s sin teclear), error (un campo o el envío no validan), success (registro listo), shy (en las
 // contraseñas hace como que no mira) y thinking (el segundo que tarda el envío simulado). error y success son «once»:
 // al terminar quedan quietos, así que onAnimationEnd los devuelve al estado que corresponda.
-import { crearAvatar3D } from './avatar3d.js';
+import { crearAvatar3D } from '../../assets/avatares3d/avatar3d.js';
 
 const AVATARES = {
   plotty: {

@@ -327,7 +327,8 @@ lotes y termina con un local que se arrienda. Nada de esto se dibuja a mano: esc
 **Plotty (E0).** Hace tres preguntas (rubro, dónde vive la operación y horas a la semana en tareas repetidas); con el
 rubro sale a la calle, con la conversación abierta, y marca los casos como el tuyo; al final arma el mensaje de WhatsApp para agendar y deja en la vitrina
 de la recepción los tres casos más cercanos. El rubro queda guardado en el navegador de quien visita (`localStorage`),
-sólo para su vitrina.
+sólo para su vitrina. Las mismas preguntas, el saludo, los finales y la vitrina (de `datos.js`) los usa la propuesta de
+las tres preguntas con Plotty en 3D (`propuestas/tres-preguntas/`): si cambian aquí, cambian allá.
 
 ## Archivos
 
@@ -603,8 +604,8 @@ ffmpeg -ss 4.3 -i visita-plotty-16x9.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 a
 Atlas y Plotty también existen como avatares animados para **Avatar Lab** (avatars.bible-strong.app), el estudio de
 avatares 2D de Bible Strong: un cuerpo armado con figuras 3D, dos ojos, expresiones y animaciones. Están en
 `_herramientas/avatares/`: `atlas.avatar.json` y `plotty.avatar.json`, y `vista.png` con todas sus expresiones. La
-propuesta de registro con avatar (`propuestas/registro-avatar/`) no los usa: ahí van en 3D, con sus colores reales y
-calcados de sus dibujos (ver su README).
+propuestas (`propuestas/tres-preguntas/` y `propuestas/registro-avatar/`) no los usan: ahí van en 3D, con sus colores
+reales y calcados de sus dibujos (`assets/avatares3d/`, ver su README).
 
 - **Para usarlos**: el estudio está en inglés, francés o chino. En la lista de avatares, el «+» → «Import a
   .avatar.json» → «Import». Quedan en la biblioteca de ese navegador con sus expresiones y animaciones; de ahí se sacan

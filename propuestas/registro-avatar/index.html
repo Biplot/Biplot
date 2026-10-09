@@ -11,9 +11,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Mulish:wght@400;600;700;800&family=Space+Grotesk:wght@700&family=Alfa+Slab+One&display=swap" rel="stylesheet">
-<link rel="modulepreload" href="three/three.module.min.js">
-<link rel="modulepreload" href="three/three.core.min.js">
-<link rel="modulepreload" href="avatar3d.js">
+<link rel="modulepreload" href="../../assets/avatares3d/three/three.module.min.js">
+<link rel="modulepreload" href="../../assets/avatares3d/three/three.core.min.js">
+<link rel="modulepreload" href="../../assets/avatares3d/avatar3d.js">
 <style>
 /* =============================================================
    Registro con avatar (propuesta). La línea editorial del sitio: títulos en serif con remate en cursiva, kickers
@@ -142,7 +142,7 @@ h1 em,h2 em{font-style:italic;color:var(--ojos)}
 
 /* ── Celular: el avatar arriba ── */
 @media (max-width:900px){
-  .pagina{grid-template-columns:1fr}
+  .pagina{display:block}                      /* en bloque: la barra fija queda arriba en toda la página, no sólo en su fila */
   .escenario{position:relative;height:auto;padding:1.1rem 1.1rem 1.4rem}
   .zona{--tam:min(66vw,280px);padding:.5rem 0}
   .presenta{align-items:flex-start}

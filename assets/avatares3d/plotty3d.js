@@ -14,6 +14,12 @@ const C = {
   motor: '#35679A', motorS: '#1F4673', cuello: '#17446F', cuelloS: '#0E2A47', led: '#24507E', estela: '#DDF4F1'
 };
 const LED = { idle: '#17C3B2', error: '#FF4D6D', success: '#4ADE80' };          // los LED: cian, rojo y verde (nunca coral)
+// La antena cuando calificas: el coral de «Agenda tu diagnóstico», el único lugar donde Plotty lo usa
+const CORAL = { color: '#FF6B4A', sombra: '#C4462B' };
+// Lo que sabe hacer. Los que corren una vez avisan al terminar (onAnimationEnd) después de su duración, en milisegundos
+export const ESTADOS = ['idle', 'typing', 'error', 'success', 'shy', 'thinking', 'greeting', 'listening', 'happy', 'surprised', 'califica',
+  'look-left', 'look-right', 'look-up', 'look-down'];
+export const DURACION = { error: 1900, success: 2600, greeting: 2400, happy: 1100, surprised: 1300 };
 const BLANCOS = { '#17C3B2': '#E9FFFC', '#FF4D6D': '#FFE3E8', '#4ADE80': '#E6FFEE' };
 
 // ── La cara de LED: 12 columnas por 10 filas en el cuadrante del gráfico del isotipo ──
@@ -123,7 +129,12 @@ const MANOS = {
   shy: { L: [-0.52, 0.62, 1.45, 0.12], R: [0.52, 0.62, 1.45, -0.12] },
   error: { L: [-2.05, 1.0, 0.6, 0.55], R: [2.05, 1.0, 0.6, -0.55] },
   success: { L: [-2.05, 1.6, 0.5, 0.35], R: [2.05, 1.6, 0.5, -0.35] },
-  thinking: { L: [-2.2, 0.25, 0.5, 0.28], R: [0.85, -0.95, 1.25, 0.55] }
+  thinking: { L: [-2.2, 0.25, 0.5, 0.28], R: [0.85, -0.95, 1.25, 0.55] },
+  greeting: { L: [-2.1, 1.25, 0.5, 0.3], R: [2.35, -0.4, 0.5, -0.1] },
+  listening: { L: [-2.15, 0.15, 0.5, 0.22], R: [2.3, -0.55, 0.5, -0.1] },
+  happy: { L: [-2.05, 0.95, 0.5, 0.4], R: [2.05, 0.95, 0.5, -0.4] },
+  surprised: { L: [-1.85, 1.3, 0.8, 0.65], R: [1.85, 1.3, 0.8, -0.65] },
+  califica: { L: [-2.1, 1.0, 0.5, 0.3], R: [2.2, 0.45, 0.6, -1.5] }          // con la derecha apunta a «Agenda tu diagnóstico»
 };
 
 export function plotty() {
@@ -164,7 +175,8 @@ export function plotty() {
   const domo = elipsoide(0.18, 0.12, 0.18, metal, 0.035); domo.position.set(X(336), Y(98), 0); bot.add(domo);
   bot.add(tubo([[X(336), Y(98) + 0.05, 0], [X(338), 2.28, 0], [X(350) - 0.02, Y(44) - 0.14, 0]], 0.035, metal, 0.03));
   const punto = new THREE.Group(); punto.position.set(X(350), Y(44), 0); bot.add(punto);
-  punto.add(esfera(0.17, cian, 0.045));
+  const antena = pintura(C.cian, C.cianS, { umbral: 0.25 });
+  punto.add(esfera(0.17, antena, 0.045));
   const reflejo = esfera(0.05, basico(C.cianB), 0); reflejo.position.set(-0.06, 0.06, 0.13); punto.add(reflejo);
   const haloAntena = brillo(C.cian, 1.0, 0.5); punto.add(haloAntena);
 
@@ -193,8 +205,9 @@ export function plotty() {
   }
 
   // ── El estado ──
-  let parpadeo = 2.5, cierra = 0, espia = 3, espiando = 0;
+  let parpadeo = 2.5, cierra = 0, espia = 3, espiando = 0, ladeo = grados(-5);
   const giro = { y: 0, x: 0 };
+  const colCian = new THREE.Color(C.cian), colCianS = new THREE.Color(C.cianS), colCoral = new THREE.Color(CORAL.color), colCoralS = new THREE.Color(CORAL.sombra);
   function cara(estado, desde, t, mirar) {
     const dx = Math.round(limitar(mirar.x * 1.6, -1, 1)), dy = Math.round(limitar(mirar.y * 1.6, -1, 1));
     const cerrado = cierra > 0;
@@ -207,6 +220,12 @@ export function plotty() {
       case 'shy': return [armarCara(espiando > 0 ? 'abierto' : 'mayor', 'menor', 'chica', espiando > 0 ? 1 : 0, espiando > 0 ? 1 : 0), LED.idle];
       case 'typing': return [armarCara(cerrado ? 'cerrado' : 'abierto', cerrado ? 'cerrado' : 'abierto', 'recta', dx, 1), LED.idle];
       case 'thinking': return [armarCara(cerrado ? 'cerrado' : 'abierto', cerrado ? 'cerrado' : 'abierto', `puntos${1 + (Math.floor(t * 2.6) % 3)}`, 1, -1), LED.idle];
+      case 'greeting': case 'happy': {
+        const guino = estado === 'greeting' && desde > 1.3 && desde < 1.65;
+        return [armarCara('feliz', guino ? 'cerrado' : 'feliz', 'grande'), LED.idle];
+      }
+      case 'surprised': return [armarCara('grande', 'grande', 'chica'), LED.idle];
+      case 'califica': return [armarCara('feliz', t % 3.2 > 2.85 ? 'cerrado' : 'feliz', 'grande'), LED.idle];
       default: return [armarCara(cerrado ? 'cerrado' : 'abierto', cerrado ? 'cerrado' : 'abierto', 'media', dx, dy), LED.idle];
     }
   }
@@ -224,7 +243,8 @@ export function plotty() {
     // Mira hacia el cursor (o el campo); en la contraseña baja la cabeza
     const metaY = estado === 'shy' ? -0.12 : mirar.x * 0.5, metaX = estado === 'shy' ? 0.16 : mirar.y * 0.24;
     giro.y = acercar(giro.y, metaY, dt, 6); giro.x = acercar(giro.x, metaX, dt, 6);
-    bot.rotation.set(giro.x, giro.y, grados(-5));
+    ladeo = acercar(ladeo, grados(estado === 'listening' ? 4 : -5), dt, 5);       // escuchando, ladea la cabeza
+    bot.rotation.set(giro.x, giro.y, ladeo);
     const vaiven = quieto ? 0 : Math.sin(t * 1.7) * 0.07;
     let sacudida = 0;
     if (estado === 'error' && !quieto) sacudida = Math.sin(desde * 46) * 0.08 * Math.max(0, 1 - desde / 0.5);
@@ -235,8 +255,14 @@ export function plotty() {
     if (!quieto) for (const h of helices) h.rotation.y += dt * (estado === 'success' ? 24 : 12);
     const llamita = quieto ? 1 : 1 + Math.sin(t * 23) * 0.08 + Math.sin(t * 37) * 0.05;
     llama.scale.set(1, llamita * (estado === 'success' ? 1.25 : 1), 1);
-    const pulso = estado === 'thinking' && !quieto ? 1 + Math.sin(t * 6) * 0.12 : 1;
-    punto.scale.setScalar(pulso); haloAntena.material.opacity = estado === 'thinking' ? 0.75 : 0.5;
+    const late = (estado === 'thinking' || estado === 'califica') && !quieto;
+    punto.scale.setScalar(late ? 1 + Math.sin(t * 6) * 0.12 : 1);
+    haloAntena.material.opacity = estado === 'califica' ? 0.85 : estado === 'thinking' ? 0.75 : 0.5;
+    // Si calificas, la antena se pone coral (y vuelve a cian al empezar de nuevo)
+    const k = 1 - Math.exp(-dt * 5), coral = estado === 'califica';
+    antena.uniforms.uColor.value.lerp(coral ? colCoral : colCian, k);
+    antena.uniforms.uSombra.value.lerp(coral ? colCoralS : colCianS, k);
+    haloAntena.material.color.lerp(coral ? colCoral : colCian, k);
 
     // Las manos van a su lugar; saludan, teclean o tapan la pantalla
     for (const lado of ['L', 'R']) {
@@ -246,7 +272,11 @@ export function plotty() {
       if (!quieto) {
         y += Math.sin(t * 1.7 + fase) * 0.08;
         if (e === 'typing') y += Math.max(0, Math.sin(t * 13 + fase * 2)) * 0.08;
-        if (e === 'success' || (e === 'idle' && lado === 'L')) r += Math.sin(t * (e === 'success' ? 9 : 3.2) + fase) * (e === 'success' ? 0.35 : 0.12);
+        if (e === 'success' || e === 'happy') r += Math.sin(t * 9 + fase) * 0.32;
+        else if ((e === 'greeting' || e === 'califica') && lado === 'L') r += Math.sin(t * 8) * 0.42;
+        else if (e === 'idle' && lado === 'L') r += Math.sin(t * 3.2) * 0.12;
+        if (e === 'happy') y += Math.abs(Math.sin(t * 9 + fase)) * 0.1;
+        if (e === 'califica' && lado === 'R') x += Math.sin(t * 5) * 0.08;
         if (e === 'error') x += Math.sin(t * 30 + fase) * 0.03;
       }
       if (e === 'shy' && lado === 'L' && espiando > 0) { x -= 0.5; y -= 0.1; }
@@ -257,8 +287,7 @@ export function plotty() {
 
   return {
     grupo: raiz, colores: COLORES, marco: { centro: -0.14, tam: 6.25 },
-    estados: ['idle', 'typing', 'error', 'success', 'shy', 'thinking', 'look-left', 'look-right', 'look-up', 'look-down'],
-    duracion: { error: 1900, success: 2600 },
+    estados: ESTADOS, duracion: DURACION,
     actualizar: (t, dt, ctx) => actualizar(t, dt, { ...ctx, estado: ctx.estado.startsWith('look-') ? 'idle' : ctx.estado })
   };
 }

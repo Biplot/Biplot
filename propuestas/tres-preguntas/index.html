@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tres preguntas con Plotty · BiPlot HQ</title>
+<meta name="description" content="Propuesta: las tres preguntas de Plotty en 3D, en vez de un formulario. Te dice por dónde partir y, si calificas, te invita a agendar tu diagnóstico.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F5F2EC">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='23' cy='11' r='2.6' fill='%2317C3B2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Mulish:wght@400;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link rel="modulepreload" href="../../assets/avatares3d/three/three.module.min.js">
+<link rel="modulepreload" href="../../assets/avatares3d/three/three.core.min.js">
+<link rel="modulepreload" href="../../assets/avatares3d/avatar3d.js">
+<style>
+/* =============================================================
+   Tres preguntas con Plotty (propuesta). En vez de un formulario, la conversación de la recepción de BiPlot HQ (E0):
+   Plotty en 3D, en grande sobre papel, reacciona a cada respuesta; la conversación va compacta sobre tinta. Las
+   preguntas, los textos y los casos salen de oficina/datos.js. El coral es sólo para «Agenda tu diagnóstico» (y la
+   antena de Plotty cuando calificas, que te invita a ese botón).
+   ============================================================= */
+@property --brillo{syntax:'<color>';inherits:true;initial-value:#17c3b2}
+:root{
+  --cuerpo:#1c426d; --ojos:#17c3b2;
+  --tinta:color-mix(in srgb,var(--cuerpo) 30%,#040b14);
+  --tinta-2:color-mix(in srgb,var(--cuerpo) 45%,#081625);
+  --papel:#F5F2EC;
+  --texto:#0F1B28; --suave:#56606A;
+  --crema:rgba(245,242,236,.92); --crema-70:rgba(245,242,236,.7); --crema-50:rgba(245,242,236,.52);
+  --filete:rgba(245,242,236,.16);
+  --acento-papel:#0A7A6F;                       /* el acento para texto sobre papel (AA) */
+  --cta:#FF6B4A; --cta-2:#FF8467; --cta-texto:#2b0f08;   /* sólo «Agenda tu diagnóstico» */
+  --ok-brillo:#4ade80;
+  --brillo:var(--ojos);
+  --serif:'Cormorant Garamond',Garamond,'Times New Roman',serif;
+  --sans:'Mulish',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --marca:'Space Grotesk','Mulish',sans-serif;
+  --suave-in:cubic-bezier(.16,1,.3,1);
+  --resorte:cubic-bezier(.34,1.56,.64,1);
+}
+:root[data-estado="califica"]{--brillo:var(--ok-brillo)}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--papel);color:var(--texto);font:400 1rem/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit}
+.oculto{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.pagina{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);min-height:100vh;min-height:100dvh}
+
+/* ── El escenario: Plotty en grande, sobre papel ── */
+.escenario{position:sticky;top:0;align-self:start;height:100vh;height:100dvh;display:flex;flex-direction:column;padding:clamp(1.25rem,3vw,2.5rem);overflow:hidden}
+.marca{display:inline-flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--texto);align-self:flex-start}
+.marca svg{width:34px;height:34px}
+.marca span{font:700 1.15rem/1 var(--marca);letter-spacing:-.01em}
+.marca b{color:var(--acento-papel);font-weight:700}
+.marca small{margin-left:.15rem;font:700 .62rem/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--suave)}
+.zona{--tam:clamp(260px,36vw,460px);position:relative;flex:1;display:grid;place-items:center;min-height:0;padding:1rem 0}
+.brillo{position:absolute;left:50%;top:50%;width:min(640px,92%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--brillo) 36%,transparent),color-mix(in srgb,var(--brillo) 10%,transparent) 55%,transparent 72%);
+  filter:blur(18px);opacity:.75;pointer-events:none;transition:--brillo .4s var(--suave-in);animation:respira 9s ease-in-out infinite}
+@keyframes respira{0%,100%{scale:.94;opacity:.62}50%{scale:1.05;opacity:.85}}
+.rebota{display:block}
+.rebota.salta{animation:rebote .38s var(--resorte)}
+@keyframes rebote{0%{translate:0 0}40%{translate:0 -16px}100%{translate:0 0}}
+.avatar{display:block;width:var(--tam);aspect-ratio:1;transition:width .3s var(--suave-in)}
+.avatar3d{position:relative;width:100%;height:100%}
+.avatar3d canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;opacity:0;transition:opacity .35s var(--suave-in)}
+.avatar3d-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .35s var(--suave-in)}
+.avatar3d.dibujado canvas{opacity:1}
+.avatar3d.dibujado .avatar3d-poster{opacity:0}
+.kicker{display:block;font:700 .7rem/1.3 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:var(--acento-papel);margin:0 0 .45rem}
+.frase{margin:0;max-width:24ch;font:italic 500 clamp(1.35rem,2.2vw,1.75rem)/1.2 var(--serif);color:var(--texto)}
+
+/* ── La conversación: compacta, sobre tinta ── */
+.panel{background:var(--tinta);color:var(--crema);padding:clamp(2rem,4vw,3.6rem) clamp(1.25rem,5vw,5rem) clamp(2.5rem,5vw,4rem)}
+.caja{width:100%;max-width:30rem}
+.panel .kicker{color:var(--ojos)}
+h1{margin:0 0 1.4rem;font:500 clamp(2.1rem,3.4vw,2.9rem)/1.05 var(--serif);letter-spacing:-.01em;color:var(--papel);text-wrap:balance}
+h1 em{font-style:italic;color:var(--ojos)}
+
+/* El avance: las tres preguntas, en orden */
+.avance{list-style:none;margin:0 0 1.6rem;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.avance li{font:700 .66rem/1.2 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--crema-50);padding-top:.6rem;position:relative}
+.avance li::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;border-radius:2px;background:var(--filete);transition:background .3s var(--suave-in)}
+.avance li[data-estado="actual"]{color:var(--crema)}
+.avance li[data-estado="actual"]::before{background:linear-gradient(90deg,var(--ojos) 40%,var(--filete) 40%)}
+.avance li[data-estado="lista"]{color:var(--ojos)}
+.avance li[data-estado="lista"]::before{background:var(--ojos)}
+
+.charla{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+.msg{max-width:88%;padding:.7rem .95rem;font:500 .98rem/1.45 var(--sans);animation:entra .26s var(--suave-in)}
+.msg.plotty{align-self:flex-start;background:var(--tinta-2);border:1px solid var(--filete);border-radius:14px 14px 14px 4px;color:var(--crema)}
+.msg.tu{align-self:flex-end;background:color-mix(in srgb,var(--ojos) 16%,transparent);border:1px solid color-mix(in srgb,var(--ojos) 55%,transparent);border-radius:14px 14px 4px 14px;color:var(--papel)}
+.msg .quien{display:block;margin-bottom:.15rem;font:800 .62rem/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--ojos)}
+.msg.escribiendo{display:flex;gap:.3rem;align-items:center;padding:.85rem 1rem}
+.msg.escribiendo i{width:.42rem;height:.42rem;border-radius:50%;background:var(--crema-70);animation:punto 1s ease-in-out infinite}
+.msg.escribiendo i:nth-child(2){animation-delay:.15s}
+.msg.escribiendo i:nth-child(3){animation-delay:.3s}
+@keyframes punto{0%,60%,100%{opacity:.3;translate:0 0}30%{opacity:1;translate:0 -3px}}
+@keyframes entra{from{opacity:0;translate:0 6px}to{opacity:1;translate:0 0}}
+
+.opciones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem;margin-top:1rem}
+.opciones:empty{display:none}
+.opciones button{appearance:none;text-align:left;min-height:3rem;padding:.7rem .95rem;border:1px solid var(--filete);border-radius:10px;background:rgba(245,242,236,.04);
+  color:var(--papel);font:600 .93rem/1.3 var(--sans);cursor:pointer;animation:entra .26s var(--suave-in) backwards;
+  transition:border-color .18s var(--suave-in),background .18s var(--suave-in),translate .18s var(--suave-in)}
+.opciones button:hover{border-color:var(--ojos);background:rgba(245,242,236,.07)}
+.opciones button:active{translate:0 1px}
+.opciones button:focus-visible{outline:2px solid var(--ojos);outline-offset:2px}
+
+/* El final: el resumen, «Agenda tu diagnóstico» y los casos como el tuyo */
+.final{margin-top:1.4rem;padding-top:1.4rem;border-top:1px solid var(--filete);display:grid;gap:1.2rem;animation:entra .3s var(--suave-in)}
+.final[hidden]{display:none}
+.resumen{margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
+.resumen dt{font:700 .62rem/1.2 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--crema-50);margin-bottom:.25rem}
+.resumen dd{margin:0;font:600 .88rem/1.35 var(--sans);color:var(--papel)}
+.acciones{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.agenda{display:inline-flex;align-items:center;justify-content:center;min-height:3.2rem;padding:0 1.6rem;border-radius:6px;background:var(--cta);color:var(--cta-texto);
+  font:800 1rem/1 var(--sans);text-decoration:none;transition:background .18s var(--suave-in),translate .18s var(--suave-in)}
+.agenda:hover{background:var(--cta-2)}
+.agenda:active{translate:0 1px}
+.agenda:focus-visible{outline:2px solid var(--papel);outline-offset:3px}
+.boton{display:inline-flex;align-items:center;min-height:3rem;padding:0 1.3rem;border-radius:6px;background:var(--ojos);color:#04211d;font:800 .95rem/1 var(--sans);text-decoration:none}
+.boton:focus-visible{outline:2px solid var(--papel);outline-offset:3px}
+.secundario{appearance:none;border:1px solid var(--filete);background:none;color:var(--crema);min-height:3rem;padding:0 1.1rem;border-radius:6px;font:700 .9rem/1 var(--sans);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.secundario:hover{border-color:var(--ojos)}
+.secundario:focus-visible{outline:2px solid var(--ojos);outline-offset:2px}
+.detalle{margin:-.4rem 0 0;font:500 .8rem/1.4 var(--sans);color:var(--crema-50)}
+.casos h2{margin:0 0 .6rem;font:700 .7rem/1.3 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--ojos)}
+.casos ul{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+.casos a{display:grid;gap:.15rem;padding:.75rem .95rem;border:1px solid var(--filete);border-radius:10px;text-decoration:none;transition:border-color .18s var(--suave-in),background .18s var(--suave-in)}
+.casos a:hover{border-color:var(--ojos);background:rgba(245,242,236,.04)}
+.casos a:focus-visible{outline:2px solid var(--ojos);outline-offset:2px}
+.casos b{font:700 .95rem/1.3 var(--sans);color:var(--papel)}
+.casos span{font:500 .82rem/1.4 var(--sans);color:var(--crema-70)}
+.nota{margin:1.6rem 0 0;font:500 .78rem/1.5 var(--sans);color:var(--crema-50)}
+
+/* ── Celular: Plotty arriba; con la conversación andando se achica y queda fijo arriba ── */
+@media (max-width:900px){
+  .pagina{display:block}                      /* en bloque: la barra fija queda arriba en toda la página, no sólo en su fila */
+  .escenario{position:relative;height:auto;padding:1.1rem 1.1rem 1.3rem}
+  .msg,.opciones,.final .acciones{scroll-margin-top:7rem}
+  .zona{--tam:min(66vw,280px);padding:.5rem 0}
+  .frase{font-size:1.3rem}
+  .panel{padding:2.2rem 1.15rem 3rem}
+  h1{font-size:2.05rem}
+  .opciones{grid-template-columns:1fr}
+  .resumen{grid-template-columns:1fr}
+  :root[data-charla] .escenario{position:sticky;top:0;z-index:5;flex-direction:row;align-items:center;gap:.9rem;padding:.35rem 1rem;
+    background:var(--papel);box-shadow:0 1px 0 rgba(15,27,40,.12)}
+  :root[data-charla] .marca{display:none}
+  :root[data-charla] .zona{--tam:84px;flex:none;padding:0}
+  :root[data-charla] .brillo{width:150px}
+  :root[data-charla] .kicker{margin-bottom:.15rem;font-size:.62rem}
+  :root[data-charla] .frase{font-size:1.02rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .brillo{animation:none}
+  .msg,.opciones button,.final,.rebota.salta,.msg.escribiendo i{animation:none}
+  .brillo,.avatar,.avatar3d canvas,.avatar3d-poster,.avance li::before{transition:none}
+}
+</style>
+</head>
+<body>
+<main class="pagina">
+  <section class="escenario" aria-label="Plotty, la recepción de BiPlot HQ">
+    <a class="marca" href="../../" aria-label="BiPlot, ir al sitio">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="bp-sq" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#143a63"/><stop offset="1" stop-color="#0b1f39"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#bp-sq)"/><path d="M9 8 V24 H25" fill="none" stroke="#3f6da0" stroke-width="1.7" stroke-linecap="round"/><polyline points="10.5,20.5 15,16.5 19,18 23,11" fill="none" stroke="#17C3B2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><circle cx="10.5" cy="20.5" r="1.8" fill="#17C3B2"/><circle cx="15" cy="16.5" r="1.8" fill="#17C3B2"/><circle cx="19" cy="18" r="1.8" fill="#17C3B2"/><circle cx="23" cy="11" r="2.3" fill="#FF6B4A"/></svg>
+      <span>Bi<b>Plot</b><small>HQ</small></span>
+    </a>
+    <div class="zona">
+      <div class="brillo" aria-hidden="true"></div>
+      <span class="rebota" id="rebota"><span class="avatar" id="avatar"></span></span>
+    </div>
+    <div class="presenta">
+      <span class="kicker">E0 · Recepción</span>
+      <p class="frase">«Tres preguntas. Prometo que no es un formulario.»</p>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Conversación con Plotty">
+    <div class="caja">
+      <span class="kicker">Recepción · E0</span>
+      <h1>Tres preguntas <em>y te digo por dónde partir.</em></h1>
+      <ol class="avance" id="avance" aria-label="Avance de la conversación">
+        <li>Tu negocio</li><li>Tu operación</li><li>Tus horas</li>
+      </ol>
+      <ol class="charla" id="charla" aria-live="polite"></ol>
+      <div class="opciones" id="opciones" role="group" aria-label="Tus respuestas"></div>
+      <div class="final" id="final" hidden></div>
+      <p class="nota">No se guarda nada. Tus respuestas sólo salen de aquí si eliges escribirnos por WhatsApp.</p>
+    </div>
+  </section>
+</main>
+<script src="../../oficina/datos.js"></script>
+<script type="module" src="preguntas.js"></script>
+</body>
+</html>
