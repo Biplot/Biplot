@@ -1,8 +1,0 @@
-node_modules/
-.vercel
-.env*
-!.env.ejemplo
-# Se copia de ../assets/avatares3d al armar (npm run build / npm run dev)
-public/avatares3d/
-# El demo armado (node scripts/armar-demo.mjs)
-demo-armado/
