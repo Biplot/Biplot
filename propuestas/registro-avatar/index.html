@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crea tu cuenta · BiPlot HQ</title>
+<meta name="description" content="Propuesta: registro con Plotty (o Atlas) como protagonista, un avatar que te mira y reacciona a lo que haces.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#F5F2EC">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='23' cy='11' r='2.6' fill='%2317C3B2'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Mulish:wght@400;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link rel="modulepreload" href="avatar-web.js">
+<style>
+/* =============================================================
+   Registro con avatar (propuesta). La línea editorial del sitio: títulos en serif con remate en cursiva, kickers
+   espaciados, papel y tinta. La paleta sale del .avatar.json de quien recibe: --cuerpo y --ojos los pone
+   registro.js; la tinta es el color del cuerpo oscurecido y el acento, el de los ojos. Sin coral: sigue reservado para
+   «Agenda tu diagnóstico».
+   ============================================================= */
+@property --brillo{syntax:'<color>';inherits:true;initial-value:#17c3b2}
+:root{
+  --cuerpo:#224b78; --ojos:#17c3b2;
+  --tinta:color-mix(in srgb,var(--cuerpo) 30%,#040b14);
+  --tinta-2:color-mix(in srgb,var(--cuerpo) 42%,#06101c);
+  --papel:#F5F2EC; --papel-2:#ECE6DA;
+  --texto:#0F1B28; --suave:#56606A;
+  --crema:rgba(245,242,236,.92); --crema-70:rgba(245,242,236,.7); --crema-50:rgba(245,242,236,.52);
+  --filete:rgba(245,242,236,.16);
+  --acento-papel:color-mix(in srgb,var(--ojos) 45%,#06302b);   /* el acento para texto sobre papel (AA) */
+  --acento-texto:#04211d;
+  --error:#ff8fa3; --error-brillo:#ff4d6d;   /* sobre tinta */
+  --ok:#86efac; --ok-brillo:#4ade80;
+  --brillo:var(--ojos);
+  --serif:'Cormorant Garamond',Garamond,'Times New Roman',serif;
+  --sans:'Mulish',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --marca:'Space Grotesk','Mulish',sans-serif;
+  --suave-in:cubic-bezier(.16,1,.3,1);
+  --resorte:cubic-bezier(.34,1.56,.64,1);
+}
+:root[data-estado="error"]{--brillo:var(--error-brillo)}
+:root[data-estado="success"]{--brillo:var(--ok-brillo)}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--papel);color:var(--texto);font:400 1rem/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.oculto{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.pagina{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);min-height:100vh;min-height:100dvh}
+
+/* ── El escenario: el avatar en grande, sobre papel ── */
+.escenario{position:sticky;top:0;align-self:start;height:100vh;height:100dvh;display:flex;flex-direction:column;padding:clamp(1.25rem,3vw,2.5rem);overflow:hidden}
+.marca{display:inline-flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--texto);align-self:flex-start}
+.marca svg{width:34px;height:34px}
+.marca span{font:700 1.15rem/1 var(--marca);letter-spacing:-.01em}
+.marca b{color:var(--acento-papel);font-weight:700}
+.marca small{margin-left:.15rem;font:700 .62rem/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;color:var(--suave)}
+
+.zona{--tam:clamp(260px,34vw,440px);position:relative;flex:1;display:grid;place-items:center;perspective:900px;min-height:0;padding:1rem 0}
+.brillo{position:absolute;left:50%;top:50%;width:min(620px,92%);aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:radial-gradient(closest-side,color-mix(in srgb,var(--brillo) 36%,transparent),color-mix(in srgb,var(--brillo) 10%,transparent) 55%,transparent 72%);
+  filter:blur(18px);opacity:.75;pointer-events:none;transition:--brillo .4s var(--suave-in);animation:respira 9s ease-in-out infinite}
+:root[data-estado="error"] .brillo,:root[data-estado="success"] .brillo{opacity:.95}
+@keyframes respira{0%,100%{scale:.94;opacity:.62}50%{scale:1.05;opacity:.85}}
+.inclina{position:relative;transform-style:preserve-3d;will-change:transform}
+.rebota{display:block}
+.rebota.salta{animation:rebote .38s var(--resorte)}
+@keyframes rebote{0%{translate:0 0}40%{translate:0 -16px}100%{translate:0 0}}
+.avatar{display:block;width:var(--tam);aspect-ratio:1;transition:width .3s var(--suave-in)}
+.avatar .bs-avatar{width:100%!important;height:100%!important}
+.sombra{position:absolute;left:50%;top:calc(50% + var(--tam) * .44);width:calc(var(--tam) * .62);height:calc(var(--tam) * .06);translate:-50% 0;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(15,27,40,.22),transparent);pointer-events:none;animation:sombra 9s ease-in-out infinite}
+@keyframes sombra{0%,100%{scale:1}50%{scale:.92}}
+
+.presenta{display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.kicker{display:block;font:700 .7rem/1.3 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:var(--acento-papel);margin:0 0 .45rem}
+.frase{margin:0;max-width:22ch;font:italic 500 clamp(1.35rem,2.2vw,1.75rem)/1.2 var(--serif);color:var(--texto)}
+.elige{display:flex;align-items:center;gap:.25rem;font:600 .8rem/1 var(--sans);color:var(--suave)}
+.elige span{margin-right:.4rem}
+.elige button{appearance:none;border:1px solid transparent;background:none;border-radius:999px;padding:.5rem .85rem;font:inherit;color:var(--texto);cursor:pointer;
+  transition:background .2s var(--suave-in),border-color .2s var(--suave-in)}
+.elige button:hover{border-color:rgba(15,27,40,.18)}
+.elige button[aria-pressed="true"]{background:var(--texto);color:var(--papel)}
+.elige button:focus-visible{outline:2px solid var(--acento-papel);outline-offset:2px}
+
+/* ── El formulario: compacto, sobre tinta ── */
+.panel{background:var(--tinta);color:var(--crema);display:flex;align-items:center;padding:clamp(2rem,4vw,4rem) clamp(1.5rem,5vw,5.5rem);transition:background .4s var(--suave-in)}
+.caja{width:100%;max-width:27rem}
+.panel .kicker{color:var(--ojos)}
+h1,h2{margin:0 0 .8rem;font:500 clamp(2.2rem,3.6vw,3.1rem)/1.04 var(--serif);letter-spacing:-.01em;color:var(--papel)}
+h1 em,h2 em{font-style:italic;color:var(--ojos)}
+.bajada{margin:0 0 1.9rem;color:var(--crema-70);max-width:34ch}
+
+.campo{margin-bottom:1rem}
+.campo label{display:block;margin-bottom:.4rem;font:700 .78rem/1.2 var(--sans);letter-spacing:.04em;color:var(--crema)}
+.control{position:relative}
+.campo input{width:100%;height:3.1rem;padding:0 1rem;border:1px solid var(--filete);border-radius:6px;background:rgba(245,242,236,.04);
+  color:var(--papel);font:500 1rem/1 var(--sans);transition:border-color .18s var(--suave-in),box-shadow .18s var(--suave-in),background .18s var(--suave-in)}
+.campo input::placeholder{color:var(--crema-50)}
+.campo input:hover{border-color:rgba(245,242,236,.28)}
+.campo input:focus{outline:none;border-color:var(--ojos);background:rgba(245,242,236,.07);box-shadow:0 0 0 3px color-mix(in srgb,var(--ojos) 22%,transparent)}
+.campo input[aria-invalid="true"]{border-color:var(--error)}
+.campo input[aria-invalid="true"]:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--error-brillo) 22%,transparent)}
+.con-boton input{padding-right:5.5rem}
+.ver{position:absolute;right:.4rem;top:50%;translate:0 -50%;appearance:none;border:0;background:none;color:var(--crema-70);font:700 .72rem/1 var(--sans);
+  letter-spacing:.12em;text-transform:uppercase;padding:.65rem .6rem;border-radius:4px;cursor:pointer}
+.ver:hover{color:var(--papel)}
+.ver:focus-visible{outline:2px solid var(--ojos);outline-offset:1px}
+.ayuda,.mensaje{margin:.4rem 0 0;font:500 .8rem/1.4 var(--sans)}
+.ayuda{color:var(--crema-50)}
+.mensaje{color:var(--error)}
+.mensaje:empty{display:none}
+.mensaje:not(:empty)+.ayuda{display:none}
+.sacude{animation:sacude .32s var(--suave-in)}
+@keyframes sacude{0%,100%{translate:0}20%{translate:-7px}40%{translate:6px}60%{translate:-4px}80%{translate:2px}}
+
+.enviar{position:relative;overflow:hidden;margin-top:.9rem;width:100%;height:3.3rem;border:0;border-radius:6px;background:var(--ojos);color:var(--acento-texto);
+  font:800 .98rem/1 var(--sans);letter-spacing:.02em;cursor:pointer;transition:filter .18s var(--suave-in),translate .18s var(--suave-in)}
+.enviar:hover{filter:brightness(1.07)}
+.enviar:active{translate:0 1px}
+.enviar:focus-visible{outline:2px solid var(--papel);outline-offset:3px}
+.enviar[aria-busy="true"]{cursor:progress}
+.enviar[aria-busy="true"]::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:38%;background:var(--acento-texto);opacity:.55;animation:linea 1s var(--suave-in) infinite}
+@keyframes linea{from{translate:-100% 0}to{translate:270% 0}}
+.nota{margin:1.4rem 0 0;font:500 .78rem/1.5 var(--sans);color:var(--crema-50)}
+
+.listo{display:none}
+.listo:focus{outline:none}
+.listo p{color:var(--crema-70);margin:0 0 1.8rem;max-width:34ch}
+.listo .enviar{width:auto;padding:0 1.6rem;background:transparent;color:var(--papel);border:1px solid var(--filete)}
+.listo .enviar:hover{border-color:var(--ojos);filter:none}
+:root[data-pantalla="listo"] .registro{display:none}
+:root[data-pantalla="listo"] .listo{display:block;animation:aparece .36s var(--suave-in)}
+@keyframes aparece{from{opacity:0;translate:0 10px}to{opacity:1;translate:0}}
+:root[data-pantalla="listo"] .listo .kicker{color:var(--ok)}
+
+.aviso{margin:0 0 1rem;padding:.75rem 1rem;border-left:3px solid var(--error);background:rgba(255,143,163,.08);font:600 .85rem/1.4 var(--sans);color:var(--error)}
+.aviso[hidden]{display:none}
+
+/* ── Celular: el avatar arriba ── */
+@media (max-width:900px){
+  .pagina{grid-template-columns:1fr}
+  .escenario{position:relative;height:auto;padding:1.1rem 1.1rem 1.4rem}
+  .zona{--tam:min(66vw,280px);padding:.5rem 0}
+  .presenta{align-items:flex-start}
+  .frase{font-size:1.3rem}
+  .panel{padding:2.4rem 1.25rem 3rem}
+  h1,h2{font-size:2.15rem}
+  .bajada{margin-bottom:1.6rem}
+  /* Con el foco en un campo, el avatar se achica y queda fijo arriba: así sigue mirando lo que escribes */
+  :root[data-foco] .escenario{position:sticky;top:0;z-index:5;flex-direction:row;align-items:center;gap:.9rem;padding:.35rem 1rem;
+    background:var(--papel);box-shadow:0 1px 0 rgba(15,27,40,.12)}
+  :root[data-foco] .marca,:root[data-foco] .elige,:root[data-foco] .sombra{display:none}
+  :root[data-foco] .zona{--tam:84px;flex:none;padding:0}
+  :root[data-foco] .brillo{width:150px}
+  :root[data-foco] .presenta{flex:1}
+  :root[data-foco] .kicker{margin-bottom:.15rem;font-size:.62rem}
+  :root[data-foco] .frase{font-size:1.02rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .brillo,.sombra{animation:none}
+  .rebota.salta,.sacude,:root[data-pantalla="listo"] .listo{animation:none}
+  .enviar[aria-busy="true"]::after{animation:none;width:100%;opacity:.25}
+  .brillo,.panel,.campo input,.elige button,.avatar{transition:none}
+}
+</style>
+</head>
+<body>
+<main class="pagina">
+  <section class="escenario" aria-label="Quien te recibe">
+    <a class="marca" href="/" aria-label="BiPlot, ir al sitio">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="bp-sq" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#143a63"/><stop offset="1" stop-color="#0b1f39"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#bp-sq)"/><path d="M9 8 V24 H25" fill="none" stroke="#3f6da0" stroke-width="1.7" stroke-linecap="round"/><polyline points="10.5,20.5 15,16.5 19,18 23,11" fill="none" stroke="#17C3B2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/><circle cx="10.5" cy="20.5" r="1.8" fill="#17C3B2"/><circle cx="15" cy="16.5" r="1.8" fill="#17C3B2"/><circle cx="19" cy="18" r="1.8" fill="#17C3B2"/><circle cx="23" cy="11" r="2.3" fill="#FF6B4A"/></svg>
+      <span>Bi<b>Plot</b><small>HQ</small></span>
+    </a>
+    <div class="zona" id="zona">
+      <div class="brillo" aria-hidden="true"></div>
+      <div class="sombra" aria-hidden="true"></div>
+      <div class="inclina" id="inclina"><span class="rebota" id="rebota"><span class="avatar" id="avatar"></span></span></div>
+    </div>
+    <div class="presenta">
+      <div>
+        <span class="kicker" id="placa">E0 · Recepción</span>
+        <p class="frase" id="frase">«Tres preguntas. Prometo que no es un formulario.»</p>
+      </div>
+      <div class="elige" role="group" aria-label="Quién te recibe">
+        <span>Te recibe</span>
+        <button type="button" data-avatar="plotty" aria-pressed="true">Plotty</button>
+        <button type="button" data-avatar="atlas" aria-pressed="false">Atlas</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Crear cuenta">
+    <div class="caja">
+      <div class="registro">
+        <span class="kicker">Crea tu cuenta</span>
+        <h1>Pasa, <em>te estábamos esperando.</em></h1>
+        <p class="bajada">Con tu cuenta entras a BiPlot HQ y sigues tu proyecto desde su sala.</p>
+        <p class="aviso" id="aviso" role="alert" hidden></p>
+        <form id="formulario" novalidate>
+          <div class="campo">
+            <label for="nombre">Nombre</label>
+            <div class="control"><input id="nombre" name="nombre" type="text" autocomplete="name" placeholder="Cómo te llamas" aria-describedby="nombre-msj"></div>
+            <p class="mensaje" id="nombre-msj" aria-live="polite"></p>
+          </div>
+          <div class="campo">
+            <label for="email">Email</label>
+            <div class="control"><input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="tu@empresa.cl" aria-describedby="email-msj"></div>
+            <p class="mensaje" id="email-msj" aria-live="polite"></p>
+          </div>
+          <div class="campo">
+            <label for="clave">Contraseña</label>
+            <div class="control con-boton">
+              <input id="clave" name="clave" type="password" autocomplete="new-password" aria-describedby="clave-msj clave-ayuda" data-clave>
+              <button class="ver" type="button" aria-controls="clave" aria-pressed="false" aria-label="Mostrar contraseña">Mostrar</button>
+            </div>
+            <p class="mensaje" id="clave-msj" aria-live="polite"></p>
+            <p class="ayuda" id="clave-ayuda">Mínimo 8 caracteres, con letras y números.</p>
+          </div>
+          <div class="campo">
+            <label for="confirma">Confirma tu contraseña</label>
+            <div class="control con-boton">
+              <input id="confirma" name="confirma" type="password" autocomplete="new-password" aria-describedby="confirma-msj" data-clave>
+              <button class="ver" type="button" aria-controls="confirma" aria-pressed="false" aria-label="Mostrar la confirmación">Mostrar</button>
+            </div>
+            <p class="mensaje" id="confirma-msj" aria-live="polite"></p>
+          </div>
+          <button class="enviar" id="enviar" type="submit">Crear cuenta</button>
+        </form>
+        <p class="nota">Propuesta de diseño: no se envía ni se guarda nada, todo pasa en tu navegador.</p>
+      </div>
+
+      <div class="listo" id="listo" tabindex="-1">
+        <span class="kicker">Cuenta creada</span>
+        <h2>Listo, <em id="listo-nombre">bienvenido</em>.</h2>
+        <p>Ya tienes tu lugar en BiPlot HQ. En la versión real, aquí te llegaría un correo para confirmar tu email.</p>
+        <button class="enviar" id="otra-vez" type="button">Volver a empezar</button>
+      </div>
+    </div>
+  </section>
+</main>
+<script type="module" src="registro.js"></script>
+</body>
+</html>

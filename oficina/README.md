@@ -602,23 +602,30 @@ ffmpeg -ss 4.3 -i visita-plotty-16x9.mp4 -frames:v 1 -vf scale=1280:720 -q:v 4 a
 
 Atlas y Plotty también existen como avatares animados para **Avatar Lab** (avatars.bible-strong.app), el estudio de
 avatares 2D de Bible Strong: un cuerpo armado con figuras 3D, dos ojos, expresiones y animaciones. Están en
-`_herramientas/avatares/`: `atlas.avatar.json` y `plotty.avatar.json`, y `vista.png` con todas sus expresiones.
+`_herramientas/avatares/`: `atlas.avatar.json` y `plotty.avatar.json`, y `vista.png` con todas sus expresiones. Los usa
+la propuesta de registro con avatar (`propuestas/registro-avatar/`, ver su README).
 
 - **Para usarlos**: el estudio está en inglés, francés o chino. En la lista de avatares, el «+» → «Import a
   .avatar.json» → «Import». Quedan en la biblioteca de ese navegador con sus expresiones y animaciones; de ahí se sacan
   fotos (SVG o PNG, con fondo o transparente, en «Photo Mode») o el paquete para React o JavaScript («Export»).
+- **Las animaciones** usan las claves de la guía de NodeStudio, en inglés y en minúscula, porque son las que pide una
+  página: `idle`, `typing`, `error` y `success` (estas dos, una sola vez: ceño en rojo con una sacudida; ojos grandes en
+  verde), `shy` (se da vuelta para no mirar la contraseña, y espía), `look-left`, `look-right`, `look-up` y `look-down`
+  (para seguir el cursor), y `listening`, `thinking`, `happy`, `celebrate`, `confused`, `sad` y `sleeping`. Plotty suma
+  `greeting`, y Atlas, `searching`, `projecting` (enciende los ojos en blanco plasma) y `suspicious`. El nombre que se ve
+  en el estudio va en español. No se cambian las claves: la página las busca tal cual.
 - **Plotty** (cuerpo `#224b78`, ojos `#17c3b2`): la cabeza es el cuadrado del isotipo, con los ojos de LED, los dos
-  rotores y la antena. Doce expresiones (feliz, guiño, atento, pensando, curioso, procesando…) y seis animaciones: En
-  reposo, Saludo, Escuchando, Pensando, Contento y Durmiendo.
+  rotores y la antena. 24 expresiones y 17 animaciones.
 - **Atlas** (cuerpo `#1d5c92`, ojos `#7fd8cf`): el orbe con su anillo en órbita y los dos satélites, ojos anchos de
-  párpado pesado. Once expresiones (de reojo, escaneando, proyectando, que enciende los ojos en blanco plasma, sospecha…)
-  y seis animaciones: Observando, Escaneando, Proyectando, No convencido, Satisfecho y Durmiendo.
+  párpado pesado, casi siempre de reojo. 22 expresiones y 19 animaciones.
 - El estudio pinta todo el cuerpo de un solo color y no dibuja boca, así que no llevan la carcasa blanca de Plotty, el
-  corazón de plasma ni la placa 360° de Atlas: se reconocen por la silueta y los ojos. Coral tampoco aparece.
+  corazón de plasma ni la placa 360° de Atlas: se reconocen por la silueta y los ojos. El rojo del error (`#ff4d6d`) y
+  el verde del éxito (`#4ade80`) van sólo en los ojos; coral no aparece.
 - Se arman con `node oficina/_herramientas/avatares/construir.mjs`, desde `atlas.mjs` y `plotty.mjs` (las figuras, las
-  expresiones y las animaciones) y `comun.mjs`. Las medidas del cuerpo van en el marco del estudio, de -150 a 150, y los
-  ojos nunca bajan de 10 (el estudio no importa ojos más chicos). La expresión `neutral` va sin giro ni movimiento, como
-  la pide el estudio. A Atlas no conviene inclinarle la cabeza hacia arriba: el anillo se abre y tapa el orbe.
+  expresiones y las animaciones) y `comun.mjs`; deja una copia en `propuestas/registro-avatar/`. Las medidas del cuerpo
+  van en el marco del estudio, de -150 a 150, y los ojos nunca bajan de 10 (el estudio no importa ojos más chicos). La
+  expresión `neutral` va sin giro ni movimiento, como la pide el estudio. A Atlas no conviene inclinarle la cabeza hacia
+  arriba: el anillo se abre y tapa el orbe.
 
 ## Conexión con el CRM
 

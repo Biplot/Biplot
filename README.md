@@ -37,6 +37,8 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   `node oficina/_herramientas/fotografiar-adentro.mjs <salida.png>` y se pasa a WebP con calidad 78) y `local-libre.webp`
   (el local «Tu proyecto aquí»).
 - `propuestas/fundos-inmobiliaria/` — propuesta de sitio para Fundos Inmobiliaria (no indexada; ver su README).
+- `propuestas/registro-avatar/` — propuesta de registro con Plotty (o Atlas) como avatar interactivo que te mira y
+  reacciona a lo que haces (no indexada; ver su README).
 
 ## Desarrollo local
 
