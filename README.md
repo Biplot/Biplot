@@ -43,6 +43,8 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   interactivo que te mira y reacciona a lo que haces (no indexada; ver su README).
 - `propuestas/reacciones-atlas/` — propuesta final de las 22 reacciones de Atlas para su página con voz, cada una en
   3D, con una conversación completa, estilo sobrio o expresivo y sonido (no indexada; ver su README).
+- `atlas/` — Atlas, la página privada con voz sobre la Bóveda BiPlot (Claude Sonnet 5.5 + Atlas en 3D). Es una app
+  aparte, con sus funciones de Vercel: no es parte del sitio estático (ver su README para publicarla).
 - `assets/avatares3d/` — Plotty y Atlas en 3D (Three.js), calcados de sus dibujos de la oficina, para usarlos en
   cualquier página: `crearAvatar3D`, sus estados y cómo están hechos, en su README.
 

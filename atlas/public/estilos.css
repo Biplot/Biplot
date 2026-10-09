@@ -1,0 +1,216 @@
+/* =============================================================
+   Atlas: la página de voz sobre la Bóveda BiPlot. Un HUD oscuro: Atlas en el centro, el resumen del día a la
+   izquierda, la conversación a la derecha y abajo lo que se dice, el micrófono y para escribir. En el celular,
+   Atlas arriba y lo demás debajo. El brillo cambia con el tono: ámbar en la alerta, azul en la pena, verde en lo
+   que salió bien, rojo en el error. Nada de coral.
+   ============================================================= */
+@property --brillo{syntax:'<color>';inherits:true;initial-value:#17c3b2}
+:root{
+  color-scheme:dark;
+  --fondo:#04101A; --fondo-2:#061522; --panel:rgba(9,30,46,.78); --panel-2:rgba(242,238,230,.05);
+  --crema:#F2EEE6; --crema-70:rgba(242,238,230,.72); --crema-50:rgba(242,238,230,.52); --filete:rgba(242,238,230,.12);
+  --lente:#7FD8CF; --cian:#17C3B2; --ambar:#F5B83D; --verde:#4ADE80; --rojo:#FF4D6D; --enlace:#C3BAFA;
+  --brillo:var(--cian);
+  --serif:'Cormorant Garamond',Garamond,'Times New Roman',serif;
+  --sans:'Mulish',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --marca:'Space Grotesk','Mulish',sans-serif;
+  --mono:ui-monospace,'Cascadia Mono',Consolas,Menlo,monospace;
+  --suave-in:cubic-bezier(.16,1,.3,1);
+  --arriba:env(safe-area-inset-top,0px); --abajo:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--fondo);color:var(--crema);font:400 15px/1.5 var(--sans);font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased;overflow:hidden}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--lente)}
+code{font:500 .88em/1 var(--mono);background:rgba(242,238,230,.08);padding:.1em .35em;border-radius:5px}
+.oculto{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--lente);outline-offset:2px}
+
+/* ── Atlas en 3D ── */
+.avatar3d{position:relative;width:100%;height:100%}
+.avatar3d canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;opacity:0;transition:opacity .35s var(--suave-in)}
+.avatar3d-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .35s var(--suave-in)}
+.avatar3d.dibujado canvas{opacity:1}
+.avatar3d.dibujado .avatar3d-poster{opacity:0}
+
+/* ── El HUD ── */
+.hud{position:relative;display:grid;grid-template-rows:auto minmax(0,1fr) auto;height:100vh;height:100dvh;
+  padding:calc(var(--arriba) + 10px) max(16px,env(safe-area-inset-right)) calc(var(--abajo) + 12px) max(16px,env(safe-area-inset-left));
+  background:radial-gradient(48% 52% at 50% 44%,color-mix(in srgb,var(--brillo) 16%,transparent),transparent 72%),linear-gradient(var(--fondo),var(--fondo-2));
+  transition:--brillo .6s var(--suave-in)}
+.hud::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(127,216,207,.03) 0 1px,transparent 1px 4px);pointer-events:none}
+.hud[data-tono="alerta"]{--brillo:var(--ambar)}
+.hud[data-tono="preocupado"]{--brillo:#4C7FB8}
+.hud[data-tono="bien"]{--brillo:var(--verde)}
+.hud[data-tono="error"]{--brillo:var(--rojo)}
+.hud[data-tono="dormido"]{--brillo:#0E3340}
+
+.barra{position:relative;display:flex;align-items:center;gap:12px;min-height:44px;z-index:2}
+.marca{display:flex;align-items:baseline;gap:8px;margin-right:auto}
+.marca b{font:700 20px/1 var(--marca);letter-spacing:.02em;color:var(--crema)}
+.marca small{font:800 10px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--crema-50)}
+.conexion{display:flex;align-items:center;gap:7px;font:700 11px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--crema-50)}
+.conexion i{width:7px;height:7px;border-radius:50%;background:var(--crema-50)}
+.hud[data-conexion="ok"] .conexion i{background:var(--verde);box-shadow:0 0 8px var(--verde)}
+.hud[data-conexion="simulado"] .conexion i{background:var(--ambar)}
+.hud[data-conexion="error"] .conexion i{background:var(--rojo)}
+.icono-boton{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;border:1px solid var(--filete);background:var(--panel-2);cursor:pointer;color:var(--crema-70)}
+.icono-boton svg{width:20px;height:20px}
+.icono-boton:hover{color:var(--crema);border-color:color-mix(in srgb,var(--lente) 50%,transparent)}
+
+/* La escena: resumen | Atlas | conversación */
+.escena{position:relative;display:grid;grid-template-columns:minmax(230px,300px) minmax(0,1fr) minmax(300px,410px);grid-template-areas:"resumen centro charla";gap:18px;min-height:0;padding:12px 0}
+.lecturas{display:contents}
+.centro{grid-area:centro;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}
+.orbita{position:relative;display:grid;place-items:center;width:min(100%,46vh,470px);aspect-ratio:1}
+.orbita .aro{position:absolute;inset:0;border-radius:50%;border:1px solid color-mix(in srgb,var(--brillo) 22%,transparent)}
+.orbita .a2{inset:7%;border:1.5px dashed color-mix(in srgb,var(--brillo) 30%,transparent);animation:gira 40s linear infinite}
+.orbita .a3{inset:-4%;border:2px solid transparent;border-top-color:color-mix(in srgb,var(--brillo) 60%,transparent);animation:gira 9s linear infinite}
+.hud[data-reaccion="buscando"] .orbita .a3,.hud[data-reaccion="thinking"] .orbita .a3,.hud[data-reaccion="leyendo"] .orbita .a3{animation-duration:1.6s}
+.hud[data-reaccion="dormir"] .orbita .a2,.hud[data-reaccion="dormir"] .orbita .a3{animation-play-state:paused;opacity:.4}
+@keyframes gira{to{rotate:360deg}}
+.atlas{position:relative;width:86%;aspect-ratio:1;cursor:pointer}
+.tocar{position:absolute;left:50%;bottom:0;translate:-50% 40%;white-space:nowrap;padding:10px 16px;border-radius:999px;border:1px solid color-mix(in srgb,var(--lente) 50%,transparent);background:rgba(4,16,26,.7);color:var(--lente);font:800 12px/1 var(--sans);letter-spacing:.06em;cursor:pointer;animation:late 2.4s ease-in-out infinite}
+@keyframes late{50%{opacity:.55}}
+.estado{min-height:20px;margin:6px 0 0;font:800 11px/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:color-mix(in srgb,var(--brillo) 70%,var(--crema));text-align:center;max-width:90%}
+.onda{display:flex;align-items:center;justify-content:center;gap:3px;height:30px;margin-top:4px}
+.onda i{width:3px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--lente) 35%,transparent)}
+.hud[data-voz] .onda i{animation:onda .9s ease-in-out infinite alternate}
+.hud[data-voz="atlas"] .onda i{background:var(--lente)}
+.hud[data-voz="chris"] .onda i{background:var(--crema)}
+@keyframes onda{0%{height:4px}100%{height:var(--h,22px)}}
+
+/* Entrar */
+.entrar{display:grid;gap:10px;width:min(320px,100%);margin-top:10px;text-align:center}
+.entrar h1{margin:0;font:500 40px/1 var(--serif)}
+.entrar p{margin:0;color:var(--crema-70)}
+.entrar input{height:48px;padding:0 16px;border-radius:14px;border:1px solid var(--filete);background:var(--panel-2);color:var(--crema);font-size:16px}
+.entrar button{height:48px;border:0;border-radius:14px;background:var(--lente);color:#05202A;font-weight:800;cursor:pointer}
+.entrar .aviso{min-height:20px;color:var(--rojo);font-weight:700}
+
+/* Paneles */
+.resumen{grid-area:resumen;align-self:start;max-height:100%;overflow:auto}
+.charla{grid-area:charla;display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;padding-right:4px;scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:rgba(242,238,230,.2) transparent}
+.tarjeta{padding:14px 16px;border-radius:16px;background:var(--panel);border:1px solid color-mix(in srgb,var(--lente) 20%,transparent);backdrop-filter:blur(6px);animation:aparece .45s var(--suave-in) both}
+@keyframes aparece{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+.t-titulo{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;font:800 10.5px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--lente)}
+.t-titulo small{font:600 11px/1.2 var(--sans);letter-spacing:0;text-transform:none;color:var(--crema-50)}
+.cifras{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.cifras li{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:baseline}
+.cifras b{font:700 24px/1 var(--marca);text-align:right}
+.cifras li[data-tono="alerta"] b{color:var(--ambar)}
+.cifras span{font-size:13.5px;color:var(--crema-70);line-height:1.3}
+.cifras small{display:block;font-size:12px;color:var(--crema-50)}
+.resumen .repetir{margin-top:12px;padding:0;border:0;background:none;color:var(--lente);font-weight:700;font-size:13px;cursor:pointer}
+
+.turno{display:grid;gap:8px}
+.pregunta{justify-self:end;max-width:88%;margin:0;padding:8px 12px;border-radius:14px 14px 4px 14px;background:rgba(242,238,230,.09);color:var(--crema)}
+.respuesta{padding:12px 14px;border-radius:4px 14px 14px 14px;background:var(--panel);border:1px solid color-mix(in srgb,var(--lente) 20%,transparent)}
+.respuesta.escribiendo::after{content:"";display:inline-block;width:6px;height:6px;margin-left:4px;border-radius:50%;background:var(--lente);animation:late .9s ease-in-out infinite;vertical-align:middle}
+.respuesta.fallo{border-color:color-mix(in srgb,var(--rojo) 50%,transparent)}
+.citas{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0;padding:0;list-style:none}
+.cita,.md a.wl{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;background:rgba(169,156,245,.15);color:var(--enlace);font-weight:700;font-size:12.5px;text-decoration:none;cursor:pointer;border:0}
+.md a.wl{padding:0 6px;font-size:inherit;background:rgba(169,156,245,.12)}
+.cita::before{content:"[[";opacity:.5;margin-right:1px}
+.cita::after{content:"]]";opacity:.5;margin-left:1px}
+.meta{margin:6px 0 0;font-size:11.5px;color:var(--crema-50)}
+
+/* La propuesta de cambio */
+.propuesta{margin-top:10px;padding:12px;border-radius:12px;background:rgba(3,16,26,.85);border:1px solid color-mix(in srgb,var(--lente) 30%,transparent)}
+.propuesta .p-titulo{margin:0 0 8px;font:800 10.5px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--lente)}
+.diff{border-radius:8px;background:#020b12;border:1px solid var(--filete);font:500 12px/1.55 var(--mono);overflow:hidden}
+.diff .ruta{padding:5px 9px;font:700 11px/1.3 var(--sans);color:var(--crema-50);border-bottom:1px solid var(--filete)}
+.diff .l{display:block;padding:2px 9px;white-space:pre-wrap;word-break:break-word;color:var(--crema-70)}
+.diff .l.mas{color:#B6F5C9;background:rgba(74,222,128,.1)}
+.diff .l.menos{color:#FFB3C1;background:rgba(255,77,109,.1);text-decoration:line-through}
+.acciones{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.acciones button{padding:9px 14px;border-radius:10px;border:1px solid var(--filete);background:transparent;font-weight:800;font-size:13px;cursor:pointer}
+.acciones .guardar{background:var(--lente);border-color:var(--lente);color:#05202A}
+.propuesta .hecho{margin:10px 0 0;font-weight:800;color:var(--verde)}
+.propuesta .hecho a{margin-left:6px;font-weight:700}
+.propuesta[data-estado="guardada"]{border-color:color-mix(in srgb,var(--verde) 50%,transparent)}
+.propuesta[data-estado="error"]{border-color:color-mix(in srgb,var(--rojo) 50%,transparent)}
+.propuesta[data-estado="descartada"]{opacity:.55}
+.propuesta .nota{margin:8px 0 0;color:var(--crema-70);font-size:13px}
+
+/* El texto con formato (respuestas y páginas) */
+.md{overflow-wrap:anywhere}
+.md>:first-child{margin-top:0}
+.md>:last-child{margin-bottom:0}
+.md p{margin:0 0 8px}
+.md ul,.md ol{margin:0 0 8px;padding-left:20px}
+.md li{margin:2px 0}
+.md h3,.md h4,.md h5{margin:14px 0 6px;font:800 15px/1.3 var(--sans);color:var(--crema)}
+.md h3{font:500 24px/1.15 var(--serif)}
+.md blockquote{margin:0 0 10px;padding:8px 12px;border-left:3px solid rgba(169,156,245,.6);background:rgba(169,156,245,.07);border-radius:0 8px 8px 0;color:var(--crema-70)}
+.md blockquote .callout{display:block;margin-bottom:4px;font-weight:800;color:var(--enlace)}
+.md table{width:100%;border-collapse:collapse;margin:0 0 10px;font-size:13px;display:block;overflow-x:auto}
+.md th,.md td{padding:5px 8px;border:1px solid var(--filete);text-align:left;vertical-align:top}
+.md pre{margin:0 0 10px;padding:10px;border-radius:8px;background:#020b12;overflow-x:auto;font:500 12px/1.5 var(--mono)}
+.md .propiedades{margin:0 0 12px;padding:8px 10px;border-radius:8px;background:var(--panel-2);font:500 12px/1.5 var(--mono);color:var(--crema-50);white-space:pre-wrap}
+.md .propiedades summary{font:800 11px/1.3 var(--sans);letter-spacing:.14em;text-transform:uppercase;cursor:pointer;white-space:normal}
+.md hr{border:0;border-top:1px solid var(--filete);margin:12px 0}
+
+/* Abajo: lo que se dice, el micrófono y para escribir */
+.mando{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"dicho mic" "escribir mic";gap:8px 14px;align-items:center;z-index:2}
+.dicho{grid-area:dicho;display:flex;align-items:baseline;gap:12px;min-height:46px;padding:10px 14px;border-radius:14px;background:var(--panel-2);border:1px solid var(--filete)}
+.quien{flex:none;font:800 10px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--crema-50)}
+.quien.es-atlas{color:var(--lente)}
+.dicho-texto{flex:1;min-width:0;font:500 19px/1.3 var(--serif);color:var(--crema);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.escribir{grid-area:escribir;display:flex;gap:8px}
+.escribir input{flex:1;min-width:0;height:42px;padding:0 14px;border-radius:12px;border:1px solid var(--filete);background:rgba(2,11,18,.6);font-size:16px}
+.escribir input::placeholder{color:var(--crema-50)}
+.escribir button{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;border:1px solid var(--filete);background:var(--panel-2);cursor:pointer}
+.escribir button svg{width:18px;height:18px}
+.mic{grid-area:mic;position:relative;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--lente) 55%,transparent);background:rgba(127,216,207,.12);color:var(--lente);cursor:pointer;transition:background .2s,color .2s}
+.mic svg{width:28px;height:28px}
+.mic[aria-pressed="true"]{background:var(--lente);color:#05202A}
+.mic[aria-pressed="true"]::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid color-mix(in srgb,var(--lente) 50%,transparent);animation:eco 1.2s ease-out infinite}
+.mic[data-sin-voz]{opacity:.4}
+@keyframes eco{from{scale:.85;opacity:1}to{scale:1.3;opacity:0}}
+
+/* Vistas: mientras carga y al entrar, sólo Atlas */
+.hud[data-vista="cargando"] .lecturas,.hud[data-vista="entrar"] .lecturas{display:none}
+.hud[data-vista="cargando"] .escena,.hud[data-vista="entrar"] .escena{grid-template-columns:minmax(0,1fr);grid-template-areas:"centro"}
+.hud[data-vista="entrar"] .orbita{width:min(100%,38vh,380px)}
+
+/* Hojas: ajustes y el visor de páginas */
+.hoja{width:min(520px,calc(100% - 24px));max-height:min(86vh,760px);padding:0;border-radius:20px;border:1px solid var(--filete);background:#071826;color:var(--crema);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.hoja::backdrop{background:rgba(2,8,14,.6);backdrop-filter:blur(3px)}
+.hoja header{position:sticky;top:0;display:flex;align-items:center;gap:10px;padding:14px 16px;background:#071826;border-bottom:1px solid var(--filete);z-index:1}
+.hoja h2{flex:1;margin:0;font:500 24px/1.1 var(--serif)}
+.hoja form{display:grid;gap:4px;margin:0}
+.ajuste{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--filete)}
+.ajuste>span{display:grid;font-weight:800}
+.ajuste small{font-weight:600;color:var(--crema-50)}
+.ajuste select{max-width:55%;padding:8px;border-radius:10px;border:1px solid var(--filete);background:var(--fondo)}
+.interruptor{display:flex;padding:3px;border-radius:999px;background:rgba(242,238,230,.08)}
+.interruptor button{padding:7px 12px;border:0;border-radius:999px;background:transparent;font-weight:800;font-size:13px;color:var(--crema-70);cursor:pointer}
+.interruptor button[aria-pressed="true"]{background:var(--crema);color:var(--fondo)}
+.gasto{margin:0;padding:12px 16px;color:var(--crema-50);font-size:13px}
+.hoja footer{padding:12px 16px 16px}
+.salir{padding:10px 16px;border-radius:12px;border:1px solid color-mix(in srgb,var(--rojo) 45%,transparent);background:transparent;color:#FFB3C1;font-weight:800;cursor:pointer}
+.visor{width:min(760px,calc(100% - 24px))}
+.visor .obsidian{font-weight:800;font-size:13px;white-space:nowrap}
+.visor .md{padding:16px 18px 22px;overflow:auto;max-height:calc(min(86vh,760px) - 70px)}
+
+/* ── Celular: Atlas arriba, lo demás debajo ── */
+@media (max-width:900px){
+  .escena{grid-template-columns:minmax(0,1fr);grid-template-areas:"centro" "lecturas";grid-template-rows:auto minmax(0,1fr);gap:8px;padding:4px 0 8px}
+  .lecturas{grid-area:lecturas;display:flex;flex-direction:column;gap:12px;min-height:0;overflow:auto;scrollbar-width:none}
+  .resumen,.charla{max-height:none;overflow:visible}
+  .orbita{width:min(62vw,30vh,260px)}
+  .hud[data-vista="atlas"].hay-charla .orbita{width:min(44vw,22vh,190px)}
+  .estado{margin-top:2px}
+  .onda{height:20px}
+  .mando{grid-template-columns:minmax(0,1fr) auto;gap:8px 10px}
+  .mic{width:60px;height:60px}
+  .dicho{min-height:42px;padding:8px 12px}
+  .dicho-texto{font-size:17px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .charla{scroll-behavior:auto}
+}

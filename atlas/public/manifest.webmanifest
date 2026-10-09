@@ -1,0 +1,17 @@
+{
+  "name": "Atlas · Bóveda BiPlot",
+  "short_name": "Atlas",
+  "description": "Atlas, tu asistente de voz sobre la Bóveda BiPlot.",
+  "lang": "es-CL",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#04101A",
+  "theme_color": "#04101A",
+  "icons": [
+    { "src": "iconos/icono-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "iconos/icono-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "iconos/icono-mascara-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
