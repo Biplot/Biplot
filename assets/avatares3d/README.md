@@ -48,7 +48,7 @@ Además, Atlas tiene las reacciones de su página con voz (ver `propuestas/reacc
 | Estado | Atlas | Corre |
 |---|---|---|
 | `despertar` | Se enciende: el plasma prende desde el centro, los anillos arrancan y frenan, abre los ojos y se calibra | 2,8 s |
-| `dormir` | Cierra los ojos, el plasma respira tenue y los anillos casi se detienen | Siempre |
+| `dormir` | Cierra los ojos (se ve el canto del párpado), el plasma respira tenue y los anillos casi se detienen | Siempre |
 | `atento` | Ojos muy abiertos, un saltito y un tirón del anillo | 0,7 s |
 | `escuchando` | Se inclina hacia ti, pupilas grandes, el anillo ladeado y el plasma que late con la voz | Siempre |
 | `asentir` | Dos cabeceos y un parpadeo | 1 s |
@@ -61,6 +61,9 @@ Además, Atlas tiene las reacciones de su página con voz (ver `propuestas/reacc
 | `alerta` | Plasma, ojos y satélites en ámbar, la mirada seria y el anillo derecho | Siempre |
 | `alegre` | Ojos que sonríen (el párpado de abajo sube en arco) y tres botecitos | 1,5 s |
 | `celebrar` | Salta, da una vuelta entera (sobrio: un meneo), el anillo gira rápido y todo en verde | 2,6 s |
+| `preocupado` | Cejas de pena, mira abajo, el plasma lento y bajo, los anillos casi detenidos | Siempre |
+| `risa` | Ojos apretados que sonríen, tirita, el plasma tiembla y la placa se bambolea | 1,8 s |
+| `buenasnoches` | Sonríe, hace una reverencia, cierra los ojos despacio y se apaga: queda dormido | 3,2 s |
 
 `escuchando` y `hablando` laten con `ajustar({ nivel })` (el micrófono, o cada palabra de la voz); sin nivel, con una
 voz simulada.

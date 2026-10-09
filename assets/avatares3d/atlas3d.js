@@ -3,7 +3,8 @@
 // anillos en órbita (el grande lleva los satélites y gira) y la placa 360° que cuelga del anillo de abajo.
 // Los ojos se dibujan en un lienzo: el párpado y la mirada cambian con cada estado y siguen al cursor.
 // Además de los estados de Avatar Lab, las reacciones de Jarvis (propuestas/reacciones-atlas/): despertar, dormir,
-// atento, escuchando, hablando, asentir, duda, buscando, leyendo, encontrado, esperando, alerta, alegre y celebrar.
+// atento, escuchando, hablando, asentir, duda, buscando, leyendo, encontrado, esperando, alerta, alegre, celebrar,
+// preocupado, risa y buenasnoches.
 // Escuchando y hablando laten con el nivel de la voz (de 0 a 1); sin nivel, con una voz simulada.
 import {
   THREE, X, Y, grados, pintura, basico, esfera, elipsoide, toro, losa, squircle, caraPlana, lienzo, brillo, sombraSuelo,
@@ -23,10 +24,11 @@ const IRIS = { idle: C.cian, error: C.rojo, success: C.verde, celebrar: C.verde,
 export const ESTADOS = [
   'idle', 'typing', 'error', 'success', 'shy', 'thinking', 'look-left', 'look-right', 'look-up', 'look-down',
   'despertar', 'dormir', 'atento', 'escuchando', 'hablando', 'asentir', 'duda', 'buscando', 'leyendo', 'encontrado',
-  'esperando', 'alerta', 'alegre', 'celebrar'
+  'esperando', 'alerta', 'alegre', 'celebrar', 'preocupado', 'risa', 'buenasnoches'
 ];
 export const DURACION = {
-  error: 1900, success: 2600, despertar: 2800, atento: 700, asentir: 1000, duda: 2200, encontrado: 1100, alegre: 1500, celebrar: 2600
+  error: 1900, success: 2600, despertar: 2800, atento: 700, asentir: 1000, duda: 2200, encontrado: 1100, alegre: 1500, celebrar: 2600,
+  risa: 1800, buenasnoches: 3200
 };
 const R = 1.64, CENTRO = Y(292);                                                  // el orbe
 const G = { y: Y(338), r: 1.08 };                                                 // el globo de líneas y el plasma
@@ -55,6 +57,13 @@ function ojo() {
     ctx.fillStyle = C.parpado; ctx.beginPath();
     ctx.moveTo(-10, -10); ctx.lineTo(170, -10); ctx.lineTo(170, yD); ctx.quadraticCurveTo(80, yC, -10, yI); ctx.closePath(); ctx.fill();
     ctx.strokeStyle = TINTA; ctx.lineWidth = 11; ctx.beginPath(); ctx.moveTo(-10, yI); ctx.quadraticCurveTo(80, yC, 170, yD); ctx.stroke();
+    // Con el ojo cerrado, el canto del párpado brilla apenas: se lee como un ojo cerrado y no como uno apagado
+    const cerrado = limitar((Math.min(izq, der) - 0.3) / 0.25, 0, 1);
+    if (cerrado > 0 && Math.max(izq, der) < 1.05) {
+      ctx.globalAlpha = cerrado; ctx.strokeStyle = C.anilloS; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(-10, yI - 8); ctx.quadraticCurveTo(80, yC - 8, 170, yD - 8); ctx.stroke();
+      ctx.globalAlpha = 1; ctx.strokeStyle = TINTA; ctx.lineWidth = 11;
+    }
     // El de abajo sube en arco: ojos que sonríen
     if (abajo[0] < 1.1) {
       const yB = 80 + r * abajo[0], yBC = 80 + r * abajo[1];
@@ -81,9 +90,10 @@ const PARPADOS = {
   dormido: [0.55, 0.55, 0.75], feliz: [-0.8, -0.8, -0.86]          // dormido: se ve la línea del párpado cerrado
 };
 // El párpado de abajo: [borde, centro]; casi siempre escondido
-const ABAJO = { feliz: [0.22, -0.62], serio: [0.62, 0.5], nada: [1.2, 1.2] };
+const ABAJO = { feliz: [0.22, -0.62], risa: [0.05, -0.78], serio: [0.62, 0.5], nada: [1.2, 1.2] };
 const ENOJO = [[-0.62, 0.06, -0.16], [0.06, -0.62, -0.16]];       // el borde de adentro baja: ceño
 const DUDA = [[-0.04, -0.12, 0.02], [-0.78, -0.82, -0.7]];         // un ojo entrecerrado y la otra «ceja» arriba
+const PENA = [[0.12, -0.5, -0.12], [-0.5, 0.12, -0.12]];           // al revés del ceño: el borde de afuera baja
 
 // Las curvas de los movimientos que corren una vez (d: segundos desde que empezó)
 const rampa = (d, ini, dur) => { const x = limitar((d - ini) / dur, 0, 1); return x * x * (3 - 2 * x); };
@@ -241,7 +251,8 @@ export function atlas() {
   let parpadeo = 4.8, cierra = 0, espia = 3, espiando = 0, chispa = 0, semilla = 1, vuelta = 0;
   let velAnillo = 0.35, velGlobo = 0.25, ladeoAnillo = 0, luz = 1, voz = 0, luzBanda = 0, brilloSat = 1;
   const color = new THREE.Color(), tmp = new THREE.Color(), colorSat = new THREE.Color(C.cian);
-  const SIN_PARPADEO = ['success', 'error', 'dormir', 'despertar', 'alegre', 'celebrar'];
+  const SIN_PARPADEO = ['success', 'error', 'dormir', 'despertar', 'alegre', 'celebrar', 'risa', 'buenasnoches'];
+  const dormido = (estado, d) => estado === 'dormir' || (estado === 'buenasnoches' && d > 2.2);
 
   // Los párpados de cada estado: [izquierdo, derecho]
   function parpados(estado, d) {
@@ -249,6 +260,9 @@ export function atlas() {
     switch (estado) {
       case 'error': return ENOJO;
       case 'duda': return DUDA;
+      case 'preocupado': return PENA;
+      case 'buenasnoches': return par(d < 1.2 ? P.feliz : d < 2.2 ? P.somnoliento : P.dormido);
+      case 'risa': return par(P.feliz);
       case 'despertar': return par(d < 1.1 ? P.dormido : d > 1.7 && d < 1.85 ? P.cerrado : d < 1.7 ? P.ancho : P.atento);
       case 'dormir': return par(d < 1.6 ? P.somnoliento : P.dormido);
       case 'atento': case 'encontrado': return par(P.ancho);
@@ -267,7 +281,8 @@ export function atlas() {
     switch (estado) {
       case 'typing': return [0.3 + mirar.x * 0.1, 0.36];
       case 'thinking': return [0.15, -0.42];
-      case 'error': case 'success': case 'encontrado': case 'alerta': case 'despertar': return [0, 0.02];
+      case 'error': case 'success': case 'encontrado': case 'alerta': return [0, 0.02];
+      case 'despertar': return d < 1.1 ? [0, -0.3] : [0, 0.02];
       case 'shy': return [0.35, 0.3];
       case 'dormir': return [0, -0.3];
       case 'atento': case 'escuchando': case 'esperando': return [mirar.x * 0.2, 0.04 + mirar.y * 0.12];
@@ -280,6 +295,9 @@ export function atlas() {
         return [s < 0.85 ? -0.34 + Math.min(3, Math.floor((s / 0.85) * 4)) * 0.227 : -0.34, 0.06 + renglon * 0.07];
       }
       case 'alegre': case 'celebrar': return [0, -0.12];
+      case 'risa': return [0, -0.14];
+      case 'preocupado': return [mirar.x * 0.1 - 0.05, 0.3];
+      case 'buenasnoches': return d < 1.2 ? [0, -0.12] : [0, -0.3];
       default: return null;
     }
   }
@@ -298,6 +316,9 @@ export function atlas() {
       case 'esperando': return { y: Math.sin(t * 2.5) * 0.015, rx: 0, rz: 0.08 };
       case 'alegre': { const b = d < 1.2 ? Math.sin((d * Math.PI * 3) / 1.2) : 0; return { y: Math.abs(b) * 0.12, rx: 0, rz: b * 0.05 }; }
       case 'celebrar': return { y: salto(d, 0.05, 0.62) * 0.42 + salto(d, 0.8, 0.4) * 0.16, rx: 0, rz: 0 };
+      case 'preocupado': return { y: -0.05, rx: 0.1, rz: Math.sin(t * 0.9) * 0.025 };
+      case 'buenasnoches': return { y: -0.12 * rampa(d, 1.4, 1.6), rx: pulso(d, 0.3, 1) * 0.32 + 0.1 * rampa(d, 1.6, 1.2), rz: 0 };
+      case 'risa': return d < 1.5 ? { y: Math.abs(Math.sin((d * Math.PI * 6) / 1.5)) * 0.05, rx: -0.06, rz: Math.sin(d * 26) * 0.035 } : { y: 0, rx: 0, rz: 0 };
       default: return { y: 0, rx: 0, rz: 0 };
     }
   }
@@ -315,9 +336,11 @@ export function atlas() {
     let [metaI, metaD] = parpados(estado, d);
     if (cierra > 0 && !SIN_PARPADEO.includes(estado)) metaI = metaD = PARPADOS.cerrado;
     if (estado === 'shy' && espiando > 0) metaD = [-0.02, -0.1, 0.02];
-    const rapidez = cierra > 0 ? 30 : estado === 'dormir' ? 1.8 : estado === 'atento' || estado === 'encontrado' ? 26 : 12;
+    const rapidez = cierra > 0 ? 30 : estado === 'dormir' ? 1.8 : estado === 'buenasnoches' && d > 1.2 ? 2.5
+      : estado === 'atento' || estado === 'encontrado' ? 26 : 12;
     for (let i = 0; i < 3; i++) { p.izq[i] = acercar(p.izq[i], metaI[i], dt, rapidez); p.der[i] = acercar(p.der[i], metaD[i], dt, rapidez); }
-    const metaAbajo = estado === 'alegre' || estado === 'celebrar' ? ABAJO.feliz : estado === 'alerta' ? ABAJO.serio : ABAJO.nada;
+    const metaAbajo = estado === 'alegre' || estado === 'celebrar' || (estado === 'buenasnoches' && d < 1.2) ? ABAJO.feliz
+      : estado === 'risa' ? ABAJO.risa : estado === 'alerta' ? ABAJO.serio : ABAJO.nada;
     for (let i = 0; i < 2; i++) p.abajo[i] = acercar(p.abajo[i], metaAbajo[i], dt, 12);
     // La mirada: de reojo y hacia el cursor; cada estado mira a su manera
     let [mx, my] = mirada(estado, d, t, mirar) ?? [-0.3 + mirar.x * 0.42, 0.2 + mirar.y * 0.32];
@@ -325,8 +348,8 @@ export function atlas() {
     const rapidezMirada = estado === 'leyendo' || estado === 'buscando' ? 22 : 9;
     p.mx = acercar(p.mx, mx, dt, rapidezMirada); p.my = acercar(p.my, my, dt, rapidezMirada);
     // La pupila: grande cuando te escucha o encuentra algo, chica cuando busca o hay una alerta
-    const metaPupila = estado === 'despertar' ? (d < 1.1 ? 1.6 : 1 + 0.6 * (1 - rampa(d, 1.2, 1.1)))
-      : { atento: 1.3, escuchando: 1.22, encontrado: 1.35, esperando: 1.15, buscando: 0.85, leyendo: 0.9, alerta: 0.78 }[estado] ?? 1;
+    const metaPupila = estado === 'despertar' ? (d < 1.1 ? 1 : 1 + 0.6 * (1 - rampa(d, 1.2, 1.1)))
+      : { atento: 1.3, escuchando: 1.22, encontrado: 1.35, esperando: 1.15, preocupado: 1.12, buscando: 0.85, leyendo: 0.9, alerta: 0.78 }[estado] ?? 1;
     p.pupila = acercar(p.pupila, metaPupila, dt, 8);
     p.iris.lerp(tmp.set(IRIS[estado] ?? IRIS.idle), 1 - Math.exp(-dt * 10));
     const iris = '#' + p.iris.getHexString();
@@ -344,7 +367,8 @@ export function atlas() {
       vueltaEntera = k >= 0.75 ? (d < 1.05 ? Math.PI * 2 * rampa(d, 0.15, 0.9) : 0) : Math.sin(d * 12) * 0.12 * pulso(d, 0.1, 0.8);
     }
     orbe.rotation.set(giro.x + cuerpo.rx, giro.y + vueltaEntera, cuerpo.rz);
-    const vaiven = quieto ? 0 : estado === 'dormir' ? Math.sin(t * 0.7) * 0.04 : Math.sin(t * 1.3) * (estado === 'alerta' ? 0.03 : 0.08);
+    const vaiven = quieto ? 0 : dormido(estado, d) ? Math.sin(t * 0.7) * 0.04 : estado === 'preocupado' ? Math.sin(t * 0.9) * 0.05
+      : Math.sin(t * 1.3) * (estado === 'alerta' ? 0.03 : 0.08);
     const sacudida = estado === 'error' && !quieto ? Math.sin(d * 46) * 0.08 * Math.max(0, 1 - d / 0.5) : 0;
     flota.position.set(sacudida, vaiven + cuerpo.y, 0);
     const alto = vaiven + cuerpo.y;
@@ -356,12 +380,14 @@ export function atlas() {
       esperando: 0, alerta: 0.55, alegre: 1.4,
       despertar: d < 0.4 ? 0 : 0.35 + 3.4 * (1 - rampa(d, 0.4, 2)),
       atento: 0.35 + 4 * pulso(d, 0, 0.55), encontrado: 0.35 + 5 * pulso(d, 0, 0.8),
-      hablando: 0.3 + voz * 0.5, celebrar: 0.5 + 4.5 * (1 - rampa(d, 0.2, 2.2))
+      hablando: 0.3 + voz * 0.5, celebrar: 0.5 + 4.5 * (1 - rampa(d, 0.2, 2.2)),
+      preocupado: 0.12, risa: 1.6, buenasnoches: 0.04 + 0.31 * (1 - rampa(d, 1.2, 1.8))
     }[estado] ?? 0.35;
     velAnillo = acercar(velAnillo, metaAnillo, dt, 10);
     const metaGlobo = {
       buscando: 2.6, dormir: 0.04, celebrar: 1.6, encontrado: 1.2,
-      despertar: d < 0.4 ? 0 : 0.25 + 1.5 * (1 - rampa(d, 0.4, 1.8))
+      despertar: d < 0.4 ? 0 : 0.25 + 1.5 * (1 - rampa(d, 0.4, 1.8)),
+      preocupado: 0.1, risa: 0.6, buenasnoches: 0.04 + 0.21 * (1 - rampa(d, 1.2, 1.8))
     }[estado] ?? 0.25;
     velGlobo = acercar(velGlobo, metaGlobo, dt, 5);
     // El anillo grande se ladea como una oreja al escucharte, se endereza en la alerta y titubea en la duda
@@ -373,9 +399,9 @@ export function atlas() {
       vuelta += dt * velAnillo; grande.vuelta.rotation.z = vuelta;
       gira.rotation.y += dt * velGlobo;
       const meneo = grados(3) + (estado === 'hablando' ? voz * grados(5) : estado === 'celebrar' ? grados(6) * (1 - rampa(d, 0.5, 2)) : 0);
-      colgante.rotation.z = grados(-6) + Math.sin(t * 1.4) * meneo;
+      colgante.rotation.z = grados(-6) + (estado === 'risa' && d < 1.5 ? Math.sin(t * 9) * grados(6) : Math.sin(t * 1.4) * meneo);
       const cada = estado === 'success' ? 0.06 : estado === 'encontrado' || estado === 'celebrar' ? 0.04
-        : estado === 'alegre' ? 0.06 : estado === 'buscando' ? 0.07 : estado === 'dormir' ? 0.6
+        : estado === 'alegre' || estado === 'risa' ? 0.05 : estado === 'buscando' ? 0.07 : dormido(estado, d) ? 0.6 : estado === 'preocupado' ? 0.2
         : estado === 'despertar' && d > 0.4 && d < 1.8 ? 0.05 : hablaOEscucha ? 0.13 - voz * 0.08 : 0.12;
       chispa -= dt; if (chispa <= 0) { rayos(++semilla); adentro(); chispa = cada; }
     }
@@ -389,11 +415,14 @@ export function atlas() {
       dormir: 0.55 + (quietoNo ? Math.sin(t * 1.1) * 0.07 : 0), atento: 1 + 0.25 * pulso(d, 0, 0.5),
       escuchando: 0.9 + voz * 0.45, hablando: 0.88 + voz * 0.55, duda: 0.82, buscando: 1 + (quietoNo ? Math.sin(t * 9) * 0.05 : 0),
       leyendo: 0.95, encontrado: 1 + 0.6 * pulso(d, 0, 0.7), esperando: 0.95 + (quietoNo ? Math.sin(t * 2.5) * 0.06 : 0),
-      alerta: 1.05 + (quietoNo ? Math.sin(t * 4) * 0.08 : 0), alegre: 1.15, celebrar: 1.3 + (quietoNo ? Math.sin(t * 8) * 0.2 : 0)
+      alerta: 1.05 + (quietoNo ? Math.sin(t * 4) * 0.08 : 0), alegre: 1.15, celebrar: 1.3 + (quietoNo ? Math.sin(t * 8) * 0.2 : 0),
+      preocupado: 0.78 + (quietoNo ? Math.sin(t * 0.9) * 0.04 : 0), risa: 1.1 + (quietoNo && d < 1.5 ? Math.sin(t * 32) * 0.12 : 0),
+      buenasnoches: 1 - 0.45 * rampa(d, 1.4, 1.4) + (quietoNo && d > 2.8 ? Math.sin(t * 1.1) * 0.07 : 0)
     }[estado] ?? 1;
-    nucleo.scale.setScalar(acercar(nucleo.scale.x, fuerza, dt, hablaOEscucha ? 18 : 6));
+    nucleo.scale.setScalar(acercar(nucleo.scale.x, fuerza, dt, hablaOEscucha || estado === 'risa' ? 18 : 6));
     // La luz del plasma: casi apagado al despertar, tenue al dormir
-    const metaLuz = estado === 'despertar' ? Math.max(0.04, rampa(d, 0.35, 0.9)) : estado === 'dormir' ? 0.35 : estado === 'duda' ? 0.75 : 1;
+    const metaLuz = estado === 'despertar' ? Math.max(0.04, rampa(d, 0.35, 0.9)) : estado === 'dormir' ? 0.35
+      : estado === 'buenasnoches' ? 1 - 0.65 * rampa(d, 1.4, 1.4) : estado === 'duda' ? 0.75 : estado === 'preocupado' ? 0.8 : 1;
     luz = acercar(luz, metaLuz, dt, estado === 'despertar' ? 12 : 4);
     haloGrande.material.opacity = 0.32 * luz; halo.material.opacity = 0.75 * luz; matBrillo.opacity = 0.45 * luz;
     for (const mat of [matFilo, matPunta, matPuntaB, estrella.material, blanco.material]) mat.opacity = luz;
@@ -401,7 +430,8 @@ export function atlas() {
     // Los satélites: laten al esperar tu OK, destellan al encontrar algo; ámbar en la alerta, verdes al celebrar
     const metaSat = {
       esperando: 0.6 + 0.6 * Math.sin(t * 2.5), encontrado: 1 + 2 * pulso(d, 0, 0.7), atento: 1 + 1.2 * pulso(d, 0, 0.5),
-      celebrar: 1.8, dormir: 0.3, despertar: rampa(d, 0.6, 1), alerta: 1 + 0.5 * Math.sin(t * 4)
+      celebrar: 1.8, dormir: 0.3, despertar: rampa(d, 0.6, 1), alerta: 1 + 0.5 * Math.sin(t * 4),
+      preocupado: 0.6, risa: 1 + 0.6 * Math.abs(Math.sin(t * 16)), buenasnoches: 1 - 0.7 * rampa(d, 1.4, 1.4)
     }[estado] ?? 1;
     brilloSat = acercar(brilloSat, metaSat, dt, 10);
     colorSat.lerp(tmp.set(estado === 'alerta' ? C.ambar : estado === 'celebrar' ? C.verde : C.cian), 1 - Math.exp(-dt * 8));

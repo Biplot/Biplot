@@ -41,8 +41,8 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   reacciona a cada respuesta y, si calificas, te invita a agendar el diagnóstico (no indexada; ver su README).
 - `propuestas/registro-avatar/` — propuesta de registro con Plotty (o Atlas) en 3D, con sus colores reales, como avatar
   interactivo que te mira y reacciona a lo que haces (no indexada; ver su README).
-- `propuestas/reacciones-atlas/` — propuesta de las reacciones de Atlas para su página con voz, cada una en 3D, con
-  una conversación completa, estilo sobrio o expresivo y sonido opcional (no indexada; ver su README).
+- `propuestas/reacciones-atlas/` — propuesta final de las 22 reacciones de Atlas para su página con voz, cada una en
+  3D, con una conversación completa, estilo sobrio o expresivo y sonido (no indexada; ver su README).
 - `assets/avatares3d/` — Plotty y Atlas en 3D (Three.js), calcados de sus dibujos de la oficina, para usarlos en
   cualquier página: `crearAvatar3D`, sus estados y cómo están hechos, en su README.
 
