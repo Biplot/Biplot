@@ -1,0 +1,5 @@
+# Quién tiene que aprobar qué. Rige cuando la protección de main exige «Require review from Code Owners».
+# vitrina/ la escribe sólo el proceso de la vitrina (biplot-nucleo/09-integracion), con lo ya aprobado en privado y un PR que aprueba un socio:
+# lo que entra aquí queda publicado y en el historial para siempre.
+/vitrina/   @Biplot/socios
+/.github/   @Biplot/socios

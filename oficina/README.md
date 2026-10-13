@@ -335,6 +335,7 @@ sólo para su vitrina.
 |---|---|
 | `index.html` | La página: barra de marca, escena, «Salir a la calle», la sala de cada empresa, menú "Recorre la oficina", la mini tele, controles, bienvenida, recorrido guiado, panel y la tele de BiPlot.TV |
 | `datos.js` | **Lo único que hay que tocar para cambiar textos y sumar casos**: equipo, mascotas, fases, lugares, proyectos (con los puntos de cada sala, o su `salaPropia`), calles del barrio, casos de referencia, vitrina y Plotty |
+| `fichas.js` | Las fichas públicas: pone lo de `../vitrina/proyectos.js` (lo arma el proceso de la vitrina desde el `vitrina.json` de cada proyecto) encima de su proyecto de `datos.js` (ver «Las fichas públicas») |
 | `crm.js` | La conexión con el CRM: antes de dibujar, trae lo que liberaron los socios para cada sala (a lo más 3 segundos, sólo desde biplot.cl), lo revisa y lo deja en su proyecto (ver «Conexión con el CRM») |
 | `escena.js` | La oficina isométrica y su barrio: arma la calle principal, las calles por rubro (con el techo de cada caso) y El Archivo desde `datos.js`; la oficina cerrada que se abre, los locales que se abren al tocarlos, zonas, vitrina, los recorridos del equipo y la gente que camina (por la vereda, dentro de un local abierto y en las salas) |
 | `oficina.js` | Interfaz: cámara (arrastrar, rueda, pellizco, teclado), entrar y salir de la oficina, menú con el barrio y su buscador, el local abierto con su vista previa, la sala de cada empresa, El Archivo, recorrido guiado, paneles, chat, videos (la tele de BiPlot.TV) y enlaces directos |
@@ -360,6 +361,8 @@ camina sólo mientras se ve.
 
 ## Cómo se edita
 
+- **Lo público de un proyecto con ficha** (hoy Haru 360 y Rumbo, `ficha: true` en `datos.js`): en su `vitrina.json`,
+  en su repo, nunca aquí (ver «Las fichas públicas»).
 - **Textos, enlaces, quién trabajó en qué**: `datos.js`. Cada proyecto tiene `calle` (su rubro), `equipo`, `enlaces`,
   `puntos`, `esencia`, `media`, `pines` (los puntos de su sala: módulo, título, detalle y la pantalla en `media/salas/`) y
   `medicion` (en qué va la medición; sin cifras hasta que se midan y el cliente lo autorice).
@@ -644,3 +647,38 @@ la revisión de lo que llega) y en `oficina.js` («Los avances del CRM»); sus e
   reales del cliente.
 - **Pendiente: Plotty como entrada al CRM.** Las tres respuestas de Plotty son las de la calificación (E0): hoy viajan
   en el mensaje de WhatsApp; con el CRM, entrarían como solicitud.
+
+## Las fichas públicas
+
+Lo público de un proyecto con ficha (nombre, cliente, rubro, estado, textos, módulos, enlaces, media y equipo) no se
+escribe en este repo: sale del `vitrina.json` de su repo y lo trae el proceso de la vitrina
+(`biplot-nucleo/09-integracion/vitrina/`), que le pasa tres filtros (el contrato, secretos y datos personales, y
+términos vetados). Un socio aprueba primero la propuesta en privado, en `biplot-nucleo`; recién entonces llega aquí
+un PR con esos mismos bytes y la misma huella SHA-256, que cambia sólo la carpeta `vitrina/` de la raíz y aprueba un
+socio con un clic (`.github/CODEOWNERS`). El contrato de la ficha, qué cruza según el permiso del cliente y por qué:
+`biplot-nucleo/09-integracion/ficha-publica.md`.
+
+- **Qué hay en `vitrina/`.** `proyectos.json` (un objeto por proyecto) y `proyectos.js` (lo mismo, como
+  `window.BIPLOT_VITRINA`), y en `media/<id>/` sus pantallas, videos, póster y logo, sin metadatos. Nadie lo edita a
+  mano: cada corrida del proceso lo arma de nuevo y un cambio a mano se pierde en el PR siguiente.
+- **Cómo lo lee la oficina.** `index.html` (y `kit/`) cargan `../vitrina/proyectos.js` antes de `datos.js` y
+  `fichas.js` después. `fichas.js` reemplaza, en el proyecto de `datos.js` con el mismo `id`, `nombre`, `cliente`,
+  `rubro`, `estado`, `corto`, `calle`, `acento`, `esencia`, `resumen`, `medicion`, `puntos`, `pines`, `enlaces`,
+  `equipo`, `media` y `nota`. Lo de la oficina queda: su sala propia, su logo en el techo, su gente y su recorrido.
+  Después corre `crm.js`, como siempre. `_herramientas/dibujos/generar.mjs` hace lo mismo al leer `datos.js`.
+- **Lo que queda en `datos.js`** de esos campos es sólo el respaldo por si `proyectos.js` no carga. No se edita.
+- **Si el permiso se revoca**, el proyecto deja de venir en lo generado y `fichas.js` lo saca de la lista de proyectos
+  y de la vitrina de la recepción, pero **eso no basta**: su local sigue dibujado en la calle (`barrio.js`, `locales.js`
+  y `salas.js` los genera `generar.mjs`), lo nombran El Archivo, BiPlot.TV y la sala de ventas, la portada lo muestra y
+  quedan su página `oficina/<id>/` y su imagen para redes. Revocar es, además, un PR de un socio que lo saca de
+  `datos.js` y de `index.html` y regenera los dibujos y las páginas (`node oficina/_herramientas/dibujos/generar.mjs`).
+  Un enlace a una sala que ya no existe no rompe la oficina: no abre nada.
+- **Un proyecto que ya tiene su sala** en `datos.js` conserva sus pantallas y su video (los nombran el dibujo de la sala,
+  los pies de foto y las piezas del museo, por archivo); de la ficha llegan los textos. Un proyecto nuevo que llega con
+  ficha entra como un local más de su calle, con las pantallas de la vitrina.
+- **Lo que llega se valida** como el contrato (`id`, `acento` en `#RRGGBB`, enlaces `https://`, equipo) antes de usarse.
+- **Sólo permiso «nombre», por ahora.** La oficina todavía no dibuja desde las fichas un caso sin nombre (permiso
+  «rubro») ni uno que va sólo al fichero de El Archivo (permiso «archivo»): esos no se muestran.
+- **Rutas.** Las de lo generado son desde la raíz del repo (`vitrina/media/haru/dashboard.webp`). Los pines de la sala
+  piden su pantalla como `media/salas/<id>.webp`, así que `fichas.js` les pone `../../../vitrina/media/<id>/<pantalla>` (de `oficina/media/salas/` a la raíz) (sólo
+  pantallas `webp`).
