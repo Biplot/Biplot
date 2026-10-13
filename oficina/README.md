@@ -666,9 +666,16 @@ términos vetados) y abre un PR que cambia sólo la carpeta `vitrina/` de la ra�
   `equipo`, `media` y `nota`. Lo de la oficina queda: su sala propia, su logo en el techo, su gente y su recorrido.
   Después corre `crm.js`, como siempre. `_herramientas/dibujos/generar.mjs` hace lo mismo al leer `datos.js`.
 - **Lo que queda en `datos.js`** de esos campos es sólo el respaldo por si `proyectos.js` no carga. No se edita.
-- **Si el permiso se revoca**, el proyecto deja de venir en lo generado: `fichas.js` lo saca de la oficina (y de la
-  vitrina de la recepción) aunque siga en `datos.js` con `ficha: true`. Un proyecto nuevo que llega con ficha entra como
-  un local más de su calle.
+- **Si el permiso se revoca**, el proyecto deja de venir en lo generado y `fichas.js` lo saca de la lista de proyectos
+  y de la vitrina de la recepción, pero **eso no basta**: su local sigue dibujado en la calle (`barrio.js`, `locales.js`
+  y `salas.js` los genera `generar.mjs`), lo nombran El Archivo, BiPlot.TV y la sala de ventas, la portada lo muestra y
+  quedan su página `oficina/<id>/` y su imagen para redes. Revocar es, además, un PR de un socio que lo saca de
+  `datos.js` y de `index.html` y regenera los dibujos y las páginas (`node oficina/_herramientas/dibujos/generar.mjs`).
+  Un enlace a una sala que ya no existe no rompe la oficina: no abre nada.
+- **Un proyecto que ya tiene su sala** en `datos.js` conserva sus pantallas y su video (los nombran el dibujo de la sala,
+  los pies de foto y las piezas del museo, por archivo); de la ficha llegan los textos. Un proyecto nuevo que llega con
+  ficha entra como un local más de su calle, con las pantallas de la vitrina.
+- **Lo que llega se valida** como el contrato (`id`, `acento` en `#RRGGBB`, enlaces `https://`, equipo) antes de usarse.
 - **Sólo permiso «nombre», por ahora.** La oficina todavía no dibuja desde las fichas un caso sin nombre (permiso
   «rubro») ni uno que va sólo al fichero de El Archivo (permiso «archivo»): esos no se muestran.
 - **Rutas.** Las de lo generado son desde la raíz del repo (`vitrina/media/haru/dashboard.webp`). Los pines de la sala

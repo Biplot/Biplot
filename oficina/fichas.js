@@ -9,7 +9,9 @@
  * - Con un permiso que no es «nombre», no se muestra: la oficina todavía no dibuja los casos sin nombre ni el fichero
  *   de El Archivo desde las fichas, y mostrar de menos es lo seguro.
  * - Si ../vitrina/proyectos.js no cargó o viene raro, datos.js queda como estaba.
- * Nada de lo que llega se escribe como HTML: oficina.js lo pone como texto, igual que lo de datos.js.
+ * - Un proyecto que ya tiene su sala dibujada en datos.js conserva sus pantallas y su video: el dibujo de la sala, los
+ *   pies de foto y las piezas del museo los nombran por archivo. De la ficha llegan los textos.
+ * - Lo que llega se valida como el contrato (id, acento #RRGGBB, enlaces https, equipo) y oficina.js lo pone como texto.
  */
 (function () {
   'use strict';
@@ -24,6 +26,7 @@
   // oficina/media/salas/ hay que subir tres carpetas para llegar a la raíz
   var DESDE_MEDIOS = '../../../';
   var MEDIO = /^vitrina\/media\/[a-z0-9-]+\/[a-z0-9-]+\.(?:mp4|webp|jpg|png)$/;
+  var ID = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/, ACENTO = /^#[0-9a-fA-F]{6}$/, URL_SEGURA = /^https:\/\/[^\s"'<>]+$/;
 
   function texto(v) { return typeof v === 'string' && v.trim() ? v : null; }
   function lista(v) { return Array.isArray(v) ? v : []; }
@@ -31,7 +34,8 @@
 
   // Lo generado, en la forma de un proyecto de datos.js; null si le falta algo
   function proyectoDe(g) {
-    if (!g || g.permiso !== 'nombre') return null;
+    if (!g || g.permiso !== 'nombre' || typeof g.id !== 'string' || !ID.test(g.id)) return null;
+    if (typeof g.acento !== 'string' || !ACENTO.test(g.acento)) return null;
     var p = { id: g.id, nombre: texto(g.nombre), cliente: texto(g.cliente), rubro: texto(g.rubro), estado: texto(g.estado),
       corto: texto(g.etapa), calle: texto(g.calle), acento: texto(g.acento), esencia: texto(g.esencia), resumen: texto(g.resumen),
       medicion: texto(g.medicion) };
@@ -42,8 +46,9 @@
       var r = medio(m.pantalla);
       return [m.modulo, m.titulo, m.detalle, r && /\.webp$/.test(r) ? DESDE_MEDIOS + r.replace(/\.webp$/, '') : null];
     });
-    p.enlaces = lista(g.enlaces).map(function (l) { return { texto: l.texto, url: l.url }; });
-    p.equipo = lista(g.equipo).slice();
+    p.enlaces = lista(g.enlaces).filter(function (l) { return l && texto(l.texto) && typeof l.url === 'string' && URL_SEGURA.test(l.url); })
+      .map(function (l) { return { texto: l.texto, url: l.url }; });
+    p.equipo = lista(g.equipo).filter(function (x) { return typeof x === 'string' && ID.test(x); });
     var m = {};
     lista(g.media).forEach(function (x) { var r = medio(x.archivo); if (r) m[x.tipo] = RAIZ + r; });
     p.media = m['video-horizontal'] && m.poster ? { h: m['video-horizontal'], v: m['video-vertical'] || '', poster: m.poster } : null;
@@ -60,6 +65,11 @@
   D.proyectos.forEach(function (p) {
     var g = generados[p.id];
     if (g) {
+      // La sala dibujada nombra sus pantallas y su video por archivo: se quedan los de datos.js (son los mismos)
+      var pantalla = {};
+      lista(p.pines).forEach(function (x) { if (x[3]) pantalla[x[0]] = x[3]; });
+      g.pines.forEach(function (x) { if (pantalla[x[0]]) x[3] = pantalla[x[0]]; });
+      if (p.media) g.media = p.media;
       CAMPOS.forEach(function (k) { p[k] = g[k]; });
       p.ficha = true;
       delete generados[p.id];
