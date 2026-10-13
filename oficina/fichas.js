@@ -20,8 +20,9 @@
 
   // Las rutas de lo generado son desde la raíz de biplot; la oficina vive en /oficina/
   var RAIZ = '../';
-  // Las pantallas de los módulos se piden como MEDIOS + id + '.webp' (oficina.js, MEDIOS = 'media/salas/')
-  var DESDE_MEDIOS = '../../';
+  // Las pantallas de los módulos se piden como MEDIOS + id + '.webp' (oficina.js, MEDIOS = 'media/salas/'): desde
+  // oficina/media/salas/ hay que subir tres carpetas para llegar a la raíz
+  var DESDE_MEDIOS = '../../../';
   var MEDIO = /^vitrina\/media\/[a-z0-9-]+\/[a-z0-9-]+\.(?:mp4|webp|jpg|png)$/;
 
   function texto(v) { return typeof v === 'string' && v.trim() ? v : null; }

@@ -672,5 +672,5 @@ términos vetados) y abre un PR que cambia sólo la carpeta `vitrina/` de la ra�
 - **Sólo permiso «nombre», por ahora.** La oficina todavía no dibuja desde las fichas un caso sin nombre (permiso
   «rubro») ni uno que va sólo al fichero de El Archivo (permiso «archivo»): esos no se muestran.
 - **Rutas.** Las de lo generado son desde la raíz del repo (`vitrina/media/haru/dashboard.webp`). Los pines de la sala
-  piden su pantalla como `media/salas/<id>.webp`, así que `fichas.js` les pone `../../vitrina/media/<id>/<pantalla>` (sólo
+  piden su pantalla como `media/salas/<id>.webp`, así que `fichas.js` les pone `../../../vitrina/media/<id>/<pantalla>` (de `oficina/media/salas/` a la raíz) (sólo
   pantallas `webp`).

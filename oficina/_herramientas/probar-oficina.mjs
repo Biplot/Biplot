@@ -121,7 +121,7 @@ const SALAS_PROPIAS = [
     ceja: 'Hecho con BiPlot', chip: 'A la medida', pantallas: 7, frente: 'malalcahuello', frenteT: 'Malalcahuello', fotos: true },
   { id: 'haru', nombre: 'Haru 360', barra: ['Haru Isidora', 'SUSHI DE AUTOR · ARICA', 'Ver la carta', 'Recorrer con la anfitriona'], letra: 'Montserrat',
     disenar: 'https://haru-carta.vercel.app', zona: 'barra', titulo: 'Chinchorrero', chips: '$8.000 | Rolls de autor', enlace: 'Ver la carta https://haru-carta.vercel.app', paradas: 7, recorrido: ['La entrada', 'La barra de sushi'],
-    ceja: 'Hecho con BiPlot', chip: 'En implementación', pantallas: 7, frente: 'carta', frenteT: 'Rolls de la casa', fotos: true },
+    ceja: 'Hecho con BiPlot', chip: 'En diagnóstico', pantallas: 7, frente: 'carta', frenteT: 'Rolls de la casa', fotos: true },
   { id: 'eleven', nombre: 'Eleven 360', barra: ['Eleven Club', 'FITNESS AND BXO', 'Ver planes', 'Recorrer con un coach'], letra: 'Anton',
     disenar: 'https://eleven-360.vercel.app/#planes', zona: 'clases', titulo: 'Power Jump', chips: 'Martes y jueves · 19:30 | 60 min | Incluida en tu plan',
     enlace: 'Ver planes https://eleven-360.vercel.app/#planes', paradas: 8,
