@@ -516,8 +516,11 @@
         }
       },
       {
-        id: 'haru', nombre: 'Haru 360', cliente: 'Haru Isidora', rubro: 'Restaurante · cocina japonesa, Arica', estado: 'Sistema a la medida · en implementación',
-        calle: 'comida', corto: 'En implementación',
+      /* FICHA PÚBLICA: lo público de este proyecto (de nombre a nota) sale de su vitrina.json y llega en
+         ../vitrina/proyectos.js; fichas.js lo pone encima. Lo de aquí es sólo el respaldo por si ese archivo no carga:
+         no se edita a mano, se cambia la ficha en su repo. Lo de la oficina (sala propia, logo, gente) sí es de aquí. */
+        id: 'haru', ficha: true, nombre: 'Haru 360', cliente: 'Haru Isidora', rubro: 'Restaurante · cocina japonesa, Arica', estado: 'Sistema a la medida · en diagnóstico',
+        calle: 'comida', corto: 'En diagnóstico',
         pines: [
           ['01 · Dashboard', 'Tu restaurante, en una pantalla.', 'Ventas, costo, margen y alertas del día, en vivo.', 'haru-1-dashboard'],
           ['02 · Mesas y comandas', 'Cada mesa, en tiempo real.', 'El garzón toma el pedido en su celular y la cocina lo recibe al instante.', 'haru-2-mesas'],
@@ -527,7 +530,7 @@
           ['06 · Carta y delivery', 'Pedidos directos, delivery en vivo.', 'Carta online sin comisiones y el repartidor en el mapa.', 'haru-6-delivery'],
           ['07 · Perfiles', 'Cada rol ve lo suyo.', 'Del dueño al repartidor, con tema claro y oscuro.', 'haru-7-perfiles']
         ],
-        medicion: 'La medición parte con la puesta en marcha: día 30, 60 y 90, contra la línea base del diagnóstico.',
+        medicion: 'El diagnóstico deja la línea base contra la que se va a medir.',
         acento: '#E0524A',
         esencia: 'Una barra de sushi a la hora de almuerzo.',
         resumen: 'Caja, máquinas de pago, apps de delivery y una planilla a mano: los totales no cuadraban y nadie sabía el costo real de cada plato. Haru 360 junta ventas, cocina, delivery, bodega y caja. Y la carta digital deja pedir desde la mesa con un QR.',
@@ -539,7 +542,7 @@
         enlaces: [{ texto: 'Ver la carta digital', url: 'https://haru-carta.vercel.app' }],
         equipo: ['lupe', 'architect', 'celda', 'engine', 'grilla', 'bucle', 'tamandua', 'faro'],
         media: { h: '../assets/casos/haru-360-h.mp4', v: '../assets/casos/haru-360-v.mp4', poster: '../assets/casos/haru-360-h.jpg' },
-        nota: 'Las cifras del video son ilustrativas: salen del generador de datos de prueba.',
+        nota: 'Las cifras del video y de las pantallas son ilustrativas: salen del generador de datos de prueba.',
         /* Sala propia: su restaurante, sin números (ver la de Nu Home). TEXTOS DE EJEMPLO hasta que Haru los apruebe; los
            rolls y precios, los de su carta digital. Su equipo va sin nombre. */
         salaPropia: {
@@ -747,7 +750,10 @@
         }
       },
       {
-        id: 'rumbo', nombre: 'Rumbo', cliente: 'Producto propio de BiPlot', rubro: 'App de desarrollo personal', estado: 'Producto propio · publicado',
+      /* FICHA PÚBLICA: lo público de este proyecto (de nombre a nota) sale de su vitrina.json y llega en
+         ../vitrina/proyectos.js; fichas.js lo pone encima. Lo de aquí es sólo el respaldo por si ese archivo no carga:
+         no se edita a mano, se cambia la ficha en su repo. Lo de la oficina (sala propia, logo, gente) sí es de aquí. */
+        id: 'rumbo', ficha: true, nombre: 'Rumbo', cliente: 'Producto propio de BiPlot', rubro: 'App de desarrollo personal', estado: 'Producto propio · publicado',
         calle: 'otro', corto: 'Publicado',
         pines: [
           ['Ritual diario', 'Apertura y cierre del día.', 'Con recordatorio, para no soltarlo.', null],
