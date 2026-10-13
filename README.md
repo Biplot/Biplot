@@ -29,6 +29,11 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   variables al comienzo del `<style>` (azul BiPlot, cian y el coral sólo para agendar).
 - `plotline.html` — recorrido "Cómo pensamos la automatización": el papel, la terminal, el enredo y el genérico, y al
   final «Hoy · BiPlot HQ» (la línea con alguien a cargo de cada tramo) y «Tu turno» (el local libre del barrio).
+- **Consultas**: los dos formularios de `index.html` (la ficha de la portada y el de contacto) abren WhatsApp como
+  siempre y, en el mismo clic, mandan la consulta a la bandeja de consultas de BiPlot (`assets/consulta.js`: nombre,
+  correo si lo dejó, mensaje y las etiquetas `utm_*` de la dirección por la que entró la persona, guardadas en
+  `sessionStorage` al llegar). Plotty, en la oficina, usa el mismo script. Si la bandeja no responde, WhatsApp abre
+  igual. Los formularios llevan un campo trampa (`sitio`, clase `.hp`) que una persona no ve.
 - `oficina/` — BiPlot HQ, la oficina virtual (el equipo, la calle con la sala de cada empresa y kit para Instagram). Ver `oficina/README.md`.
 - `assets/` — video, imágenes y scripts. En `assets/oficina/`, lo de la oficina que usa el sitio: las caras del equipo
   (`caras/`, se generan con `node oficina/_herramientas/exportar-kit.mjs --caras`), la visita guiada en versión web
