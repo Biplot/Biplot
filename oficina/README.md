@@ -653,8 +653,9 @@ la revisión de lo que llega) y en `oficina.js` («Los avances del CRM»); sus e
 Lo público de un proyecto con ficha (nombre, cliente, rubro, estado, textos, módulos, enlaces, media y equipo) no se
 escribe en este repo: sale del `vitrina.json` de su repo y lo trae el proceso de la vitrina
 (`biplot-nucleo/09-integracion/vitrina/`), que le pasa tres filtros (el contrato, secretos y datos personales, y
-términos vetados) y abre un PR que cambia sólo la carpeta `vitrina/` de la raíz. Lo aprueba un socio
-(`.github/CODEOWNERS`). El contrato de la ficha, qué cruza según el permiso del cliente y por qué:
+términos vetados). Un socio aprueba primero la propuesta en privado, en `biplot-nucleo`; recién entonces llega aquí
+un PR con esos mismos bytes y la misma huella SHA-256, que cambia sólo la carpeta `vitrina/` de la raíz y aprueba un
+socio con un clic (`.github/CODEOWNERS`). El contrato de la ficha, qué cruza según el permiso del cliente y por qué:
 `biplot-nucleo/09-integracion/ficha-publica.md`.
 
 - **Qué hay en `vitrina/`.** `proyectos.json` (un objeto por proyecto) y `proyectos.js` (lo mismo, como
