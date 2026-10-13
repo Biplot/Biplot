@@ -311,7 +311,7 @@ for (const id of Object.keys(SALAS)) {
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${img}">
 <link rel="icon" href="${ICONO}">
-<script>location.replace('../#${id}');</script>
+<script>location.replace('../' + location.search + '#${id}');</script>
 <style>
 body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box; background: #0E2A47; color: #F2F4F7;
   font: 16px/1.5 Inter, "Segoe UI", system-ui, sans-serif; text-align: center; }

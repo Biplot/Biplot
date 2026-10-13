@@ -28,13 +28,15 @@
   }
 
   var texto = function (v, max) { return String(v == null ? '' : v).trim().slice(0, max); };
+  // Un correo que la bandeja no aceptaría («juan@gmail») no se manda: así la consulta llega igual, sin él.
+  var correoValido = function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) ? v : ''; };
 
   /* Devuelve una promesa que nunca falla: { ok: true } o { ok: false, error? }. */
   function enviar(d) {
     if (!window.fetch) return Promise.resolve({ ok: false });
     var cuerpo = {
       nombre: texto(d.nombre, 120),
-      correo: texto(d.correo, 200),
+      correo: correoValido(texto(d.correo, 200)),
       telefono: texto(d.telefono, 40),
       empresa: texto(d.empresa, 120),
       mensaje: texto(d.mensaje, 3000),

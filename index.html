@@ -719,11 +719,11 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
         <form class="wa-form" data-wa novalidate>
           <span class="kicker">Diagnóstico sin costo</span>
           <h2 id="hero-card-h">Cuéntanos tu proceso</h2>
-          <label class="hf"><span>Nombre</span><input name="name" type="text" autocomplete="name" placeholder="Tu nombre" required></label>
-          <label class="hf"><span>¿Qué te quita más tiempo hoy?</span><textarea name="message" placeholder="Ej: armamos el reporte mensual cruzando 4 planillas a mano" required></textarea></label>
+          <label class="hf"><span>Nombre</span><input name="name" type="text" autocomplete="name" placeholder="Tu nombre" required minlength="2"></label>
+          <label class="hf"><span>¿Qué te quita más tiempo hoy?</span><textarea name="message" placeholder="Ej: armamos el reporte mensual cruzando 4 planillas a mano" required minlength="5"></textarea></label>
           <label class="hp" aria-hidden="true">Sitio web<input name="sitio" type="text" tabindex="-1" autocomplete="off"></label>
           <button type="submit" class="btn btn-coral btn-block"><svg class="i"><use href="#i-wa"/></svg> Agenda tu diagnóstico</button>
-          <p class="fine">Te responde una persona del equipo en menos de 48 horas. Guardamos tu consulta solo para responderte.</p>
+          <p class="fine">Te responde una persona del equipo en menos de 48 horas. Al tocar el botón, tu consulta queda guardada en BiPlot, solo para responderte.</p>
         </form>
         <div class="wa-ok" hidden>
           <svg class="i"><use href="#i-check"/></svg>
@@ -1218,13 +1218,13 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
       <div class="form-card reveal">
         <form class="wa-form" id="contactForm" data-wa novalidate>
           <div class="form-row">
-            <label class="ff"><span>Nombre</span><input name="name" type="text" required autocomplete="name" placeholder="Tu nombre"></label>
+            <label class="ff"><span>Nombre</span><input name="name" type="text" required minlength="2" autocomplete="name" placeholder="Tu nombre"></label>
             <label class="ff"><span>Correo <small>(opcional)</small></span><input name="email" type="email" autocomplete="email" placeholder="tucorreo@empresa.cl"></label>
           </div>
-          <label class="ff"><span>Cuéntanos tu proceso</span><textarea name="message" required placeholder="Ej: hoy armamos el reporte mensual cruzando 4 planillas a mano..."></textarea></label>
+          <label class="ff"><span>Cuéntanos tu proceso</span><textarea name="message" required minlength="5" placeholder="Ej: hoy armamos el reporte mensual cruzando 4 planillas a mano..."></textarea></label>
           <label class="hp" aria-hidden="true">Sitio web<input name="sitio" type="text" tabindex="-1" autocomplete="off"></label>
           <button type="submit" class="btn btn-coral btn-lg btn-block"><svg class="i"><use href="#i-wa"/></svg> Enviar por WhatsApp</button>
-          <p class="fine">Antes de enviarlo verás tu mensaje completo en WhatsApp. Guardamos tu consulta solo para responderte.</p>
+          <p class="fine">Al tocar el botón, tu consulta queda guardada en BiPlot (aunque no la envíes por WhatsApp), solo para responderte. Después verás tu mensaje completo en WhatsApp.</p>
         </form>
         <div class="wa-ok" hidden>
           <svg class="i"><use href="#i-check"/></svg>

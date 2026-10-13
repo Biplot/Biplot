@@ -2083,8 +2083,8 @@
       var T = C.datos, f = document.createElement('form');
       f.className = 'chat-datos'; f.noValidate = true;
       f.innerHTML = '<p class="chat-datos-titulo">' + esc(T.titulo) + '</p><p class="chat-datos-ayuda">' + esc(T.ayuda) + '</p>' +
-        '<label><span>Nombre</span><input name="nombre" type="text" autocomplete="name" maxlength="120" required></label>' +
-        '<label><span>Correo</span><input name="correo" type="email" autocomplete="email" maxlength="200" required></label>' +
+        '<label><span>Nombre</span><input name="nombre" type="text" autocomplete="name" minlength="2" maxlength="120" required></label>' +
+        '<label><span>Correo</span><input name="correo" type="email" autocomplete="email" maxlength="200" pattern="[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}" required></label>' +
         '<label class="hp" aria-hidden="true">Sitio web<input name="sitio" type="text" tabindex="-1" autocomplete="off"></label>' +
         '<button type="submit" class="bp-btn">' + esc(T.boton) + '</button><p class="chat-datos-estado" role="status" aria-live="polite"></p>';
       f.addEventListener('submit', function (e) {
