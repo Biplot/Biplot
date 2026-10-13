@@ -642,7 +642,7 @@ la revisión de lo que llega) y en `oficina.js` («Los avances del CRM»); sus e
   montos, contactos, notas, fechas ni lo que no se ha liberado) y la oficina no muestra nada más. Ojo: lo liberado
   (también las imágenes de los módulos) queda a la vista de cualquiera en biplot.cl, así que conviene que no traiga datos
   reales del cliente.
-- **Plotty como entrada a la bandeja de consultas** (desde el 13-10). Las tres respuestas de Plotty son las de la
+- **Plotty como entrada a la bandeja de consultas** (PR del 12-10-2026). Las tres respuestas de Plotty son las de la
   calificación (E0). Siguen viajando en el mensaje de WhatsApp («Agenda tu diagnóstico») y, debajo, «¿Prefieres que te
   escribamos?» pide nombre y correo y manda la consulta (las tres respuestas) a la bandeja de consultas de BiPlot con
   `origen: 'oficina'`, por `assets/consulta.js` (el mismo del formulario de la portada; ahí está la única dirección que
