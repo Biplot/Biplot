@@ -19,7 +19,7 @@
 // ilustracion/ guarda a Aby y Felipe hasta su visto bueno) y barrio/ (la calle, sus
 // locales, las plantillas por rubro, la gente del barrio y las salas grandes).
 // Las medidas de cada cabezón (caja, centro y pies) están en cabezones/medidas.json.
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { VECTOR } from './cabezones/todos.mjs';
@@ -176,7 +176,12 @@ console.log('ilustraciones.js', kb(ilus));
 
 /* ───────── Barrio y salas grandes ───────── */
 // Los datos reales (nombres y colores de cada proyecto) salen de datos.js, igual que en la oficina.
-const ventana = {}; new Function('window', readFileSync(path.join(oficina, 'datos.js'), 'utf8'))(ventana);
+// Lo público de los proyectos con ficha llega en ../vitrina/proyectos.js y fichas.js lo pone encima, como en la oficina.
+const ventana = {};
+const vitrinaJs = path.join(oficina, '..', 'vitrina', 'proyectos.js');
+if (existsSync(vitrinaJs)) new Function('window', readFileSync(vitrinaJs, 'utf8'))(ventana);
+new Function('window', readFileSync(path.join(oficina, 'datos.js'), 'utf8'))(ventana);
+new Function('window', readFileSync(path.join(oficina, 'fichas.js'), 'utf8'))(ventana);
 const DATOS = ventana.OFICINA_DATOS;
 // Cada personaje se define una vez por documento (#v-id) y el barrio lo usa con <use>. La silueta (el contorno grueso)
 // se dibuja una vez y se repite corrida con <use>, como en el elenco.

@@ -463,7 +463,8 @@
     var zn = zonaPorId(obj.id);
     if (zn && zn.libre || obj.id === 'libre') return 'Local disponible · ' + calleDe(obj.id);
     if (PROYECTOS[obj.id]) return 'Local · ' + calleDe(obj.id);
-    return obj.id === 'vitrina' ? 'Recepción · La vitrina' : SALAS[obj.id].etiqueta;
+    // Un id que ya no existe (un enlace a la sala de un proyecto que salió de la oficina) no rompe nada
+    return obj.id === 'vitrina' ? 'Recepción · La vitrina' : SALAS[obj.id] ? SALAS[obj.id].etiqueta : '';
   }
   // Lo de adentro (el equipo, Plotty, las salas de la oficina) se ve con la oficina abierta; lo del barrio, desde la calle
   function deAdentro(obj) { var zn = obj.tipo === 'zona' && zonaPorId(obj.id); return obj.tipo === 'actor' || obj.tipo === 'chat' || !!(zn && zn.adentro); }
@@ -628,7 +629,7 @@
   function listaVitrina() {
     return '<ul class="vitrina">' + vitrinaIds.map(function (id) {
       var pr = PROYECTOS[id], c = CASOS[id];
-      if (pr) return '<li><span class="punto" style="background:' + pr.acento + '" aria-hidden="true"></span><div><b>' + esc(pr.nombre) + '</b><span>' + esc(pr.rubro) + '</span><a href="#" data-abrir="zona:' + id + '">Ver el local</a></div></li>';
+      if (pr) return '<li><span class="punto" style="background:' + esc(pr.acento) + '" aria-hidden="true"></span><div><b>' + esc(pr.nombre) + '</b><span>' + esc(pr.rubro) + '</span><a href="#" data-abrir="zona:' + id + '">Ver el local</a></div></li>';
       if (c) return '<li><span class="num">' + c.num + '</span><div><b>' + esc(c.nombre) + '</b><span>' + esc(c.rubro) + ' · caso de referencia</span><a href="' + esc(c.demo) + '">Ver la demo</a> · <a href="' + esc(c.caso) + '">Leer el caso</a></div></li>';
       return '';
     }).join('') + '</ul>';
