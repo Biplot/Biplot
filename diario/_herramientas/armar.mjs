@@ -52,12 +52,17 @@ const VEREDICTOS = { mito: ['Mito', 'v-mito'], dato: ['Dato', 'v-dato'], 'a medi
 // ---------- Utilidades ----------
 const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // Texto con **negrita** y *cursiva*, nada más
-const md = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>');
+// (los marcadores y rangos como 6-0 o 2026-27 no se cortan al final de la línea)
+const md = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>')
+  .replace(/\b(\d+-\d+)\b/g, '<span style="white-space:nowrap">$1</span>');
 const lista = (x) => (x == null ? [] : Array.isArray(x) ? x : [x]);
 const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 function fechaLarga(iso) { const d = new Date(iso + 'T12:00:00Z'); return `${DIAS[d.getUTCDay()]} ${d.getUTCDate()} de ${MESES[d.getUTCMonth()]} de ${d.getUTCFullYear()}`; }
 const numero = (ed) => 'N.º ' + ed.numero;
+// Lo que dice el pie de cómo se hizo: una edición de prueba que nadie ha revisado no puede decir «revisado por personas»
+const hechura = (ed) => (ed.prueba && !ed.edita ? 'Armada con ayuda de IA; como es de prueba, todavía le falta la revisión de una persona'
+  : `Hecho con ayuda de IA y revisado por personas${ed.edita ? `. Edita: ${esc(ed.edita)}` : ''}`);
 const titulo = (n) => (n ? `${esc(n[0])} <em>${esc(n[1])}</em>` : '');
 const tituloPlano = (n) => (n ? n.join(' ') : '');
 // Todas las fuentes de la edición, sin repetir, para el pie
@@ -202,7 +207,7 @@ function pieWeb(ed, base) {
     <div class="pie-cols">
       <div><h3>La Línea</h3><ul>
         <li>El diario de BiPlot. ${PERIODICIDAD}.</li>
-        <li>Hecho con ayuda de IA y revisado por personas${ed && ed.edita ? `. Edita: ${esc(ed.edita)}` : ''}.</li>
+        <li>${ed ? hechura(ed) : 'Hecho con ayuda de IA y revisado por personas'}.</li>
         <li><a href="${base}">La hemeroteca</a> · <a href="${base}../">biplot.cl</a> · <a href="${base}../oficina/">BiPlot HQ</a> · <a href="${base}../oficina/tv/">BiPlot.TV</a></li>
       </ul></div>
       ${ed ? `<div><h3>Las fuentes de esta edición</h3><ul class="fuentes">${fuentes.map((f) => `<li><a href="${esc(f.url)}" rel="noopener">${esc(f.medio)}</a>${f.titulo ? ` · ${esc(f.titulo)}` : ''}</li>`).join('')}</ul></div>
@@ -281,7 +286,7 @@ function notaC(n, sec, { grande = false, oscuro = false } = {}) {
   const tc = oscuro ? C.crema : C.texto, gc = oscuro ? '#B9C2CC' : C.gris;
   return `<tr><td style="padding:0 0 22px 0;">
 ${n.cifra ? `<div style="font:600 30px/1.1 ${oscuro ? C.mono : C.serif};color:${oscuro ? C.cian : C.acento};font-variant-numeric:lining-nums;">${esc(n.cifra.valor)}</div>${n.cifra.leyenda ? `<div style="font:700 10px/1.4 ${C.sans};letter-spacing:2px;text-transform:uppercase;color:${gc};margin:2px 0 8px;">${esc(n.cifra.leyenda)}</div>` : ''}` : ''}
-<div style="font:500 ${grande ? '34px/1.05' : '23px/1.15'} ${C.serif};color:${tc};">${md(n.titular)}</div>
+<div style="font:500 ${grande ? '34px/1.05' : '23px/1.15'} ${C.serif};color:${tc};font-variant-numeric:lining-nums;">${md(n.titular)}</div>
 ${lista(n.bajada).map((p) => `<div style="margin-top:8px;font:400 ${grande ? `18px/1.45 ${C.serif}` : `15px/1.55 ${C.sans}`};color:${tc};">${md(p)}</div>`).join('\n')}
 ${n.importa ? `<div style="margin-top:10px;padding-left:10px;border-left:2px solid ${C.cian};font:400 14px/1.5 ${C.sans};color:${gc};"><b style="color:${tc};">${esc(sec.importa || 'Por qué importa')}.</b> ${md(n.importa)}</div>` : ''}
 ${fuentesC(n.fuentes, oscuro)}
@@ -418,7 +423,7 @@ ${ed.aparte ? `<tr><td class="pad" style="padding:12px 24px 0 24px;"><table role
   <tr><td class="pad" style="padding:0 24px 18px 24px;border-top:1px solid #2A3F55;"><div style="padding-top:16px;">${kickerC('Fe de erratas', C.cian)}</div>
     <div style="margin-top:8px;font:400 13px/1.6 ${C.sans};color:#C9D1D9;">${lista(ed.erratas).length ? lista(ed.erratas).map(md).join('<br>') : 'Sin correcciones en esta edición. Si ves un error, responde este correo y lo corregimos aquí.'}</div></td></tr>
   <tr><td class="pad" style="padding:16px 24px 26px 24px;border-top:1px solid #2A3F55;font:400 12px/1.6 ${C.sans};color:#8C99A6;">
-    La Línea es el diario de BiPlot. ${PERIODICIDAD}. Hecho con ayuda de IA y revisado por personas${ed.edita ? `. Edita: ${esc(ed.edita)}` : ''}.<br>
+    La Línea es el diario de BiPlot. ${PERIODICIDAD}. ${hechura(ed)}.<br>
     Los resúmenes son nuestros; las notas completas son de cada medio, y cada una lleva su enlace.<br>
     <a href="${url}" style="color:#C9D1D9;">Ver en el navegador</a> · <a href="${SITIO}/diario/" style="color:#C9D1D9;">La hemeroteca</a> · <a href="${SITIO}/" style="color:#C9D1D9;">biplot.cl</a> · <a href="${BAJA}" style="color:#C9D1D9;">Darte de baja</a>
   </td></tr>
