@@ -71,8 +71,13 @@ function todasLasFuentes(ed) {
   const juntar = (f) => { for (const x of lista(f)) if (x && x.url && !vistas.has(x.url)) vistas.set(x.url, x); };
   for (const i of lista(ed.indicadores)) juntar(i.fuente);
   for (const s of SECCIONES) for (const n of notasDe(ed, s.id)) juntar(n.fuentes);
-  return [...vistas.values()];
+  // Agrupadas por medio, en orden alfabético: cada medio con todos sus enlaces de la edición
+  const porMedio = new Map();
+  for (const f of vistas.values()) { if (!porMedio.has(f.medio)) porMedio.set(f.medio, []); porMedio.get(f.medio).push(f.url); }
+  return [...porMedio].map(([medio, urls]) => ({ medio, urls })).sort((x, y) => x.medio.localeCompare(y.medio, 'es'));
 }
+// «Emol ² ³»: el medio enlaza a su primera nota y las demás van numeradas
+const fuentePie = (f, estilo = '') => `<a href="${esc(f.urls[0])}"${estilo} rel="noopener">${esc(f.medio)}</a>${f.urls.slice(1).map((u, i) => ` <a href="${esc(u)}"${estilo} rel="noopener"><sup>${i + 2}</sup></a>`).join('')}`;
 // Las notas de una sección, sea cual sea su forma en el JSON
 function notasDe(ed, id) {
   const v = ed[id];
@@ -201,7 +206,7 @@ function pieWeb(ed, base) {
   <div class="envoltura">
     <div class="punto">
       <div><span class="kicker">BiPlot · Automatización a la medida</span><h2>Tu proceso es el <em>próximo punto</em></h2>
-      <p>Si algo de esta edición se parece a lo que pasa en tu empresa, conversemos. Una sesión corta, sin costo.</p></div>
+      <p>Si algo de ${ed ? 'esta edición' : 'lo que lees aquí'} se parece a lo que pasa en tu empresa, conversemos. Una sesión corta, sin costo.</p></div>
       <a class="btn-cta" href="${AGENDAR}" rel="noopener">Agenda tu diagnóstico</a>
     </div>
     <div class="pie-cols">
@@ -210,7 +215,7 @@ function pieWeb(ed, base) {
         <li>${ed ? hechura(ed) : 'Hecho con ayuda de IA y revisado por personas'}.</li>
         <li><a href="${base}">La hemeroteca</a> · <a href="${base}../">biplot.cl</a> · <a href="${base}../oficina/">BiPlot HQ</a> · <a href="${base}../oficina/tv/">BiPlot.TV</a></li>
       </ul></div>
-      ${ed ? `<div><h3>Las fuentes de esta edición</h3><ul class="fuentes">${fuentes.map((f) => `<li><a href="${esc(f.url)}" rel="noopener">${esc(f.medio)}</a>${f.titulo ? ` · ${esc(f.titulo)}` : ''}</li>`).join('')}</ul></div>
+      ${ed ? `<div><h3>Las fuentes de esta edición</h3><p class="fuentes">${fuentes.map((f) => fuentePie(f)).join(' · ')}</p></div>
       <div><h3>Fe de erratas</h3><ul>${lista(ed.erratas).length ? lista(ed.erratas).map((e) => `<li>${md(e)}</li>`).join('') : '<li>Sin correcciones en esta edición. Si ves un error, respóndenos y lo corregimos aquí.</li>'}</ul></div>` : ''}
     </div>
     <p class="legal">© ${new Date().getUTCFullYear()} BiPlot. Los resúmenes son nuestros; las notas completas son de cada medio, y cada una lleva su enlace.</p>
@@ -369,7 +374,9 @@ function edicionCorreo(ed) {
 <title>La Línea ${esc(numero(ed))} · ${esc(fecha)}</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Mulish:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-  body{margin:0;padding:0;background:${C.papel};}
+  body{margin:0;padding:0;background:${C.papel};font-feature-settings:'lnum' 1;}
+  /* Cifras de caja alta en Cormorant (Apple Mail): !important para ganarle al atajo font: de los estilos en línea */
+  td,div,span,a,i,b{font-feature-settings:'lnum' 1 !important;}
   a{color:${C.acento};}
   @media (max-width:620px){
     .contenedor{width:100% !important;}
@@ -379,7 +386,7 @@ function edicionCorreo(ed) {
   }
 </style>
 </head>
-<body style="margin:0;padding:0;background:${C.papel};">
+<body style="margin:0;padding:0;background:${C.papel};font-feature-settings:'lnum' 1;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${C.papel};">${esc(ed.previa || '')}&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;&#8199;&#847;</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.papel}" style="background:${C.papel};">
 <tr><td align="center" style="padding:16px 0 32px 0;">
@@ -419,7 +426,7 @@ ${ed.aparte ? `<tr><td class="pad" style="padding:12px 24px 0 24px;"><table role
   ${lista(ed.preguntas).length ? `<tr><td class="pad" style="padding:0 24px 18px 24px;border-top:1px solid #2A3F55;"><div style="padding-top:16px;">${kickerC('Las respuestas de Plotty', C.cian)}</div>
     ${lista(ed.preguntas).map((p, i) => `<div style="margin-top:8px;font:400 14px/1.5 ${C.sans};color:#C9D1D9;"><span style="font:600 12px ${C.mono};color:${C.cian};">0${i + 1}</span> · ${md(p.respuesta)}</div>`).join('')}</td></tr>` : ''}
   <tr><td class="pad" style="padding:0 24px 18px 24px;border-top:1px solid #2A3F55;"><div style="padding-top:16px;">${kickerC('Las fuentes de esta edición', C.cian)}</div>
-    <div style="margin-top:8px;font:400 13px/1.7 ${C.sans};color:#C9D1D9;">${fuentes.map((f) => `<a href="${esc(f.url)}" style="color:${C.crema};">${esc(f.medio)}</a>`).join(' · ')}</div></td></tr>
+    <div style="margin-top:8px;font:400 13px/1.7 ${C.sans};color:#C9D1D9;">${fuentes.map((f) => fuentePie(f, ` style="color:${C.crema};"`)).join(' · ')}</div></td></tr>
   <tr><td class="pad" style="padding:0 24px 18px 24px;border-top:1px solid #2A3F55;"><div style="padding-top:16px;">${kickerC('Fe de erratas', C.cian)}</div>
     <div style="margin-top:8px;font:400 13px/1.6 ${C.sans};color:#C9D1D9;">${lista(ed.erratas).length ? lista(ed.erratas).map(md).join('<br>') : 'Sin correcciones en esta edición. Si ves un error, responde este correo y lo corregimos aquí.'}</div></td></tr>
   <tr><td class="pad" style="padding:16px 24px 26px 24px;border-top:1px solid #2A3F55;font:400 12px/1.6 ${C.sans};color:#8C99A6;">

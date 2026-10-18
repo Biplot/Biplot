@@ -9,6 +9,8 @@ escribe la oficina: Aby abre la edición y el resto del equipo firma su sección
 - La hemeroteca: **biplot.cl/diario/** (`diario/index.html`), con todas las ediciones, la más nueva arriba.
 - El correo: `diario/_herramientas/salida/<fecha>-correo.html` (no se sube; se arma de nuevo al enviarlo).
 - La N.º 0 (19 de octubre de 2026) es la **edición de prueba**: lleva «Edición de prueba» en la cabecera y `noindex`.
+  Sus notas se juntaron con búsqueda web, sin poder abrir los artículos (la red del entorno donde se armó no lo permitía):
+  antes de enviarla, alguien tiene que abrir cada enlace y confirmar las cifras.
   La hemeroteca también queda `noindex` mientras no haya ninguna edición publicada (sin `"prueba": true`).
 
 ## Las secciones y quién las firma
@@ -41,7 +43,8 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`. Las 
   referencia (Reuters, AP, EFE, Diario Financiero, La Tercera, HBR…), o dos fuentes independientes.
 - **Los resúmenes son nuestros**: dos o tres frases con los hechos, nunca el artículo copiado ni sus fotos (las imágenes
   son las del equipo). Las cifras, tal cual las da la fuente, con su fecha.
-- Hecho con ayuda de IA y **revisado por personas**: el pie lo dice, con el nombre de quien edita (`edita`).
+- Hecho con ayuda de IA y **revisado por personas**: el pie lo dice, con el nombre de quien edita (`edita`). Una edición de
+  prueba sin `edita` dice, en cambio, que todavía le falta esa revisión.
 - Los errores se corrigen en la **fe de erratas** de la edición siguiente (`erratas`).
 - Los casos de clientes de BiPlot salen sólo con su permiso, como los capítulos de BiPlot.TV.
 

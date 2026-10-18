@@ -32,11 +32,14 @@
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--text);font:400 1rem/1.62 var(--sans);-webkit-font-smoothing:antialiased}
+/* Cifras de caja alta (Cormorant trae las antiguas, y «N.º 0» se lee «N.º o»). Va con !important porque cada atajo font:
+   reinicia font-feature-settings en su elemento. Las tabulares siguen saliendo de font-variant-numeric. */
+*,*::before,*::after{font-feature-settings:'lnum' 1 !important}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration-color:rgba(var(--text-rgb),.35);text-underline-offset:.18em;text-decoration-thickness:1px}
 a:hover{text-decoration-color:currentColor}
 :focus-visible{outline:2px solid var(--accent-ink);outline-offset:3px;border-radius:3px}
-h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.04;letter-spacing:-.01em;margin:0;font-variant-numeric:lining-nums}
+h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.04;letter-spacing:-.01em;margin:0}
 h1 em,h2 em,h3 em{font-style:italic;font-weight:500}
 p{margin:0}
 .envoltura{max-width:var(--ancho);margin:0 auto;padding:0 var(--gutter)}
@@ -201,7 +204,8 @@ p{margin:0}
 .pie-cols h3{font:700 .64rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
 .pie-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
 .pie a{color:var(--paper)}
-.pie .fuentes li{font-size:.85rem}
+.pie .fuentes{font-size:.85rem;line-height:1.9}
+.pie .fuentes sup{font-size:.7em;color:var(--accent)}
 .pie .legal{margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line-dark);font-size:.78rem;color:rgba(var(--paper-rgb),.55)}
 
 /* ===== La hemeroteca ===== */
