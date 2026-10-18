@@ -1,223 +1,226 @@
 /* =============================================================
-   La Línea — el diario de BiPlot (la edición en la web y la hemeroteca)
-   En la línea editorial del sitio: títulos en Cormorant Garamond con un remate en cursiva, texto en Mulish, papel y
-   tinta, kickers espaciados y columnas con filete. La línea cian recorre el diario y termina en el punto coral, que
-   sigue siendo sólo para agendar el diagnóstico. Lo arma diario/_herramientas/armar.mjs; aquí sólo va el estilo.
+   La Línea — el diario de BiPlot, en su edición de Gotham
+   Un diario de verdad, leído de noche: las hojas de papel de diario (amarillo, con grano) sobre la ciudad a oscuras, la
+   cabecera en letra gótica, titulares condensados en mayúsculas, texto justificado en columnas y un folio en cada
+   página. El equipo sale con la paleta de la noche (acero en las sombras, farol en las luces; ver imagenes.mjs). El coral
+   sigue siendo sólo para agendar el diagnóstico: en la noche es la única mancha de color. Lo arma armar.mjs.
    ============================================================= */
 :root{
-  --ink:#081B30;          --ink-rgb:8,27,48;
-  --ink-2:#0E2A47;        --ink-2-rgb:14,42,71;
-  --ink-3:#132F4E;
-  --paper:#F5F2EC;        --paper-rgb:245,242,236;
-  --sand:#ECE6DA;
-  --text:#0F1B28;         --text-rgb:15,27,40;
-  --muted:#56606A;
-  --accent:#17C3B2;       --accent-rgb:23,195,178;
-  --accent-ink:#0A7A6F;
-  --cta:#FF6B4A;          --cta-2:#FF8467;  --cta-text:#2b0f08;
-  --line-dark:rgba(var(--paper-rgb),.16);
-  --line-light:rgba(var(--text-rgb),.14);
-  --rule:rgba(var(--text-rgb),.5);
+  /* La noche y su farol */
+  --noche:#0B0D10;        --noche-2:#15181D;      --acero:#3A4654;
+  --farol:#C8962E;        --farol-rgb:200,150,46;
+  /* El papel de diario y su tinta */
+  --papel:#E7DDC4;        --papel-2:#DDD1B3;      --papel-3:#CDBF9C;
+  --tinta:#17140F;        --tinta-rgb:23,20,15;   --tinta-2:#3B362D;      --gris:#5E5748;
+  --ocre:#7A5512;                                  /* el farol, para texto sobre papel (AA) */
+  --cta:#FF6B4A;          --cta-2:#FF8467;        --cta-text:#2b0f08;     /* sólo para agendar el diagnóstico */
 
-  --serif:'Cormorant Garamond',Garamond,Georgia,'Times New Roman',serif;
-  --sans:'Mulish',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,monospace;
-  --brand:'Space Grotesk','Mulish',sans-serif;
+  --gotica:'UnifrakturMaguntia','Old English Text MT',serif;
+  --titular:'Oswald','Arial Narrow','Helvetica Neue Condensed',Impact,sans-serif;
+  --texto:'Old Standard TT',Georgia,'Times New Roman',serif;
+  --maquina:'Courier Prime','Courier New',Courier,monospace;
 
-  --r-md:10px;
-  --r-lg:16px;
-  --gutter:clamp(16px,4vw,40px);
-  --ancho:1120px;
+  --hoja:1120px;
+  --gutter:clamp(16px,3.4vw,44px);
+  /* El grano del papel */
+  --grano:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .09 0 0 0 0 .08 0 0 0 0 .06 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.38'/%3E%3C/svg%3E");
 }
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--paper);color:var(--text);font:400 1rem/1.62 var(--sans);-webkit-font-smoothing:antialiased}
-/* Cifras de caja alta (Cormorant trae las antiguas, y «N.º 0» se lee «N.º o»). Va con !important porque cada atajo font:
-   reinicia font-feature-settings en su elemento. Las tabulares siguen saliendo de font-variant-numeric. */
-*,*::before,*::after{font-feature-settings:'lnum' 1 !important}
+body{margin:0;color:var(--papel);font:400 1rem/1.55 var(--texto);-webkit-font-smoothing:antialiased;
+  background:radial-gradient(ellipse 70% 38% at 50% 0,rgba(var(--farol-rgb),.22),transparent 70%),var(--noche);background-attachment:fixed}
 img{max-width:100%;display:block}
-a{color:inherit;text-decoration-color:rgba(var(--text-rgb),.35);text-underline-offset:.18em;text-decoration-thickness:1px}
-a:hover{text-decoration-color:currentColor}
-:focus-visible{outline:2px solid var(--accent-ink);outline-offset:3px;border-radius:3px}
-h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.04;letter-spacing:-.01em;margin:0}
-h1 em,h2 em,h3 em{font-style:italic;font-weight:500}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:.16em}
+:focus-visible{outline:2px solid var(--farol);outline-offset:3px}
+h1,h2,h3,h4{margin:0;font-weight:400}
 p{margin:0}
-.envoltura{max-width:var(--ancho);margin:0 auto;padding:0 var(--gutter)}
-.kicker{display:block;font:700 .7rem/1.3 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:var(--accent-ink)}
 .saltar{position:absolute;left:-9999px}
-.saltar:focus{left:1rem;top:1rem;z-index:5;background:var(--ink);color:var(--paper);padding:.6rem 1rem;border-radius:6px}
+.saltar:focus{left:1rem;top:1rem;z-index:5;background:var(--papel);color:var(--tinta);padding:.6rem 1rem}
 
-/* ===== La cabecera: como la de un diario, con filetes dobles ===== */
-.barra{background:var(--ink);color:rgba(var(--paper-rgb),.78);font:600 .74rem/1.2 var(--sans);letter-spacing:.04em}
-.barra .envoltura{display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:44px}
-.barra a{text-decoration:none;display:inline-flex;align-items:center;gap:.55rem;color:var(--paper)}
+/* ===== La barra, en la noche ===== */
+.barra{max-width:var(--hoja);margin:0 auto;padding:0 var(--gutter);display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:52px;
+  font:700 .74rem/1.2 var(--maquina);letter-spacing:.08em;text-transform:uppercase;color:rgba(231,221,196,.72)}
+.barra a{text-decoration:none;display:inline-flex;align-items:center;gap:.55rem}
+.barra a:hover{color:var(--papel)}
 .barra svg{width:22px;height:22px;flex:none}
-.barra .marca{font:700 .95rem/1 var(--brand);letter-spacing:-.01em}
-.barra .marca span{color:var(--accent)}
-.barra nav{display:flex;gap:1.1rem}
-.barra nav a{color:rgba(var(--paper-rgb),.78)}
-.barra nav a:hover{color:var(--paper)}
+.barra nav{display:flex;gap:1.2rem}
 
-.cabecera{padding-top:clamp(1.4rem,3vw,2.2rem);text-align:center}
-.cab-fecha{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.3rem 1rem;border-top:3px double var(--rule);border-bottom:1px solid var(--rule);
-  padding:.55rem 0;font:700 .68rem/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.cab-fecha .prueba{color:var(--accent-ink)}
-.cab-nombre{font-size:clamp(4rem,14vw,9.5rem);line-height:.86;letter-spacing:-.025em;margin:clamp(1rem,2.4vw,1.6rem) 0 .5rem}
-.cab-nombre em{padding-right:.04em}
-.cab-lema{font:400 italic clamp(1.1rem,2.2vw,1.4rem)/1.3 var(--serif);color:var(--muted)}
-.cab-lema b{font:700 .66rem/1 var(--sans);font-style:normal;letter-spacing:.24em;text-transform:uppercase;color:var(--accent-ink);display:block;margin-bottom:.5rem}
-/* La línea: cruza la cabecera y sigue hasta el pie, donde termina en el punto coral */
-.linea{display:block;width:100%;height:46px;margin:clamp(.8rem,2vw,1.2rem) 0 0;color:var(--accent)}
+/* ===== Las hojas ===== */
+.diario{display:grid;gap:clamp(1.4rem,3vw,2.4rem);padding:0 clamp(0px,2vw,24px) clamp(2rem,5vw,4rem)}
+.hoja{position:relative;max-width:var(--hoja);width:100%;margin:0 auto;padding:clamp(1rem,2.4vw,1.8rem) var(--gutter) clamp(1.6rem,3.4vw,2.6rem);
+  background:var(--grano),radial-gradient(ellipse at 50% 40%,var(--papel) 55%,var(--papel-2) 100%);color:var(--tinta);
+  box-shadow:0 1px 0 rgba(255,255,255,.25) inset,0 30px 60px -20px rgba(0,0,0,.8),0 2px 6px rgba(0,0,0,.5)}
+/* La portada viene doblada al medio, como sale del quiosco */
+.hoja.portada::after{content:"";position:absolute;left:0;right:0;top:50%;height:12px;transform:translateY(-50%);pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(var(--tinta-rgb),.09) 50%,transparent);mix-blend-mode:multiply}
+.folio{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-bottom:.45rem;border-bottom:1px solid var(--tinta);
+  font:700 .7rem/1.3 var(--maquina);letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-2)}
+.folio .gotica{font:400 1.05rem/1 var(--gotica);letter-spacing:0;text-transform:none;color:var(--tinta)}
+.pagina-titulo{margin:.9rem 0 1.4rem;padding:.35rem 0;border-top:4px solid var(--tinta);border-bottom:1px solid var(--tinta);text-align:center;
+  font:700 clamp(1.5rem,3.6vw,2.4rem)/1 var(--titular);letter-spacing:.06em;text-transform:uppercase}
+.pagina-titulo em{font:italic 400 .82em/1 var(--texto);letter-spacing:0;text-transform:none}
 
-/* La franja de datos (Celda) */
-.franja{display:grid;grid-template-columns:repeat(2,1fr);margin:0;border-top:1px solid var(--rule);border-bottom:3px double var(--rule);text-align:left}
-.franja div{padding:.85rem 0 .95rem}
-.franja div:nth-child(even){padding-left:1rem;border-left:1px solid var(--line-light)}
-.franja div:nth-child(n+3){border-top:1px solid var(--line-light)}
-.franja dt{font:700 .62rem/1.2 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:.35rem}
-.franja dd{margin:0;font:500 clamp(1.35rem,2.4vw,1.75rem)/1.05 var(--serif);font-variant-numeric:lining-nums tabular-nums}
-.franja small{display:block;margin-top:.3rem;font:600 .7rem/1.3 var(--sans);color:var(--muted)}
-.franja small a{color:var(--muted)}
-@media (min-width:860px){
-  .franja{grid-template-columns:repeat(var(--n,4),1fr)}
-  .franja div{padding:1rem 1.2rem 1.1rem}
-  .franja div:first-child{padding-left:0}
-  .franja div+div{border-left:1px solid var(--line-light)}
-  .franja div:nth-child(n+3){border-top:0}
-  .franja div:nth-child(even){padding-left:1.2rem}
+/* ===== La cabecera de la portada ===== */
+.orejas{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem}
+.oreja{border:1px solid var(--tinta);padding:.5rem .6rem;font:700 .66rem/1.35 var(--maquina);letter-spacing:.08em;text-transform:uppercase;text-align:center;max-width:170px}
+.oreja b{display:block;font:700 1.05rem/1.1 var(--titular);letter-spacing:.04em}
+.oreja:last-child{justify-self:end}
+.cabecera{font:400 clamp(3.4rem,12.5vw,8.6rem)/1 var(--gotica);text-align:center;letter-spacing:-.01em;padding:.2rem 0 .1rem}
+.lema{text-align:center;font:italic 400 clamp(1rem,1.8vw,1.2rem)/1.3 var(--texto);color:var(--tinta-2)}
+.fechero{margin-top:.7rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.2rem 1rem;padding:.4rem 0;
+  border-top:3px double var(--tinta);border-bottom:3px double var(--tinta);font:700 .72rem/1.3 var(--maquina);letter-spacing:.1em;text-transform:uppercase}
+@media (max-width:640px){.orejas{grid-template-columns:1fr 1fr}.orejas .cabecera{grid-column:1/-1;grid-row:1}.oreja{max-width:none}}
+/* La línea: cruza bajo la cabecera, de punto en punto */
+.linea{display:block;width:100%;height:30px;margin:.5rem 0 0;color:var(--tinta)}
+
+/* Mercados (Celda): como la tabla de cotizaciones */
+.mercados{display:grid;grid-template-columns:repeat(2,1fr);margin:.6rem 0 0;border-bottom:1px solid var(--tinta)}
+.mercados div{padding:.45rem .7rem .55rem 0}
+.mercados div:nth-child(even){padding-left:.7rem;border-left:1px dotted var(--tinta)}
+.mercados dt{font:700 .62rem/1.2 var(--maquina);letter-spacing:.14em;text-transform:uppercase;color:var(--ocre)}
+.mercados dd{margin:.1rem 0 0;font:600 1.3rem/1.1 var(--titular);font-variant-numeric:tabular-nums}
+.mercados small{display:block;font:400 .7rem/1.3 var(--maquina);color:var(--gris)}
+.mercados small a{color:var(--gris)}
+@media (min-width:820px){.mercados{grid-template-columns:repeat(var(--n,4),1fr)}.mercados div+div{padding-left:.9rem;border-left:1px dotted var(--tinta)}}
+
+/* ===== La portada ===== */
+.titular-mayor{margin:1.1rem 0 .4rem;font:700 clamp(2.3rem,6.6vw,5rem)/.94 var(--titular);text-transform:uppercase;letter-spacing:-.005em;text-align:center;text-wrap:balance}
+.bajada-mayor{text-align:center;font:italic 400 clamp(1.1rem,2vw,1.35rem)/1.35 var(--texto);color:var(--tinta-2);max-width:820px;margin:0 auto 1.1rem;text-wrap:balance}
+.portada-grid{display:grid;gap:1.4rem;border-top:1px solid var(--tinta);padding-top:1rem}
+@media (min-width:900px){.portada-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1.15fr) minmax(0,.9fr);gap:0}
+  .portada-grid>*{padding:0 1.2rem}.portada-grid>*:first-child{padding-left:0}.portada-grid>*:last-child{padding-right:0}
+  .portada-grid>*+*{border-left:1px solid var(--tinta)}}
+.lado>.nota+.nota{margin-top:1.1rem;padding-top:1rem;border-top:1px solid var(--tinta)}
+.foto{margin:0}
+.foto img{width:100%;height:auto;border:1px solid var(--tinta);filter:contrast(1.04)}
+.foto figcaption{margin-top:.45rem;font:italic 400 .86rem/1.35 var(--texto);color:var(--tinta-2)}
+.foto figcaption b{font:700 .66rem/1 var(--maquina);font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta)}
+.indice{margin-top:1.2rem;border:2px solid var(--tinta);padding:.7rem .9rem}
+.indice h2{font:700 .8rem/1 var(--titular);letter-spacing:.2em;text-transform:uppercase;text-align:center;padding-bottom:.45rem;border-bottom:1px solid var(--tinta)}
+.indice ol{list-style:none;margin:.5rem 0 0;padding:0;display:grid;gap:.25rem}
+.indice a{display:flex;align-items:baseline;gap:.4rem;text-decoration:none;font:400 .95rem/1.35 var(--texto)}
+.indice a::after{content:"";flex:1;order:1;border-bottom:1px dotted var(--tinta);transform:translateY(-.25em)}
+.indice a b{order:2;font:700 .9rem/1 var(--titular)}
+.indice a:hover span{text-decoration:underline}
+.redaccion{margin-top:1.2rem;padding:.9rem 1rem;background:rgba(var(--tinta-rgb),.06);border-top:3px double var(--tinta);border-bottom:3px double var(--tinta)}
+.redaccion h2{font:700 .72rem/1 var(--titular);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem}
+.redaccion p{font:italic 400 .98rem/1.45 var(--texto)}
+.redaccion p+p{margin-top:.45rem}
+.redaccion .firma{margin-top:.7rem}
+
+/* ===== Las notas ===== */
+.seccion{padding-top:1.2rem}
+.seccion+.seccion{margin-top:1.4rem;border-top:4px solid var(--tinta)}
+.sec-cab{display:grid;gap:.7rem;margin-bottom:1rem}
+@media (min-width:760px){.sec-cab{grid-template-columns:1fr auto;align-items:end}}
+.kicker{display:block;font:500 .72rem/1.2 var(--titular);letter-spacing:.22em;text-transform:uppercase;color:var(--ocre)}
+.sec-nombre{font:700 clamp(1.9rem,4.2vw,2.8rem)/1 var(--titular);text-transform:uppercase;letter-spacing:.01em;margin-top:.15rem}
+.sec-nombre em{font:italic 400 .9em/1 var(--texto);text-transform:none;letter-spacing:0}
+.firma{display:flex;align-items:center;gap:.65rem;text-align:left}
+.firma img{width:46px;height:46px;flex:none;border-radius:50%;box-shadow:0 0 0 1px var(--tinta)}
+.firma b{display:block;font:600 .78rem/1.2 var(--titular);letter-spacing:.12em;text-transform:uppercase}
+.firma i{display:block;font:italic 400 .92rem/1.25 var(--texto);color:var(--tinta-2)}
+@media (min-width:760px){.sec-cab .firma{max-width:340px}}
+
+.notas{display:grid;grid-template-columns:1fr;gap:1.4rem}
+@media (min-width:760px){
+  .notas{grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));gap:0}
+  .notas>.nota{padding:0 1.1rem}.notas>.nota:first-child{padding-left:0}.notas>.nota:last-child{padding-right:0}
+  .notas>.nota+.nota{border-left:1px solid var(--tinta)}
+  .notas.n-2{--cols:2}.notas.n-1{--cols:1}
 }
+.nota h4,.nota h3{font:600 clamp(1.3rem,2.2vw,1.6rem)/1.04 var(--titular);text-transform:uppercase;letter-spacing:.005em;text-wrap:balance}
+.nota .bajada{margin-top:.55rem;font-size:1rem;line-height:1.5;hyphens:auto;-webkit-hyphens:auto}
+/* Justificado sólo donde la columna es ancha: en las angostas, sin guiones, abre huecos */
+@media (min-width:760px){.capitular .bajada,.notas.n-1 .bajada,.notas.n-2 .bajada,.el-dato .bajada,.caso .bajada{text-align:justify}}
+.nota .bajada+.bajada{margin-top:0;text-indent:1.4em}
+/* La primera letra de la nota principal, como en el diario */
+.capitular .bajada:first-of-type::first-letter{float:left;font:700 3.9em/.8 var(--titular);padding:.06em .1em 0 0;color:var(--tinta)}
+.nota .importa{margin-top:.7rem;padding:.45rem .6rem;border:1px solid var(--tinta);font-size:.9rem;line-height:1.4}
+.nota .importa b{font:600 .7rem/1 var(--titular);letter-spacing:.14em;text-transform:uppercase;margin-right:.3rem}
+.nota .cifra{font:700 clamp(2rem,3.6vw,2.7rem)/1 var(--titular);font-variant-numeric:tabular-nums;margin-bottom:.35rem}
+.nota .cifra small{display:block;font:700 .64rem/1.3 var(--maquina);letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-top:.25rem}
+.fuente{margin-top:.6rem;font:400 .74rem/1.4 var(--maquina);color:var(--gris)}
+.fuente a{color:var(--tinta-2)}
 
-/* ===== La nota de la redacción ===== */
-.redaccion{display:grid;grid-template-columns:auto 1fr;gap:1rem 1.2rem;align-items:start;max-width:780px;margin:clamp(1.8rem,4vw,2.6rem) auto 0;
-  padding:1.2rem 1.3rem;background:var(--sand);border-radius:var(--r-lg)}
-@media (max-width:520px){.redaccion{padding:1rem}.redaccion img{width:44px;height:44px}}
-.redaccion img{width:56px;height:56px}
-.redaccion p{font:400 clamp(1.12rem,1.8vw,1.28rem)/1.42 var(--serif)}
-.redaccion p+p{margin-top:.6rem}
-.redaccion .firma-chica{font:700 .66rem/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--accent-ink);margin-top:.7rem}
+/* El dato (Celda) */
+.el-dato{display:grid;gap:1.2rem}
+.el-dato .grande{font:700 clamp(4.6rem,13vw,8rem)/.9 var(--titular);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.el-dato .grande small{display:block;margin-top:1rem;font:700 .7rem/1.3 var(--maquina);letter-spacing:.12em;text-transform:uppercase;color:var(--ocre)}
+@media (min-width:760px){.el-dato{grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr);align-items:start}.el-dato .nota{border-left:1px solid var(--tinta);padding-left:1.2rem}}
 
-/* ===== Secciones ===== */
-.seccion{padding-top:clamp(2.4rem,5vw,3.6rem)}
-.sec-cab{display:grid;grid-template-columns:1fr;gap:1rem;border-top:1px solid var(--text);padding-top:1rem;margin-bottom:clamp(1.3rem,3vw,2rem)}
-.sec-cab h2{font-size:clamp(2.2rem,5vw,3.4rem);margin-top:.35rem}
-.firma{display:flex;align-items:center;gap:.75rem;text-align:left}
-.firma img{width:48px;height:48px;flex:none}
-.firma b{display:block;font:700 .8rem/1.25 var(--sans)}
-.firma b small{font:700 .6rem/1 var(--sans);letter-spacing:.18em;color:var(--accent-ink);margin-left:.35rem;text-transform:uppercase}
-.firma i{display:block;font:italic 500 1rem/1.25 var(--serif);color:var(--muted)}
-@media (min-width:760px){.sec-cab{grid-template-columns:1fr auto;align-items:end}.sec-cab .firma{max-width:330px}}
-
-/* Las notas, en columnas con filete */
-.notas{display:grid;grid-template-columns:1fr;gap:1.8rem clamp(1.5rem,3vw,2.5rem)}
-@media (min-width:760px){.notas{grid-template-columns:repeat(var(--cols,3),minmax(0,1fr))}.notas>.nota+.nota{border-left:1px solid var(--line-light);padding-left:clamp(1.5rem,3vw,2.5rem)}}
-@media (min-width:760px){.notas.n-2{--cols:2}.notas.n-1{--cols:1}}
-.nota h3{font-size:clamp(1.5rem,2.4vw,1.85rem);line-height:1.08}
-.nota .bajada{margin-top:.6rem;color:var(--text);font-size:.97rem}
-.nota .bajada+.bajada{margin-top:.5rem}
-.nota .importa{margin-top:.75rem;padding-left:.8rem;border-left:2px solid var(--accent);font-size:.92rem;color:var(--muted)}
-.nota .importa b{color:var(--text);font-weight:700}
-.nota .cifra{font:500 clamp(2.2rem,4vw,2.9rem)/1 var(--serif);color:var(--accent-ink);font-variant-numeric:lining-nums tabular-nums;margin-bottom:.4rem}
-.nota .cifra small{display:block;font:700 .62rem/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
-.fuente{margin-top:.8rem;font:700 .68rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.fuente a{color:var(--accent-ink);text-decoration:none;border-bottom:1px solid rgba(10,122,111,.35)}
-.fuente a:hover{border-bottom-color:currentColor}
-
-/* La portada: la nota principal a la izquierda y las otras a la derecha */
-.portada{padding-top:clamp(2rem,4vw,2.8rem)}
-.portada .notas{gap:1.8rem clamp(1.5rem,3vw,2.5rem)}
-.portada .principal h3{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1}
-.portada .principal .bajada{font:400 clamp(1.15rem,1.9vw,1.32rem)/1.45 var(--serif);margin-top:.9rem}
-.portada .principal .importa{font-size:.97rem}
-.portada .lado{display:grid;gap:1.6rem;align-content:start}
-.portada .lado .nota+.nota{border-top:1px solid var(--line-light);padding-top:1.4rem}
-@media (min-width:860px){.portada .notas{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr)}.portada .lado{border-left:1px solid var(--line-light);padding-left:clamp(1.5rem,3vw,2.5rem)}}
-
-/* El dato: el número grande de Celda */
-.el-dato{display:grid;gap:1.4rem}
-.el-dato .grande{font:500 clamp(4.2rem,12vw,7.5rem)/.9 var(--serif);color:var(--accent-ink);letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
-.el-dato .grande small{display:block;font:700 .66rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:.7rem}
-@media (min-width:760px){.el-dato{grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);align-items:start}}
-
-/* El caso (Lupe): lo que pedían, lo que cambiaron y lo que pasó */
-.caso h3{font-size:clamp(1.9rem,3.6vw,2.6rem)}
-.caso-pasos{list-style:none;margin:1.2rem 0 0;padding:0;display:grid;gap:1.2rem}
-.caso-pasos li{border-top:1px solid var(--rule);padding-top:.8rem}
-.caso-pasos b{display:block;font:700 .64rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:.35rem}
-@media (min-width:760px){.caso-pasos{grid-template-columns:repeat(3,1fr);gap:clamp(1.5rem,3vw,2.5rem)}}
-
-/* El marcador (Felipe): la sección en tinta */
-.tinta{background:var(--ink-2);color:var(--paper);margin-top:clamp(2.4rem,5vw,3.6rem);padding-bottom:clamp(2.4rem,5vw,3.4rem)}
-.tinta .sec-cab{border-top-color:var(--line-dark)}
-.tinta .kicker,.tinta .firma b small{color:var(--accent)}
-.tinta .firma i,.tinta .fuente,.tinta .nota .importa{color:rgba(var(--paper-rgb),.7)}
-.tinta .nota .bajada{color:rgba(var(--paper-rgb),.88)}
-.tinta .nota .cifra{color:var(--accent);font-family:var(--mono);font-weight:600;font-size:clamp(1.9rem,3.4vw,2.4rem);letter-spacing:-.02em}
-.tinta .nota .cifra small{color:rgba(var(--paper-rgb),.6)}
-.tinta .fuente a{color:var(--accent);border-bottom-color:rgba(var(--accent-rgb),.4)}
-.tinta .notas>.nota+.nota{border-left-color:var(--line-dark)}
-.tinta .nota .importa b{color:var(--paper)}
-.tinta .nota .importa{border-left-color:var(--accent)}
-.agenda{margin-top:2rem;border-top:1px solid var(--line-dark);padding-top:1rem}
-.agenda ul{list-style:none;margin:.7rem 0 0;padding:0;display:grid;gap:.5rem}
-.agenda li{display:grid;grid-template-columns:7.5rem 1fr;gap:1rem;font-size:.95rem}
-.agenda li b{font:600 .8rem/1.6 var(--mono);color:var(--accent)}
-@media (max-width:520px){.agenda li{grid-template-columns:1fr;gap:0}}
+/* El caso (Lupe) */
+.caso-pasos{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:1rem}
+.caso-pasos li{border-top:2px solid var(--tinta);padding-top:.5rem;font-size:.98rem;line-height:1.45}
+.caso-pasos b{display:block;font:600 .7rem/1.2 var(--titular);letter-spacing:.16em;text-transform:uppercase;color:var(--ocre);margin-bottom:.25rem}
+@media (min-width:760px){.caso-pasos{grid-template-columns:repeat(3,1fr);gap:1.4rem}}
 
 /* ¿Mito o dato? (Tamandúa): el timbre */
-.timbre{display:inline-block;transform:rotate(-4deg);border:2px solid currentColor;border-radius:4px;padding:.2rem .6rem;margin-bottom:.8rem;
-  font:800 .78rem/1.2 var(--sans);letter-spacing:.24em;text-transform:uppercase}
-.timbre.v-dato{color:var(--accent-ink)}
-.timbre.v-mito{color:var(--text)}
-.timbre.v-medias{color:var(--muted)}
-.mito .afirmacion{font:italic 500 clamp(1.35rem,2.2vw,1.6rem)/1.2 var(--serif)}
+.timbre{display:inline-block;transform:rotate(-5deg);border:3px double currentColor;padding:.15rem .6rem;margin-bottom:.7rem;
+  font:700 1rem/1.1 var(--titular);letter-spacing:.24em;text-transform:uppercase;opacity:.9}
+.timbre.v-dato{color:var(--tinta)}
+.timbre.v-mito{color:var(--tinta)}
+.timbre.v-medias{color:var(--ocre)}
+.mito .afirmacion{font:italic 400 clamp(1.25rem,2.2vw,1.5rem)/1.2 var(--texto)}
 
-/* Tres preguntas (Plotty) */
-.preguntas{list-style:none;margin:0;padding:0;counter-reset:p;display:grid;gap:1.4rem}
-@media (min-width:760px){.preguntas{grid-template-columns:repeat(3,1fr);gap:clamp(1.5rem,3vw,2.5rem)}}
-.preguntas li{counter-increment:p;border-top:1px solid var(--rule);padding-top:.8rem}
-.preguntas li::before{content:counter(p,decimal-leading-zero);display:block;font:600 .8rem/1 var(--mono);color:var(--accent-ink);margin-bottom:.5rem}
-.preguntas p{font:500 1.25rem/1.25 var(--serif)}
-.preguntas details{margin-top:.7rem;font-size:.93rem}
-.preguntas summary{cursor:pointer;font:700 .66rem/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--accent-ink)}
-.preguntas details p{font:400 .95rem/1.5 var(--sans);margin-top:.5rem;color:var(--muted)}
+/* El marcador (Felipe): la caja de resultados va en negativo */
+.marcadores{background:var(--tinta);color:var(--papel);padding:1rem 1.1rem 1.2rem}
+.marcadores .notas>.nota+.nota{border-left-color:rgba(231,221,196,.3)}
+.marcadores .nota .cifra{color:var(--farol)}
+.marcadores .nota .cifra small,.marcadores .fuente,.marcadores .fuente a{color:rgba(231,221,196,.68)}
+.marcadores .nota .importa{border-color:rgba(231,221,196,.4)}
+.agenda{margin-top:1.2rem;border-top:3px double var(--tinta);padding-top:.7rem}
+.agenda h4{font:600 .8rem/1 var(--titular);letter-spacing:.2em;text-transform:uppercase}
+.agenda ul{list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:.35rem}
+.agenda li{display:grid;grid-template-columns:8.5rem 1fr;gap:1rem;font-size:.96rem}
+.agenda li b{font:700 .8rem/1.6 var(--maquina);text-transform:uppercase}
+@media (max-width:520px){.agenda li{grid-template-columns:1fr;gap:0}}
 
-/* El aparte: Rumbo */
-.aparte{display:grid;grid-template-columns:auto 1fr;gap:1rem 1.3rem;align-items:center;margin-top:clamp(2.4rem,5vw,3.6rem);padding:clamp(1.2rem,3vw,1.8rem);background:var(--sand);border-radius:var(--r-lg)}
-.aparte img{width:64px;height:64px;border-radius:14px}
-.aparte h2{font-size:clamp(1.6rem,3vw,2.1rem)}
-.aparte p{margin-top:.45rem;font-size:.97rem}
-.aparte a.ir{display:inline-block;margin-top:.6rem;font:700 .74rem/1.3 var(--sans);letter-spacing:.06em;color:var(--accent-ink)}
-
-/* ===== El pie: la línea termina en el punto coral ===== */
-.pie{background:var(--ink);color:rgba(var(--paper-rgb),.78);margin-top:clamp(2.6rem,5vw,4rem);padding:clamp(2.4rem,5vw,3.4rem) 0 2.4rem;font-size:.92rem}
-.pie .kicker{color:var(--accent)}
-.pie h2{color:var(--paper);font-size:clamp(2rem,4.4vw,3rem);margin:.4rem 0 .8rem}
-.pie h2 em{color:var(--accent)}
-.punto{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.6rem;padding-bottom:2rem;border-bottom:1px solid var(--line-dark)}
-.punto p{max-width:520px}
-.btn-cta{display:inline-flex;align-items:center;gap:.6rem;background:var(--cta);color:var(--cta-text);border-radius:999px;padding:.85rem 1.4rem;
-  font:800 .95rem/1 var(--sans);text-decoration:none;transition:background .2s}
+/* ===== Pasatiempos y avisos ===== */
+.cierre{display:grid;gap:1.4rem}
+@media (min-width:860px){.cierre{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:0}.cierre>*{padding:0 1.2rem}.cierre>*:first-child{padding-left:0}.cierre>*:last-child{padding-right:0;border-left:1px solid var(--tinta)}}
+.cierre .sec-cab{grid-template-columns:1fr}
+.preguntas{list-style:none;margin:0;padding:0;counter-reset:p;display:grid;gap:.9rem}
+.preguntas li{counter-increment:p;display:grid;grid-template-columns:2rem 1fr;gap:.6rem;font:400 1.08rem/1.35 var(--texto)}
+.preguntas li::before{content:counter(p) ".";font:700 1.4rem/1 var(--titular)}
+/* Las soluciones, de cabeza, como en el diario */
+.soluciones{margin-top:1rem;padding-top:.6rem;border-top:1px dotted var(--tinta);transform:rotate(180deg);font:400 .82rem/1.4 var(--maquina);color:var(--tinta-2)}
+.soluciones b{font-weight:700}
+.consultorio{margin-top:1.6rem;display:grid;grid-template-columns:auto 1fr;gap:.8rem 1rem;align-items:start;border-top:4px solid var(--tinta);padding-top:1rem}
+.consultorio img{width:58px;height:58px;border-radius:12px;box-shadow:0 0 0 1px var(--tinta)}
+.consultorio h3{font:600 1.35rem/1.05 var(--titular);text-transform:uppercase}
+.consultorio p{margin-top:.35rem;font-size:.98rem;text-align:justify;hyphens:auto}
+.consultorio a{display:inline-block;margin-top:.4rem;font:700 .76rem/1.3 var(--maquina);text-transform:uppercase;letter-spacing:.06em}
+/* Se busca: el aviso de BiPlot, el único coral del diario */
+.se-busca{border:3px solid var(--tinta);outline:1px solid var(--tinta);outline-offset:4px;margin:6px;padding:1rem 1.1rem 1.2rem;text-align:center;
+  background:rgba(var(--tinta-rgb),.05)}
+.se-busca .kicker{color:var(--tinta-2)}
+.se-busca h3{font:700 clamp(3rem,7vw,4.4rem)/.9 var(--titular);letter-spacing:.04em;text-transform:uppercase;margin:.25rem 0 .5rem}
+.se-busca p{font-size:1rem;line-height:1.45}
+.se-busca .recompensa{margin-top:.6rem;font:700 .8rem/1.4 var(--maquina);letter-spacing:.06em;text-transform:uppercase}
+.btn-cta{display:inline-flex;align-items:center;gap:.6rem;margin-top:1rem;background:var(--cta);color:var(--cta-text);border-radius:999px;padding:.8rem 1.3rem;
+  font:700 .95rem/1 var(--titular);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;box-shadow:0 0 0 2px var(--tinta)}
 .btn-cta:hover{background:var(--cta-2)}
-.btn-cta::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--cta-text);opacity:.85}
-.pie-cols{display:grid;gap:1.6rem;padding-top:1.8rem}
-@media (min-width:760px){.pie-cols{grid-template-columns:1.1fr 1.4fr 1fr}}
-.pie-cols h3{font:700 .64rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
-.pie-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
-.pie a{color:var(--paper)}
-.pie .fuentes{font-size:.85rem;line-height:1.9}
-.pie .fuentes sup{font-size:.7em;color:var(--accent)}
-.pie .legal{margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line-dark);font-size:.78rem;color:rgba(var(--paper-rgb),.55)}
+.btn-cta::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--cta-text)}
+.cajas{display:grid;gap:1rem;margin-top:1.4rem;border-top:4px solid var(--tinta);padding-top:1rem}
+@media (min-width:760px){.cajas{grid-template-columns:1.6fr 1fr 1fr;gap:0}.cajas>*{padding:0 1rem}.cajas>*:first-child{padding-left:0}.cajas>*:last-child{padding-right:0}.cajas>*+*{border-left:1px solid var(--tinta)}}
+.cajas h3{font:600 .76rem/1 var(--titular);letter-spacing:.2em;text-transform:uppercase;margin-bottom:.5rem}
+.cajas p,.cajas li{font:400 .8rem/1.55 var(--maquina);color:var(--tinta-2)}
+.cajas ul{list-style:none;margin:0;padding:0}
+.cajas sup{font-size:.7em}
+
+/* ===== El pie, en la noche ===== */
+.pie{max-width:var(--hoja);margin:0 auto;padding:0 var(--gutter) 2.6rem;font:400 .78rem/1.6 var(--maquina);color:rgba(231,221,196,.6);text-align:center}
+.pie a{color:rgba(231,221,196,.85)}
 
 /* ===== La hemeroteca ===== */
 .hemeroteca{list-style:none;margin:0;padding:0}
-.hemeroteca li{border-top:1px solid var(--line-light)}
-.hemeroteca li:last-child{border-bottom:1px solid var(--line-light)}
-.hemeroteca a{display:grid;grid-template-columns:5.5rem 1fr;gap:.2rem 1.2rem;padding:1.1rem 0;text-decoration:none}
-.hemeroteca .num{font:600 .85rem/1.5 var(--mono);color:var(--accent-ink);grid-row:span 2}
-.hemeroteca .fecha{font:700 .66rem/1.4 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-.hemeroteca .tit{font:500 clamp(1.4rem,2.6vw,1.9rem)/1.1 var(--serif)}
-.hemeroteca a:hover .tit{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.15em}
-.hemeroteca .etiqueta{font:700 .58rem/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--accent-ink);border:1px solid currentColor;border-radius:3px;padding:.2rem .4rem;margin-left:.5rem;vertical-align:.15em}
+.hemeroteca li{border-bottom:1px solid var(--tinta)}
+.hemeroteca a{display:grid;grid-template-columns:5.5rem 1fr;gap:.15rem 1.2rem;padding:.9rem 0;text-decoration:none}
+.hemeroteca .num{font:700 1.4rem/1.1 var(--titular);grid-row:span 2}
+.hemeroteca .fecha{font:700 .7rem/1.4 var(--maquina);letter-spacing:.1em;text-transform:uppercase;color:var(--gris)}
+.hemeroteca .tit{font:600 clamp(1.3rem,2.6vw,1.8rem)/1.08 var(--titular);text-transform:uppercase}
+.hemeroteca a:hover .tit{text-decoration:underline;text-decoration-thickness:2px}
+.etiqueta{font:700 .6rem/1 var(--maquina);letter-spacing:.12em;text-transform:uppercase;border:1px solid currentColor;padding:.15rem .35rem;margin-left:.5rem}
 
-@media (prefers-reduced-motion:no-preference){.btn-cta{transition:background .2s}}
-@media print{.barra,.pie .punto{display:none}.tinta{background:none;color:var(--text)}body{background:#fff}}
+@media print{body{background:#fff}.barra,.pie{display:none}.hoja{box-shadow:none;background:#fff}}
