@@ -1,0 +1,219 @@
+/* =============================================================
+   La Línea — el diario de BiPlot (la edición en la web y la hemeroteca)
+   En la línea editorial del sitio: títulos en Cormorant Garamond con un remate en cursiva, texto en Mulish, papel y
+   tinta, kickers espaciados y columnas con filete. La línea cian recorre el diario y termina en el punto coral, que
+   sigue siendo sólo para agendar el diagnóstico. Lo arma diario/_herramientas/armar.mjs; aquí sólo va el estilo.
+   ============================================================= */
+:root{
+  --ink:#081B30;          --ink-rgb:8,27,48;
+  --ink-2:#0E2A47;        --ink-2-rgb:14,42,71;
+  --ink-3:#132F4E;
+  --paper:#F5F2EC;        --paper-rgb:245,242,236;
+  --sand:#ECE6DA;
+  --text:#0F1B28;         --text-rgb:15,27,40;
+  --muted:#56606A;
+  --accent:#17C3B2;       --accent-rgb:23,195,178;
+  --accent-ink:#0A7A6F;
+  --cta:#FF6B4A;          --cta-2:#FF8467;  --cta-text:#2b0f08;
+  --line-dark:rgba(var(--paper-rgb),.16);
+  --line-light:rgba(var(--text-rgb),.14);
+  --rule:rgba(var(--text-rgb),.5);
+
+  --serif:'Cormorant Garamond',Garamond,Georgia,'Times New Roman',serif;
+  --sans:'Mulish',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --brand:'Space Grotesk','Mulish',sans-serif;
+
+  --r-md:10px;
+  --r-lg:16px;
+  --gutter:clamp(16px,4vw,40px);
+  --ancho:1120px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--text);font:400 1rem/1.62 var(--sans);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration-color:rgba(var(--text-rgb),.35);text-underline-offset:.18em;text-decoration-thickness:1px}
+a:hover{text-decoration-color:currentColor}
+:focus-visible{outline:2px solid var(--accent-ink);outline-offset:3px;border-radius:3px}
+h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.04;letter-spacing:-.01em;margin:0}
+h1 em,h2 em,h3 em{font-style:italic;font-weight:500}
+p{margin:0}
+.envoltura{max-width:var(--ancho);margin:0 auto;padding:0 var(--gutter)}
+.kicker{display:block;font:700 .7rem/1.3 var(--sans);letter-spacing:.26em;text-transform:uppercase;color:var(--accent-ink)}
+.saltar{position:absolute;left:-9999px}
+.saltar:focus{left:1rem;top:1rem;z-index:5;background:var(--ink);color:var(--paper);padding:.6rem 1rem;border-radius:6px}
+
+/* ===== La cabecera: como la de un diario, con filetes dobles ===== */
+.barra{background:var(--ink);color:rgba(var(--paper-rgb),.78);font:600 .74rem/1.2 var(--sans);letter-spacing:.04em}
+.barra .envoltura{display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:44px}
+.barra a{text-decoration:none;display:inline-flex;align-items:center;gap:.55rem;color:var(--paper)}
+.barra svg{width:22px;height:22px;flex:none}
+.barra .marca{font:700 .95rem/1 var(--brand);letter-spacing:-.01em}
+.barra .marca span{color:var(--accent)}
+.barra nav{display:flex;gap:1.1rem}
+.barra nav a{color:rgba(var(--paper-rgb),.78)}
+.barra nav a:hover{color:var(--paper)}
+
+.cabecera{padding-top:clamp(1.4rem,3vw,2.2rem);text-align:center}
+.cab-fecha{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.3rem 1rem;border-top:3px double var(--rule);border-bottom:1px solid var(--rule);
+  padding:.55rem 0;font:700 .68rem/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.cab-fecha .prueba{color:var(--accent-ink)}
+.cab-nombre{font-size:clamp(4rem,14vw,9.5rem);line-height:.86;letter-spacing:-.025em;margin:clamp(1rem,2.4vw,1.6rem) 0 .5rem}
+.cab-nombre em{padding-right:.04em}
+.cab-lema{font:400 italic clamp(1.1rem,2.2vw,1.4rem)/1.3 var(--serif);color:var(--muted)}
+.cab-lema b{font:700 .66rem/1 var(--sans);font-style:normal;letter-spacing:.24em;text-transform:uppercase;color:var(--accent-ink);display:block;margin-bottom:.5rem}
+/* La línea: cruza la cabecera y sigue hasta el pie, donde termina en el punto coral */
+.linea{display:block;width:100%;height:46px;margin:clamp(.8rem,2vw,1.2rem) 0 0;color:var(--accent)}
+
+/* La franja de datos (Celda) */
+.franja{display:grid;grid-template-columns:repeat(2,1fr);margin:0;border-top:1px solid var(--rule);border-bottom:3px double var(--rule);text-align:left}
+.franja div{padding:.85rem 0 .95rem}
+.franja div:nth-child(even){padding-left:1rem;border-left:1px solid var(--line-light)}
+.franja div:nth-child(n+3){border-top:1px solid var(--line-light)}
+.franja dt{font:700 .62rem/1.2 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:.35rem}
+.franja dd{margin:0;font:500 clamp(1.35rem,2.4vw,1.75rem)/1.05 var(--serif);font-variant-numeric:lining-nums tabular-nums}
+.franja small{display:block;margin-top:.3rem;font:600 .7rem/1.3 var(--sans);color:var(--muted)}
+.franja small a{color:var(--muted)}
+@media (min-width:860px){
+  .franja{grid-template-columns:repeat(var(--n,4),1fr)}
+  .franja div{padding:1rem 1.2rem 1.1rem}
+  .franja div:first-child{padding-left:0}
+  .franja div+div{border-left:1px solid var(--line-light)}
+  .franja div:nth-child(n+3){border-top:0}
+  .franja div:nth-child(even){padding-left:1.2rem}
+}
+
+/* ===== La nota de la redacción ===== */
+.redaccion{display:grid;grid-template-columns:auto 1fr;gap:1rem 1.2rem;align-items:start;max-width:780px;margin:clamp(1.8rem,4vw,2.6rem) auto 0;
+  padding:1.2rem 1.3rem;background:var(--sand);border-radius:var(--r-lg)}
+@media (max-width:520px){.redaccion{padding:1rem}.redaccion img{width:44px;height:44px}}
+.redaccion img{width:56px;height:56px}
+.redaccion p{font:400 clamp(1.12rem,1.8vw,1.28rem)/1.42 var(--serif)}
+.redaccion p+p{margin-top:.6rem}
+.redaccion .firma-chica{font:700 .66rem/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--accent-ink);margin-top:.7rem}
+
+/* ===== Secciones ===== */
+.seccion{padding-top:clamp(2.4rem,5vw,3.6rem)}
+.sec-cab{display:grid;grid-template-columns:1fr;gap:1rem;border-top:1px solid var(--text);padding-top:1rem;margin-bottom:clamp(1.3rem,3vw,2rem)}
+.sec-cab h2{font-size:clamp(2.2rem,5vw,3.4rem);margin-top:.35rem}
+.firma{display:flex;align-items:center;gap:.75rem;text-align:left}
+.firma img{width:48px;height:48px;flex:none}
+.firma b{display:block;font:700 .8rem/1.25 var(--sans)}
+.firma b small{font:700 .6rem/1 var(--sans);letter-spacing:.18em;color:var(--accent-ink);margin-left:.35rem;text-transform:uppercase}
+.firma i{display:block;font:italic 500 1rem/1.25 var(--serif);color:var(--muted)}
+@media (min-width:760px){.sec-cab{grid-template-columns:1fr auto;align-items:end}.sec-cab .firma{max-width:330px}}
+
+/* Las notas, en columnas con filete */
+.notas{display:grid;grid-template-columns:1fr;gap:1.8rem clamp(1.5rem,3vw,2.5rem)}
+@media (min-width:760px){.notas{grid-template-columns:repeat(var(--cols,3),minmax(0,1fr))}.notas>.nota+.nota{border-left:1px solid var(--line-light);padding-left:clamp(1.5rem,3vw,2.5rem)}}
+@media (min-width:760px){.notas.n-2{--cols:2}.notas.n-1{--cols:1}}
+.nota h3{font-size:clamp(1.5rem,2.4vw,1.85rem);line-height:1.08}
+.nota .bajada{margin-top:.6rem;color:var(--text);font-size:.97rem}
+.nota .bajada+.bajada{margin-top:.5rem}
+.nota .importa{margin-top:.75rem;padding-left:.8rem;border-left:2px solid var(--accent);font-size:.92rem;color:var(--muted)}
+.nota .importa b{color:var(--text);font-weight:700}
+.nota .cifra{font:500 clamp(2.2rem,4vw,2.9rem)/1 var(--serif);color:var(--accent-ink);font-variant-numeric:lining-nums tabular-nums;margin-bottom:.4rem}
+.nota .cifra small{display:block;font:700 .62rem/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:.3rem}
+.fuente{margin-top:.8rem;font:700 .68rem/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.fuente a{color:var(--accent-ink);text-decoration:none;border-bottom:1px solid rgba(10,122,111,.35)}
+.fuente a:hover{border-bottom-color:currentColor}
+
+/* La portada: la nota principal a la izquierda y las otras a la derecha */
+.portada{padding-top:clamp(2rem,4vw,2.8rem)}
+.portada .notas{gap:1.8rem clamp(1.5rem,3vw,2.5rem)}
+.portada .principal h3{font-size:clamp(2.2rem,5vw,3.6rem);line-height:1}
+.portada .principal .bajada{font:400 clamp(1.15rem,1.9vw,1.32rem)/1.45 var(--serif);margin-top:.9rem}
+.portada .principal .importa{font-size:.97rem}
+.portada .lado{display:grid;gap:1.6rem;align-content:start}
+.portada .lado .nota+.nota{border-top:1px solid var(--line-light);padding-top:1.4rem}
+@media (min-width:860px){.portada .notas{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr)}.portada .lado{border-left:1px solid var(--line-light);padding-left:clamp(1.5rem,3vw,2.5rem)}}
+
+/* El dato: el número grande de Celda */
+.el-dato{display:grid;gap:1.4rem}
+.el-dato .grande{font:500 clamp(4.2rem,12vw,7.5rem)/.9 var(--serif);color:var(--accent-ink);letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
+.el-dato .grande small{display:block;font:700 .66rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-top:.7rem}
+@media (min-width:760px){.el-dato{grid-template-columns:minmax(0,.9fr) minmax(0,1.4fr);align-items:start}}
+
+/* El caso (Lupe): lo que pedían, lo que cambiaron y lo que pasó */
+.caso h3{font-size:clamp(1.9rem,3.6vw,2.6rem)}
+.caso-pasos{list-style:none;margin:1.2rem 0 0;padding:0;display:grid;gap:1.2rem}
+.caso-pasos li{border-top:1px solid var(--rule);padding-top:.8rem}
+.caso-pasos b{display:block;font:700 .64rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:.35rem}
+@media (min-width:760px){.caso-pasos{grid-template-columns:repeat(3,1fr);gap:clamp(1.5rem,3vw,2.5rem)}}
+
+/* El marcador (Felipe): la sección en tinta */
+.tinta{background:var(--ink-2);color:var(--paper);margin-top:clamp(2.4rem,5vw,3.6rem);padding-bottom:clamp(2.4rem,5vw,3.4rem)}
+.tinta .sec-cab{border-top-color:var(--line-dark)}
+.tinta .kicker,.tinta .firma b small{color:var(--accent)}
+.tinta .firma i,.tinta .fuente,.tinta .nota .importa{color:rgba(var(--paper-rgb),.7)}
+.tinta .nota .bajada{color:rgba(var(--paper-rgb),.88)}
+.tinta .nota .cifra{color:var(--accent);font-family:var(--mono);font-weight:600;font-size:clamp(1.9rem,3.4vw,2.4rem);letter-spacing:-.02em}
+.tinta .nota .cifra small{color:rgba(var(--paper-rgb),.6)}
+.tinta .fuente a{color:var(--accent);border-bottom-color:rgba(var(--accent-rgb),.4)}
+.tinta .notas>.nota+.nota{border-left-color:var(--line-dark)}
+.tinta .nota .importa b{color:var(--paper)}
+.tinta .nota .importa{border-left-color:var(--accent)}
+.agenda{margin-top:2rem;border-top:1px solid var(--line-dark);padding-top:1rem}
+.agenda ul{list-style:none;margin:.7rem 0 0;padding:0;display:grid;gap:.5rem}
+.agenda li{display:grid;grid-template-columns:7.5rem 1fr;gap:1rem;font-size:.95rem}
+.agenda li b{font:600 .8rem/1.6 var(--mono);color:var(--accent)}
+@media (max-width:520px){.agenda li{grid-template-columns:1fr;gap:0}}
+
+/* ¿Mito o dato? (Tamandúa): el timbre */
+.timbre{display:inline-block;transform:rotate(-4deg);border:2px solid currentColor;border-radius:4px;padding:.2rem .6rem;margin-bottom:.8rem;
+  font:800 .78rem/1.2 var(--sans);letter-spacing:.24em;text-transform:uppercase}
+.timbre.v-dato{color:var(--accent-ink)}
+.timbre.v-mito{color:var(--text)}
+.timbre.v-medias{color:var(--muted)}
+.mito .afirmacion{font:italic 500 clamp(1.35rem,2.2vw,1.6rem)/1.2 var(--serif)}
+
+/* Tres preguntas (Plotty) */
+.preguntas{list-style:none;margin:0;padding:0;counter-reset:p;display:grid;gap:1.4rem}
+@media (min-width:760px){.preguntas{grid-template-columns:repeat(3,1fr);gap:clamp(1.5rem,3vw,2.5rem)}}
+.preguntas li{counter-increment:p;border-top:1px solid var(--rule);padding-top:.8rem}
+.preguntas li::before{content:counter(p,decimal-leading-zero);display:block;font:600 .8rem/1 var(--mono);color:var(--accent-ink);margin-bottom:.5rem}
+.preguntas p{font:500 1.25rem/1.25 var(--serif)}
+.preguntas details{margin-top:.7rem;font-size:.93rem}
+.preguntas summary{cursor:pointer;font:700 .66rem/1.3 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--accent-ink)}
+.preguntas details p{font:400 .95rem/1.5 var(--sans);margin-top:.5rem;color:var(--muted)}
+
+/* El aparte: Rumbo */
+.aparte{display:grid;grid-template-columns:auto 1fr;gap:1rem 1.3rem;align-items:center;margin-top:clamp(2.4rem,5vw,3.6rem);padding:clamp(1.2rem,3vw,1.8rem);background:var(--sand);border-radius:var(--r-lg)}
+.aparte img{width:64px;height:64px;border-radius:14px}
+.aparte h2{font-size:clamp(1.6rem,3vw,2.1rem)}
+.aparte p{margin-top:.45rem;font-size:.97rem}
+.aparte a.ir{display:inline-block;margin-top:.6rem;font:700 .74rem/1.3 var(--sans);letter-spacing:.06em;color:var(--accent-ink)}
+
+/* ===== El pie: la línea termina en el punto coral ===== */
+.pie{background:var(--ink);color:rgba(var(--paper-rgb),.78);margin-top:clamp(2.6rem,5vw,4rem);padding:clamp(2.4rem,5vw,3.4rem) 0 2.4rem;font-size:.92rem}
+.pie .kicker{color:var(--accent)}
+.pie h2{color:var(--paper);font-size:clamp(2rem,4.4vw,3rem);margin:.4rem 0 .8rem}
+.pie h2 em{color:var(--accent)}
+.punto{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.6rem;padding-bottom:2rem;border-bottom:1px solid var(--line-dark)}
+.punto p{max-width:520px}
+.btn-cta{display:inline-flex;align-items:center;gap:.6rem;background:var(--cta);color:var(--cta-text);border-radius:999px;padding:.85rem 1.4rem;
+  font:800 .95rem/1 var(--sans);text-decoration:none;transition:background .2s}
+.btn-cta:hover{background:var(--cta-2)}
+.btn-cta::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--cta-text);opacity:.85}
+.pie-cols{display:grid;gap:1.6rem;padding-top:1.8rem}
+@media (min-width:760px){.pie-cols{grid-template-columns:1.1fr 1.4fr 1fr}}
+.pie-cols h3{font:700 .64rem/1.3 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+.pie-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:.35rem}
+.pie a{color:var(--paper)}
+.pie .fuentes li{font-size:.85rem}
+.pie .legal{margin-top:2rem;padding-top:1.2rem;border-top:1px solid var(--line-dark);font-size:.78rem;color:rgba(var(--paper-rgb),.55)}
+
+/* ===== La hemeroteca ===== */
+.hemeroteca{list-style:none;margin:0;padding:0}
+.hemeroteca li{border-top:1px solid var(--line-light)}
+.hemeroteca li:last-child{border-bottom:1px solid var(--line-light)}
+.hemeroteca a{display:grid;grid-template-columns:5.5rem 1fr;gap:.2rem 1.2rem;padding:1.1rem 0;text-decoration:none}
+.hemeroteca .num{font:600 .85rem/1.5 var(--mono);color:var(--accent-ink);grid-row:span 2}
+.hemeroteca .fecha{font:700 .66rem/1.4 var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.hemeroteca .tit{font:500 clamp(1.4rem,2.6vw,1.9rem)/1.1 var(--serif)}
+.hemeroteca a:hover .tit{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.15em}
+.hemeroteca .etiqueta{font:700 .58rem/1 var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--accent-ink);border:1px solid currentColor;border-radius:3px;padding:.2rem .4rem;margin-left:.5rem;vertical-align:.15em}
+
+@media (prefers-reduced-motion:no-preference){.btn-cta{transition:background .2s}}
+@media print{.barra,.pie .punto{display:none}.tinta{background:none;color:var(--text)}body{background:#fff}}

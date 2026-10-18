@@ -9,3 +9,6 @@ desktop.ini
 
 # Videos grandes del teaser y la visita (se exportan con exportar-teaser.mjs; no se suben)
 oficina/kit/video/
+
+# El correo de cada edición de La Línea (se arma de nuevo con diario/_herramientas/armar.mjs) y sus fotos de revisión
+diario/_herramientas/salida/
