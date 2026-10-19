@@ -85,20 +85,21 @@ con la tapa de la N.º 0 como referencia de estilo: un retrato de busto, cuadrad
 de Felipe, el taladro de The Engine, la lupa de Lupe, el farol de Faro…) sobre rayos cian, y después la misma imagen
 pasada a blanco y negro. Sin letras ni números en la imagen, salvo la placa «360°» de Atlas. Atlas no tiene ficha
 publicada, así que su referencia fue su cara de cómic del diario, pedida al repo (que es público) por
-`raw.githubusercontent.com`.
+`raw.githubusercontent.com`; para rehacerla, sirve igual su cara a color (`caras/color/atlas.jpg`).
 
-- `diario/imagenes/caras/<id>.png`: la de blanco y negro, 320 × 320, la que usa el diario.
+- `diario/imagenes/caras/<id>.jpg`: la de blanco y negro, 320 × 320, la que usa el diario.
 - `diario/imagenes/caras/color/<id>.jpg`: la de color, 640 × 640, para cuando se necesite (la oficina, redes).
 - `_herramientas/caras.json`: las caras que todavía no se bajan al repo, con la URL donde quedaron al generarlas (`bn` y
   `color`). Mientras una cara esté en la lista, `armar.mjs` la pide de ahí: en la web, la versión chica en WebP que la
-  herramienta deja al lado (`…_min.webp`); en el correo, el PNG. Hoy están las once, porque la red del entorno donde se
-  armaron no dejaba bajarlas.
+  herramienta deja al lado (`…_min.webp`); en el correo, el PNG.
 - `node diario/_herramientas/imagenes.mjs caras` las baja, las deja en `caras/` y las saca de la lista; con la lista
   vacía, el diario usa las del repo. Detrás de un proxy, con `NODE_USE_ENV_PROXY=1` delante.
 - Mientras sigan fuera, el correo pesa más (cada PNG es de 1024 px): conviene bajarlas antes de enviarlo.
 
 Para una cara nueva (o para rehacer una): generar la de color con la ficha y la tapa como referencias, después la de
-blanco y negro desde la de color, y anotar las dos URL en `caras.json`.
+blanco y negro desde la de color, y anotar las dos URL en `caras.json`. Antes de bajarlas, mirarlas: al pasar a blanco y
+negro, la IA tiende a rellenar de negro el pelo claro (a Aby y a Lupe hubo que decirle que el suyo queda en blanco, con
+trama suave).
 
 ### La tapa
 
@@ -111,8 +112,7 @@ blanco y negro desde la de color, y anotar las dos URL en `caras.json`.
 4. En el JSON, `tapa.src` con esa ruta (`imagenes/tapas/<fecha>.jpg`), `tapa.alt` describiendo la escena y `tapa.pie`.
 
 Mientras la tapa no esté en el repo, `src` puede ser la URL https donde quedó al generarla: la web y el correo la piden
-de ahí. Es lo que pasa con la N.º 0, porque la red del entorno donde se armó no dejaba bajarla. Sin `tapa`, la edición
-sale con una tapa tipográfica (el nombre, el volumen y el titular).
+de ahí. Sin `tapa`, la edición sale con una tapa tipográfica (el nombre, el volumen y el titular).
 
 ### El JSON de una edición
 

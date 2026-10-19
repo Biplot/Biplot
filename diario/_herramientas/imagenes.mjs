@@ -1,5 +1,5 @@
 // Las imágenes de La Línea, en diario/imagenes/:
-//   caras/<id>.png        la cara de quien firma, en blanco y negro de manga (320 × 320), para el recuadro del interior
+//   caras/<id>.jpg        la cara de quien firma, en blanco y negro de manga (320 × 320), para el recuadro del interior
 //   caras/color/<id>.jpg  la misma cara a color, como en la tapa (640 × 640)
 //   tapas/<fecha>.jpg     la tapa a color de una edición (1200 px de ancho)
 //   rumbo.png             el ícono de Rumbo, en blanco y negro, para el consultorio
@@ -43,7 +43,7 @@ if (pedido === 'caras') {
   const pendientes = fs.existsSync(listaCaras) ? JSON.parse(fs.readFileSync(listaCaras, 'utf8')) : {};
   for (const [id, { bn, color }] of Object.entries(pendientes)) {
     try {
-      await guardar(await bajar(bn), path.join(salida, 'caras', `${id}.png`), 320, 320);
+      await guardar(await bajar(bn), path.join(salida, 'caras', `${id}.jpg`), 320, 320);
       if (color) await guardar(await bajar(color), path.join(salida, 'caras', 'color', `${id}.jpg`), 640, 640);
       delete pendientes[id];
     } catch (e) { fallas++; console.error(`✗ ${id}: ${e.message}`); }

@@ -18,7 +18,7 @@ const PERIODICIDAD = 'Sale los lunes';
 // El enlace para darse de baja lo pone la plataforma de envío: aquí va su etiqueta (en Buttondown, {{ unsubscribe_url }};
 // en Brevo, {{ unsubscribe }}). Mientras no se elija, queda este marcador.
 const BAJA = '{{baja}}';
-// Las caras van en diario/imagenes/caras/<id>.png. Las que todavía no se bajan al repo están en caras.json, con la URL
+// Las caras van en diario/imagenes/caras/<id>.jpg. Las que todavía no se bajan al repo están en caras.json, con la URL
 // donde quedaron al generarlas (la de blanco y negro y la de color), y se piden de ahí; imagenes.mjs caras las baja.
 const listaCaras = path.join(raiz, 'diario', '_herramientas', 'caras.json');
 const CARAS_FUERA = fs.existsSync(listaCaras) ? JSON.parse(fs.readFileSync(listaCaras, 'utf8')) : {};
@@ -170,7 +170,7 @@ function pieWeb(base) {
 `;
 }
 // En la web, de una cara que sigue fuera se pide la versión chica en WebP que la herramienta deja al lado (…_min.webp)
-const caraWeb = (id, base) => (CARAS_FUERA[id] ? CARAS_FUERA[id].bn.replace(/\.png$/, '_min.webp') : `${base}imagenes/caras/${id}.png`);
+const caraWeb = (id, base) => (CARAS_FUERA[id] ? CARAS_FUERA[id].bn.replace(/\.png$/, '_min.webp') : `${base}imagenes/caras/${id}.jpg`);
 const recuadro = (id, base, tam = 84) => `<span class="recuadro" style="width:${tam}px;height:${tam}px"><img src="${esc(caraWeb(id, base))}" alt="" width="${tam}" height="${tam}" loading="lazy"></span>`;
 function fuentesWeb(fuentes) {
   const fs_ = lista(fuentes);
@@ -333,7 +333,7 @@ const C = {
   papel: '#FAFAF7', tinta: '#0B0B0B', gris: '#55554F', trama: '#D4D4CE', mesa: '#E2E1DC', cta: '#FF6B4A', ctaTexto: '#2b0f08',
 };
 const img = (rel) => `${SITIO}/diario/${rel}`;
-const caraC = (id) => (CARAS_FUERA[id] ? CARAS_FUERA[id].bn : img(`imagenes/caras/${id}.png`));
+const caraC = (id) => (CARAS_FUERA[id] ? CARAS_FUERA[id].bn : img(`imagenes/caras/${id}.jpg`));
 const narraC = (t) => `<span style="display:inline-block;border:3px solid ${C.tinta};background:${C.papel};padding:2px 8px;font:700 11px/1.3 ${C.texto};letter-spacing:2px;text-transform:uppercase;color:${C.tinta};">${esc(t)}</span>`;
 function firmaC(id) {
   const f = FIRMAS[id];
