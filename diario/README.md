@@ -83,7 +83,9 @@ en la tapa) y en el blanco y negro del manga (tinta, negros planos y trama de pu
 en la web y en el correo. Se dibujaron con IA a partir de las fichas del equipo (`biplot.cl/oficina/kit/png/ficha-<id>-4x5.png`)
 con la tapa de la N.º 0 como referencia de estilo: un retrato de busto, cuadrado, con su rasgo y su objeto (la pelota
 de Felipe, el taladro de The Engine, la lupa de Lupe, el farol de Faro…) sobre rayos cian, y después la misma imagen
-pasada a blanco y negro. Sin letras ni números en la imagen.
+pasada a blanco y negro. Sin letras ni números en la imagen, salvo la placa «360°» de Atlas. Atlas no tiene ficha
+publicada, así que su referencia fue su cara de cómic del diario, pedida al repo (que es público) por
+`raw.githubusercontent.com`.
 
 - `diario/imagenes/caras/<id>.png`: la de blanco y negro, 320 × 320, la que usa el diario.
 - `diario/imagenes/caras/color/<id>.jpg`: la de color, 640 × 640, para cuando se necesite (la oficina, redes).
