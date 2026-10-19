@@ -5,8 +5,8 @@
 // Uso, desde la raíz del repo: node diario/_herramientas/armar.mjs [AAAA-MM-DD]   (sin fecha, la última)
 // Es un tomo de manga: la tapa a color (la escena de la semana) y, al abrirlo, los capítulos en blanco y negro, con
 // paneles, tramas y globos. Quién firma cada sección y sus textos fijos (SECCIONES) y cómo se reparten en capítulos
-// (PAGINAS) están aquí; el JSON trae sólo lo de esa semana. Las caras y el ícono de Rumbo los saca imagenes.mjs, que
-// también baja la tapa. Cómo se escribe el JSON está en diario/README.md.
+// (PAGINAS) están aquí; el JSON trae sólo lo de esa semana. Las caras (en anime, como la tapa) y la tapa se dibujan con
+// IA; imagenes.mjs las baja al repo y saca el ícono de Rumbo. Cómo se escribe el JSON está en diario/README.md.
 import fs from 'node:fs'; import path from 'node:path';
 
 const raiz = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
@@ -18,6 +18,10 @@ const PERIODICIDAD = 'Sale los lunes';
 // El enlace para darse de baja lo pone la plataforma de envío: aquí va su etiqueta (en Buttondown, {{ unsubscribe_url }};
 // en Brevo, {{ unsubscribe }}). Mientras no se elija, queda este marcador.
 const BAJA = '{{baja}}';
+// Las caras van en diario/imagenes/caras/<id>.png. Las que todavía no se bajan al repo están en caras.json, con la URL
+// donde quedaron al generarlas (la de blanco y negro y la de color), y se piden de ahí; imagenes.mjs caras las baja.
+const listaCaras = path.join(raiz, 'diario', '_herramientas', 'caras.json');
+const CARAS_FUERA = fs.existsSync(listaCaras) ? JSON.parse(fs.readFileSync(listaCaras, 'utf8')) : {};
 
 // Quién firma: los integrantes de la oficina (oficina/README.md), con su placa y su frase
 const FIRMAS = {
@@ -96,6 +100,7 @@ function validar(ed, archivo) {
     for (const f of lista(n.fuentes)) if (!/^https:\/\//.test(f.url || '')) faltan.push(`${s.id}: la fuente «${f.medio}» no trae una URL https`);
   }
   if (ed.tapa && !/^(https:\/\/|imagenes\/)/.test(ed.tapa.src || '')) faltan.push('tapa: «src» va con una URL https o una ruta imagenes/…');
+  for (const [id, c] of Object.entries(CARAS_FUERA)) if (!/^https:\/\/.+\.png$/.test(c.bn || '')) faltan.push(`caras.json: «${id}» no trae su URL https (.png) en «bn»`);
   if (faltan.length) { console.error(`✗ ${path.relative(raiz, archivo)}:\n  - ` + faltan.join('\n  - ')); process.exit(1); }
 }
 
@@ -164,7 +169,9 @@ function pieWeb(base) {
 </html>
 `;
 }
-const recuadro = (id, base, tam = 84) => `<span class="recuadro" style="width:${tam}px;height:${tam}px"><img src="${base}imagenes/caras/${id}.png" alt="" width="${tam}" height="${tam}" loading="lazy"></span>`;
+// En la web, de una cara que sigue fuera se pide la versión chica en WebP que la herramienta deja al lado (…_min.webp)
+const caraWeb = (id, base) => (CARAS_FUERA[id] ? CARAS_FUERA[id].bn.replace(/\.png$/, '_min.webp') : `${base}imagenes/caras/${id}.png`);
+const recuadro = (id, base, tam = 84) => `<span class="recuadro" style="width:${tam}px;height:${tam}px"><img src="${esc(caraWeb(id, base))}" alt="" width="${tam}" height="${tam}" loading="lazy"></span>`;
 function fuentesWeb(fuentes) {
   const fs_ = lista(fuentes);
   if (!fs_.length) return '';
@@ -326,11 +333,12 @@ const C = {
   papel: '#FAFAF7', tinta: '#0B0B0B', gris: '#55554F', trama: '#D4D4CE', mesa: '#E2E1DC', cta: '#FF6B4A', ctaTexto: '#2b0f08',
 };
 const img = (rel) => `${SITIO}/diario/${rel}`;
+const caraC = (id) => (CARAS_FUERA[id] ? CARAS_FUERA[id].bn : img(`imagenes/caras/${id}.png`));
 const narraC = (t) => `<span style="display:inline-block;border:3px solid ${C.tinta};background:${C.papel};padding:2px 8px;font:700 11px/1.3 ${C.texto};letter-spacing:2px;text-transform:uppercase;color:${C.tinta};">${esc(t)}</span>`;
 function firmaC(id) {
   const f = FIRMAS[id];
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-<td width="56" valign="middle" style="padding-right:10px;"><img src="${img(`imagenes/caras/${id}.png`)}" width="56" height="56" alt="" style="display:block;border:3px solid ${C.tinta};background:${C.trama};"></td>
+<td width="56" valign="middle" style="padding-right:10px;"><img src="${esc(caraC(id))}" width="56" height="56" alt="" style="display:block;border:3px solid ${C.tinta};background:${C.trama};"></td>
 <td valign="middle" style="font:700 12px/1.3 ${C.texto};letter-spacing:2px;text-transform:uppercase;color:${C.tinta};">${esc(f.nombre)} · ${esc(f.placa)}<br>
 <span style="font:16px/1.3 ${C.globo};letter-spacing:0;text-transform:none;color:${C.tinta};">«${esc(f.frase)}»</span></td></tr></table>`;
 }
@@ -456,7 +464,7 @@ ${tapa}
   ${panelC(`${narraC(`Santiago · ${Mayus(fecha)}`)}
     <div style="font:400 28px/1.15 ${C.titulo};color:${C.tinta};margin:10px 0 4px;">${md(principal.titular)}</div>
     ${parrafosC(principal.bajada)}
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:12px;"><tr><td width="64" valign="top" style="padding-right:10px;"><img src="${img('imagenes/caras/aby.png')}" width="64" height="64" alt="" style="display:block;border:3px solid ${C.tinta};background:${C.trama};"></td>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:12px;"><tr><td width="64" valign="top" style="padding-right:10px;"><img src="${esc(caraC('aby'))}" width="64" height="64" alt="" style="display:block;border:3px solid ${C.tinta};background:${C.trama};"></td>
     <td valign="top">${principal.importa ? globoC(sec.importa, principal.importa).replace('margin-top:12px;', 'margin-top:0;') : ''}</td></tr></table>
     ${fuentesC(principal.fuentes)}`)}
   ${lado.map((n) => notaC(n, sec)).join('\n')}

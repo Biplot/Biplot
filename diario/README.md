@@ -8,7 +8,7 @@ negra, paneles con borde de tinta, tramas de puntos, líneas de velocidad, onoma
 cada página. El capítulo 1 es la portada (los mercados, la noticia principal a todo lo ancho, las otras dos, la nota de
 la redacción y el índice «En este tomo»); después vienen Economía y gestión, Tecnología y verificación, Deportes, y
 Pasatiempos y avisos. Lo escribe la oficina: Aby abre la edición y el resto del equipo firma su sección, con su cara en el
-recuadro de esquina del cómic, **en blanco y negro**: tinta gruesa y la sombra dura con trama. El coral sigue siendo
+recuadro de esquina, **dibujada en anime como en la tapa** y pasada al blanco y negro del manga (tinta y trama). El coral sigue siendo
 sólo para agendar el diagnóstico: es el botón del aviso «Se busca», la única mancha de color del interior. Las noticias
 se juntan solas, pero **ninguna edición sale sin que una persona la apruebe**, igual que la vitrina.
 
@@ -72,10 +72,31 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`, y c�
 4. Una persona la revisa y la aprueba (en el PR); al publicarse `main`, la edición queda en biplot.cl/diario/.
 5. Se envía el correo desde la plataforma de envío.
 
-`node diario/_herramientas/imagenes.mjs` vuelve a sacar las imágenes del interior a `diario/imagenes/`: las caras de
-quienes firman (`caras/<id>.png`, 320 × 320, en blanco y negro con tinta y trama, desde el kit de la oficina) y el ícono
-de Rumbo (`rumbo.png`). Van en PNG porque los correos no muestran WebP ni aplican filtros. Las tres herramientas
-necesitan Playwright.
+`node diario/_herramientas/imagenes.mjs` baja al repo las caras y las tapas, ya del tamaño que usa el diario, y vuelve a
+sacar el ícono de Rumbo (`rumbo`, en blanco y negro con tinta y trama). Todo queda en PNG o JPEG porque los correos no
+muestran WebP ni aplican filtros. Las tres herramientas necesitan Playwright.
+
+### Las caras
+
+Cada integrante que firma tiene su cara **en anime, en el mismo estilo de la tapa**, en dos versiones: a color (como sale
+en la tapa) y en el blanco y negro del manga (tinta, negros planos y trama de puntos), que es la que va en el interior,
+en la web y en el correo. Se dibujaron con IA a partir de las fichas del equipo (`biplot.cl/oficina/kit/png/ficha-<id>-4x5.png`)
+con la tapa de la N.º 0 como referencia de estilo: un retrato de busto, cuadrado, con su rasgo y su objeto (la pelota
+de Felipe, el taladro de The Engine, la lupa de Lupe, el farol de Faro…) sobre rayos cian, y después la misma imagen
+pasada a blanco y negro. Sin letras ni números en la imagen.
+
+- `diario/imagenes/caras/<id>.png`: la de blanco y negro, 320 × 320, la que usa el diario.
+- `diario/imagenes/caras/color/<id>.jpg`: la de color, 640 × 640, para cuando se necesite (la oficina, redes).
+- `_herramientas/caras.json`: las caras que todavía no se bajan al repo, con la URL donde quedaron al generarlas (`bn` y
+  `color`). Mientras una cara esté en la lista, `armar.mjs` la pide de ahí: en la web, la versión chica en WebP que la
+  herramienta deja al lado (`…_min.webp`); en el correo, el PNG. Hoy están las once, porque la red del entorno donde se
+  armaron no dejaba bajarlas.
+- `node diario/_herramientas/imagenes.mjs caras` las baja, las deja en `caras/` y las saca de la lista; con la lista
+  vacía, el diario usa las del repo. Detrás de un proxy, con `NODE_USE_ENV_PROXY=1` delante.
+- Mientras sigan fuera, el correo pesa más (cada PNG es de 1024 px): conviene bajarlas antes de enviarlo.
+
+Para una cara nueva (o para rehacer una): generar la de color con la ficha y la tapa como referencias, después la de
+blanco y negro desde la de color, y anotar las dos URL en `caras.json`.
 
 ### La tapa
 
@@ -84,8 +105,8 @@ necesitan Playwright.
 2. Generarla con IA a partir de los dibujos del equipo (`oficina/ilustraciones.js` y los que están en biplot.cl), en el
    estilo de las portadas a color de manga: tinta, color plano, sombras duras. Formato vertical, 2:3.
 3. Bajarla al repo: `node diario/_herramientas/imagenes.mjs tapa AAAA-MM-DD <url>` la guarda en
-   `diario/imagenes/tapas/<fecha>.png` (o `.jpg`) y dice qué poner en el JSON.
-4. En el JSON, `tapa.src` con esa ruta (`imagenes/tapas/<fecha>.png`), `tapa.alt` describiendo la escena y `tapa.pie`.
+   `diario/imagenes/tapas/<fecha>.jpg` (1200 px de ancho) y dice qué poner en el JSON.
+4. En el JSON, `tapa.src` con esa ruta (`imagenes/tapas/<fecha>.jpg`), `tapa.alt` describiendo la escena y `tapa.pie`.
 
 Mientras la tapa no esté en el repo, `src` puede ser la URL https donde quedó al generarla: la web y el correo la piden
 de ahí. Es lo que pasa con la N.º 0, porque la red del entorno donde se armó no dejaba bajarla. Sin `tapa`, la edición
@@ -103,7 +124,7 @@ sale con una tapa tipográfica (el nombre, el volumen y el titular).
   "previa": "El texto que el correo muestra junto al asunto",
   "redaccion": ["Párrafo de Aby", "…"],
   "indicadores": [{ "nombre": "UF", "valor": "$39.000,00", "nota": "lunes 19", "fuente": { "medio": "…", "url": "https://…" } }],
-  "tapa": { "src": "imagenes/tapas/2026-10-19.png", "alt": "La escena, descrita", "pie": "…" },   // opcional
+  "tapa": { "src": "imagenes/tapas/2026-10-19.jpg", "alt": "La escena, descrita", "pie": "…" },   // opcional
   "portada": [nota, nota, nota],          // la primera va a todo lo ancho; su «importa» va en el globo de Aby
   "dato": { "valor": "4,1%", "leyenda": "IPC a 12 meses", ...nota },
   "maquinas": [nota, …], "planos": [nota, …],
@@ -128,7 +149,8 @@ Tablas de 600 px con los estilos en línea, que es lo que respetan Gmail, Outloo
 los paneles, los globos y el aviso «Se busca» con su botón coral. Las soluciones de «Tres preguntas», las fuentes y la fe
 de erratas van al pie. Gmail y Outlook no cargan las fuentes del tomo, así que los titulares caen en Arial Black y el
 texto en Arial Narrow o Arial (Apple Mail sí carga las fuentes). Las caras y el ícono se piden a
-https://biplot.cl/diario/imagenes/, así que se ven recién cuando están publicadas.
+https://biplot.cl/diario/imagenes/, así que se ven recién cuando están publicadas (las caras que siguen en `caras.json`,
+desde donde quedaron al generarlas).
 El enlace para darse de baja es `BAJA` en `armar.mjs` (hoy, el marcador `{{baja}}`): se cambia por la etiqueta de la
 plataforma que se elija (en Buttondown, `{{ unsubscribe_url }}`; en Brevo, `{{ unsubscribe }}`).
 
