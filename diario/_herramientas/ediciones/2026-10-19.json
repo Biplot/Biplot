@@ -4,6 +4,11 @@
   "prueba": true,
   "cubre": "Semana del 12 al 18 de octubre",
   "previa": "El FMI recorta el crecimiento de Chile, una de cada tres pymes encuentra IA sin permiso y la U se acerca al líder: la semana en cinco minutos.",
+  "tapa": {
+    "src": "https://d8j0ntlcm91z4.cloudfront.net/user_3Ivj07LQYAqlDTdRYOjnsLYhQmG/hf_20261019_110943_300ee74a-d7d1-4868-95d9-48a5f9719854.png",
+    "alt": "Tapa a color: Plotty, disfrazado de FMI con sombrero de copa, corta con unas tijeras gigantes la línea de crecimiento; el pedazo cortado cae sobre un cartel de 0,6%. Aby transmite con su teléfono, Celda muestra un 0,2% y Lupe revisa el cartel con su lupa.",
+    "pie": "La escena de la semana: el FMI le pasa la tijera a Chile. Ilustración hecha con IA a partir de los dibujos del equipo de BiPlot."
+  },
   "redaccion": [
     "Buenos días. Esta es la N.º 0 de *La Línea*, el diario de BiPlot: lo que pasó en la semana en economía, IA, gestión, casos y deporte, contado por el equipo de la oficina y con el enlace a cada fuente.",
     "Es la edición de prueba: no sale a ningún correo hasta que una persona la revise. Si algo sobra, falta o no cuadra, dínoslo. Tres, dos, uno… estamos al aire."

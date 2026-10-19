@@ -1,22 +1,26 @@
 # La Línea, el diario de BiPlot
 
-Un newsletter que es un diario de verdad, en su edición de **Gotham**: hojas de papel de diario envejecido, con grano,
-sobre la ciudad de noche; la cabecera «La Línea» en letra gótica, con sus orejas; titulares condensados en mayúsculas,
-texto en columnas y un folio en cada página. La portada trae el titular a todo lo ancho, la foto con trama de puntos, la
-nota de la redacción y el índice («En esta edición»); después vienen las páginas (Economía y gestión, Tecnología y
-verificación, Deportes, Pasatiempos y avisos). Lo escribe la oficina: Aby abre la edición y el resto del equipo firma su
-sección, con su cara en la **paleta de la noche** (el color baja, las sombras se van al acero y las luces al farol). El
-coral sigue siendo sólo para agendar el diagnóstico: es el botón del aviso «Se busca», la única mancha de color del
-diario. Las noticias se juntan solas, pero **ninguna edición sale sin que una persona la apruebe**, igual que la vitrina.
+Un newsletter que es un diario de verdad, armado como **un tomo de manga**. Cada edición abre con una **tapa a color**,
+como las portadas a color de los tomos: una escena donde el equipo de la oficina actúa la noticia más importante de la
+semana (se disfrazan si hace falta: en la N.º 0, Plotty va de FMI, con sombrero de copa, y le corta con unas tijeras
+gigantes la línea de crecimiento a Chile). Al abrirlo, el interior es **en blanco y negro**: capítulos con su barra
+negra, paneles con borde de tinta, tramas de puntos, líneas de velocidad, onomatopeyas y globos de diálogo, y un folio en
+cada página. El capítulo 1 es la portada (los mercados, la noticia principal a todo lo ancho, las otras dos, la nota de
+la redacción y el índice «En este tomo»); después vienen Economía y gestión, Tecnología y verificación, Deportes, y
+Pasatiempos y avisos. Lo escribe la oficina: Aby abre la edición y el resto del equipo firma su sección, con su cara en el
+recuadro de esquina del cómic, **en blanco y negro**: tinta gruesa y la sombra dura con trama. El coral sigue siendo
+sólo para agendar el diagnóstico: es el botón del aviso «Se busca», la única mancha de color del interior. Las noticias
+se juntan solas, pero **ninguna edición sale sin que una persona la apruebe**, igual que la vitrina.
 
-Las fuentes son de Google Fonts: UnifrakturMaguntia (la cabecera), Oswald (los titulares), Old Standard TT (el texto) y
-Courier Prime (fechas, folios y cotizaciones). Es un estilo inspirado en los diarios de Gotham, sin nombres ni símbolos
-de Batman.
+Las fuentes son de Google Fonts: Dela Gothic One (titulares y capítulos), Bangers (onomatopeyas y golpes), Archivo
+Narrow (el texto), Patrick Hand (los globos) e IBM Plex Mono (fechas, folios y cotizaciones). **No lleva letras
+japonesas**, ni en la tapa ni adentro: todo va en castellano. Es un estilo inspirado en el manga y el cómic, sin nombres,
+personajes ni logos de ninguna serie o editorial.
 
 - Cada edición en la web: **biplot.cl/diario/AAAA-MM-DD/** (`diario/<fecha>/index.html`).
 - La hemeroteca: **biplot.cl/diario/** (`diario/index.html`), con todas las ediciones, la más nueva arriba.
 - El correo: `diario/_herramientas/salida/<fecha>-correo.html` (no se sube; se arma de nuevo al enviarlo).
-- La N.º 0 (19 de octubre de 2026) es la **edición de prueba**: lleva «Edición de prueba» en la cabecera y `noindex`.
+- La N.º 0 (Vol. 0, 19 de octubre de 2026) es la **edición de prueba**: lleva «Edición de prueba» y `noindex`.
   Sus notas se juntaron con búsqueda web, sin poder abrir los artículos (la red del entorno donde se armó no lo permitía):
   antes de enviarla, alguien tiene que abrir cada enlace y confirmar las cifras.
   La hemeroteca también queda `noindex` mientras no haya ninguna edición publicada (sin `"prueba": true`).
@@ -25,12 +29,12 @@ de Batman.
 
 | Sección | Firma | Qué trae |
 |---|---|---|
-| Portada | Aby (PRENSA) | Las tres noticias de la semana, la primera a todo lo ancho, la foto y la nota de la redacción |
-| El dato · Economía | Celda (E3) | Un número explicado; la UF, el dólar, el IPSA y el cobre van en «Mercados», bajo la cabecera |
+| Portada | Aby (PRENSA) | Las tres noticias de la semana, la primera a todo lo ancho con su «¡Último minuto!», y la nota de la redacción |
+| El dato · Economía | Celda (E3) | Un número explicado; la UF, el dólar, el IPSA y el cobre van en «Mercados», al comienzo del capítulo 1 |
 | Las máquinas · IA y automatización | The Engine (E4) | IA y automatización aterrizadas: «Qué cambia para una pyme» |
 | Sala de planos · Gestión | The Architect (E2) | Una idea de gestión con evidencia: «Para llevar» |
-| El caso de la semana | Lupe (E1) | Lo que pasaba, lo que cambiaron y lo que pasó, con cifras |
-| El marcador · Deporte | Felipe (PRENSA) | Contado como un partido; los resultados en una caja en negativo y «Lo que viene» |
+| El caso de la semana | Lupe (E1) | Una tira de tres paneles: lo que pasaba, lo que cambiaron y lo que pasó, con cifras |
+| El marcador · Deporte | Felipe (PRENSA) | Contado como un partido, en paneles con líneas de acción y su «¡DON!», y «Lo que viene» |
 | ¿Mito o dato? | Tamandúa (E6) | Una afirmación que circula, con su timbre: mito, dato o a medias |
 | Para guardar | Pepa (E9) | Una herramienta o un recurso que sirve dos veces |
 | A producción · Emprendimiento | Faro (E7) | Lanzamientos y emprendimiento |
@@ -51,7 +55,8 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`, y c�
 - Una nota necesita una fuente primaria (Banco Central, INE, CMF, el blog oficial de la empresa, el estudio) o de
   referencia (Reuters, AP, EFE, Diario Financiero, La Tercera, HBR…), o dos fuentes independientes.
 - **Los resúmenes son nuestros**: dos o tres frases con los hechos, nunca el artículo copiado ni sus fotos (las imágenes
-  son las del equipo). Las cifras, tal cual las da la fuente, con su fecha.
+  son las del equipo). La tapa es una ilustración y se dice: «Ilustración hecha con IA a partir de los dibujos del equipo
+  de BiPlot», en su pie. Las cifras, tal cual las da la fuente, con su fecha.
 - Hecho con ayuda de IA y **revisado por personas**: el pie lo dice, con el nombre de quien edita (`edita`). Una edición de
   prueba sin `edita` dice, en cambio, que todavía le falta esa revisión.
 - Los errores se corrigen en la **fe de erratas** de la edición siguiente (`erratas`).
@@ -67,11 +72,24 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`, y c�
 4. Una persona la revisa y la aprueba (en el PR); al publicarse `main`, la edición queda en biplot.cl/diario/.
 5. Se envía el correo desde la plataforma de envío.
 
-`node diario/_herramientas/imagenes.mjs` vuelve a sacar las imágenes del diario, todas con la paleta de la noche, a
-`diario/imagenes/`: las caras de quienes firman (`caras/<id>.png`, 160 × 160, desde el kit de la oficina), la foto de la
-portada (`prensa.jpg`: Aby y Felipe bajo el farol, con la trama de puntos; una edición puede traer otra en `foto`), el
-ícono de Rumbo (`rumbo.png`) y la cabecera en letra gótica para el correo (`cabecera.png`). Van en PNG y JPEG porque los
-correos no muestran WebP. Las tres herramientas necesitan Playwright.
+`node diario/_herramientas/imagenes.mjs` vuelve a sacar las imágenes del interior a `diario/imagenes/`: las caras de
+quienes firman (`caras/<id>.png`, 320 × 320, en blanco y negro con tinta y trama, desde el kit de la oficina) y el ícono
+de Rumbo (`rumbo.png`). Van en PNG porque los correos no muestran WebP ni aplican filtros. Las tres herramientas
+necesitan Playwright.
+
+### La tapa
+
+1. Elegir la noticia principal y pensar la escena: quién del equipo la actúa, de qué se disfraza, qué objeto la cuenta
+   (unas tijeras, una balanza, un marcador). Sin texto en la imagen, salvo una cifra o una sigla si la escena la necesita.
+2. Generarla con IA a partir de los dibujos del equipo (`oficina/ilustraciones.js` y los que están en biplot.cl), en el
+   estilo de las portadas a color de manga: tinta, color plano, sombras duras. Formato vertical, 2:3.
+3. Bajarla al repo: `node diario/_herramientas/imagenes.mjs tapa AAAA-MM-DD <url>` la guarda en
+   `diario/imagenes/tapas/<fecha>.png` (o `.jpg`) y dice qué poner en el JSON.
+4. En el JSON, `tapa.src` con esa ruta (`imagenes/tapas/<fecha>.png`), `tapa.alt` describiendo la escena y `tapa.pie`.
+
+Mientras la tapa no esté en el repo, `src` puede ser la URL https donde quedó al generarla: la web y el correo la piden
+de ahí. Es lo que pasa con la N.º 0, porque la red del entorno donde se armó no dejaba bajarla. Sin `tapa`, la edición
+sale con una tapa tipográfica (el nombre, el volumen y el titular).
 
 ### El JSON de una edición
 
@@ -85,8 +103,8 @@ correos no muestran WebP. Las tres herramientas necesitan Playwright.
   "previa": "El texto que el correo muestra junto al asunto",
   "redaccion": ["Párrafo de Aby", "…"],
   "indicadores": [{ "nombre": "UF", "valor": "$39.000,00", "nota": "lunes 19", "fuente": { "medio": "…", "url": "https://…" } }],
-  "portada": [nota, nota, nota],          // la primera va a todo lo ancho; su «importa» es la bajada del titular
-  "foto": { "src": "imagenes/prensa.jpg", "pie": "…" },   // opcional: sin ella, la de Aby y Felipe
+  "tapa": { "src": "imagenes/tapas/2026-10-19.png", "alt": "La escena, descrita", "pie": "…" },   // opcional
+  "portada": [nota, nota, nota],          // la primera va a todo lo ancho; su «importa» va en el globo de Aby
   "dato": { "valor": "4,1%", "leyenda": "IPC a 12 meses", ...nota },
   "maquinas": [nota, …], "planos": [nota, …],
   "caso": { "titular": "…", "bajada": ["…"], "antes": "…", "cambio": "…", "resultado": "…", "fuentes": [fuente] },
@@ -105,11 +123,12 @@ En los textos se puede usar `**negrita**` y `*cursiva*`; nada más.
 
 ## El correo
 
-Tablas de 600 px con los estilos en línea, que es lo que respetan Gmail, Outlook y Apple Mail: la hoja de papel sobre la
-noche, la barra negra de cada página y el aviso «Se busca» con su botón coral. Gmail y Outlook no cargan las fuentes del
-diario, así que la cabecera gótica va como imagen (`imagenes/cabecera.png`), los titulares caen en Arial Narrow y el texto
-en Georgia (Apple Mail sí carga las fuentes). Las imágenes se piden a https://biplot.cl/diario/imagenes/, así que se ven
-recién cuando están publicadas.
+Tablas de 600 px con los estilos en línea, que es lo que respetan Gmail, Outlook y Apple Mail: la tapa a color arriba
+(una imagen enlazada a la edición en la web) y, abajo, el interior en blanco y negro, con la barra negra de cada capítulo,
+los paneles, los globos y el aviso «Se busca» con su botón coral. Las soluciones de «Tres preguntas», las fuentes y la fe
+de erratas van al pie. Gmail y Outlook no cargan las fuentes del tomo, así que los titulares caen en Arial Black y el
+texto en Arial Narrow o Arial (Apple Mail sí carga las fuentes). Las caras y el ícono se piden a
+https://biplot.cl/diario/imagenes/, así que se ven recién cuando están publicadas.
 El enlace para darse de baja es `BAJA` en `armar.mjs` (hoy, el marcador `{{baja}}`): se cambia por la etiqueta de la
 plataforma que se elija (en Buttondown, `{{ unsubscribe_url }}`; en Brevo, `{{ unsubscribe }}`).
 
@@ -120,4 +139,5 @@ plataforma que se elija (en Buttondown, `{{ unsubscribe_url }}`; en Brevo, `{{ u
 - `redactar.mjs`: la API de Claude escribe el JSON con este manual de estilo, y una segunda pasada (la de Tamandúa)
   compara cada frase con el texto de su fuente.
 - Un workflow semanal que deja el borrador como PR para que una persona lo apruebe.
-- El quiosco de la plaza de la oficina, que vende la última edición.
+- El quiosco de la plaza de la oficina, que vende el último tomo.
+- Un campo `escena` en el JSON (quién actúa, de qué se disfraza, qué objeto usa) para que la tapa se pida sola.
