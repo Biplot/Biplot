@@ -2,11 +2,14 @@
 //   caras/<id>.jpg        la cara de quien firma, en blanco y negro de manga (320 × 320), para el recuadro del interior
 //   caras/color/<id>.jpg  la misma cara a color, como en la tapa (640 × 640)
 //   tapas/<fecha>.jpg     la tapa a color de una edición (1200 px de ancho)
+// y, en diario/_herramientas/escenas/ (no se publica), las escenas propuestas para la tapa, que se eligen en el CRM:
+//   <fecha>-<letra>.jpg   una escena (900 px de ancho)
 //   rumbo.png             el ícono de Rumbo, en blanco y negro, para el consultorio
 // Las caras y las tapas se dibujan con IA (ver diario/README.md) y quedan, al generarlas, en el sitio de la herramienta.
 // Esto las baja y las deja del tamaño que usa el diario:
 //   node diario/_herramientas/imagenes.mjs caras                  las caras que lista caras.json (y las saca de la lista)
 //   node diario/_herramientas/imagenes.mjs tapa AAAA-MM-DD <url>  la tapa de esa edición
+//   node diario/_herramientas/imagenes.mjs escena AAAA-MM-DD a <url>  una escena propuesta para su tapa (a, b, c…)
 //   node diario/_herramientas/imagenes.mjs rumbo                  el ícono de Rumbo, desde assets/rumbo/icono.png
 // Todo en PNG o JPEG: los correos (Outlook, sobre todo) no muestran WebP ni aplican filtros.
 // Necesita Playwright (con el Chromium del entorno). Detrás de un proxy (HTTPS_PROXY), Node lo usa para bajar sólo con
@@ -19,7 +22,7 @@ const salida = path.join(raiz, 'diario', 'imagenes');
 const listaCaras = path.join(raiz, 'diario', '_herramientas', 'caras.json');
 const listo = (archivo) => console.log('✓', path.relative(raiz, archivo), Math.round(fs.statSync(archivo).size / 1024) + ' KB');
 const [, , pedido, ...args] = process.argv;
-if (!['caras', 'tapa', 'rumbo'].includes(pedido)) { console.error('Uso: imagenes.mjs caras | tapa AAAA-MM-DD https://… | rumbo'); process.exit(1); }
+if (!['caras', 'tapa', 'escena', 'rumbo'].includes(pedido)) { console.error('Uso: imagenes.mjs caras | tapa AAAA-MM-DD https://… | escena AAAA-MM-DD a https://… | rumbo'); process.exit(1); }
 
 const nav = await chromium.launch({ executablePath: fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined });
 const pg = await nav.newPage();
@@ -58,6 +61,14 @@ if (pedido === 'tapa') {
     await guardar(await bajar(url), path.join(salida, 'tapas', `${fecha}.jpg`), 1200);
     console.log(`  En el JSON de la edición: "tapa": { "src": "imagenes/tapas/${fecha}.jpg", … }`);
   } catch (e) { fallas++; console.error(`✗ tapa: ${e.message}`); }
+}
+if (pedido === 'escena') {
+  const [fecha, letra, url] = args;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha || '') || !/^[a-f]$/.test(letra || '') || !/^https:\/\//.test(url || '')) { console.error('Uso: imagenes.mjs escena AAAA-MM-DD a https://…'); process.exit(1); }
+  try {
+    await guardar(await bajar(url), path.join(raiz, 'diario', '_herramientas', 'escenas', `${fecha}-${letra}.jpg`), 900);
+    console.log(`  En el JSON de la edición, en "escenas": { "imagen": "_herramientas/escenas/${fecha}-${letra}.jpg", "escena": "…" }`);
+  } catch (e) { fallas++; console.error(`✗ escena: ${e.message}`); }
 }
 if (pedido === 'rumbo') {
   // La tinta del cómic (contorno grueso), el color plano de imprenta y el paso a blanco y negro del manga

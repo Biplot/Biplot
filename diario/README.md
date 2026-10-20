@@ -71,25 +71,27 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`, y c�
 3. `node diario/_herramientas/fotografiar.mjs [AAAA-MM-DD] [carpeta]`: fotografía la web (1280 y 390 px), el correo (680 y
    390 px) y la hemeroteca para revisarlos. Lo que el correo pide a biplot.cl se sirve desde el repo.
 4. Un PR con la edición en este repo (uno por edición).
-5. **La validación, en el CRM.** `node diario/_herramientas/taller.mjs AAAA-MM-DD /ruta/a/biplot-nucleo` deja la edición
-   en el taller de marketing del CRM (`biplot-nucleo`, `05-crm/marketing/piezas/ll-<NNN>/`): la tapa, cada capítulo de la
-   web y el correo en tramos, con su ficha (canal `OTRO`, campaña `la-linea`, el enlace a la edición). Va en un PR a
-   `main` de biplot-nucleo (el formato: `biplot-crm/docs/TALLER.md`). En el CRM, un socio:
-   - une ese PR en **Aprobaciones** y, en **Marketing**, aprieta «Traer piezas nuevas»: la edición queda por aprobar;
-   - la **aprueba** o escribe en su nota qué hay que ajustar. Los ajustes vuelven con otro nombre (el tercer argumento,
-     `v2`, se lo suma a cada archivo) y los archivos viejos se quitan en el CRM;
-   - quien la aprueba firma «Edita»: su nombre va en `edita` antes de publicar.
-6. **Publicar**, también desde el CRM: en Aprobaciones → «PR para unir», unir el PR de la edición. Al publicarse `main`,
-   queda en biplot.cl/diario/. Para que el CRM pueda unirlo, la App «biplot-aprobador» tiene que estar instalada en el
-   repo `Biplot`; sin ella, el botón abre GitHub.
+5. **La validación, en el CRM**, en su sección **La Línea** (`biplot-crm.vercel.app/la-linea`). El CRM lee de GitHub
+   los PR abiertos que traen una edición y la muestra: la tapa (o las escenas para elegirla), lo que trae sección por
+   sección con sus fuentes y el enlace a la vista previa de Vercel. Un socio responde cada pregunta en «Sí» o «Ajustar»
+   (en una edición de prueba, las del diseño) y:
+   - la **aprueba**, o **pide ajustes** con lo que hay que cambiar;
+   - si la edición trae escenas, **elige la tapa**.
+   Lo decidido queda como comentario del PR, de la App del CRM («biplot-aprobador»), con quién y cuándo: así quien arma
+   la edición lo lee ahí. Una aprobación vale para el commit en que se dio; si después cambia algo, vuelve a esperar.
+   El socio que aprueba es quien edita: su nombre va en `edita` antes de pedir la validación.
+6. **Publicar**, también desde La Línea: «Publicar en biplot.cl» une el PR (lo aprueba antes en GitHub, en ese commit)
+   cuando cada edición que trae está aprobada y GitHub dice que se puede unir. Al publicarse `main`, queda en
+   biplot.cl/diario/. Para que el CRM escriba en el PR y lo una, la App «biplot-aprobador» tiene que estar instalada en
+   el repo `Biplot`; sin ella, cada botón abre el PR en GitHub.
 7. Enviar el correo desde Brevo.
 
-El diseño del diario se validó igual: cinco piezas del taller, `ll-diseno-tapa`, `-web`, `-celular`, `-correo` y
-`-caras`, con las preguntas de validación en su nota.
+La N.º 0 es la edición de prueba con que se valida el diseño: en La Línea muestra las preguntas del diseño (la tapa,
+las caras, la lectura, el orden, el tono, el aviso, las frases de Aby y Felipe, el nombre y el día).
 
 `node diario/_herramientas/imagenes.mjs` baja al repo las caras y las tapas, ya del tamaño que usa el diario, y vuelve a
 sacar el ícono de Rumbo (`rumbo`, en blanco y negro con tinta y trama). Todo queda en PNG o JPEG porque los correos no
-muestran WebP ni aplican filtros. `fotografiar.mjs`, `imagenes.mjs` y `taller.mjs` necesitan Playwright (`armar.mjs`, no).
+muestran WebP ni aplican filtros. `fotografiar.mjs` e `imagenes.mjs` necesitan Playwright (`armar.mjs`, no).
 
 ### Las caras
 
@@ -120,9 +122,10 @@ trama suave).
 
 1. Elegir la noticia principal y pensar la escena: quién del equipo la actúa, de qué se disfraza, qué objeto la cuenta
    (unas tijeras, una balanza, un marcador). Sin texto en la imagen, salvo una cifra o una sigla si la escena la necesita.
-   Las dos o tres escenas propuestas se eligen en el CRM: `node diario/_herramientas/taller.mjs tapas AAAA-MM-DD
-   /ruta/a/biplot-nucleo escenas.json` deja una pieza por escena (`ll-<NNN>-tapa-a`, `-b`…); se aprueba la que va y se
-   descartan las otras.
+   Las dos o tres escenas propuestas se eligen en La Línea, en el CRM: cada una se baja con
+   `node diario/_herramientas/imagenes.mjs escena AAAA-MM-DD a <url>` (queda en `diario/_herramientas/escenas/`, que no se
+   publica) y va en el JSON como `"escenas": [{ "imagen": "_herramientas/escenas/AAAA-MM-DD-a.jpg", "escena": "…" }]`,
+   sin `tapa`. Cuando un socio elige una, se pone como tapa y se saca `escenas`.
 2. Generarla con IA a partir de los dibujos del equipo (`oficina/ilustraciones.js` y los que están en biplot.cl), en el
    estilo de las portadas a color de manga: tinta, color plano, sombras duras. Formato vertical, 2:3.
 3. Bajarla al repo: `node diario/_herramientas/imagenes.mjs tapa AAAA-MM-DD <url>` la guarda en
@@ -145,6 +148,7 @@ de ahí. Sin `tapa`, la edición sale con una tapa tipográfica (el nombre, el v
   "redaccion": ["Párrafo de Aby", "…"],
   "indicadores": [{ "nombre": "UF", "valor": "$39.000,00", "nota": "lunes 19", "fuente": { "medio": "…", "url": "https://…" } }],
   "tapa": { "src": "imagenes/tapas/2026-10-19.jpg", "alt": "La escena, descrita", "pie": "…" },   // opcional
+  "escenas": [{ "imagen": "_herramientas/escenas/2026-10-26-a.jpg", "escena": "…" }],   // mientras se elige la tapa
   "portada": [nota, nota, nota],          // la primera va a todo lo ancho; su «importa» va en el globo de Aby
   "dato": { "valor": "4,1%", "leyenda": "IPC a 12 meses", ...nota },
   "maquinas": [nota, …], "planos": [nota, …],
@@ -181,8 +185,7 @@ se cambia esa etiqueta.
   fuentes de la semana.
 - `redactar.mjs`: la API de Claude escribe el JSON con este manual de estilo, y una segunda pasada (la de Tamandúa)
   compara cada frase con el texto de su fuente.
-- Un workflow semanal que deja el borrador como PR y su pieza en el taller, para que un socio lo apruebe en el CRM.
-- Una vista «La Línea» en el CRM: cada pregunta de la validación con su comentario, la tapa elegida, la firma de quien
-  edita y el envío por Brevo.
+- Un workflow semanal que deja el borrador como PR, para que un socio lo valide en La Línea.
+- El envío por Brevo desde La Línea, después de publicar.
 - El quiosco de la plaza de la oficina, que vende el último tomo.
 - Un campo `escena` en el JSON (quién actúa, de qué se disfraza, qué objeto usa) para que la tapa se pida sola.
