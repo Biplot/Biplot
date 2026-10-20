@@ -153,8 +153,9 @@ de erratas van al pie. Gmail y Outlook no cargan las fuentes del tomo, así que 
 texto en Arial Narrow o Arial (Apple Mail sí carga las fuentes). Las caras y el ícono se piden a
 https://biplot.cl/diario/imagenes/, así que se ven recién cuando están publicadas (las caras que siguen en `caras.json`,
 desde donde quedaron al generarlas).
-El enlace para darse de baja es `BAJA` en `armar.mjs` (hoy, el marcador `{{baja}}`): se cambia por la etiqueta de la
-plataforma que se elija (en Buttondown, `{{ unsubscribe_url }}`; en Brevo, `{{ unsubscribe }}`).
+El correo se envía con **Brevo**. El enlace para darse de baja es `BAJA` en `armar.mjs`: la etiqueta de Brevo,
+`{{ unsubscribe }}`, que Brevo cambia por el enlace de cada suscriptor al enviar. Si algún día se cambia de plataforma,
+se cambia esa etiqueta.
 
 ## Lo que viene
 

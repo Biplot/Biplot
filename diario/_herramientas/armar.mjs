@@ -15,9 +15,9 @@ const SITIO = 'https://biplot.cl';
 const AGENDAR = 'https://wa.me/56966275675?text=Hola%20BiPlot%20%F0%9F%91%8B%2C%20quiero%20agendar%20un%20diagn%C3%B3stico.';
 const RUMBO = 'https://rumbo.biplot.cl/conoce';
 const PERIODICIDAD = 'Sale los lunes';
-// El enlace para darse de baja lo pone la plataforma de envío: aquí va su etiqueta (en Buttondown, {{ unsubscribe_url }};
-// en Brevo, {{ unsubscribe }}). Mientras no se elija, queda este marcador.
-const BAJA = '{{baja}}';
+// El enlace para darse de baja lo pone la plataforma de envío, Brevo: aquí va su etiqueta, que Brevo cambia por el
+// enlace de cada suscriptor al enviar.
+const BAJA = '{{ unsubscribe }}';
 // Las caras van en diario/imagenes/caras/<id>.jpg. Las que todavía no se bajan al repo están en caras.json, con la URL
 // donde quedaron al generarlas (la de blanco y negro y la de color), y se piden de ahí; imagenes.mjs caras las baja.
 const listaCaras = path.join(raiz, 'diario', '_herramientas', 'caras.json');
