@@ -10,7 +10,7 @@ la redacción y el índice «En este tomo»); después vienen Economía y gesti�
 Pasatiempos y avisos. Lo escribe la oficina: Aby abre la edición y el resto del equipo firma su sección, con su cara en el
 recuadro de esquina, **dibujada en anime como en la tapa** y pasada al blanco y negro del manga (tinta y trama). El coral sigue siendo
 sólo para agendar el diagnóstico: es el botón del aviso «Se busca», la única mancha de color del interior. Las noticias
-se juntan solas, pero **ninguna edición sale sin que una persona la apruebe**, igual que la vitrina.
+se juntan solas, pero **ninguna edición sale sin que un socio la apruebe en el CRM**, igual que la vitrina.
 
 Las fuentes son de Google Fonts: Dela Gothic One (titulares y capítulos), Bangers (onomatopeyas y golpes), Archivo
 Narrow (el texto), Patrick Hand (los globos) e IBM Plex Mono (fechas, folios y cotizaciones). **No lleva letras
@@ -57,8 +57,9 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`, y c�
 - **Los resúmenes son nuestros**: dos o tres frases con los hechos, nunca el artículo copiado ni sus fotos (las imágenes
   son las del equipo). La tapa es una ilustración y se dice: «Ilustración hecha con IA a partir de los dibujos del equipo
   de BiPlot», en su pie. Las cifras, tal cual las da la fuente, con su fecha.
-- Hecho con ayuda de IA y **revisado por personas**: el pie lo dice, con el nombre de quien edita (`edita`). Una edición de
-  prueba sin `edita` dice, en cambio, que todavía le falta esa revisión.
+- Hecho con ayuda de IA y **revisado por personas**: el pie lo dice, con el nombre de quien edita (`edita`), que es el
+  socio que aprobó la edición en el CRM. Una edición de prueba sin `edita` dice, en cambio, que todavía le falta esa
+  revisión.
 - Los errores se corrigen en la **fe de erratas** de la edición siguiente (`erratas`).
 - Los casos de clientes de BiPlot salen sólo con su permiso, como los capítulos de BiPlot.TV.
 
@@ -69,12 +70,26 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`, y c�
    última). Si falta algo obligatorio, dice qué y no escribe nada.
 3. `node diario/_herramientas/fotografiar.mjs [AAAA-MM-DD] [carpeta]`: fotografía la web (1280 y 390 px), el correo (680 y
    390 px) y la hemeroteca para revisarlos. Lo que el correo pide a biplot.cl se sirve desde el repo.
-4. Una persona la revisa y la aprueba (en el PR); al publicarse `main`, la edición queda en biplot.cl/diario/.
-5. Se envía el correo desde la plataforma de envío.
+4. Un PR con la edición en este repo (uno por edición).
+5. **La validación, en el CRM.** `node diario/_herramientas/taller.mjs AAAA-MM-DD /ruta/a/biplot-nucleo` deja la edición
+   en el taller de marketing del CRM (`biplot-nucleo`, `05-crm/marketing/piezas/ll-<NNN>/`): la tapa, cada capítulo de la
+   web y el correo en tramos, con su ficha (canal `OTRO`, campaña `la-linea`, el enlace a la edición). Va en un PR a
+   `main` de biplot-nucleo (el formato: `biplot-crm/docs/TALLER.md`). En el CRM, un socio:
+   - une ese PR en **Aprobaciones** y, en **Marketing**, aprieta «Traer piezas nuevas»: la edición queda por aprobar;
+   - la **aprueba** o escribe en su nota qué hay que ajustar. Los ajustes vuelven con otro nombre (el tercer argumento,
+     `v2`, se lo suma a cada archivo) y los archivos viejos se quitan en el CRM;
+   - quien la aprueba firma «Edita»: su nombre va en `edita` antes de publicar.
+6. **Publicar**, también desde el CRM: en Aprobaciones → «PR para unir», unir el PR de la edición. Al publicarse `main`,
+   queda en biplot.cl/diario/. Para que el CRM pueda unirlo, la App «biplot-aprobador» tiene que estar instalada en el
+   repo `Biplot`; sin ella, el botón abre GitHub.
+7. Enviar el correo desde Brevo.
+
+El diseño del diario se validó igual: cinco piezas del taller, `ll-diseno-tapa`, `-web`, `-celular`, `-correo` y
+`-caras`, con las preguntas de validación en su nota.
 
 `node diario/_herramientas/imagenes.mjs` baja al repo las caras y las tapas, ya del tamaño que usa el diario, y vuelve a
 sacar el ícono de Rumbo (`rumbo`, en blanco y negro con tinta y trama). Todo queda en PNG o JPEG porque los correos no
-muestran WebP ni aplican filtros. Las tres herramientas necesitan Playwright.
+muestran WebP ni aplican filtros. `fotografiar.mjs`, `imagenes.mjs` y `taller.mjs` necesitan Playwright (`armar.mjs`, no).
 
 ### Las caras
 
@@ -105,6 +120,9 @@ trama suave).
 
 1. Elegir la noticia principal y pensar la escena: quién del equipo la actúa, de qué se disfraza, qué objeto la cuenta
    (unas tijeras, una balanza, un marcador). Sin texto en la imagen, salvo una cifra o una sigla si la escena la necesita.
+   Las dos o tres escenas propuestas se eligen en el CRM: `node diario/_herramientas/taller.mjs tapas AAAA-MM-DD
+   /ruta/a/biplot-nucleo escenas.json` deja una pieza por escena (`ll-<NNN>-tapa-a`, `-b`…); se aprueba la que va y se
+   descartan las otras.
 2. Generarla con IA a partir de los dibujos del equipo (`oficina/ilustraciones.js` y los que están en biplot.cl), en el
    estilo de las portadas a color de manga: tinta, color plano, sombras duras. Formato vertical, 2:3.
 3. Bajarla al repo: `node diario/_herramientas/imagenes.mjs tapa AAAA-MM-DD <url>` la guarda en
@@ -163,6 +181,8 @@ se cambia esa etiqueta.
   fuentes de la semana.
 - `redactar.mjs`: la API de Claude escribe el JSON con este manual de estilo, y una segunda pasada (la de Tamandúa)
   compara cada frase con el texto de su fuente.
-- Un workflow semanal que deja el borrador como PR para que una persona lo apruebe.
+- Un workflow semanal que deja el borrador como PR y su pieza en el taller, para que un socio lo apruebe en el CRM.
+- Una vista «La Línea» en el CRM: cada pregunta de la validación con su comentario, la tapa elegida, la firma de quien
+  edita y el envío por Brevo.
 - El quiosco de la plaza de la oficina, que vende el último tomo.
 - Un campo `escena` en el JSON (quién actúa, de qué se disfraza, qué objeto usa) para que la tapa se pida sola.
