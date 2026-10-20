@@ -70,19 +70,22 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`, y c�
    última). Si falta algo obligatorio, dice qué y no escribe nada.
 3. `node diario/_herramientas/fotografiar.mjs [AAAA-MM-DD] [carpeta]`: fotografía la web (1280 y 390 px), el correo (680 y
    390 px) y la hemeroteca para revisarlos. Lo que el correo pide a biplot.cl se sirve desde el repo.
-4. Un PR con la edición en este repo (uno por edición).
+4. Un PR con la edición en este repo (uno por edición), sólo con lo suyo: el JSON, su página, la hemeroteca, su tapa y
+   las escenas. El check **«Diario · verificar»** (`.github/workflows/diario.yml`) vuelve a armar cada edición y falla si
+   alguna página no sale de su JSON.
 5. **La validación, en el CRM**, en su sección **La Línea** (`biplot-crm.vercel.app/la-linea`). El CRM lee de GitHub
    los PR abiertos que traen una edición y la muestra: la tapa (o las escenas para elegirla), lo que trae sección por
    sección con sus fuentes y el enlace a la vista previa de Vercel. Un socio responde cada pregunta en «Sí» o «Ajustar»
    (en una edición de prueba, las del diseño) y:
    - la **aprueba**, o **pide ajustes** con lo que hay que cambiar;
    - si la edición trae escenas, **elige la tapa**.
-   Lo decidido queda como comentario del PR, de la App del CRM («biplot-aprobador»), con quién y cuándo: así quien arma
-   la edición lo lee ahí. Una aprobación vale para el commit en que se dio; si después cambia algo, vuelve a esperar.
+   Lo decidido queda como comentario del PR, de la App del CRM («biplot-aprobador»), con el nombre de quien decidió y
+   cuándo (el repo es público: nunca su correo): así quien arma la edición lo lee ahí. Una aprobación vale para el commit en que se dio; si después cambia algo, vuelve a esperar.
    El socio que aprueba es quien edita: su nombre va en `edita` antes de pedir la validación.
 6. **Publicar**, también desde La Línea: «Publicar en biplot.cl» une el PR (lo aprueba antes en GitHub, en ese commit)
-   cuando cada edición que trae está aprobada y GitHub dice que se puede unir. Al publicarse `main`, queda en
-   biplot.cl/diario/. Para que el CRM escriba en el PR y lo una, la App «biplot-aprobador» tiene que estar instalada en
+   cuando cada edición que trae está aprobada, el PR no trae nada más que sus ediciones, «Diario · verificar» está en
+   verde y GitHub dice que se puede unir. Al publicarse `main`, queda en biplot.cl/diario/. Un PR que trae algo más (el
+   diseño, las herramientas, como el de la N.º 0) se valida igual en La Línea, pero se une en Aprobaciones o en GitHub. Para que el CRM escriba en el PR y lo una, la App «biplot-aprobador» tiene que estar instalada en
    el repo `Biplot`; sin ella, cada botón abre el PR en GitHub.
 7. Enviar el correo desde Brevo.
 
@@ -185,7 +188,8 @@ se cambia esa etiqueta.
   fuentes de la semana.
 - `redactar.mjs`: la API de Claude escribe el JSON con este manual de estilo, y una segunda pasada (la de Tamandúa)
   compara cada frase con el texto de su fuente.
-- Un workflow semanal que deja el borrador como PR, para que un socio lo valide en La Línea.
+- Un workflow semanal que deja el borrador como PR, para que un socio lo valide en La Línea (con el token de una App
+  de la org: un PR abierto con el `GITHUB_TOKEN` del workflow no hace correr «Diario · verificar»).
 - El envío por Brevo desde La Línea, después de publicar.
 - El quiosco de la plaza de la oficina, que vende el último tomo.
 - Un campo `escena` en el JSON (quién actúa, de qué se disfraza, qué objeto usa) para que la tapa se pida sola.
