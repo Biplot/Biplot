@@ -492,6 +492,132 @@ ${tapa}
 `;
 }
 
+// ---------- Las láminas para redes ----------
+// El carrusel de cada edición para Instagram y LinkedIn: láminas de 1080×1350 (4:5) con la tapa, cada nota de la
+// portada con su «por qué importa», El dato y un cierre con el resto del número y biplot.cl/diario. Aquí sólo se arma el
+// HTML (en salida/, que no se sube); redes.mjs fotografía cada lámina en diario/<fecha>/redes/NN.jpg y esas sí viajan
+// en el PR de la edición. Al publicarla, el CRM deja el carrusel por aprobar en Marketing con esas imágenes.
+const caraColor = (id) => (CARAS_FUERA[id] && CARAS_FUERA[id].color ? CARAS_FUERA[id].color : `/diario/imagenes/caras/color/${id}.jpg`);
+const LAMINA_CSS = `
+:root{--papel:#FAFAF7;--tinta:#0B0B0B;--trama-clara:#D4D4CE;--trama-oscura:#6E6E68;--gris:#55554F;
+  --titulo:'Dela Gothic One','Arial Black',sans-serif;--golpe:'Bangers',Impact,sans-serif;--texto:'Archivo Narrow','Arial Narrow',sans-serif;
+  --globo:'Patrick Hand','Comic Sans MS',cursive;--maquina:'IBM Plex Mono',monospace;
+  --trama-c:radial-gradient(circle,var(--trama-oscura) 1.6px,transparent 2.1px) 0 0/9px 9px,var(--trama-clara);
+  --trama-o:radial-gradient(circle,var(--tinta) 2px,transparent 2.6px) 0 0/9px 9px,var(--trama-oscura)}
+*{box-sizing:border-box;margin:0}
+body{background:#E2E1DC;display:grid;gap:40px;justify-content:center;padding:40px 0;-webkit-font-smoothing:antialiased}
+.lamina{--k:1;position:relative;width:1080px;height:1350px;overflow:hidden;background:var(--papel);color:var(--tinta);display:flex;flex-direction:column;font-family:var(--texto)}
+.cab{display:flex;justify-content:space-between;align-items:center;gap:24px;background:var(--tinta);color:var(--papel);padding:26px 56px}
+.cab b{font:400 46px/1 var(--titulo)}
+.cab span{font:600 24px/1.2 var(--maquina);letter-spacing:.06em;text-transform:uppercase}
+.cuerpo{flex:1;min-height:0;display:flex;flex-direction:column;gap:calc(30px*var(--k));padding:calc(52px*var(--k)) 64px calc(44px*var(--k));border:8px solid var(--tinta);border-top:0;border-bottom:0;overflow:hidden}
+.kicker{align-self:flex-start;border:5px solid var(--tinta);padding:8px 18px;font:700 26px/1.2 var(--texto);letter-spacing:.14em;text-transform:uppercase}
+.titular{font:400 calc(80px*var(--k))/1.08 var(--titulo);letter-spacing:-.01em}
+.bajada{font:400 calc(36px*var(--k))/1.38 var(--texto)}
+.dice{margin-top:auto;display:flex;align-items:flex-end;gap:34px}
+.cara{flex:none;display:grid;gap:8px;justify-items:center}
+.cara img{width:calc(190px*var(--k));height:calc(190px*var(--k));object-fit:cover;border:6px solid var(--tinta);background:var(--trama-c)}
+.cara small{font:600 22px/1 var(--maquina);text-transform:uppercase;letter-spacing:.08em}
+.globo{position:relative;flex:1;border:6px solid var(--tinta);border-radius:44px;padding:calc(26px*var(--k)) 34px;background:var(--papel);font:400 calc(40px*var(--k))/1.25 var(--globo)}
+.globo::before{content:'';position:absolute;left:-34px;bottom:46px;border:17px solid transparent;border-right:30px solid var(--tinta);border-left:0}
+.globo::after{content:'';position:absolute;left:-23px;bottom:52px;border:11px solid transparent;border-right:20px solid var(--papel);border-left:0}
+.globo b{font:400 calc(30px*var(--k))/1 var(--titulo);margin-right:.3em}
+.pie{display:flex;justify-content:space-between;align-items:center;border:8px solid var(--tinta);padding:20px 48px;font:600 26px/1 var(--maquina);letter-spacing:.04em}
+.pie b{font:400 30px/1 var(--titulo);letter-spacing:0}
+/* La tapa: la ilustración entera, sobre la trama oscura */
+.tapa{background:var(--trama-o);align-items:center;padding-top:26px}
+.tapa img{height:1210px;width:auto;box-shadow:0 0 0 6px var(--tinta),0 24px 50px -10px rgba(0,0,0,.6)}
+.desliza{position:absolute;right:44px;bottom:22px;transform:rotate(-4deg);background:var(--papel);border:6px solid var(--tinta);padding:12px 22px;font:400 46px/1 var(--golpe);letter-spacing:.06em;box-shadow:8px 8px 0 var(--tinta)}
+.tapa-tipografica{flex:1;width:812px;margin-bottom:114px;background:var(--tinta);color:var(--papel);display:grid;align-content:center;justify-items:center;gap:40px;padding:80px;text-align:center}
+.tapa-tipografica b{font:400 150px/1 var(--titulo)}
+.tapa-tipografica span{font:400 52px/1.2 var(--titulo)}
+/* El dato: la cifra en grande, sobre la trama */
+.cifra{border:8px solid var(--tinta);background:var(--trama-c);padding:calc(26px*var(--k)) 40px calc(30px*var(--k));display:grid;justify-items:center;text-align:center;gap:6px}
+.cifra b{font:400 calc(250px*var(--k))/1 var(--golpe);letter-spacing:.02em;-webkit-text-stroke:3px var(--tinta);color:var(--papel);text-shadow:10px 10px 0 var(--tinta)}
+.cifra span{background:var(--tinta);color:var(--papel);padding:8px 18px;font:700 30px/1.2 var(--texto);letter-spacing:.1em;text-transform:uppercase}
+/* El cierre: el resto del número y dónde leerlo */
+.cierre{background:var(--tinta);color:var(--papel)}
+.cierre .cuerpo{border-color:var(--tinta)}
+.cierre .kicker{border-color:var(--papel)}
+.indice{list-style:none;padding:0;display:grid;gap:calc(20px*var(--k))}
+.indice li{display:flex;align-items:center;gap:26px}
+.indice img{flex:none;width:calc(104px*var(--k));height:calc(104px*var(--k));object-fit:cover;border:5px solid var(--papel)}
+.indice i{display:block;font:700 22px/1.3 var(--texto);font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:var(--trama-clara)}
+.indice span{font:400 calc(31px*var(--k))/1.22 var(--titulo)}
+.final{margin-top:auto;background:var(--papel);color:var(--tinta);border:8px solid var(--papel);padding:34px 40px;display:grid;gap:12px;text-align:center;box-shadow:inset 0 0 0 6px var(--tinta)}
+.final b{font:400 54px/1 var(--titulo)}
+.final span{font:400 92px/1 var(--golpe);letter-spacing:.03em}
+.final small{font:600 24px/1.3 var(--maquina);letter-spacing:.06em;text-transform:uppercase}`;
+// Ajusta la letra de cada lámina al texto de la semana (un titular corto va más grande, uno largo se achica hasta caber)
+// y avisa a redes.mjs que ya se puede fotografiar.
+const LAMINA_JS = `document.fonts.ready.then(() => {
+  for (const l of document.querySelectorAll('.lamina')) {
+    const c = l.querySelector('.cuerpo'); if (!c) continue;
+    for (let k = 1.24; k > .55; k -= .03) { l.style.setProperty('--k', k.toFixed(2)); if (c.scrollHeight <= c.clientHeight + 1) break; }
+    if (c.scrollHeight > c.clientHeight + 1) l.dataset.noCabe = '1';
+  }
+  document.body.dataset.listo = '1';
+});`;
+function laminasDe(ed) {
+  const total = [];
+  const fecha = Mayus(fechaLarga(ed.fecha).replace(/ de \d{4}$/, ''));
+  const cab = `<header class="cab"><b>La Línea</b><span>${esc(vol(ed))} · ${esc(fecha)}</span></header>`;
+  const pie = (n) => `<footer class="pie"><b>biplot.cl/diario</b><span>${n} / {{total}}</span></footer>`;
+  const dice = (id, etiqueta, t) => (t ? `<div class="dice"><span class="cara"><img src="${esc(caraColor(id))}" alt=""><small>${esc(FIRMAS[id].nombre)}</small></span><p class="globo"><b>${esc(etiqueta)}.</b>${md(t)}</p></div>` : '');
+  total.push(ed.tapa
+    ? `<section class="lamina tapa"><img src="${esc(tapaSrc(ed, '/diario/'))}" alt=""><span class="desliza">Desliza →</span></section>`
+    : `<section class="lamina tapa"><div class="tapa-tipografica"><b>La Línea</b><span>${esc(vol(ed))}</span><span>${md(lista(ed.portada)[0].titular)}</span></div><span class="desliza">Desliza →</span></section>`);
+  const portada = lista(ed.portada), sp = seccion('portada');
+  portada.forEach((n, i) => total.push(`<section class="lamina">${cab}<div class="cuerpo">
+    <p class="kicker">Portada · ${i + 1} de ${portada.length}</p>
+    <h2 class="titular">${md(n.titular)}</h2>
+    ${lista(n.bajada).slice(0, 1).map((p) => `<p class="bajada">${md(p)}</p>`).join('')}
+    ${dice('aby', sp.importa, n.importa)}
+  </div>${pie(total.length + 1)}</section>`));
+  if (ed.dato) {
+    const sd = seccion('dato');
+    total.push(`<section class="lamina">${cab}<div class="cuerpo">
+    <p class="kicker">${esc(sd.kicker)} · ${esc(tituloPlano(sd.nombre))}</p>
+    ${ed.dato.valor ? `<div class="cifra"><b>${esc(ed.dato.valor)}</b>${ed.dato.leyenda ? `<span>${esc(ed.dato.leyenda)}</span>` : ''}</div>` : ''}
+    <h2 class="titular">${md(ed.dato.titular)}</h2>
+    ${dice('celda', sd.importa, ed.dato.importa)}
+  </div>${pie(total.length + 1)}</section>`);
+  }
+  // El cierre: lo que no cupo en el carrusel, con quién lo firma
+  const resto = SECCIONES.filter((s) => !['portada', 'dato'].includes(s.id) && (s.id === 'preguntas' ? lista(ed.preguntas).length : notasDe(ed, s.id).length)).slice(0, 6).map((s) => {
+    const n = notasDe(ed, s.id)[0];
+    // Un mito no va como titular: se dice con su veredicto
+    const t = s.id === 'preguntas' ? '¿Leíste bien la semana? Tres preguntas para comprobarlo'
+      : s.id === 'mito' ? `«${plano(n.afirmacion).replace(/\.$/, '')}». Veredicto: ${(VEREDICTOS[n.veredicto] || [n.veredicto])[0]}`
+      : plano(n.titular || n.empresa || '');
+    return `<li><img src="${esc(caraColor(s.firma))}" alt=""><span><i>${esc(tituloPlano(s.nombre))} · ${esc(FIRMAS[s.firma].nombre)}</i>${esc(t)}</span></li>`;
+  });
+  total.push(`<section class="lamina cierre"><div class="cuerpo">
+    ${resto.length ? `<p class="kicker">También en este número</p><ul class="indice">${resto.join('')}</ul>` : ''}
+    <div class="final"><b>Léela completa</b><span>biplot.cl/diario</span><small>${esc(PERIODICIDAD)} · Gratis · Enlace en la bio</small></div>
+  </div></section>`);
+  return total.map((l) => l.replace('{{total}}', total.length));
+}
+function redesHtml(ed) {
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1160">
+<meta name="robots" content="noindex">
+<title>${esc(`La Línea, ${vol(ed)}: las láminas para redes`)}</title>
+<link href="${FUENTES_WEB}" rel="stylesheet">
+<style>${LAMINA_CSS}
+</style>
+</head>
+<body>
+${laminasDe(ed).join('\n')}
+<script>${LAMINA_JS}</script>
+</body>
+</html>
+`;
+}
+
 // ---------- La última edición, para el resto del sitio ----------
 // La portada de biplot.cl, el quiosco de la oficina y el cintillo de BiPlot.TV leen este archivo y no el JSON de cada
 // edición: así todos muestran lo mismo y sólo lo publicado (viaja en el mismo PR que la edición). Las de prueba se ven
@@ -506,10 +632,12 @@ function ultimaJson(ediciones) {
     tapa: ed.tapa ? { src: /^https:\/\//.test(ed.tapa.src) ? ed.tapa.src : `/diario/${ed.tapa.src}`, alt: ed.tapa.alt || '' } : null,
     titular: plano(lista(ed.portada)[0].titular),
     titulares: lista(ed.portada).map((n) => plano(n.titular)),
-    // La nota de cada integrante de la oficina en esta edición: la primera de su sección
+    // La nota de cada integrante de la oficina en esta edición: la primera de su sección, con su cifra si la trae (en El
+    // dato, la de la sección) y el ancla de la sección en su página (la portada no tiene: se abre arriba)
     notas: SECCIONES.filter((s) => notasDe(ed, s.id).length).map((s) => {
-      const n = notasDe(ed, s.id)[0];
-      return { seccion: s.nombre ? s.nombre.join(' ') : s.kicker, firma: s.firma, nombre: FIRMAS[s.firma].nombre, titular: plano(n.titular || n.afirmacion || n.empresa) };
+      const n = notasDe(ed, s.id)[0], c = s.id === 'dato' ? ed.dato : n.cifra;
+      return { id: s.id, seccion: s.nombre ? s.nombre.join(' ') : s.kicker, firma: s.firma, nombre: FIRMAS[s.firma].nombre,
+        titular: plano(n.titular || n.afirmacion || n.empresa), cifra: c && c.valor ? { valor: plano(c.valor), leyenda: plano(c.leyenda || '') } : null };
     }),
   } : null;
   return JSON.stringify({ nota: 'Lo arma diario/_herramientas/armar.mjs: no se edita a mano.', edicion, proxima: sumarDias(ediciones.at(-1).fecha, 7) }, null, 2) + '\n';
@@ -528,3 +656,4 @@ escribir(`diario/${ed.fecha}/index.html`, edicionWeb(ed));
 escribir('diario/index.html', hemerotecaWeb([...ediciones].reverse()));
 escribir('diario/ultima.json', ultimaJson(ediciones));
 escribir(`diario/_herramientas/salida/${ed.fecha}-correo.html`, edicionCorreo(ed));
+escribir(`diario/_herramientas/salida/${ed.fecha}-redes.html`, redesHtml(ed));

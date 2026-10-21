@@ -20,7 +20,7 @@ personajes ni logos de ninguna serie o editorial.
 - Cada edición en la web: **biplot.cl/diario/AAAA-MM-DD/** (`diario/<fecha>/index.html`).
 - La hemeroteca: **biplot.cl/diario/** (`diario/index.html`), con todas las ediciones, la más nueva arriba.
 - La última edición, para el resto del sitio: `diario/ultima.json`, con su número, su fecha, su tapa, sus titulares y la
-  nota de cada integrante, y la fecha de la próxima. Lo leen el bloque «La Línea» de la portada de biplot.cl, el quiosco
+  nota de cada integrante (con su cifra y el ancla de su sección), y la fecha de la próxima. Lo leen el bloque «La Línea» de la portada de biplot.cl, el quiosco
   de la plaza de la oficina y el cintillo de la tele de BiPlot.TV. Sólo lleva ediciones que no son de prueba: mientras no
   haya ninguna, `edicion` va en `null` y cada lugar dice cuándo sale la próxima. Viaja en el mismo PR que la edición, así
   que nada aparece antes de publicarla.
@@ -74,12 +74,15 @@ El estándar de cada semana (quién hace qué, el calendario, las reglas de cada
 práctica del 12-10) está en `_herramientas/semana.md`. Lo de abajo son los comandos.
 
 1. Escribir `_herramientas/ediciones/<fecha>.json` (la fecha es la del lunes en que sale).
-2. `node diario/_herramientas/armar.mjs [AAAA-MM-DD]`: escribe la edición web, la hemeroteca, `ultima.json` y el correo
-   (sin fecha, la última). Si falta algo obligatorio, dice qué y no escribe nada.
+2. `node diario/_herramientas/armar.mjs [AAAA-MM-DD]`: escribe la edición web, la hemeroteca, `ultima.json`, el correo
+   y las láminas para redes (estas dos en `_herramientas/salida/`, que no se sube; sin fecha, la última). Si falta algo obligatorio, dice qué y no escribe nada.
 3. `node diario/_herramientas/fotografiar.mjs [AAAA-MM-DD] [carpeta]`: fotografía la web (1280 y 390 px), el correo (680 y
    390 px) y la hemeroteca para revisarlos. Lo que el correo pide a biplot.cl se sirve desde el repo.
+   `node diario/_herramientas/redes.mjs [AAAA-MM-DD]`: fotografía el carrusel para Instagram y LinkedIn en
+   `diario/<fecha>/redes/01.jpg…` (1080 × 1350; falla si un texto no cabe o no cargan las letras). Viaja en el PR y, al
+   publicar, el CRM lo deja por aprobar en Marketing.
 4. Un PR con la edición en este repo (uno por edición), sólo con lo suyo: el JSON, su página, la hemeroteca,
-   `ultima.json`, su tapa y las escenas. El check **«Diario · verificar»** (`.github/workflows/diario.yml`) vuelve a armar cada edición y falla si
+   `ultima.json`, su tapa, las escenas y las láminas para redes. El check **«Diario · verificar»** (`.github/workflows/diario.yml`) vuelve a armar cada edición y falla si
    alguna página no sale de su JSON.
 5. **La validación, en el CRM**, en su sección **La Línea** (`biplot-crm.vercel.app/la-linea`). El CRM lee de GitHub
    los PR abiertos que traen una edición y la muestra: la tapa (o las escenas para elegirla), lo que trae sección por
@@ -103,7 +106,7 @@ portada: la tapa, el logo y las caras; el contenido: que el interior se lea bien
 
 `node diario/_herramientas/imagenes.mjs` baja al repo las caras y las tapas, ya del tamaño que usa el diario, y vuelve a
 sacar el ícono de Rumbo (`rumbo`, en blanco y negro con tinta y trama). Todo queda en PNG o JPEG porque los correos no
-muestran WebP ni aplican filtros. `fotografiar.mjs` e `imagenes.mjs` necesitan Playwright (`armar.mjs`, no).
+muestran WebP ni aplican filtros. `fotografiar.mjs`, `redes.mjs` e `imagenes.mjs` necesitan Playwright (`armar.mjs`, no).
 
 ### Las caras
 
@@ -117,7 +120,7 @@ publicada, así que su referencia fue su cara de cómic del diario, pedida al re
 `raw.githubusercontent.com`; para rehacerla, sirve igual su cara a color (`caras/color/atlas.jpg`).
 
 - `diario/imagenes/caras/<id>.jpg`: la de blanco y negro, 320 × 320, la que usa el diario.
-- `diario/imagenes/caras/color/<id>.jpg`: la de color, 640 × 640, para cuando se necesite (la oficina, redes).
+- `diario/imagenes/caras/color/<id>.jpg`: la de color, 640 × 640: la usan las láminas para redes.
 - `_herramientas/caras.json`: las caras que todavía no se bajan al repo, con la URL donde quedaron al generarlas (`bn` y
   `color`). Mientras una cara esté en la lista, `armar.mjs` la pide de ahí: en la web, la versión chica en WebP que la
   herramienta deja al lado (`…_min.webp`); en el correo, el PNG.

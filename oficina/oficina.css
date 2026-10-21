@@ -753,6 +753,24 @@ button { font: inherit; color: inherit; }
 @keyframes cintillo { to { transform: translateX(-100%); } }
 @media (prefers-reduced-motion: reduce) { .tele-cintillo-txt > span { animation: none; } .tele-cintillo-txt > span + span { display: none; } .tele-cintillo-txt { overflow: hidden; text-overflow: ellipsis; } }
 .oficina-quieta .tele-cintillo-txt > span { animation-play-state: paused; }
+/* La Línea en la ficha de cada integrante: su nota de la semana, en un globo (como los «Por qué importa» del diario) */
+.globo-linea { position: relative; margin: 14px 0 6px; padding: 12px 14px; border: 1.5px solid var(--bp-marca-cian); border-radius: 16px; background: rgba(23, 195, 178, .08); }
+.globo-linea::before { content: ""; position: absolute; left: 22px; top: -9px; width: 14px; height: 14px; background: linear-gradient(rgba(23, 195, 178, .08), rgba(23, 195, 178, .08)) var(--bp-superficie); border-left: 1.5px solid var(--bp-marca-cian); border-top: 1.5px solid var(--bp-marca-cian); transform: rotate(45deg); }
+.globo-ceja { margin: 0; font: 600 11.5px/1.4 var(--bp-f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--bp-marca-cian); }
+.globo-cifra { margin: 6px 0 0; font-size: 13px; opacity: .85; }
+.globo-cifra b { display: block; font: 700 22px/1.1 var(--bp-f-mono); color: var(--bp-texto); opacity: 1; }
+.globo-titular { margin: 6px 0 8px; font-weight: 700; line-height: 1.35; }
+.globo-leer { font-weight: 600; color: var(--bp-marca-cian); }
+/* La bienvenida: Plotty avisa que salió el número de la semana */
+.intro-linea { display: flex; align-items: flex-start; gap: 10px; margin: 12px 0 14px; padding: 10px 12px; border-radius: 12px; background: rgba(23, 195, 178, .1); font-size: 14px; line-height: 1.45; }
+.intro-linea-cara { flex: none; width: 32px; height: 32px; }
+.intro-linea-cara > * { width: 32px; height: 32px; }
+.intro-linea a { font-weight: 600; color: var(--bp-marca-cian); }
+/* El marcador de La Línea, en la tarjeta de la pantalla del centro de BiPlot.TV */
+.marcador-linea { margin: 12px 0 4px; padding: 12px 14px; border-radius: 12px; background: var(--p-velo, rgba(255, 255, 255, .06)); }
+.marcador-linea-cifra { display: flex; align-items: baseline; gap: 10px; margin: 6px 0; }
+.marcador-linea-cifra b { font: 700 34px/1 var(--bp-f-mono); color: var(--bp-marca-cian); }
+.marcador-linea .sp-btn { margin-top: 6px; }
 /* El quiosco de la plaza: la tapa de la última edición de La Línea y sus titulares */
 .quiosco-ed { display: grid; grid-template-columns: 108px 1fr; gap: 16px; align-items: start; margin: 4px 0 14px; }
 .quiosco-tapa img { display: block; width: 100%; height: auto; border-radius: 4px; box-shadow: 0 8px 20px rgba(0, 0, 0, .35); transform: rotate(-2deg); }

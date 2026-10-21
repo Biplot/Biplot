@@ -31,8 +31,43 @@
       proxima: d && FECHA.test(d.proxima || '') ? d.proxima : null,
       edicion: ok ? { numero: e.numero, fecha: e.fecha, url: '..' + e.url, titular: texto(e.titular, 200),
         titulares: (Array.isArray(e.titulares) ? e.titulares : []).map(function (t) { return texto(t, 200); }).filter(Boolean).slice(0, 3),
-        tapa: tapa ? { src: (/^\//.test(tapa.src) ? '..' : '') + tapa.src, alt: texto(tapa.alt, 400) } : null } : null
+        tapa: tapa ? { src: (/^\//.test(tapa.src) ? '..' : '') + tapa.src, alt: texto(tapa.alt, 400) } : null,
+        // La nota de cada integrante (sólo de quien está en la oficina), con su cifra y el ancla de su sección
+        notas: (Array.isArray(e.notas) ? e.notas : []).filter(function (n) { return n && PERSONAL[n.firma] && /^[a-z]+$/.test(n.id || '') && texto(n.titular, 200); }).slice(0, 12).map(function (n) {
+          return { id: n.id, firma: n.firma, seccion: texto(n.seccion, 60), titular: texto(n.titular, 200),
+            cifra: n.cifra && texto(n.cifra.valor, 24) ? { valor: texto(n.cifra.valor, 24), leyenda: texto(n.cifra.leyenda, 120) } : null };
+        }) } : null
     };
+  }
+  // La nota de un integrante en la última edición (o null), y el enlace a su sección en la página de la edición
+  function notaDe(firma) { var ed = DIARIO.edicion; return ed ? ed.notas.filter(function (n) { return n.firma === firma; })[0] || null : null; }
+  function enlaceNota(n) { return DIARIO.edicion.url + (n.id === 'portada' ? '' : '#' + n.id); }
+  // En la ficha de cada integrante, su nota de la semana en un globo; Plotty, que no firma notas, avisa que salió el número
+  function globoLinea(id) {
+    var ed = DIARIO.edicion; if (!ed) return '';
+    var n = notaDe(id);
+    if (!n && id !== 'plotty') return '';
+    var ceja = 'La Línea N.º ' + ed.numero + ' · ' + (n ? n.seccion : 'Salió el número de la semana');
+    return '<div class="globo-linea"><p class="globo-ceja">' + esc(ceja) + '</p>' +
+      (n && n.cifra ? '<p class="globo-cifra"><b>' + esc(n.cifra.valor) + '</b>' + esc(n.cifra.leyenda) + '</p>' : '') +
+      '<p class="globo-titular">' + esc(n ? n.titular : ed.titular) + '</p>' +
+      '<a class="globo-leer" href="' + esc(n ? enlaceNota(n) : ed.url) + '">' + (n ? 'Leer su nota' : 'Leer la edición') + '</a></div>';
+  }
+  // La bienvenida: Plotty avisa que salió el número nuevo (una vez, cuando llega ultima.json)
+  function avisarBienvenida() {
+    var intro = document.getElementById('intro'), ed = DIARIO.edicion;
+    if (!intro || !ed || intro.querySelector('.intro-linea')) return;
+    var p = document.createElement('p'); p.className = 'intro-linea';
+    p.innerHTML = '<span class="intro-linea-cara" aria-hidden="true">' + avatar('plotty') + '</span><span><b>Salió La Línea N.º ' + esc(String(ed.numero)) + ':</b> ' + esc(ed.titular) +
+      ' <a href="' + esc(ed.url) + '">Leer el diario</a></span>';
+    var acc = intro.querySelector('.intro-acciones'); intro.insertBefore(p, acc || null);
+  }
+  // En la pantalla del centro de BiPlot.TV, el marcador de la semana: el de Felipe en La Línea
+  function marcadorLinea() {
+    var n = notaDe('felipe'); if (!n || n.id !== 'marcador') return '';
+    return '<div class="marcador-linea"><p class="ceja">El marcador de La Línea · N.º ' + esc(String(DIARIO.edicion.numero)) + '</p>' +
+      (n.cifra ? '<p class="marcador-linea-cifra"><b>' + esc(n.cifra.valor) + '</b><span>' + esc(n.cifra.leyenda) + '</span></p>' : '') +
+      '<p>' + esc(n.titular) + '</p><a class="sp-btn negro" href="' + esc(enlaceNota(n)) + '">Leer lo que cuenta Felipe</a></div>';
   }
   function diaDiario(iso) {
     var d = new Date(iso + 'T12:00:00Z');
@@ -42,7 +77,13 @@
   if (window.fetch) fetch('../diario/ultima.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     DIARIO = revisarDiario(d);
     pintarCintillo();
+    avisarBienvenida();
+    // Lo que ya estaba abierto cuando llegó (un enlace directo, #felipe o #quiosco): se completa sin cerrarlo
     if (abierto && abierto.tipo === 'zona' && abierto.id === 'quiosco') panelCuerpo.innerHTML = htmlZona('quiosco');
+    else if (abierto && !panelCuerpo.querySelector('.globo-linea')) {
+      var ancla = abierto.tipo === 'actor' ? panelCuerpo.querySelector('.ahora') : abierto.id === 'recepcion' ? panelCuerpo.querySelector('h2 + p') : null;
+      if (ancla) ancla.insertAdjacentHTML('afterend', globoLinea(abierto.tipo === 'actor' ? abierto.id : 'plotty'));
+    }
   }).catch(function () { /* sin diario: el quiosco dice que sale los lunes */ });
 
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -643,7 +684,7 @@
       // Sin apellido, el apodo va solo (Felipe: «Le dicen Rodman»)
       (p.completo ? '<p class="completo">' + esc(p.completo) + (p.alias ? ' · le dicen ' + esc(p.alias) : '') + '</p>' : p.alias ? '<p class="completo">Le dicen ' + esc(p.alias) + '</p>' : '') +
       '<p class="lema">' + esc(p.lema) + '</p>' +
-      '<p class="ahora"><span class="pulso" aria-hidden="true"></span>Ahora: ' + esc(ahora) + '</p>' +
+      '<p class="ahora"><span class="pulso" aria-hidden="true"></span>Ahora: ' + esc(ahora) + '</p>' + globoLinea(id) +
       (id === 'plotty' ? '<div class="acciones">' + botonChat('Responder las tres preguntas') + '</div>' : '') +
       '<h3>Qué hace</h3><p>' + esc(p.resumen) + '</p>' +
       '<h3>' + (masc ? 'Sus tareas' : 'Cómo es') + '</h3><ul class="rasgos">' + p.rasgos.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>' +
@@ -856,7 +897,7 @@
     if (id === 'recepcion') {
       return '<div class="media"><video class="panel-video" muted loop playsinline preload="none" poster="../assets/casos/teaser-biplot-h.jpg" data-src="../assets/casos/teaser-biplot-h.mp4" aria-label="Teaser de BiPlot"></video>' +
         '<button type="button" class="media-grande" data-grande="../assets/casos/teaser-biplot-h.mp4" data-grande-v="../assets/casos/teaser-biplot-v.mp4">' + icono('play') + 'Ver con sonido</button></div>' +
-        cab() + '<div class="acciones">' + botonChat() + '</div>' + chipsEquipo(['plotty', 'lupe']) +
+        cab() + globoLinea('plotty') + '<div class="acciones">' + botonChat() + '</div>' + chipsEquipo(['plotty', 'lupe']) +
         '<h3>Cómo moverte</h3><ul class="rasgos"><li>Arrastra para moverte y usa la rueda o los botones para acercarte.</li><li>Toca a alguien del equipo o una sala para ver más.</li><li>Afuera está la calle: toca un local para entrar a la sala de esa empresa.</li><li>Con teclado: el menú «Recorre la oficina», las flechas y las teclas + y −.</li></ul>';
     }
     if (id === 'vitrina') {
@@ -1556,6 +1597,7 @@
         '<figcaption>' + esc(piePantalla(pr, d.imagen)) + '</figcaption></figure>' : '') +
       (d.video ? htmlVideoZona(d) : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
+      (d.marcadorLinea ? marcadorLinea() : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
       (d.fases ? htmlFases(d.atlas) : '') + (d.hitos ? htmlHitos(d.hitos) : '') + (d.fichero ? '<div class="tarjeta-fichero">' + htmlFichero('h4', true) + '</div>' : '') +
       (d.programas ? '<div class="tarjeta-programas">' + htmlProgramas(programasTv(), true) + '</div>' : '') +
@@ -1811,7 +1853,7 @@
       '<figure class="frente-lamina"><div class="frente-marco' + (f.modelo ? ' v3d-marco' : '') + '">' + dib + '</div>' + (pie ? '<figcaption class="frente-pie">' + esc(pie) + '</figcaption>' : '') +
       (f.modelo ? MANDOS_3D : '') + '</figure>' +
       '<div class="frente-texto' + (img ? ' con-img' : '') + (o.bp ? ' bp' : '') + '"><div class="frente-cuerpo"><p class="ceja">' + esc(d.ceja || d.nombre || '') + '</p><h3 id="sala-frente-t" tabindex="-1">' + esc(nombre) + '</h3>' +
-      (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
+      (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') + (d.marcadorLinea ? marcadorLinea() : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
       (d.enlace || (d.botones && d.botones.length) ? '<div class="tarjeta-botones">' + (d.enlace ? '<a class="sp-btn negro" href="' + esc(d.enlace.url) + '" target="_blank" rel="noopener">' +
         esc(d.enlace.texto) + '<span class="sr"> (se abre en otra pestaña)</span></a>' : '') + botonesPropia(d.botones || []) + '</div>' : '') +

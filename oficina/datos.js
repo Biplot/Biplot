@@ -398,6 +398,8 @@
               botones: [{ hq: true, texto: 'Pasar a BiPlot HQ' }] },
             marcador: { nombre: 'La pantalla del centro', ceja: 'BiPlot.TV · Como en la NBA', titulo: 'Las mejores jugadas, al centro de la cancha',
               texto: 'Cuelga sobre el medio del estudio, como en la NBA: cuatro pantallas, los anillos de luces y el marcador. Pasa las repeticiones del canal, una tras otra. En el marcador, BiPlot.TV juega de local; la visita es tu proyecto, que todavía no entra a la cancha.',
+              // Con una edición de La Línea publicada, la tarjeta suma su marcador: el de Felipe (oficina.js, marcadorLinea)
+              marcadorLinea: true,
               botones: [{ tele: true, texto: 'Prender la tele' }, { zona: 'cartelera', texto: 'Toda la programación' }] },
             guion: { nombre: 'Así se hace un capítulo', ceja: 'BiPlot.TV · El guion', titulo: 'Tres pasos, y cada uno se aprueba',
               texto: 'Primero, el guion y el look: la historia compás por compás, el elenco y seis cuadros clave. Después, la animación con su música, cuadro a cuadro, dibujada y compuesta por código. Al final, los dos formatos: horizontal para la web y LinkedIn, vertical para Reels, TikTok y estados.' },
