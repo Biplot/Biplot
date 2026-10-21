@@ -65,6 +65,9 @@ están en `SECCIONES` y `FIRMAS`, al comienzo de `_herramientas/armar.mjs`, y c�
 
 ## Cómo se arma una edición
 
+El estándar de cada semana (quién hace qué, el calendario, las reglas de cada paso y los tiempos de la edición de
+práctica del 12-10) está en `_herramientas/semana.md`. Lo de abajo son los comandos.
+
 1. Escribir `_herramientas/ediciones/<fecha>.json` (la fecha es la del lunes en que sale).
 2. `node diario/_herramientas/armar.mjs [AAAA-MM-DD]`: escribe la edición web, la hemeroteca y el correo (sin fecha, la
    última). Si falta algo obligatorio, dice qué y no escribe nada.
