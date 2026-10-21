@@ -285,6 +285,11 @@ Los dos leen `../diario/ultima.json` (lo arma `diario/_herramientas/armar.mjs` s
 lo que trae se revisa y se pone como texto): sin edición, el quiosco dice cuándo sale la próxima y la tele va sin
 cintillo. La zona del quiosco está en `barrio/barrio.mjs` (junto a la de BiPlot.TV), lo que dice en `datos.js`
 (`salas.quiosco`) y el código en `oficina.js` («La Línea, el diario de BiPlot», `htmlQuiosco` y `pintarCintillo`).
+Con una edición publicada, además: la ficha de cada integrante que firma una sección lleva su nota de la semana en un
+globo (con su cifra y «Leer su nota», que abre su sección; `globoLinea`); Plotty avisa en la bienvenida, en la recepción
+y en su ficha que salió el número (`avisarBienvenida`); y la pantalla del centro de BiPlot.TV, vista de frente, suma
+«El marcador de La Línea», el de Felipe (`marcadorLinea`, con `marcadorLinea: true` en su zona de `datos.js`). Si la
+ficha ya estaba abierta (un enlace directo como #felipe) cuando llega el archivo, el globo se agrega sin cerrarla.
 
 **Las vitrinas, en 3D.** Al tocar una vitrina del museo (cada época, cada desarrollo y el pedestal libre) se abre en
 grande y en 3D, sobre la sala oscurecida: su pedestal con su cédula, su vidrio y la pieza del centro van girando, una
