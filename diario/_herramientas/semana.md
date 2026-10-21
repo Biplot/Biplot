@@ -10,8 +10,8 @@ corrida. Lo que el diario es y cómo se ve está en `../README.md`; esto es cóm
   escenas de la tapa, redacta el JSON, lo hace verificar, arma la edición y abre su PR.
 - **Tamandúa**: una segunda pasada con IA, de un agente distinto del que redactó. Compara cada frase y cada cifra con
   su fuente antes de abrir el PR.
-- **El socio de turno**: Hernán o Christopher, el que se acordó para esa semana. Elige la tapa, responde las
-  preguntas, aprueba y publica en **La Línea** del CRM (`biplot-crm.vercel.app/la-linea`) y envía el correo desde
+- **El socio de turno**: Hernán o Christopher, el que se acordó para esa semana. Elige la tapa, marca la
+  portada y el contenido, y aprueba y publica en un clic en **La Línea** del CRM (`biplot-crm.vercel.app/la-linea`) y envía el correo desde
   Brevo. Su nombre va en `edita` antes de pedir la validación: una edición de verdad sin `edita` no se aprueba.
 
 ## El calendario
@@ -28,7 +28,7 @@ Hora de Chile. La edición cubre de lunes a domingo y sale el lunes siguiente, c
 | domingo, 12:30 | Armar, fotografiar, revisar las capturas y abrir el PR | redacción | 10 min |
 | domingo, en la tarde | Elegir la tapa en La Línea | socio | — |
 | domingo, 20:00 | Poner la tapa elegida, sacar `escenas` y subir | redacción | — |
-| lunes, 7:30 | Responder las preguntas, aprobar y «Publicar en biplot.cl» | socio | — |
+| lunes, 7:30 | Marcar la portada y el contenido, y «Aprobar y publicar» | socio | — |
 | lunes, 8:00 | Enviar el correo desde Brevo | socio | — |
 | durante la semana | Anotar lo que haya que corregir | todos | — |
 
@@ -123,11 +123,12 @@ esa fecha, y la nota de la redacción dice qué indicadores son del viernes.
 1. **El domingo, el socio elige la tapa** en La Línea. La redacción la baja con
    `node diario/_herramientas/imagenes.mjs tapa AAAA-MM-DD <url>`, la pone en `tapa` (con `alt` y el `pie` «La escena de
    la semana: … Ilustración hecha con IA a partir de los dibujos del equipo de BiPlot.»), saca `escenas` y sube.
-2. **El lunes, el socio responde las preguntas** y la aprueba o pide ajustes. Lo que decide queda como comentario del PR,
-   con su nombre: el repo es público, así que nada privado en las notas. Con ajustes pedidos, la redacción los hace y
-   la edición vuelve a esperar su validación.
-3. **«Publicar en biplot.cl»** aprueba el PR en GitHub y lo une; Vercel la deja en `biplot.cl/diario/AAAA-MM-DD/` en
-   unos minutos.
+2. **El lunes, el socio marca dos casillas**, la portada y el contenido, y pulsa **«Aprobar y publicar»**: un clic que
+   la aprueba (como comentario del PR, con su nombre), aprueba el PR en GitHub y lo une; Vercel la deja en
+   `biplot.cl/diario/AAAA-MM-DD/` en unos minutos. Si algo hay que cambiar, «Pedir ajustes» y un cuadro de texto: la
+   redacción los hace y la edición vuelve a esperar. El repo es público, así que nada privado en los ajustes.
+3. Si el PR todavía no se puede publicar (un borrador, el CI corriendo), el botón dice «Aprobar» y dice qué falta;
+   cuando esté listo, «Publicar en biplot.cl».
 4. **El correo, desde Brevo**: una campaña nueva con el HTML de `diario/_herramientas/salida/AAAA-MM-DD-correo.html`
    (`armar.mjs` lo arma; no se sube al repo), el asunto y la previa de arriba, una prueba a los dos socios y, si se ve
    bien en Gmail y en el celular, el envío a la lista.
@@ -147,5 +148,6 @@ esa fecha, y la nota de la redacción dice qué indicadores son del viernes.
 - Las imágenes se equivocan en los números: hay que mirarlas siempre antes de proponerlas.
 - «Lo que viene» se escribe con lo que se sabía el domingo. Si la edición se arma después (como la práctica), se deja
   fuera lo que ya se sabe que se suspendió y el PR lo dice: es preferible a publicar una agenda que se sabe falsa.
-- Una edición de práctica (`"prueba": true`) muestra en La Línea las preguntas del diseño, no las de la semana: el CRM
-  todavía no distingue una de otra.
+- Aprobar tenía que ser corto: desde el 21-10 son dos casillas (la portada y el contenido) y un clic, «Aprobar y
+  publicar», en vez de cinco preguntas, «Aprobar» y «Publicar» (biplot-crm#37). Las casillas del diseño quedan sólo para
+  la N.º 0; una de práctica muestra las de la semana.
