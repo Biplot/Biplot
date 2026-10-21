@@ -80,7 +80,7 @@
       ]
     },
     {
-      "titular": "Fogape con aportes hasta 2028, y un proyecto pyme que cobraría solo el interés de las facturas atrasadas",
+      "titular": "El Fogape tendrá aportes hasta 2028, y viene un proyecto para las pymes",
       "bajada": [
         "El miércoles 7, el Congreso despachó a ley el proyecto que extiende hasta el 31 de diciembre de 2028 el plazo para que el Fisco haga aportes al Fondo de Garantía para Pequeños Empresarios (Fogape), que vencía en diciembre de este año. La misma ley suma octubre, noviembre y diciembre al bono de $100.000 por combustibles para taxis, colectivos y transporte escolar.",
         "En la Mesa Pro Pyme del lunes 5, Economía y Hacienda presentaron a doce gremios los ejes de un proyecto que llegaría en las próximas semanas: mantener en 12,5% el impuesto de las pymes, patentes municipales provisorias para empezar a operar y que los intereses de una factura pagada fuera de plazo corran solos y se paguen junto con el capital."
@@ -433,26 +433,6 @@
             "url": "https://www.biobiochile.cl/noticias/deportes/futbol/la-roja/2026/10/12/la-roja-femenina-aplasto-a-bolivia-en-amistoso.shtml"
           }
         ]
-      },
-      {
-        "titular": "Messi se despide de Argentina con gol, y con un árbitro chileno",
-        "cifra": {
-          "valor": "3-0",
-          "leyenda": "Argentina-Benín"
-        },
-        "bajada": [
-          "El martes 6, en el Monumental, Argentina le ganó 3-0 a Benín en la despedida de Lionel Messi, que dio dos asistencias y marcó de penal su gol 126 con la selección. El árbitro fue el chileno Fernando Véjar, que al final le regaló sus tarjetas."
-        ],
-        "fuentes": [
-          {
-            "medio": "BioBioChile",
-            "url": "https://www.biobiochile.cl/noticias/deportes/futbol-internacional/notas-futbol-internacional/2026/10/06/con-gol-de-penal-y-arbitros-chilenos-messi-tuvo-emotiva-despedida-de-argentina-con-triunfo-a-benin.shtml"
-          },
-          {
-            "medio": "EFE en Infobae",
-            "url": "https://www.infobae.com/america/agencias/2026/10/07/3-0-la-leyenda-de-messi-parece-no-tener-fin/"
-          }
-        ]
       }
     ],
     "agenda": [
@@ -484,8 +464,8 @@
       "respuesta": "36,8%. La gasolina, 20,8%."
     },
     {
-      "pregunta": "¿Quién arbitró la despedida de Messi de la selección argentina?",
-      "respuesta": "El chileno Fernando Véjar."
+      "pregunta": "¿Con qué marcador le ganó Coquimbo Unido al líder Colo-Colo el domingo 11?",
+      "respuesta": "5-2, con dos goles de Nicolás Johansen."
     }
   ],
   "aparte": {
