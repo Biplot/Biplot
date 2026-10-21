@@ -69,7 +69,7 @@ esa fecha, y la nota de la redacción dice qué indicadores son del viernes.
   de mes de AAAA».
 - **Mirar cada escena antes de proponerla**: números y palabras bien escritos y una sola vez (en la práctica, el dial
   del ascensor repetía el 23 y una escalera rehecha repetía el 23%), sin letras japonesas, cada integrante reconocible y
-  **The Architect sin ojos a la vista**.
+  **The Architect sin ojos a la vista y con su barba italiana**.
 - **Para corregir una escena, editarla** (la imagen como referencia y «cambia sólo esto, deja todo lo demás igual»)
   antes que generarla de nuevo: así no se pierde lo que ya estaba bien.
 - Cada una se baja con `node diario/_herramientas/imagenes.mjs escena AAAA-MM-DD a <url>` y va en `escenas`, sin
