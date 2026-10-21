@@ -46,20 +46,11 @@
       }
     }
   ],
-  "escenas": [
-    {
-      "imagen": "_herramientas/escenas/2026-10-12-a.jpg",
-      "escena": "La obra: The Engine fija con su taladro el último peldaño (23%) de una escalera que baja desde el 27%; The Architect la dirige con el plano en holograma y Aby transmite en vivo."
-    },
-    {
-      "imagen": "_herramientas/escenas/2026-10-12-b.jpg",
-      "escena": "El ascensor: Plotty, de ascensorista, baja la palanca y el dial va de 27 a 23; Celda lo confirma con su calculadora y Lupe lee la letra chica."
-    },
-    {
-      "imagen": "_herramientas/escenas/2026-10-12-c.jpg",
-      "escena": "La goma: Pepa borra «INTERESES» y «MULTAS» de una deuda gigante, Faro alumbra un reloj de arena de 180 días y Aby transmite en vivo."
-    }
-  ],
+  "tapa": {
+    "src": "imagenes/tapas/2026-10-12.jpg",
+    "alt": "Tapa a color: Plotty, de ascensorista con gorra roja, baja la palanca de un ascensor antiguo cuyo dial va de 27 a 23; Celda lo confirma con su calculadora y Lupe lee con su lupa la letra chica de un rollo de papel.",
+    "pie": "La escena de la semana: el impuesto a las empresas baja en ascensor. Ilustración hecha con IA a partir de los dibujos del equipo de BiPlot."
+  },
   "portada": [
     {
       "titular": "Kast promulga la Ley de Reconstrucción: el impuesto a las empresas bajará de 27% a 23%",
