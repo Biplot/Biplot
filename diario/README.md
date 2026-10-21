@@ -119,7 +119,8 @@ publicada, así que su referencia fue su cara de cómic del diario, pedida al re
 Para una cara nueva (o para rehacer una): generar la de color con la ficha y la tapa como referencias, después la de
 blanco y negro desde la de color, y anotar las dos URL en `caras.json`. Antes de bajarlas, mirarlas: al pasar a blanco y
 negro, la IA tiende a rellenar de negro el pelo claro (a Aby y a Lupe hubo que decirle que el suyo queda en blanco, con
-trama suave).
+trama suave). A The Architect **nunca se le ven los ojos**: lleva lentes opacos con el brillo blanco del anime y el
+flequillo le da sombra (más misterioso, pedido del 21-10); en cada tapa donde salga, el prompt lo dice.
 
 ### La tapa
 
