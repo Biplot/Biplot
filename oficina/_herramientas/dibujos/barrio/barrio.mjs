@@ -433,6 +433,8 @@ export function callePrincipal(datos) {
   }
   // BiPlot.TV, en la plaza: se toca como un lugar (no se abre como un local)
   zonas.push({ id: 'tv', caja: CANAL.zona.caja, foco: CANAL.zona.foco });
+  // El quiosco de diarios de la plaza: se toca y abre La Línea, el diario de BiPlot (su última edición)
+  { const [x, y] = CANAL.quiosco; zonas.push({ id: 'quiosco', caja: [x, y, x + 1.4, y + 1.1, 1.45], foco: [x + 0.7, y + 0.55, 0.8] }); }
   // Pizarras en la vereda, frente a su local (después del frente del local)
   EN.pizarra(E, 8.6, 24.72, ['VISITA LA', 'MAQUETA', 'del loteo'], { k: 4.85 + YF + W + D + 0.7 });
   EN.pizarra(E, 13.3, 24.72, ['HOY', 'Pide con', 'el QR'], { color: '#F29A6B', k: 9.55 + YF + W + D + 0.7 });

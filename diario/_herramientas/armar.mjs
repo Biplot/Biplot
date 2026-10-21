@@ -1,6 +1,8 @@
 // Arma una edición de La Línea, el diario de BiPlot, desde su contenido (diario/_herramientas/ediciones/<fecha>.json):
 //   diario/<fecha>/index.html                        la edición en la web (biplot.cl/diario/<fecha>/), con diario/diario.css
 //   diario/index.html                                la hemeroteca, con todas las ediciones (la más nueva arriba)
+//   diario/ultima.json                               la última edición que no es de prueba, para la portada de
+//                                                    biplot.cl, el quiosco de la oficina y el cintillo de BiPlot.TV
 //   diario/_herramientas/salida/<fecha>-correo.html  el correo: tablas de 600 px y estilos en línea (no se sube)
 // Uso, desde la raíz del repo: node diario/_herramientas/armar.mjs [AAAA-MM-DD]   (sin fecha, la última)
 // Es un tomo de manga: la tapa a color (la escena de la semana) y, al abrirlo, los capítulos en blanco y negro, con
@@ -490,6 +492,29 @@ ${tapa}
 `;
 }
 
+// ---------- La última edición, para el resto del sitio ----------
+// La portada de biplot.cl, el quiosco de la oficina y el cintillo de BiPlot.TV leen este archivo y no el JSON de cada
+// edición: así todos muestran lo mismo y sólo lo publicado (viaja en el mismo PR que la edición). Las de prueba se ven
+// sólo en la hemeroteca: sin una edición de verdad, «edicion» va en null y cada lugar muestra cuándo sale la próxima.
+const plano = (t) => String(t ?? '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1');
+const sumarDias = (iso, n) => new Date(Date.parse(iso + 'T12:00:00Z') + n * 864e5).toISOString().slice(0, 10);
+function ultimaJson(ediciones) {
+  const ed = ediciones.filter((e) => !e.prueba).at(-1);
+  const edicion = ed ? {
+    numero: ed.numero, fecha: ed.fecha, fechaLarga: fechaLarga(ed.fecha), cubre: ed.cubre || null,
+    url: `/diario/${ed.fecha}/`,
+    tapa: ed.tapa ? { src: /^https:\/\//.test(ed.tapa.src) ? ed.tapa.src : `/diario/${ed.tapa.src}`, alt: ed.tapa.alt || '' } : null,
+    titular: plano(lista(ed.portada)[0].titular),
+    titulares: lista(ed.portada).map((n) => plano(n.titular)),
+    // La nota de cada integrante de la oficina en esta edición: la primera de su sección
+    notas: SECCIONES.filter((s) => notasDe(ed, s.id).length).map((s) => {
+      const n = notasDe(ed, s.id)[0];
+      return { seccion: s.nombre ? s.nombre.join(' ') : s.kicker, firma: s.firma, nombre: FIRMAS[s.firma].nombre, titular: plano(n.titular || n.afirmacion || n.empresa) };
+    }),
+  } : null;
+  return JSON.stringify({ nota: 'Lo arma diario/_herramientas/armar.mjs: no se edita a mano.', edicion, proxima: sumarDias(ediciones.at(-1).fecha, 7) }, null, 2) + '\n';
+}
+
 // ---------- Armar ----------
 const archivos = fs.readdirSync(carpetaEd).filter((f) => /^\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort();
 if (!archivos.length) { console.error('No hay ediciones en', path.relative(raiz, carpetaEd)); process.exit(1); }
@@ -501,4 +526,5 @@ if (!ed) { console.error('No encontré la edición', pedida); process.exit(1); }
 const escribir = (rel, html) => { const f = path.join(raiz, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); console.log('✓', rel, Math.round(html.length / 1024) + ' KB'); };
 escribir(`diario/${ed.fecha}/index.html`, edicionWeb(ed));
 escribir('diario/index.html', hemerotecaWeb([...ediciones].reverse()));
+escribir('diario/ultima.json', ultimaJson(ediciones));
 escribir(`diario/_herramientas/salida/${ed.fecha}-correo.html`, edicionCorreo(ed));

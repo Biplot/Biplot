@@ -138,7 +138,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   await js("try{localStorage.clear()}catch(e){}; true"); await abrir(w, h, movil, false);
   ok(await js("!document.querySelector('#intro').hidden"), 'la bienvenida aparece en la primera visita');
   ok(await js('document.documentElement.scrollWidth <= innerWidth'), 'sin desborde horizontal');
-  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 33 && !!document.querySelector('#recorrer .menu-tv[data-id=\"tv\"]')"), 'el menú lista 11 integrantes, 2 mascotas, 10 lugares de la oficina, 9 del barrio y el botón de BiPlot.TV (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
+  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 34 && !!document.querySelector('#recorrer .menu-tv[data-id=\"tv\"]') && !!document.querySelector('#recorrer [data-id=\"quiosco\"]')"), 'el menú lista 11 integrantes, 2 mascotas, 10 lugares de la oficina, 10 del barrio (con el quiosco de La Línea) y el botón de BiPlot.TV (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
   ok(await js("document.querySelectorAll('.actor').length === 13"), 'los 11 integrantes y las 2 mascotas están en la escena');
   ok(await js("document.querySelectorAll('.barrio-atras .local[data-local]').length === 7 && document.querySelectorAll('.caminante').length === 2"), 'la calle principal tiene sus 7 locales cerrados y 2 personas caminando por la vereda');
   ok(await js("[...document.querySelectorAll('.barrio-atras image')].map(i => i.getAttribute('href')).filter(h => /logo-/.test(h)).sort().join() === 'media/salas/logo-fundos.webp,media/salas/logo-haru.webp,media/salas/logo-nuhome.webp'"), 'los techos de Fundos, Haru y Nu Home llevan su logo real');
@@ -149,9 +149,9 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(await js("[...document.querySelectorAll('button, a[href]')].every(b => { const r = b.getBoundingClientRect(); return r.width === 0 || (r.width >= 24 && r.height >= 24); })"), 'todo botón o enlace visible mide al menos 24 px');
   // Recorrido guiado completo
   const pasos = await js(`(async () => { document.querySelector('#intro-guia').click(); await ${W(300)}; const t = [], dentro = [];
-    for (let i = 0; i < 21; i++) { t.push(document.querySelector('#guia-t').textContent); dentro.push(document.querySelector('#svg-escena').classList.contains('oficina-abierta')); document.querySelector('#guia-sig').click(); await ${W(120)}; }
+    for (let i = 0; i < 22; i++) { t.push(document.querySelector('#guia-t').textContent); dentro.push(document.querySelector('#svg-escena').classList.contains('oficina-abierta')); document.querySelector('#guia-sig').click(); await ${W(120)}; }
     return { t, dentro, oculto: document.querySelector('#guia').hidden, intro: document.querySelector('#intro').hidden, chat: !!document.querySelector('#panel:not([hidden]) .chat') }; })()`);
-  ok(pasos.t.length === 21 && pasos.oculto && pasos.intro && pasos.t[0] === 'BiPlot HQ' && pasos.t.includes('El pasaje') && pasos.t[19] === 'BiPlot.TV' && pasos.t[20] === 'Tu proyecto aquí', 'el recorrido guiado pasa por 21 paradas, de la oficina cerrada a la calle y a BiPlot.TV, en la plaza (' + pasos.t[0] + ' → ' + pasos.t[20] + ')');
+  ok(pasos.t.length === 22 && pasos.oculto && pasos.intro && pasos.t[0] === 'BiPlot HQ' && pasos.t.includes('El pasaje') && pasos.t[19] === 'BiPlot.TV' && pasos.t[20] === 'El quiosco' && pasos.t[21] === 'Tu proyecto aquí', 'el recorrido guiado pasa por 22 paradas, de la oficina cerrada a la calle, a BiPlot.TV y al quiosco, en la plaza (' + pasos.t[0] + ' → ' + pasos.t[21] + ')');
   ok(!pasos.dentro[0] && pasos.dentro.slice(1, 12).every(Boolean) && pasos.dentro.slice(12).every((d) => !d), 'el recorrido entra a la oficina en la recepción y sale a la calle en el pasaje');
   ok(pasos.chat, 'al terminar el recorrido se abre la conversación con Plotty');
   // Cada entrada del menú abre su panel con título (las salas de las empresas, con su vista de sala)

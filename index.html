@@ -450,6 +450,22 @@ h1 em,h2 em,.footer-claim em{font-style:italic;color:var(--accent-ink)}
   .hq-points{flex:1;align-content:space-between}
 }
 @media (max-width:700px){.hq-frame{aspect-ratio:9/16;max-width:360px;margin-inline:auto}.hq-caption{text-align:center}}
+/* La Línea, el diario: la tapa de la última edición y su titular, leídos de diario/ultima.json (site.js, initDiario).
+   Sin una edición publicada (sólo hay de prueba), un tomo dibujado y cuándo sale la próxima. */
+.ll-home{display:grid;gap:clamp(2rem,5vw,4.5rem);align-items:center}
+@media (min-width:860px){.ll-home{grid-template-columns:minmax(0,300px) minmax(0,1fr)}}
+@media (max-width:859px){.ll-home-tapa{max-width:220px}}
+.ll-home-tapa{display:block;width:100%;max-width:300px;margin-inline:auto;transform:rotate(-2.5deg);transition:transform .45s var(--ease)}
+.ll-home-tapa:hover{transform:rotate(-1deg) translateY(-4px)}
+.ll-home-tapa img{display:block;width:100%;height:auto;border-radius:6px;box-shadow:0 18px 40px rgba(var(--text-rgb),.28)}
+.ll-home-tomo{display:grid;place-content:center;gap:.6rem;aspect-ratio:2/3;padding:1.6rem;border-radius:6px;background:#0B0B0B;color:#FAFAF7;text-align:center;box-shadow:0 18px 40px rgba(var(--text-rgb),.28)}
+.ll-home-tomo svg{width:72px;height:72px;margin:0 auto}
+.ll-home-tomo b{font:800 clamp(2rem,4vw,2.6rem)/1 var(--sans);letter-spacing:-.01em}
+.ll-home-tomo span{font:500 .72rem/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(250,250,247,.72)}
+.ll-home-ed{margin-top:1.8rem;padding:1.05rem 1.25rem;border-left:3px solid var(--accent);background:rgba(var(--text-rgb),.045);border-radius:0 10px 10px 0;max-width:60ch}
+.ll-home-fecha{display:block;font:500 .76rem/1.4 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ll-home-tit{display:block;font:700 1.15rem/1.35 var(--sans);color:var(--text);margin:.35rem 0 .75rem}
+.ll-home .fine{margin-top:1rem;font-size:.86rem;color:var(--muted)}
 .v-sound,.v-expand{position:absolute;bottom:14px;width:42px;height:42px;border-radius:50%;background:rgba(var(--ink-rgb),.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(var(--paper-rgb),.25);color:#fff;display:grid;place-items:center;z-index:2;transition:border-color .25s,color .25s}
 .v-sound{right:14px}
 .v-expand{left:14px}
@@ -1105,6 +1121,28 @@ body.paused *,body.paused *::before,body.paused *::after{animation-play-state:pa
         <div class="hero-actions hq-acc">
           <a href="oficina/" class="btn btn-teal">Entrar a la oficina <svg class="i i-go"><use href="#i-go"/></svg></a>
           <a href="oficina/#conversar" class="btn btn-ghost">Conversar con Plotty</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section light" id="diario" aria-labelledby="diario-h">
+    <div class="container">
+      <div class="ll-home" data-ll>
+        <a class="ll-home-tapa" href="diario/" data-ll-enlace aria-label="La hemeroteca de La Línea">
+          <img data-ll-tapa alt="" width="600" height="900" hidden>
+          <span class="ll-home-tomo" data-ll-tomo aria-hidden="true"><svg><use href="#isotipo"/></svg><b>La Línea</b><span>El diario de BiPlot</span></span>
+        </a>
+        <div>
+          <span class="kicker">La Línea · el diario de BiPlot</span>
+          <h2 id="diario-h">La semana de las pymes, <em>en un tomo de manga.</em></h2>
+          <p class="lead">Cada lunes, lo que movió a las pymes de Chile en cinco minutos: cada cifra con su fuente y su «por qué importa», firmado por el equipo de la oficina.</p>
+          <div class="ll-home-ed">
+            <span class="ll-home-fecha" data-ll-fecha>Sale los lunes</span>
+            <b class="ll-home-tit" data-ll-titular>El primer número está por salir.</b>
+            <a href="diario/" class="link-go" data-ll-leer>Ver la hemeroteca <svg class="i i-go"><use href="#i-go"/></svg></a>
+          </div>
+          <p class="fine">La suscripción por correo abre con el primer número.</p>
         </div>
       </div>
     </div>

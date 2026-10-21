@@ -18,6 +18,33 @@
   var reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var MEDIOS = 'media/salas/';
 
+  /* ── La Línea, el diario de BiPlot ── */
+  // El quiosco de la plaza y el cintillo de la tele muestran la última edición, de ../diario/ultima.json (lo arma
+  // diario/_herramientas/armar.mjs, sólo con ediciones que no son de prueba). Lo que trae se revisa y se pone como texto;
+  // si no llega o no hay edición, el quiosco dice cuándo sale la próxima y la tele va sin cintillo.
+  var DIARIO = { edicion: null, proxima: null };
+  function revisarDiario(d) {
+    var FECHA = /^\d{4}-\d{2}-\d{2}$/, texto = function (t, n) { return typeof t === 'string' ? t.slice(0, n) : ''; };
+    var e = d && d.edicion, tapa = e && e.tapa && typeof e.tapa.src === 'string' && /^(\/diario\/imagenes\/[\w.\/-]+|https:\/\/[^\s"'<>]+)$/.test(e.tapa.src) ? e.tapa : null;
+    var ok = e && typeof e.numero === 'number' && FECHA.test(e.fecha || '') && /^\/diario\/\d{4}-\d{2}-\d{2}\/$/.test(e.url || '') && texto(e.titular, 200);
+    return {
+      proxima: d && FECHA.test(d.proxima || '') ? d.proxima : null,
+      edicion: ok ? { numero: e.numero, fecha: e.fecha, url: '..' + e.url, titular: texto(e.titular, 200),
+        titulares: (Array.isArray(e.titulares) ? e.titulares : []).map(function (t) { return texto(t, 200); }).filter(Boolean).slice(0, 3),
+        tapa: tapa ? { src: (/^\//.test(tapa.src) ? '..' : '') + tapa.src, alt: texto(tapa.alt, 400) } : null } : null
+    };
+  }
+  function diaDiario(iso) {
+    var d = new Date(iso + 'T12:00:00Z');
+    return ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'][d.getUTCDay()] + ' ' + d.getUTCDate() + ' de ' +
+      ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][d.getUTCMonth()];
+  }
+  if (window.fetch) fetch('../diario/ultima.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    DIARIO = revisarDiario(d);
+    pintarCintillo();
+    if (abierto && abierto.tipo === 'zona' && abierto.id === 'quiosco') panelCuerpo.innerHTML = htmlZona('quiosco');
+  }).catch(function () { /* sin diario: el quiosco dice que sale los lunes */ });
+
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function guardar(k, v) { try { localStorage.setItem('oficina-' + k, v); } catch (e) { /* sin almacenamiento */ } }
   function leer(k) { try { return localStorage.getItem('oficina-' + k); } catch (e) { return null; } }
@@ -166,7 +193,7 @@
       var zn = zonaPorId(obj.id); if (!zn) return;
       var q = P(zn.foco[0], zn.foco[1], zn.foco[2]);
       // Un local del barrio se abre al mirarlo: la cámara se acerca un poco más, para ver lo de adentro
-      var ventana = zn.hq ? 1250 : zn.id === 'tv' ? 760 : zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.id === 'pasaje' ? 470 : zn.barrio ? 410 : 520;
+      var ventana = zn.hq ? 1250 : zn.id === 'tv' ? 760 : zn.id === 'quiosco' ? 340 : zn.id === 'muro' || zn.id === 'recepcion' || zn.id === 'planos' ? 580 : zn.id === 'pasaje' ? 470 : zn.barrio ? 410 : 520;
       volar(q[0], q[1], zPara(obj.ventana || ventana), dur, fin);
     }
   }
@@ -215,6 +242,7 @@
     else if (pr) accion = ESTADO_TXT[estadoDe(pr)] + ' · Ver el local';
     else if (obj.id === 'archivo') accion = MUSEO ? 'El museo y todos los casos' : 'Ver todos los casos';
     else if (obj.id === 'tv') accion = 'El canal y sus videos';
+    else if (obj.id === 'quiosco') accion = DIARIO.edicion ? 'La Línea N.º ' + DIARIO.edicion.numero : 'La Línea, el diario de BiPlot';
     else if (obj.id === 'pasaje') accion = 'Ver el directorio';
     else if (obj.id === 'puerta-404') accion = 'No se abre';
     return '<b>' + esc(zn.nombre) + '</b><span>' + esc(accion) + '</span>';
@@ -364,11 +392,12 @@
     if (id === 'archivo') return { id: id, nombre: SALAS.archivo.nombre, sub: (MUSEO ? 'Museo de BiPlot · ' : '') + (BARRIO ? BARRIO.total : 0) + ' casos, por rubro', estado: 'lugar', color: '#7FD8CF' };
     if (id === 'libre' || /^libre-/.test(id)) return { id: id, nombre: PROYECTOS.libre.nombre, sub: 'Local disponible', estado: 'libre', color: '#7FD8CF', libre: true };
     if (id === 'tv' && CANAL) return { id: id, nombre: SALAS.tv.nombre, sub: SALAS.tv.sub + ' · ' + programasTv().length + ' videos', estado: 'lugar', color: '#17C3B2' };
+    if (id === 'quiosco') return { id: id, nombre: SALAS.quiosco.nombre, sub: SALAS.quiosco.sub, estado: 'lugar', color: '#17C3B2' };
     if (!pr) return null;
     return { id: id, nombre: nombreCaso(pr), sub: pr.permiso === 'rubro' ? 'Caso sin nombre' : pr.rubro, estado: estadoDe(pr), chip: chipCaso(pr), color: pr.acento };
   }
   function callesDelBarrio() {
-    var g = [{ id: 'principal', nombre: 'Calle principal', ids: ORDEN_PRINCIPAL.concat(CANAL ? ['tv'] : []) }];
+    var g = [{ id: 'principal', nombre: 'Calle principal', ids: ORDEN_PRINCIPAL.concat(CANAL ? ['tv'] : [], zonaPorId('quiosco') && SALAS.quiosco ? ['quiosco'] : []) }];
     if (BARRIO) BARRIO.calles.forEach(function (c) { g.push({ id: c.id, nombre: c.nombre, ids: c.casos.concat(['libre-' + c.id]) }); });
     return g;
   }
@@ -676,6 +705,31 @@
       '<button type="button" class="bp-btn" data-tele-prender="1"><span class="ico" aria-hidden="true">' + icono('tv') + '</span>Prender la tele</button></div>' +
       '<h3>La programación</h3>' + htmlProgramas(programasTv(), false) + '<p class="nota">Cada video se abre en la tele del canal, con toda la programación: se cambia de canal sin salir. Sale en horizontal o en vertical, según tu pantalla.</p>' + chipsEquipo(['aby', 'felipe']);
   }
+  // El quiosco de la plaza: la tapa de la última edición de La Línea, su titular y los de la portada, y el enlace para
+  // leerla; sin edición, cuándo sale la próxima
+  function htmlQuiosco() {
+    var S = SALAS.quiosco, ed = DIARIO.edicion;
+    var cab = '<p class="bp-etiqueta">' + esc(S.etiqueta) + '</p><h2 id="panel-titulo" tabindex="-1">' + esc(S.titulo) + '</h2>';
+    if (!ed) {
+      return cab + '<p>' + esc(S.texto) + '</p><p class="quiosco-sale">' + esc(DIARIO.proxima ? 'El primer número sale el ' + diaDiario(DIARIO.proxima) + '.' : 'Sale los lunes.') + '</p>' +
+        '<div class="acciones"><a class="bp-btn" href="../diario/">Ver la hemeroteca</a></div>' + chipsEquipo(['aby', 'felipe']);
+    }
+    return cab + '<div class="quiosco-ed">' +
+      (ed.tapa ? '<a class="quiosco-tapa" href="' + esc(ed.url) + '"><img src="' + esc(ed.tapa.src) + '" alt="' + esc(ed.tapa.alt || 'La tapa de La Línea') + '" width="600" height="900" loading="lazy"></a>' : '') +
+      '<div><p class="quiosco-fecha">N.º ' + esc(String(ed.numero)) + ' · ' + esc(diaDiario(ed.fecha)) + '</p><p class="quiosco-titular">' + esc(ed.titular) + '</p>' +
+      (ed.titulares.length > 1 ? '<ul class="quiosco-mas">' + ed.titulares.slice(1).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' : '') + '</div></div>' +
+      '<p>' + esc(S.texto) + '</p>' +
+      '<div class="acciones"><a class="bp-btn primario" href="' + esc(ed.url) + '">Leer la edición</a><a class="bp-btn" href="../diario/">Ediciones anteriores</a></div>' + chipsEquipo(['aby', 'felipe']);
+  }
+  // El cintillo de la tele: los titulares de la última edición de La Línea, pasando abajo de la pantalla (quieto con
+  // movimiento reducido). Sin edición, no sale
+  function pintarCintillo() {
+    var c = tele && tele.querySelector('.tele-cintillo'); if (!c) return;
+    var ed = DIARIO.edicion;
+    c.hidden = !ed; if (!ed) return;
+    var linea = ed.titulares.concat(['biplot.cl/diario']).map(esc).join('<i aria-hidden="true">●</i>');
+    c.innerHTML = '<b>La Línea · N.º ' + esc(String(ed.numero)) + '</b><span class="tele-cintillo-txt"><span>' + linea + '</span><span aria-hidden="true">' + linea + '</span></span>';
+  }
   // La programación de BiPlot.TV, en el orden de su cartelera: cada video con su pantalla, de qué es, su nombre y cuánto
   // dura. En la calle se ve directo con sonido; en el canal, cada uno abre su tarjeta (con el video y lo que cuenta)
   function programasTv() { var Z = SALAS.tv.salaPropia.zonas, c = Z.cartelera; return (c && c.programas || []).filter(function (id) { return Z[id] && videoDe(Z[id]); }); }
@@ -745,7 +799,7 @@
 
   /* ── Los locales del barrio se abren al tocarlos (locales.js): se va el techo y se ve lo de adentro ── */
   var localAbierto = null;
-  function esLocal(zn) { return !!(zn && zn.barrio && !zn.hq && zn.id !== 'pasaje' && zn.id !== 'tv'); }
+  function esLocal(zn) { return !!(zn && zn.barrio && !zn.hq && zn.id !== 'pasaje' && zn.id !== 'tv' && zn.id !== 'quiosco'); }
   // Lo de adentro de un local: el de la calle principal, o el de un caso según su plantilla o su estado (con su frente
   // y sus extras), con las marcas de su color y su nombre; los locales que se arriendan, vacíos
   function adentroDe(id) {
@@ -825,6 +879,7 @@
     if (id === 'pasaje') return vistaSala('pasaje') + cab() + htmlDirectorio();
     if (id === 'archivo') return htmlArchivo();
     if (id === 'tv') return htmlTv();
+    if (id === 'quiosco') return htmlQuiosco();
     if (id === 'puerta-404') {
       return vistaSala('puerta-404') + cab() + '<div class="acciones"><button type="button" class="bp-btn" data-golpe="1">Golpear la puerta</button></div><p class="golpe" aria-live="polite"></p>';
     }
@@ -2195,6 +2250,7 @@
             '<div class="tele-retoma" role="status" hidden><span>Seguimos donde quedaste, en el <b data-r="t"></b></span><button type="button" class="bp-btn chico" data-tele="principio">Desde el principio</button></div>' +
             '<div class="tele-guia" hidden><div class="tele-guia-cab"><p class="tele-ceja">Guía de programación</p><button type="button" class="bp-btn chico" data-tele="guia">Cerrar la guía</button></div>' +
               '<ol aria-label="Los canales de BiPlot.TV" style="--filas:' + Math.ceil(CANALES.length / 2) + '">' + guia + '</ol></div>' +
+            '<div class="tele-cintillo" aria-hidden="true" hidden></div>' +
             '<div class="tele-linea" aria-hidden="true"><i data-t="avance"></i></div>' +
           '</div>' +
           '<div class="tele-bisel"><span class="tele-led" aria-hidden="true"></span><span class="tele-marca" aria-hidden="true">BiPlot<b>.TV</b></span><div class="tele-botones" data-t="botones"></div></div>' +
@@ -2225,6 +2281,7 @@
     CANALES = canalesTele();
     rep.vistos = leerJson('tv-vistos') || [];
     tele.innerHTML = htmlTele();
+    pintarCintillo();
     repV = tele.querySelector('.tele-video');
     ['play', 'pause', 'volumechange'].forEach(function (ev) { repV.addEventListener(ev, function () { pintarTele(); if (ev === 'pause') mostrarOsd(); }); });
     repV.addEventListener('timeupdate', avanceTele);
@@ -2533,6 +2590,7 @@
     ['zona', 'rumbo', 'Rumbo', 'Nuestra app para ordenar lo personal, un día a la vez.'],
     ['zona', 'archivo', 'El Archivo', 'El museo de BiPlot: del papel a hoy, con una pieza de cada desarrollo. Y el fichero, con todos los casos por rubro.'],
     ['zona', 'tv', 'BiPlot.TV', 'El canal de BiPlot: los capítulos animados, la oficina y los casos, en video. Hoy se estrena «Un bocado a la vez».'],
+    ['zona', 'quiosco', 'El quiosco', 'Aquí se vende La Línea, el diario de BiPlot: cada lunes, la semana de las pymes en cinco minutos.'],
     ['zona', 'libre', 'Tu proyecto aquí', 'Este local está esperando el próximo proyecto. ¿Conversamos?']
   ].filter(function (g) { return g[0] === 'actor' || zonaPorId(g[1]); });
   var guia = $('#guia'), pasoGuia = 0;
