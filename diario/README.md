@@ -19,6 +19,11 @@ personajes ni logos de ninguna serie o editorial.
 
 - Cada edición en la web: **biplot.cl/diario/AAAA-MM-DD/** (`diario/<fecha>/index.html`).
 - La hemeroteca: **biplot.cl/diario/** (`diario/index.html`), con todas las ediciones, la más nueva arriba.
+- La última edición, para el resto del sitio: `diario/ultima.json`, con su número, su fecha, su tapa, sus titulares y la
+  nota de cada integrante, y la fecha de la próxima. Lo leen el bloque «La Línea» de la portada de biplot.cl, el quiosco
+  de la plaza de la oficina y el cintillo de la tele de BiPlot.TV. Sólo lleva ediciones que no son de prueba: mientras no
+  haya ninguna, `edicion` va en `null` y cada lugar dice cuándo sale la próxima. Viaja en el mismo PR que la edición, así
+  que nada aparece antes de publicarla.
 - El correo: `diario/_herramientas/salida/<fecha>-correo.html` (no se sube; se arma de nuevo al enviarlo).
 - La N.º 0 (Vol. 0, 19 de octubre de 2026) es la **edición de prueba**: lleva «Edición de prueba» y `noindex`.
   Sus notas se juntaron con búsqueda web, sin poder abrir los artículos (la red del entorno donde se armó no lo permitía):
@@ -69,12 +74,12 @@ El estándar de cada semana (quién hace qué, el calendario, las reglas de cada
 práctica del 12-10) está en `_herramientas/semana.md`. Lo de abajo son los comandos.
 
 1. Escribir `_herramientas/ediciones/<fecha>.json` (la fecha es la del lunes en que sale).
-2. `node diario/_herramientas/armar.mjs [AAAA-MM-DD]`: escribe la edición web, la hemeroteca y el correo (sin fecha, la
-   última). Si falta algo obligatorio, dice qué y no escribe nada.
+2. `node diario/_herramientas/armar.mjs [AAAA-MM-DD]`: escribe la edición web, la hemeroteca, `ultima.json` y el correo
+   (sin fecha, la última). Si falta algo obligatorio, dice qué y no escribe nada.
 3. `node diario/_herramientas/fotografiar.mjs [AAAA-MM-DD] [carpeta]`: fotografía la web (1280 y 390 px), el correo (680 y
    390 px) y la hemeroteca para revisarlos. Lo que el correo pide a biplot.cl se sirve desde el repo.
-4. Un PR con la edición en este repo (uno por edición), sólo con lo suyo: el JSON, su página, la hemeroteca, su tapa y
-   las escenas. El check **«Diario · verificar»** (`.github/workflows/diario.yml`) vuelve a armar cada edición y falla si
+4. Un PR con la edición en este repo (uno por edición), sólo con lo suyo: el JSON, su página, la hemeroteca,
+   `ultima.json`, su tapa y las escenas. El check **«Diario · verificar»** (`.github/workflows/diario.yml`) vuelve a armar cada edición y falla si
    alguna página no sale de su JSON.
 5. **La validación, en el CRM**, en su sección **La Línea** (`biplot-crm.vercel.app/la-linea`). El CRM lee de GitHub
    los PR abiertos que traen una edición y la muestra: la tapa (o las escenas para elegirla), lo que trae sección por
@@ -197,5 +202,6 @@ se cambia esa etiqueta.
 - Un workflow semanal que deja el borrador como PR, para que un socio lo valide en La Línea (con el token de una App
   de la org: un PR abierto con el `GITHUB_TOKEN` del workflow no hace correr «Diario · verificar»).
 - El envío por Brevo desde La Línea, después de publicar.
-- El quiosco de la plaza de la oficina, que vende el último tomo.
+- La suscripción en el bloque de la portada, cuando esté la cuenta de Brevo.
+- El canal 12 de BiPlot.TV, «La Línea»: un video de la semana por edición, presentado por Aby.
 - Un campo `escena` en el JSON (quién actúa, de qué se disfraza, qué objeto usa) para que la tapa se pida sola.

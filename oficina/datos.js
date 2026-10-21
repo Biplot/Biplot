@@ -163,6 +163,12 @@
 
     /* Las salas de la oficina y los lugares del barrio: lo que cuenta el panel de cada uno. */
     salas: {
+      /* El quiosco de diarios de la plaza vende La Línea, el diario de BiPlot. Su panel muestra la última edición (oficina.js
+         lee ../diario/ultima.json, que arma diario/_herramientas/armar.mjs sólo con las que no son de prueba) o, si
+         todavía no hay ninguna, cuándo sale la próxima. La tele de BiPlot.TV lleva sus titulares en el cintillo. */
+      quiosco: { nombre: 'El quiosco', sub: 'La Línea, el diario de BiPlot', etiqueta: 'La plaza · El quiosco',
+        titulo: 'La Línea, el diario de BiPlot',
+        texto: 'Cada lunes, lo que movió a las pymes de Chile en cinco minutos: cada cifra con su fuente y su «por qué importa», firmado por el equipo de la oficina.' },
       recepcion: { nombre: 'Recepción', sub: 'Plotty y la vitrina', etiqueta: 'Recepción',
         titulo: 'Pasa, esta es la oficina',
         texto: 'Aquí te recibe Plotty. Llega con tu libreta, la de las planillas a mano y el clip: tres preguntas y te dice por dónde partir. En la vitrina de al lado están los casos más cercanos a tu rubro.' },

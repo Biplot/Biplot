@@ -277,6 +277,15 @@ una sala no llegan bajo ella. Sus canales son los mismos de la tele (sin «Tu pr
 («La mini tele») y sus estilos en `oficina.css` (`.mini-tele`). Se eligió entre dos (un botón «Prender la tele» arriba y
 la mini tele); la maqueta de las dos quedó en el historial (`_herramientas/propuestas/README.md`).
 
+**El quiosco y el cintillo de La Línea.** El quiosco de diarios de la plaza, al lado de BiPlot.TV, se toca (y está en
+la lista de la calle principal y en el recorrido guiado): su panel muestra la última edición de La Línea, el diario de
+BiPlot, con su tapa, su titular y los de la portada, «Leer la edición» y «Ediciones anteriores». La tele lleva abajo un
+cintillo con esos titulares, que pasan como en un noticiero (quietos con «reducir movimiento» o la oficina en pausa).
+Los dos leen `../diario/ultima.json` (lo arma `diario/_herramientas/armar.mjs` sólo con ediciones que no son de prueba;
+lo que trae se revisa y se pone como texto): sin edición, el quiosco dice cuándo sale la próxima y la tele va sin
+cintillo. La zona del quiosco está en `barrio/barrio.mjs` (junto a la de BiPlot.TV), lo que dice en `datos.js`
+(`salas.quiosco`) y el código en `oficina.js` («La Línea, el diario de BiPlot», `htmlQuiosco` y `pintarCintillo`).
+
 **Las vitrinas, en 3D.** Al tocar una vitrina del museo (cada época, cada desarrollo y el pedestal libre) se abre en
 grande y en 3D, sobre la sala oscurecida: su pedestal con su cédula, su vidrio y la pieza del centro van girando, una
 vuelta cada 20 segundos, con su texto al lado (su capítulo, su pantalla real, «Entrar a su sala»). Al abrirse se ve igual

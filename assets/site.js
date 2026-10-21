@@ -383,6 +383,41 @@
     });
   })();
 
+  /* ============ LA LÍNEA, EL DIARIO: la última edición en la portada ============ */
+  // Lee diario/ultima.json (lo arma diario/_herramientas/armar.mjs con la última edición que no es de prueba). Sin
+  // edición o sin el archivo, queda lo escrito en el HTML; con edición, su tapa, su fecha, su titular y el enlace.
+  (function initDiario() {
+    const caja = document.querySelector('[data-ll]');
+    if (!caja || !window.fetch) return;
+    const DIAS = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const dia = (iso) => { const d = new Date(iso + 'T12:00:00Z'); return `${DIAS[d.getUTCDay()]} ${d.getUTCDate()} de ${MESES[d.getUTCMonth()]}`; };
+    const pon = (sel, texto) => { const e = caja.querySelector(sel); if (e) e.textContent = texto; };
+    fetch('diario/ultima.json', { cache: 'no-cache' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d) return;
+        const ed = d.edicion;
+        if (!ed) {
+          if (d.proxima) pon('[data-ll-titular]', `El primer número sale el ${dia(d.proxima)}.`);
+          return;
+        }
+        const url = ed.url.replace(/^\//, '');
+        pon('[data-ll-fecha]', `N.º ${ed.numero} · ${dia(ed.fecha)}`);
+        pon('[data-ll-titular]', ed.titular);
+        const leer = caja.querySelector('[data-ll-leer]');
+        if (leer) { leer.href = url; leer.firstChild.textContent = 'Leer la edición '; }
+        const enlace = caja.querySelector('[data-ll-enlace]');
+        if (enlace) { enlace.href = url; enlace.setAttribute('aria-label', `La Línea N.º ${ed.numero}: ${ed.titular}`); }
+        const img = caja.querySelector('[data-ll-tapa]');
+        if (img && ed.tapa) {
+          img.addEventListener('load', () => { img.hidden = false; const t = caja.querySelector('[data-ll-tomo]'); if (t) t.hidden = true; }, { once: true });
+          img.src = ed.tapa.src.replace(/^\//, '');
+        }
+      })
+      .catch(() => {});
+  })();
+
   /* ============ VISOR DE VIDEO (portada, casos y la visita) ============ */
   (function initLightbox() {
     const lb = document.getElementById('vlightbox');
