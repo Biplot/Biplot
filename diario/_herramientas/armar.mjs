@@ -618,11 +618,214 @@ ${laminasDe(ed).join('\n')}
 `;
 }
 
+// ---------- El video de la semana ----------
+// La edición en unos 45 segundos, para el canal de La Línea en BiPlot.TV (16:9) y el Reel (9:16): la portada con la
+// tapa, cada nota de la portada con lo que dice Aby, El dato y dónde leerla, y al final el cierre de marca BiPlot de
+// biplot-nucleo (04-marca/00-motor/cierre-biplot.js, que se monta, no se copia). Aquí sólo se arma la página
+// (salida/<fecha>-video.html); video.mjs la graba cuadro a cuadro con su música en diario/<fecha>/video/.
+// Una sola línea de tiempo para los dos formatos: el vertical cambia la composición, nunca los tiempos.
+const VIDEO_CSS = `
+:root{--papel:#FAFAF7;--tinta:#0B0B0B;--trama-clara:#D4D4CE;--trama-oscura:#6E6E68;
+  --titulo:'Dela Gothic One','Arial Black',sans-serif;--golpe:'Bangers',Impact,sans-serif;--texto:'Archivo Narrow','Arial Narrow',sans-serif;
+  --globo:'Patrick Hand','Comic Sans MS',cursive;--maquina:'IBM Plex Mono',monospace;
+  --trama-c:radial-gradient(circle,var(--trama-oscura) .16rem,transparent .21rem) 0 0/.9rem .9rem,var(--trama-clara);
+  --trama-o:radial-gradient(circle,var(--tinta) .2rem,transparent .26rem) 0 0/.9rem .9rem,var(--trama-oscura)}
+*{box-sizing:border-box;margin:0}
+html,body{background:#000}
+body{overflow:hidden}
+#stage{position:relative;overflow:hidden;background:var(--tinta);color:var(--tinta);font-family:var(--texto);-webkit-font-smoothing:antialiased}
+.esc{position:absolute;inset:0;overflow:hidden}
+[data-entra]{will-change:transform,opacity}
+/* La portada del video */
+.intro{background:var(--tinta)}
+.rayas{position:absolute;left:50%;top:50%;width:300rem;height:300rem;margin:-150rem 0 0 -150rem;background:repeating-conic-gradient(rgba(250,250,247,.13) 0 1.6deg,transparent 1.6deg 7deg)}
+.intro-c{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:3rem;text-align:center;color:var(--papel)}
+.intro-c b{font:400 19rem/.95 var(--titulo);color:var(--papel);-webkit-text-stroke:.45rem var(--tinta);text-shadow:1.3rem 1.3rem 0 var(--trama-oscura)}
+.intro-c span{font:700 4rem/1.2 var(--texto);letter-spacing:.24em;text-transform:uppercase;background:var(--papel);color:var(--tinta);padding:.6rem 2rem}
+.intro-c small{font:600 3.2rem/1.2 var(--maquina);letter-spacing:.08em;text-transform:uppercase}
+/* La tapa */
+.tapa{background:var(--trama-o);display:flex;align-items:center;justify-content:space-between;gap:7rem;padding:0 9rem}
+.tapa .lado{flex:1;display:grid;gap:3.4rem;align-content:center;height:80rem;color:var(--papel)}
+.tapa ol{list-style:none;padding:0;display:grid;gap:2.6rem;overflow:hidden}
+.tapa li{font:400 4.6rem/1.15 var(--titulo);background:var(--tinta);padding:2rem 2.6rem;border-left:1.2rem solid var(--papel)}
+.tapa figure{flex:none;height:92rem;box-shadow:0 0 0 .7rem var(--tinta),0 3rem 6rem -1rem rgba(0,0,0,.6);overflow:hidden;background:var(--tinta)}
+.tapa img{height:100%;width:auto;display:block}
+.portrait .tapa{flex-direction:column;justify-content:flex-start;padding:23rem 7rem 0;gap:4rem}
+.portrait .tapa .lado{flex:none;height:auto;justify-items:center}
+.portrait .tapa ol{display:none}
+.portrait .tapa figure{height:126rem}
+.kicker{justify-self:start;align-self:flex-start;border:.55rem solid currentColor;padding:1rem 2.2rem;font:700 3.2rem/1.2 var(--texto);letter-spacing:.16em;text-transform:uppercase;background:inherit}
+.tapa .kicker{color:var(--papel);background:var(--tinta)}
+.portrait .tapa .kicker{justify-self:center}
+/* Cada nota */
+.nota{background:var(--papel);display:flex;flex-direction:column;gap:4rem;padding:9rem 10rem 8rem;border:1.1rem solid var(--tinta)}
+.nota .titular{flex:1;min-height:0;overflow:hidden;font:400 8.4rem/1.08 var(--titulo);letter-spacing:-.01em;max-width:150rem}
+.dice{display:flex;align-items:flex-end;gap:4.5rem}
+.cara{flex:none;display:grid;gap:1rem;justify-items:center}
+.cara img{width:25rem;height:25rem;object-fit:cover;border:.7rem solid var(--tinta);display:block}
+.cara small{font:600 2.8rem/1 var(--maquina);text-transform:uppercase;letter-spacing:.1em}
+.globo{position:relative;flex:1;max-width:120rem;border:.7rem solid var(--tinta);border-radius:5rem;padding:3rem 4rem;background:var(--papel);font:400 4.6rem/1.25 var(--globo);transform-origin:0 100%}
+.globo::before{content:'';position:absolute;left:-4.2rem;bottom:5rem;border:2rem solid transparent;border-right:3.6rem solid var(--tinta);border-left:0}
+.globo::after{content:'';position:absolute;left:-2.8rem;bottom:5.8rem;border:1.2rem solid transparent;border-right:2.4rem solid var(--papel);border-left:0}
+.globo b{font:400 3.4rem/1 var(--titulo);margin-right:.35em}
+.portrait .nota{padding:23rem 7rem 19rem;gap:5rem}
+.portrait .nota .titular{font-size:9.4rem}
+.portrait .dice{gap:4rem}
+.portrait .cara img{width:23rem;height:23rem}
+.portrait .globo{font-size:4.4rem;padding:3rem 3.4rem}
+/* El dato */
+.cifra{flex:none;display:grid;justify-items:center;gap:1.4rem;border:1.1rem solid var(--tinta);background:var(--trama-c);padding:2.4rem 4rem 3rem}
+.cifra b{font:400 24rem/1 var(--golpe);color:var(--papel);-webkit-text-stroke:.45rem var(--tinta);text-shadow:1.4rem 1.4rem 0 var(--tinta)}
+.cifra span{background:var(--tinta);color:var(--papel);padding:1rem 2.4rem;font:700 3.6rem/1.2 var(--texto);letter-spacing:.12em;text-transform:uppercase}
+.dato .fila{flex:1;min-height:0;display:flex;gap:7rem;align-items:center}
+.dato .fila .titular{font-size:6.6rem;align-self:stretch;display:flex;align-items:center}
+.portrait .dato .fila{flex-direction:column;align-items:stretch;gap:5rem}
+.portrait .dato .fila .titular{font-size:7.6rem}
+.portrait .cifra b{font-size:32rem}
+.portrait .intro-c b{font-size:14.5rem}
+/* Dónde leerla */
+.fin{background:var(--tinta);color:var(--papel);display:grid;place-content:center;justify-items:center;gap:4.4rem;text-align:center;padding:0 8rem}
+.fin p{font:400 8.6rem/1 var(--titulo)}
+.fin strong{font:400 15rem/1 var(--golpe);letter-spacing:.03em;background:var(--papel);color:var(--tinta);padding:2rem 5rem 1.4rem;box-shadow:1.4rem 1.4rem 0 var(--trama-oscura)}
+.fin small{font:600 3.4rem/1.3 var(--maquina);letter-spacing:.08em;text-transform:uppercase}
+.caras{display:flex;flex-wrap:wrap;justify-content:center;gap:2.2rem;max-width:150rem}
+.caras img{width:13rem;height:13rem;object-fit:cover;border:.5rem solid var(--papel);display:block}
+.portrait .fin strong{font-size:11.4rem;padding:2rem 3.4rem 1.4rem}
+.portrait .caras{max-width:66rem}
+.portrait .caras img{width:14rem;height:14rem}`;
+// La animación, igual para todas las ediciones: cada escena dura su data-d y cada cosa con data-entra aparece a esos
+// segundos de empezada su escena (data-como: golpe, globo, sube o cae; data-son: el sonido de ese momento).
+const VIDEO_JS = `
+const qs = new URLSearchParams(location.search);
+const W = +qs.get('w') || 1920, H = +qs.get('h') || 1080, P = H > W;
+const stage = document.getElementById('stage');
+stage.style.width = W + 'px'; stage.style.height = H + 'px';
+if (P) stage.classList.add('portrait');
+document.documentElement.style.fontSize = Math.min(W, H) / 100 + 'px';
+const lim = (x) => Math.max(0, Math.min(1, x));
+const suave = (k) => 1 - Math.pow(1 - k, 3);
+const rebote = (k) => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+const ESC = [...document.querySelectorAll('.esc')].map((el) => ({ el, d: +el.dataset.d, cosas: [...el.querySelectorAll('[data-entra]')].map((c) => ({ c, entra: +c.dataset.entra, como: c.dataset.como || 'sube' })) }));
+let t0 = 0;
+for (const e of ESC) { e.ini = t0; t0 += e.d; }
+const ultima = ESC[ESC.length - 1];
+const cierre = CierreBiPlot.montar(stage, { inicio: t0 });
+const cues = [{ t: 0.25, type: 'impact' }];
+ESC.forEach((e, i) => {
+  if (i) cues.push({ t: e.ini, type: 'whoosh', d: 0.5, gain: 0.55 });
+  for (const c of e.cosas) if (c.c.dataset.son) cues.push({ t: e.ini + c.entra, type: c.c.dataset.son });
+});
+window.DURATION = cierre.fin;
+window.CUES = [...cues, ...cierre.cues].sort((a, b) => a.t - b.t);
+window.FONTS = ['Dela Gothic One', 'Bangers', 'Archivo Narrow', 'Patrick Hand', 'IBM Plex Mono', ...CierreBiPlot.FUENTES];
+window.ESCENAS = ESC.map((e) => ({ id: e.el.id, ini: e.ini, d: e.d }));
+function aparecer(c, x) {
+  const k = lim((x - c.entra) / (c.como === 'golpe' ? 0.32 : 0.45));
+  const s = c.c.style;
+  s.opacity = c.como === 'golpe' ? lim(k * 3) : suave(k);
+  if (c.como === 'golpe') s.transform = 'scale(' + (1.6 - 0.6 * suave(k)) + ') rotate(' + (-4 * (1 - k)) + 'deg)';
+  else if (c.como === 'globo') s.transform = 'scale(' + (k <= 0 ? 0.4 : 0.4 + 0.6 * rebote(k)) + ')';
+  else if (c.como === 'cae') s.transform = 'translateY(' + (-6 * (1 - suave(k))) + 'rem)';
+  else s.transform = 'translateY(' + (5 * (1 - suave(k))) + 'rem)';
+}
+function renderFrame(t) {
+  for (const e of ESC) {
+    const x = t - e.ini;
+    // La última sigue debajo hasta que el barrido del cierre la tapa entera
+    const fin = e === ultima ? e.d + 1.2 : e.d;
+    const ve = x >= 0 && x < fin;
+    e.el.style.visibility = ve ? '' : 'hidden';
+    if (!ve) continue;
+    e.el.style.opacity = Math.min(lim(x / 0.3), e === ultima ? 1 : lim((e.d - x) / 0.3));
+    e.el.style.transform = 'translateX(' + (4 * (1 - suave(lim(x / 0.45)))) + 'rem)';
+    for (const c of e.cosas) aparecer(c, x);
+    const r = e.el.querySelector('.rayas');
+    if (r) r.style.transform = 'rotate(' + (t * 6) + 'deg)';
+    const img = e.el.querySelector('.tapa figure img');
+    if (img) img.style.transform = 'scale(' + (1 + 0.05 * lim(x / e.d)) + ')';
+  }
+  cierre.render(t);
+}
+window.renderFrame = renderFrame;
+// La letra de cada caja se achica hasta que el texto cabe (una vez, ya con las letras cargadas)
+function ajustar() {
+  window.TEXTOS_AJUSTADOS = [];
+  for (const e of ESC) {
+    for (const c of e.el.querySelectorAll('.ajusta')) {
+      const base = parseFloat(getComputedStyle(c).fontSize);
+      let f = base;
+      while ((c.scrollHeight > c.clientHeight + 6 || c.scrollWidth > c.clientWidth + 2) && f > base * 0.5) { f *= 0.96; c.style.fontSize = f + 'px'; }
+      if (f < base) window.TEXTOS_AJUSTADOS.push(e.el.id + ': ' + Math.round(100 * f / base) + ' %');
+    }
+  }
+}
+Promise.all([document.fonts.ready, CierreBiPlot.listo(), ...[...document.images].map((i) => i.decode().catch(() => {}))]).then(() => {
+  ajustar();
+  renderFrame(+qs.get('t') || 0);
+  window.READY = true;
+  if (qs.has('render') || qs.has('t')) return;
+  // Vista previa: se reproduce en un loop, a escala de la ventana
+  const escala = Math.min(innerWidth / W, innerHeight / H);
+  stage.style.transformOrigin = '0 0'; stage.style.transform = 'scale(' + escala + ')';
+  const t1 = performance.now();
+  (function cuadro() { renderFrame(((performance.now() - t1) / 1000) % window.DURATION); requestAnimationFrame(cuadro); })();
+});`;
+// Cuánto dura cada escena (en segundos); el cierre BiPlot dura siempre 7,05
+const VIDEO_D = { intro: 3, tapa: 4.5, nota: 6.5, dato: 6.5, fin: 4, cierre: 7.05 };
+const duracionVideo = (ed) => VIDEO_D.intro + (ed.tapa ? VIDEO_D.tapa : 0) + lista(ed.portada).length * VIDEO_D.nota + (ed.dato ? VIDEO_D.dato : 0) + VIDEO_D.fin + VIDEO_D.cierre;
+function videoHtml(ed) {
+  const fecha = Mayus(fechaLarga(ed.fecha).replace(/ de \d{4}$/, ''));
+  const portada = lista(ed.portada), sp = seccion('portada'), sd = seccion('dato');
+  const dice = (id, etiqueta, t, entra) => (t ? `<div class="dice"><span class="cara" data-entra="${entra - 0.2}" data-como="sube"><img src="${esc(caraColor(id))}" alt=""><small>${esc(FIRMAS[id].nombre)}</small></span><p class="globo" data-entra="${entra}" data-como="globo" data-son="pop"><b>${esc(etiqueta)}.</b>${md(t)}</p></div>` : '');
+  const esc_ = [];
+  esc_.push(`<section class="esc intro" id="intro" data-d="${VIDEO_D.intro}"><div class="rayas"></div><div class="intro-c">
+    <b data-entra="0.05" data-como="golpe">La Línea</b><span data-entra="0.7" data-como="sube">El diario de BiPlot</span><small data-entra="1.1" data-como="sube">${esc(vol(ed))} · ${esc(fecha)}</small></div></section>`);
+  if (ed.tapa) {
+    esc_.push(`<section class="esc tapa" id="tapa" data-d="${VIDEO_D.tapa}"><div class="lado"><p class="kicker" data-entra="0.2" data-como="sube">Esta semana</p>
+    <ol class="ajusta">${portada.map((n, i) => `<li data-entra="${0.8 + i * 0.7}" data-como="sube" data-son="tick">${md(n.titular)}</li>`).join('')}</ol></div>
+    <figure><img src="${esc(tapaSrc(ed, '/diario/'))}" alt=""></figure></section>`);
+  }
+  portada.forEach((n, i) => esc_.push(`<section class="esc nota" id="nota-${i + 1}" data-d="${VIDEO_D.nota}"><p class="kicker" data-entra="0.1" data-como="sube">Portada · ${i + 1} de ${portada.length}</p>
+    <h2 class="titular ajusta" data-entra="0.3" data-como="sube">${md(n.titular)}</h2>
+    ${dice('aby', sp.importa, n.importa, 2.1)}</section>`));
+  if (ed.dato) {
+    esc_.push(`<section class="esc nota dato" id="dato" data-d="${VIDEO_D.dato}"><p class="kicker" data-entra="0.1" data-como="sube">${esc(sd.kicker)} · ${esc(tituloPlano(sd.nombre))}</p>
+    <div class="fila">${ed.dato.valor ? `<div class="cifra" data-entra="0.35" data-como="golpe" data-son="impact"><b>${esc(ed.dato.valor)}</b>${ed.dato.leyenda ? `<span>${esc(ed.dato.leyenda)}</span>` : ''}</div>` : ''}
+    <h2 class="titular ajusta" data-entra="0.9" data-como="sube">${md(ed.dato.titular)}</h2></div>
+    ${dice('celda', sd.importa, ed.dato.importa, 2.6)}</section>`);
+  }
+  const firmas = [...new Set(SECCIONES.filter((s) => (s.id === 'preguntas' ? lista(ed.preguntas).length : notasDe(ed, s.id).length)).map((s) => s.firma))].slice(0, 8);
+  esc_.push(`<section class="esc fin" id="fin" data-d="${VIDEO_D.fin}"><p data-entra="0.1" data-como="sube">Léela completa</p>
+    <strong data-entra="0.45" data-como="golpe" data-son="impact">biplot.cl/diario</strong>
+    <div class="caras">${firmas.map((id, i) => `<img src="${esc(caraColor(id))}" alt="" data-entra="${1 + i * 0.12}" data-como="globo"${i % 2 ? '' : ' data-son="tick"'}>`).join('')}</div>
+    <small data-entra="1.4" data-como="sube">${esc(PERIODICIDAD)} · Gratis</small></section>`);
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<title>${esc(`La Línea, ${vol(ed)}: el video de la semana`)}</title>
+<link href="${FUENTES_WEB}" rel="stylesheet">
+<style>${VIDEO_CSS}
+</style>
+</head>
+<body>
+<div id="stage">
+${esc_.join('\n')}
+</div>
+<script src="/nucleo/04-marca/00-motor/cierre-biplot.js"></script>
+<script>${VIDEO_JS}</script>
+</body>
+</html>
+`;
+}
+
 // ---------- La última edición, para el resto del sitio ----------
 // La portada de biplot.cl, el quiosco de la oficina y el cintillo de BiPlot.TV leen este archivo y no el JSON de cada
 // edición: así todos muestran lo mismo y sólo lo publicado (viaja en el mismo PR que la edición). Las de prueba se ven
 // sólo en la hemeroteca: sin una edición de verdad, «edicion» va en null y cada lugar muestra cuándo sale la próxima.
 const plano = (t) => String(t ?? '').replace(/\*\*(.+?)\*\*/g, '$1').replace(/\*(.+?)\*/g, '$1');
+const minutosVideo = (s) => { const n = Math.floor(Math.floor(s * 30) / 30); return `${Math.floor(n / 60)}:${String(n % 60).padStart(2, '0')}`; };
 const sumarDias = (iso, n) => new Date(Date.parse(iso + 'T12:00:00Z') + n * 864e5).toISOString().slice(0, 10);
 function ultimaJson(ediciones) {
   const ed = ediciones.filter((e) => !e.prueba).at(-1);
@@ -634,6 +837,9 @@ function ultimaJson(ediciones) {
     titulares: lista(ed.portada).map((n) => plano(n.titular)),
     // La nota de cada integrante de la oficina en esta edición: la primera de su sección, con su cifra si la trae (en El
     // dato, la de la sección) y el ancla de la sección en su página (la portada no tiene: se abre arriba)
+    // El video de la semana (video.mjs), si la edición lo trae: el canal de La Línea en BiPlot.TV
+    video: ['h.mp4', 'v.mp4', 'h.jpg'].every((f) => fs.existsSync(path.join(raiz, 'diario', ed.fecha, 'video', f)))
+      ? { h: `/diario/${ed.fecha}/video/h.mp4`, v: `/diario/${ed.fecha}/video/v.mp4`, poster: `/diario/${ed.fecha}/video/h.jpg`, duracion: minutosVideo(duracionVideo(ed)) } : null,
     notas: SECCIONES.filter((s) => notasDe(ed, s.id).length).map((s) => {
       const n = notasDe(ed, s.id)[0], c = s.id === 'dato' ? ed.dato : n.cifra;
       return { id: s.id, seccion: s.nombre ? s.nombre.join(' ') : s.kicker, firma: s.firma, nombre: FIRMAS[s.firma].nombre,
@@ -657,3 +863,4 @@ escribir('diario/index.html', hemerotecaWeb([...ediciones].reverse()));
 escribir('diario/ultima.json', ultimaJson(ediciones));
 escribir(`diario/_herramientas/salida/${ed.fecha}-correo.html`, edicionCorreo(ed));
 escribir(`diario/_herramientas/salida/${ed.fecha}-redes.html`, redesHtml(ed));
+escribir(`diario/_herramientas/salida/${ed.fecha}-video.html`, videoHtml(ed));

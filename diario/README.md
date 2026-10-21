@@ -20,8 +20,9 @@ personajes ni logos de ninguna serie o editorial.
 - Cada edición en la web: **biplot.cl/diario/AAAA-MM-DD/** (`diario/<fecha>/index.html`).
 - La hemeroteca: **biplot.cl/diario/** (`diario/index.html`), con todas las ediciones, la más nueva arriba.
 - La última edición, para el resto del sitio: `diario/ultima.json`, con su número, su fecha, su tapa, sus titulares y la
-  nota de cada integrante (con su cifra y el ancla de su sección), y la fecha de la próxima. Lo leen el bloque «La Línea» de la portada de biplot.cl, el quiosco
-  de la plaza de la oficina y el cintillo de la tele de BiPlot.TV. Sólo lleva ediciones que no son de prueba: mientras no
+  nota de cada integrante (con su cifra y el ancla de su sección), su video si lo trae y la fecha de la próxima. Lo leen
+  el bloque «La Línea» de la portada de biplot.cl, el quiosco de la plaza de la oficina, el cintillo y el canal de La
+  Línea en la tele de BiPlot.TV. Sólo lleva ediciones que no son de prueba: mientras no
   haya ninguna, `edicion` va en `null` y cada lugar dice cuándo sale la próxima. Viaja en el mismo PR que la edición, así
   que nada aparece antes de publicarla.
 - El correo: `diario/_herramientas/salida/<fecha>-correo.html` (no se sube; se arma de nuevo al enviarlo).
@@ -81,8 +82,13 @@ práctica del 12-10) está en `_herramientas/semana.md`. Lo de abajo son los com
    `node diario/_herramientas/redes.mjs [AAAA-MM-DD]`: fotografía el carrusel para Instagram y LinkedIn en
    `diario/<fecha>/redes/01.jpg…` (1080 × 1350; falla si un texto no cabe o no cargan las letras). Viaja en el PR y, al
    publicar, el CRM lo deja por aprobar en Marketing.
+   `node diario/_herramientas/video.mjs [AAAA-MM-DD] [--cuadros 2,12,40]`: graba el video de la semana (~45 s, la
+   portada, cada nota con lo que dice Aby, El dato y el cierre de marca BiPlot) en `diario/<fecha>/video/`: `h.mp4`
+   (1920 × 1080, el canal de La Línea en la tele de la oficina) y `v.mp4` (1080 × 1920, el Reel), con sus portadas, y
+   vuelve a correr `armar.mjs` para que `ultima.json` lo sume. La página la arma `armar.mjs` en `salida/<fecha>-video.html`
+   (en el navegador se reproduce sola); el cierre y el motor de audio son los de `biplot-nucleo/04-marca/00-motor/`.
 4. Un PR con la edición en este repo (uno por edición), sólo con lo suyo: el JSON, su página, la hemeroteca,
-   `ultima.json`, su tapa, las escenas y las láminas para redes. El check **«Diario · verificar»** (`.github/workflows/diario.yml`) vuelve a armar cada edición y falla si
+   `ultima.json`, su tapa, las escenas, las láminas para redes y el video. El check **«Diario · verificar»** (`.github/workflows/diario.yml`) vuelve a armar cada edición y falla si
    alguna página no sale de su JSON.
 5. **La validación, en el CRM**, en su sección **La Línea** (`biplot-crm.vercel.app/la-linea`). El CRM lee de GitHub
    los PR abiertos que traen una edición y la muestra: la tapa (o las escenas para elegirla), lo que trae sección por
@@ -106,7 +112,7 @@ portada: la tapa, el logo y las caras; el contenido: que el interior se lea bien
 
 `node diario/_herramientas/imagenes.mjs` baja al repo las caras y las tapas, ya del tamaño que usa el diario, y vuelve a
 sacar el ícono de Rumbo (`rumbo`, en blanco y negro con tinta y trama). Todo queda en PNG o JPEG porque los correos no
-muestran WebP ni aplican filtros. `fotografiar.mjs`, `redes.mjs` e `imagenes.mjs` necesitan Playwright (`armar.mjs`, no).
+muestran WebP ni aplican filtros. `fotografiar.mjs`, `redes.mjs`, `video.mjs` (además, ffmpeg y `biplot-nucleo` al lado) e `imagenes.mjs` necesitan Playwright (`armar.mjs`, no).
 
 ### Las caras
 

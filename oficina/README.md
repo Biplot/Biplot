@@ -290,6 +290,9 @@ globo (con su cifra y «Leer su nota», que abre su sección; `globoLinea`); Plo
 y en su ficha que salió el número (`avisarBienvenida`); y la pantalla del centro de BiPlot.TV, vista de frente, suma
 «El marcador de La Línea», el de Felipe (`marcadorLinea`, con `marcadorLinea: true` en su zona de `datos.js`). Si la
 ficha ya estaba abierta (un enlace directo como #felipe) cuando llega el archivo, el globo se agrega sin cerrarla.
+Si la edición trae su video de la semana (`video` en `ultima.json`, de `diario/_herramientas/video.mjs`), la tele
+suma el canal «La Línea de la semana» justo antes de «Tu proyecto» (`canalesTele`), con «Leer La Línea»: el horizontal
+en la pantalla grande y el vertical en el celular parado, como los demás canales.
 
 **Las vitrinas, en 3D.** Al tocar una vitrina del museo (cada época, cada desarrollo y el pedestal libre) se abre en
 grande y en 3D, sobre la sala oscurecida: su pedestal con su cédula, su vidrio y la pieza del centro van girando, una
