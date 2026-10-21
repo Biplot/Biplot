@@ -26,12 +26,16 @@
   function revisarDiario(d) {
     var FECHA = /^\d{4}-\d{2}-\d{2}$/, texto = function (t, n) { return typeof t === 'string' ? t.slice(0, n) : ''; };
     var e = d && d.edicion, tapa = e && e.tapa && typeof e.tapa.src === 'string' && /^(\/diario\/imagenes\/[\w.\/-]+|https:\/\/[^\s"'<>]+)$/.test(e.tapa.src) ? e.tapa : null;
+    var VIDEO = /^\/diario\/\d{4}-\d{2}-\d{2}\/video\/[hv]\.(mp4|jpg)$/;
+    var video = e && e.video && VIDEO.test(e.video.h || '') && VIDEO.test(e.video.v || '') && VIDEO.test(e.video.poster || '') ? e.video : null;
     var ok = e && typeof e.numero === 'number' && FECHA.test(e.fecha || '') && /^\/diario\/\d{4}-\d{2}-\d{2}\/$/.test(e.url || '') && texto(e.titular, 200);
     return {
       proxima: d && FECHA.test(d.proxima || '') ? d.proxima : null,
       edicion: ok ? { numero: e.numero, fecha: e.fecha, url: '..' + e.url, titular: texto(e.titular, 200),
         titulares: (Array.isArray(e.titulares) ? e.titulares : []).map(function (t) { return texto(t, 200); }).filter(Boolean).slice(0, 3),
         tapa: tapa ? { src: (/^\//.test(tapa.src) ? '..' : '') + tapa.src, alt: texto(tapa.alt, 400) } : null,
+        // El video de la semana (video.mjs): su canal en BiPlot.TV
+        video: video ? { h: '..' + video.h, v: '..' + video.v, poster: '..' + video.poster, dur: /^\d:\d\d$/.test(video.duracion || '') ? video.duracion : '' } : null,
         // La nota de cada integrante (sólo de quien está en la oficina), con su cifra y el ancla de su sección
         notas: (Array.isArray(e.notas) ? e.notas : []).filter(function (n) { return n && PERSONAL[n.firma] && /^[a-z]+$/.test(n.id || '') && texto(n.titular, 200); }).slice(0, 12).map(function (n) {
           return { id: n.id, firma: n.firma, seccion: texto(n.seccion, 60), titular: texto(n.titular, 200),
@@ -2238,6 +2242,11 @@
       return { id: id, n: k + 1, nombre: d.nombre, ceja: d.ceja, dur: d.duracion || '', mini: MEDIOS + '../tv/pantalla-' + (d.pantalla || id) + '.webp',
         h: v.h, v: v.v || v.h, poster: v.poster, botones: d.botones || [], relato: R[id] || '' };
     });
+    // La Línea de la semana, cuando la última edición trae su video, justo antes de «Tu proyecto»
+    var ed = DIARIO.edicion, L = ed && ed.video;
+    if (L) C.push({ id: 'lalinea', n: C.length + 1, nombre: 'La Línea de la semana', ceja: 'La Línea · N.º ' + ed.numero, dur: L.dur, mini: L.poster,
+      h: L.h, v: L.v, poster: L.poster, botones: [{ url: ed.url, texto: 'Leer La Línea' }],
+      relato: 'Las noticias de la semana para tu empresa, en menos de un minuto. Las cuenta Aby; el resto, en el diario.' });
     var F = Z.cartelera && Z.cartelera.cierre;
     if (F) C.push({ id: 'tuproyecto', n: C.length + 1, tu: true, nombre: F.nombre, ceja: F.ceja, titulo: F.titulo, texto: F.texto, dur: '', relato: F.relato || '' });
     return C;

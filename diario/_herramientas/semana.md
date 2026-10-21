@@ -27,10 +27,10 @@ Hora de Chile. La edición cubre de lunes a domingo y sale el lunes siguiente, c
 | domingo, 11:30 | Verificación y correcciones | Tamandúa y redacción | 17 min, más 10 de correcciones |
 | domingo, 12:30 | Armar, fotografiar, revisar las capturas y abrir el PR | redacción | 10 min |
 | domingo, en la tarde | Elegir la tapa en La Línea | socio | — |
-| domingo, 20:00 | Poner la tapa elegida, sacar `escenas`, rehacer las láminas para redes y subir | redacción | — |
+| domingo, 20:00 | Poner la tapa elegida, sacar `escenas`, rehacer las láminas y el video, y subir | redacción | 5 min |
 | lunes, 7:30 | Marcar la portada y el contenido, y «Aprobar y publicar» | socio | — |
 | lunes, 8:00 | Enviar el correo desde Brevo | socio | — |
-| lunes, en el día | Aprobar el carrusel en Marketing y publicarlo en Instagram y LinkedIn | socio | — |
+| lunes, en el día | Aprobar el carrusel y el reel en Marketing y publicarlos en Instagram y LinkedIn | socio | — |
 | durante la semana | Anotar lo que haya que corregir | todos | — |
 
 La redacción corre sola con las tareas programadas de la sesión (jueves y domingo); el socio sólo entra a La Línea dos
@@ -118,8 +118,14 @@ esa fecha, y la nota de la redacción dice qué indicadores son del viernes.
   `diario/AAAA-MM-DD/redes/` (01.jpg, 02.jpg…, de 1080 × 1350: la tapa, cada nota de la portada con su «por qué
   importa», El dato y el cierre). Se miran todas: si una dice que el texto no cabe, se acorta la nota (la bajada o el
   «por qué importa»). Sin la tapa elegida, la primera sale tipográfica: se rehacen cuando se pone la tapa.
+- **El video de la semana**: `node diario/_herramientas/video.mjs AAAA-MM-DD --cuadros 1.6,6.8,12,32,36.8,44` saca
+  cuadros de revisión en los dos formatos (en `salida/`); si se ven bien, `node diario/_herramientas/video.mjs
+  AAAA-MM-DD` graba `diario/AAAA-MM-DD/video/` (h.mp4 para la tele de la oficina, v.mp4 para el Reel y sus portadas;
+  unos 4 minutos) y vuelve a armar la edición para que `ultima.json` lo sume. Usa el cierre de marca y el motor de audio
+  de `biplot-nucleo` (clonado al lado de este repo o en `BIPLOT_NUCLEO`). Si dice que achicó la letra de una escena, se
+  mira ese cuadro; si algo no cabe, se acorta la nota. También se rehace al poner la tapa.
 - **Una rama y un PR por edición**: la rama `diario/AAAA-MM-DD`, desde `main`, y el PR sólo con lo suyo: el JSON, su
-  página, la hemeroteca, `ultima.json`, su tapa, sus escenas y sus láminas para redes. Con algo más, La Línea no lo publica (se une en Aprobaciones o en
+  página, la hemeroteca, `ultima.json`, su tapa, sus escenas, sus láminas para redes y su video. Con algo más, La Línea no lo publica (se une en Aprobaciones o en
   GitHub). El check **«Diario · verificar»** vuelve a armar cada edición y tiene que quedar en verde.
 - En la descripción del PR: la principal y por qué, lo que no se pudo verificar y lo que el socio debería mirar.
 
@@ -128,7 +134,7 @@ esa fecha, y la nota de la redacción dice qué indicadores son del viernes.
 1. **El domingo, el socio elige la tapa** en La Línea. La redacción la baja con
    `node diario/_herramientas/imagenes.mjs tapa AAAA-MM-DD <url>`, la pone en `tapa` (con `alt` y el `pie` «La escena de
    la semana: … Ilustración hecha con IA a partir de los dibujos del equipo de BiPlot.»), saca `escenas`, rehace las
-   láminas con `redes.mjs` (la primera es la tapa) y sube.
+   láminas con `redes.mjs` y el video con `video.mjs` (los dos muestran la tapa) y sube.
 2. **El lunes, el socio marca dos casillas**, la portada y el contenido, y pulsa **«Aprobar y publicar»**: un clic que
    la aprueba (como comentario del PR, con su nombre), aprueba el PR en GitHub y lo une; Vercel la deja en
    `biplot.cl/diario/AAAA-MM-DD/` en unos minutos. Si algo hay que cambiar, «Pedir ajustes» y un cuadro de texto: la
@@ -138,9 +144,11 @@ esa fecha, y la nota de la redacción dice qué indicadores son del viernes.
 4. **El correo, desde Brevo**: una campaña nueva con el HTML de `diario/_herramientas/salida/AAAA-MM-DD-correo.html`
    (`armar.mjs` lo arma; no se sube al repo), el asunto y la previa de arriba, una prueba a los dos socios y, si se ve
    bien en Gmail y en el celular, el envío a la lista.
-5. **El carrusel, desde Marketing**: al publicar, el CRM deja la pieza «La Línea N.º X · carrusel» por aprobar en la
-   campaña «La Línea», con las láminas (leídas de biplot.cl) y el texto para publicar. Un socio la revisa, la aprueba y
-   la publica a mano en Instagram y LinkedIn; después pega el enlace en la pieza. Nada se publica solo en redes.
+5. **El carrusel y el reel, desde Marketing**: al publicar, el CRM deja «La Línea N.º X · carrusel» y «La Línea N.º X ·
+   reel» por aprobar en la campaña «La Línea», con las láminas y el video (leídos de biplot.cl) y el texto para
+   publicar. Un socio los revisa, los aprueba y los publica a mano en Instagram y LinkedIn; después pega el enlace en
+   cada pieza. Nada se publica solo en redes. El video también queda en la tele de la oficina, en su canal, en cuanto
+   Vercel publica la edición.
 
 ## 7. Después
 
