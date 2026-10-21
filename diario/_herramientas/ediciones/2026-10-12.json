@@ -1,0 +1,466 @@
+{
+  "numero": 0,
+  "fecha": "2026-10-12",
+  "prueba": true,
+  "cubre": "Semana del 5 al 11 de octubre",
+  "previa": "La reforma que baja el impuesto a las empresas, el diésel que no para y el 2-0 de La Roja en Los Ángeles: la semana en cinco minutos.",
+  "redaccion": [
+    "Buenos días. Esta es una edición de práctica de *La Línea*: la semana del 5 al 11 de octubre, armada después y de punta a punta, para dejar escrito cómo vamos a trabajar cada semana. No sale a ningún correo.",
+    "Hoy lunes es feriado: la UF es la de hoy y el dólar, el IPSA y el cobre son los del viernes. Los mercados vuelven el martes."
+  ],
+  "indicadores": [
+    {
+      "nombre": "UF",
+      "valor": "$41.146,83",
+      "nota": "lunes 12",
+      "fuente": {
+        "medio": "SII",
+        "url": "https://www.sii.cl/valores_y_fechas/uf/uf2026.htm"
+      }
+    },
+    {
+      "nombre": "Dólar",
+      "valor": "$978,7",
+      "nota": "cierre del viernes 9 · −$11,9 en la semana",
+      "fuente": {
+        "medio": "DF",
+        "url": "https://www.df.cl/mercados/bolsa-monedas/dolar-hoy-p5kv8"
+      }
+    },
+    {
+      "nombre": "MSCI IPSA",
+      "valor": "11.043,36",
+      "nota": "viernes 9 · +1,2% en la semana",
+      "fuente": {
+        "medio": "DF",
+        "url": "https://www.df.cl/mercados/bolsa-monedas/bolsas-hoy-n5t5w"
+      }
+    },
+    {
+      "nombre": "Cobre",
+      "valor": "US$6,66/lb",
+      "nota": "cierre del viernes 9 · +2,33% en la semana",
+      "fuente": {
+        "medio": "Cochilco",
+        "url": "https://www.cochilco.cl/web/download/1006/2026/16972/informe-del-mercado-internacional-del-cobre-semana-del-5-a-9-de-octubre-de-2026.pdf"
+      }
+    }
+  ],
+  "tapa": {
+    "src": "imagenes/tapas/2026-10-12.jpg",
+    "alt": "Tapa a color: Plotty, de ascensorista con gorra roja, baja la palanca de un ascensor antiguo cuyo dial va de 27 a 23; Celda lo confirma con su calculadora y Lupe lee con su lupa la letra chica de un rollo de papel.",
+    "pie": "La escena de la semana: el impuesto a las empresas baja en ascensor. Ilustración hecha con IA a partir de los dibujos del equipo de BiPlot."
+  },
+  "portada": [
+    {
+      "titular": "Kast promulga la Ley de Reconstrucción: el impuesto a las empresas bajará de 27% a 23%",
+      "bajada": [
+        "El viernes 9, el Presidente José Antonio Kast firmó la promulgación de la Ley de Reconstrucción Nacional y Desarrollo Económico y Social, sin ceremonia por el aluvión en Las Condes. El impuesto de primera categoría del régimen general bajará de 27% a 25,5% en 2027, a 24% en 2028 y a 23% desde 2029.",
+        "Para las deudas tributarias vencidas al 31 de diciembre de 2025, la Tesorería abrirá convenios durante 180 días, con condonación de hasta 100% de los intereses y 80% de las multas si se paga al contado. Los plazos corren desde su publicación en el Diario Oficial, que al viernes 9 todavía estaba pendiente."
+      ],
+      "importa": "Si la empresa arrastra deudas con el Fisco de 2025 o antes, se viene una ventana de 180 días para pagarlas con condonación de hasta el 100% de los intereses y el 80% de las multas, si pagas al contado: conviene sacar la cuenta ahora y tener la caja lista cuando se publique.",
+      "fuentes": [
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/09/1213750/ley-de-reconstruccion-promulgada.html"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/negocios/megareforma-kast-primeras-normas-vigencia-tras-promulgacion/"
+        }
+      ]
+    },
+    {
+      "titular": "El Fogape tendrá aportes hasta 2028, y viene un proyecto para las pymes",
+      "bajada": [
+        "El miércoles 7, el Congreso despachó a ley el proyecto que extiende hasta el 31 de diciembre de 2028 el plazo para que el Fisco haga aportes al Fondo de Garantía para Pequeños Empresarios (Fogape), que vencía en diciembre de este año. La misma ley suma octubre, noviembre y diciembre al bono de $100.000 por combustibles para taxis, colectivos y transporte escolar.",
+        "En la Mesa Pro Pyme del lunes 5, Economía y Hacienda presentaron a doce gremios los ejes de un proyecto que llegaría en las próximas semanas: mantener en 12,5% el impuesto de las pymes, patentes municipales provisorias para empezar a operar y que los intereses de una factura pagada fuera de plazo corran solos y se paguen junto con el capital."
+      ],
+      "importa": "El Fogape es el que respalda el crédito cuando la empresa no tiene garantías propias: sigue habiendo con qué pedirlo. Y si el proyecto avanza, el cliente que paga tarde pagará intereses sin que haya que cobrárselos.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/economia-y-politica/congreso/el-congreso-despacha-a-ley-el-proyecto-que-extiende-las-ayudas-a"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/07/1213542/ley-bonos-transportistas-pescadores-fogape.html"
+        },
+        {
+          "medio": "Ministerio de Economía",
+          "url": "https://www.economia.gob.cl/2026/10/06/ministerios-de-economia-y-hacienda-analizan-con-gremios-pymes-ejes-del-proyecto-de-ley-que-beneficiara-al-sector.htm"
+        }
+      ]
+    },
+    {
+      "titular": "La inflación de septiembre: 0,4% en el mes, bajo lo esperado",
+      "bajada": [
+        "El INE informó el jueves 8 que el IPC subió 0,4% en septiembre, bajo el 0,5% que esperaban los operadores financieros. Acumula 4,0% en el año y 4,1% en doce meses. Lo que más empujó fueron los alimentos (+0,6%, con las papas +8,6% y las lechugas +10,5%) y el transporte (+0,9%).",
+        "Con el dato, la UF subirá unos $164 entre el 10 de octubre y el 9 de noviembre, hasta $41.295,46. Los economistas esperan que el Banco Central mantenga la tasa en 4,5% en su reunión del 26 y 27 de octubre."
+      ],
+      "importa": "Los arriendos y contratos en UF suben más lento este mes. El costo que sigue apretando es el del combustible.",
+      "fuentes": [
+        {
+          "medio": "INE",
+          "url": "https://www.ine.gob.cl/sala-de-prensa/prensa/general/noticia/2026/10/08/%C3%ADndice-de-precios-al-consumidor-(ipc)-de-septiembre-present%C3%B3-una-variaci%C3%B3n-mensual-de-0-4"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/ipc-de-septiembre-sube-menos-de-lo-esperado-pero-expectativas-de-inflacion-para-cierre-del-ano-se-ubican-entre-45-y-5/"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/08/1213592/alza-uf-ipc-septiembre.html"
+        }
+      ]
+    }
+  ],
+  "dato": {
+    "valor": "36,8%",
+    "leyenda": "El alza del diésel en lo que va de 2026",
+    "titular": "El diésel acumula 36,8% de alza en el año",
+    "bajada": [
+      "Es la variación del precio del petróleo diésel en el IPC entre diciembre de 2025 y septiembre de 2026, según el boletín que el INE publicó el jueves 8. Solo en septiembre subió 10,2%. Para comparar: la gasolina acumula 20,8% y el IPC completo, 4,0%.",
+      "El diésel mueve los camiones, la maquinaria, el campo y la pesca, así que su alza se cuela en casi todo lo que llega en camión. Según La Tercera, detrás está la guerra en Medio Oriente, que cortó los envíos de diésel desde el Golfo Pérsico, sumada a las refinerías rusas golpeadas por la guerra con Ucrania."
+    ],
+    "importa": "Si tu negocio reparte o compra mercadería, mira cuánto pesa hoy el flete en tus costos y si tus precios ya lo recogen.",
+    "fuentes": [
+      {
+        "medio": "INE",
+        "url": "https://www.ine.gob.cl/docs/default-source/%C3%ADndice-de-precios-al-consumidor/boletines/espa%C3%B1ol/2026/boletin-%C3%ADndice-de-precios-al-consumidor-septiembre-2026.pdf"
+      },
+      {
+        "medio": "La Tercera",
+        "url": "https://www.latercera.com/pulso/noticia/escalada-mundial-del-precio-del-diesel-su-mercado-las-razones-de-una-subida-que-seguira-y-el-impacto-en-chile/"
+      }
+    ]
+  },
+  "planos": [
+    {
+      "titular": "Casi tres de cada cuatro pymes y startups gobiernan su IA de forma «frágil»",
+      "bajada": [
+        "Un estudio de Endeavor Research e IAméricas, que DF dio a conocer el viernes 9, midió 418 organizaciones de seis países, 300 de ellas chilenas: el 73% de las pymes y startups quedó en la categoría «frágil», y el 48% de todas las organizaciones evaluadas, en el nivel más básico de madurez. Lo mejor evaluado fue el compromiso declarado con el uso responsable (3,56 de 5); lo peor, tener políticas escritas con un responsable claro (1,76 de 5).",
+        "Mientras tanto, el uso de chatbots en Chile pasó de 29,9% de la población en 2024 a 60,4% en 2026, según el Índice de Ciudadanía Digital."
+      ],
+      "importa": "Escribe en una hoja la regla de IA de tu pyme: qué datos nunca se pegan en un chatbot, quién responde si algo sale mal y qué tarea vas a medir antes y después de usarla.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/df-lab/innovacion-y-startups/la-mayoria-de-las-pyme-y-startups-de-chile-y-la-region-gobiernan-su-ia-de"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/uso-de-chatbots-en-chile-se-duplica-en-dos-anos-y-supera-el-60-de-la-poblacion/"
+        }
+      ]
+    },
+    {
+      "titular": "El jefe que duerme poco, y lo esconde, le marca el ritmo al equipo",
+      "bajada": [
+        "En una encuesta a 1.009 gerentes y ejecutivos de Estados Unidos, publicada el martes 6 en Harvard Business Review, el 39% dijo dormir menos de lo necesario cuatro o más noches por semana, y el 52% de los altos ejecutivos ocultó su cansancio cuatro o más veces el último mes. La encuesta es de la propia autora, la neurocientífica Els van der Helm.",
+        "En Chile, el último Termómetro de Salud Mental Achs-UC muestra que el insomnio moderado o severo subió de 8,6% a 14,3% de los encuestados."
+      ],
+      "importa": "No mandes mensajes de trabajo de noche (prográmalos para la mañana) y no celebres en público al que contestó a las tres de la madrugada.",
+      "fuentes": [
+        {
+          "medio": "Harvard Business Review",
+          "url": "https://hbr.org/2026/10/research-sleep-deprivation-is-a-leadership-problem"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/economia-y-politica/laboral-personas/se-deteriora-mas-la-salud-mental-de-los-trabajadores-ante-temor-a-perder"
+        }
+      ]
+    }
+  ],
+  "maquinas": [
+    {
+      "titular": "Anthropic lanza Claude Haiku 5.5, su modelo chico, hasta 90% más barato",
+      "bajada": [
+        "El miércoles 7, Anthropic lanzó Claude Haiku 5.5, su modelo para tareas repetitivas y de alto volumen: resúmenes, clasificación, atención al cliente. Cuesta US$0,10 por millón de tokens de entrada y US$0,50 de salida en instrucciones de hasta 100 mil tokens, 90% menos que Haiku 4.5. La propia empresa estima que, en promedio, cuesta alrededor de 75% menos, porque sobre 100 mil tokens el precio baja solo 50% y el modelo nuevo usa algo más de tokens por tarea.",
+        "Un aviso: esta edición se arma con ayuda de Claude. Las cifras son las del anuncio de Anthropic."
+      ],
+      "importa": "Clasificar correos, ordenar facturas o resumir documentos con IA sale bastante más barato. Antes de presupuestar, pruébalo con tus propias tareas: el ahorro que declara la empresa es de 75%, no de 90%.",
+      "fuentes": [
+        {
+          "medio": "Anthropic",
+          "url": "https://www.anthropic.com/claude-haiku-5-5"
+        }
+      ]
+    },
+    {
+      "titular": "Google presenta el agente Gemini: colegas virtuales con correo propio y tope de gasto",
+      "bajada": [
+        "El jueves 8, en Gemini at Work, Google Cloud presentó un agente de trabajo que funciona dentro de Gmail, Drive, Docs, Sheets y Calendar. Permite crear «agentes colegas» con su propia cuenta de Workspace, correo y calendario, que solo ven lo que se les comparte, y trae topes de gasto: si un proyecto llega al límite fijado, el agente se pausa.",
+        "Google no dio fecha ni precio para que lo usen todas las empresas."
+      ],
+      "importa": "Google no dijo cuándo llegará a cada Workspace. Dos ideas para copiar ya: que cada automatización tenga su propia cuenta con permisos acotados, y que la IA tenga un tope de gasto.",
+      "fuentes": [
+        {
+          "medio": "Google Cloud",
+          "url": "https://cloud.google.com/blog/products/ai-machine-learning/welcome-to-gemini-at-work-2026"
+        }
+      ]
+    }
+  ],
+  "mito": [
+    {
+      "afirmacion": "El cruce de datos de la Contraloría hizo bajar en un millón las licencias médicas",
+      "veredicto": "a medias",
+      "bajada": [
+        "Lo dijo el Presidente Kast el martes 6, en el Summit País Digital. La cifra existe: según la Superintendencia de Seguridad Social, en 2025 se emitieron 7.016.470 licencias, 1.034.791 menos que en 2024. Pero la propia Suseso dice que la baja «responde a múltiples factores», entre ellos su fiscalización. Y, según La Tercera con cifras de la Suseso, la caída ya venía de antes del informe de la Contraloría, de mayo de 2025, aunque se hizo más pronunciada desde entonces."
+      ],
+      "fuentes": [
+        {
+          "medio": "Suseso",
+          "url": "https://www.suseso.gob.cl/607/articles-774683_archivo_01.pdf"
+        },
+        {
+          "medio": "Suseso",
+          "url": "https://www.suseso.gob.cl/605/w3-article-774794.html"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/a-un-ano-de-denuncia-de-la-contraloria-licencias-medicas-se-desploman-casi-20-con-16-millones-menos/"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/df-lab/tech-empresas/kast-en-summit-pais-digital-nuestra-meta-es-lograr-la-interoperabilidad"
+        }
+      ]
+    },
+    {
+      "afirmacion": "El 70% de las pymes chilenas ya usa IA",
+      "veredicto": "a medias",
+      "bajada": [
+        "Lo dijo Pelayo Covarrubias, presidente de la Fundación País Digital, al inaugurar el mismo Summit, el martes 6. La cifra calza con un estudio de Entel Digital de junio de 2025: una encuesta que respondieron más de 526 dueños, directores y gerentes, a quienes les llegó por gremios, centros académicos y fundaciones; Entel no informa que sea una muestra aleatoria. Y ahí «usar IA» incluye abrir ChatGPT: no quiere decir que siete de cada diez pymes tengan procesos automatizados."
+      ],
+      "fuentes": [
+        {
+          "medio": "Entel Digital",
+          "url": "https://www.enteldigital.cl/blog/estudio-sobre-adopcion-de-ia-en-chile"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/df-lab/tech-empresas/kast-en-summit-pais-digital-nuestra-meta-es-lograr-la-interoperabilidad"
+        }
+      ]
+    }
+  ],
+  "guardar": [
+    {
+      "titular": "F29 de octubre: con el feriado, el pago en línea corre al martes 13",
+      "bajada": [
+        "Según el calendario del SII, el F29 del período de septiembre con pago en línea vence el martes 13 para los contribuyentes en general, porque el lunes 12 es feriado. Los facturadores electrónicos que declaran y pagan en sii.cl tienen hasta el lunes 19 si pagan con mandato al banco (PEC) y hasta el martes 20 si pagan en línea. Sin movimiento, hasta el miércoles 28."
+      ],
+      "importa": "Si emites factura electrónica y declaras y pagas en sii.cl, tu plazo es el lunes 19 (con mandato al banco) o el martes 20 (pago en línea). Los demás tienen hasta el martes 13 si pagan en línea; con mandato al banco, el plazo era el domingo 11.",
+      "fuentes": [
+        {
+          "medio": "SII",
+          "url": "https://misiir.sii.cl/cgi_calendario/calendario.cgi?OPT=3&VIEW=2&YEAR=2026&MONTH=10&DAY=1&TYPE=F29"
+        }
+      ]
+    },
+    {
+      "titular": "Semana de la Pyme: más de 200 actividades, del martes 13 al viernes 16",
+      "bajada": [
+        "El Ministerio de Economía organiza la Semana de la Pyme en las 16 regiones. El martes 13, en la Plaza de la Constitución, la «Formalizatón» orienta para constituir la empresa e iniciar actividades, y entrega gratis la firma electrónica avanzada."
+      ],
+      "importa": "Entra a semanadelapyme.cl, elige tu región e inscríbete en una actividad. Si todavía no tienes firma electrónica avanzada, el martes 13 la entregan gratis en la Formalizatón de la Plaza de la Constitución, en Santiago, de 11:00 a 18:00.",
+      "fuentes": [
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/05/1213313/semana-de-la-pyme-2026.html"
+        },
+        {
+          "medio": "Semana de la Pyme",
+          "url": "https://www.semanadelapyme.cl/"
+        }
+      ]
+    }
+  ],
+  "lanzamientos": [
+    {
+      "titular": "Más plata, menos rondas: la inversión en startups de la región",
+      "bajada": [
+        "Según PitchBook, citado por DF el lunes 5, las startups de América Latina captaron US$1.900 millones entre julio y septiembre, 12% más que un año antes, pero en 155 rondas, 19% menos. En lo que va del año suman 520 rondas: el menor número a esta altura del año desde 2018. Tres rondas (Clip, Ualá y Flash) se llevaron el 45% del monto."
+      ],
+      "importa": "La plata está concentrada en pocas fintech grandes. Para una startup chica, la mejor ronda sigue siendo vender.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/df-lab/innovacion-y-startups/inversion-en-startups-de-la-region-sube-12-en-el-trimestre-pero-rondas"
+        }
+      ]
+    },
+    {
+      "titular": "Fintual habría pedido partir el trámite para crear una AFP, según DF",
+      "bajada": [
+        "Según DF, que cita a fuentes que conocen el proceso, Fintual presentó ante la Superintendencia de Pensiones la solicitud del certificado provisorio, la primera de tres etapas para constituir una AFP. Todo podría tomar entre seis y siete meses, y la empresa ya busca especialistas en operaciones de AFP. Sería la octava AFP del país."
+      ],
+      "importa": "Si llega a operar, habrá una opción más para la cuenta de pensiones de cada persona de tu equipo.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/mercados/pensiones/fintual-ingresa-solicitud-formal-ante-la-superintendencia-de-pensiones-para"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/07/1213526/fintual-solicitud-afp-superintendencia-pensiones.html"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/pais/nueva-afp-fintual-presenta-solicitud-ante-superintendencia-y-comienza-reclutamiento-de-trabajadores/"
+        }
+      ]
+    }
+  ],
+  "mundo": [
+    {
+      "titular": "Las actas de la Fed anticipan otra alza de tasas este año",
+      "bajada": [
+        "Las actas de la reunión de septiembre, publicadas el miércoles 7, muestran que «la mayoría de los participantes» ve probable otra alza antes de fin de año. En septiembre, la Reserva Federal subió 25 puntos base, al rango de 3,75%-4%, su primera alza desde julio de 2023."
+      ],
+      "importa": "Tasas más altas en Estados Unidos tienden a sostener el dólar: si importas o tienes deudas en dólares, sigue de cerca el tipo de cambio.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/internacional/economia/actas-de-la-fed-muestran-que-funcionarios-preven-otra-alza-de-tasas-para"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/las-actas-de-la-fed-anticipan-una-subida-de-tasas-para-finales-de-este-ano/"
+        }
+      ]
+    },
+    {
+      "titular": "Trump promete no atacar a Irán antes del 3 de noviembre, y el petróleo modera su alza",
+      "bajada": [
+        "El jueves 8, Trump escribió que no atacará a Irán antes de las elecciones de mitad de mandato del 3 de noviembre, y que sigue el bloqueo naval a las exportaciones iraníes. El Brent llegó a subir más de 5% en el día y después moderó el alza: a media tarde (16:41 GMT) subía 3,5%, a US$103,73 el barril."
+      ],
+      "importa": "Mientras el petróleo siga sobre US$100, el diésel y los fletes seguirán caros.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/internacional/politica/trump-afirma-que-eeuu-no-atacara-iran-antes-de-las-elecciones-legislativas"
+        }
+      ]
+    },
+    {
+      "titular": "Brasil va a segunda vuelta: Flávio Bolsonaro contra Lula",
+      "bajada": [
+        "En la primera vuelta del domingo 4, Flávio Bolsonaro obtuvo 47,11% y Lula da Silva 45,07%, con el 99,6% escrutado. Se enfrentan en el balotaje del domingo 25 de octubre."
+      ],
+      "fuentes": [
+        {
+          "medio": "El Mostrador",
+          "url": "https://www.elmostrador.cl/noticias/mundo/2026/10/05/bolsonaro-se-impone-en-primera-vuelta-y-se-espera-renido-balotaje-con-lula-el-25-de-octubre/"
+        },
+        {
+          "medio": "BioBioChile",
+          "url": "https://www.biobiochile.cl/noticias/internacional/america-latina/2026/10/05/las-claves-del-triunfo-de-flavio-bolsonaro-y-la-caida-de-lula-da-silva-en-la-primera-vuelta-en-brasil.shtml"
+        }
+      ]
+    }
+  ],
+  "marcador": {
+    "notas": [
+      {
+        "titular": "La Roja se despide de la gira con un 2-0 a México",
+        "cifra": {
+          "valor": "0-2",
+          "leyenda": "México-Chile, Los Ángeles"
+        },
+        "bajada": [
+          "El martes 6, en el Coliseo de Los Ángeles, Chile le ganó 2-0 a México con goles de Maximiliano Gutiérrez (54') y Vicente Pizarro (65'). Fue el único triunfo de la gira del técnico interino Nicolás Córdova, que había perdido 0-1 con Canadá y 2-4 con Estados Unidos. La Roja vuelve en noviembre, con dos partidos ante Colombia."
+        ],
+        "fuentes": [
+          {
+            "medio": "La Tercera",
+            "url": "https://www.latercera.com/el-deportivo/noticia/la-roja-de-nicolas-cordova-se-sacude-chile-supera-a-mexico-y-termina-con-un-triunfo-su-gira-norteamericana/"
+          },
+          {
+            "medio": "Redgol",
+            "url": "https://redgol.cl/seleccionchilena/chile-vs-mexico-sigue-el-minuto-a-minuto-del-ultimo-amistoso-de-la-roja"
+          }
+        ]
+      },
+      {
+        "titular": "Coquimbo le hace cinco al líder",
+        "cifra": {
+          "valor": "5-2",
+          "leyenda": "Coquimbo-Colo-Colo"
+        },
+        "bajada": [
+          "El domingo 11, por la fecha 24, Coquimbo Unido goleó 5-2 a Colo-Colo con dos goles de Nicolás Johansen y uno de Guido Vadalá, Benjamín Chandía y Lucas Pratto; descontaron Javier Correa y Arturo Vidal. Colo-Colo perdió su racha, pero sigue líder. La lluvia y el aluvión de Las Condes frenaron parte de la fecha: la ANFP suspendió Universidad Católica-Audax Italiano."
+        ],
+        "fuentes": [
+          {
+            "medio": "Chilevisión",
+            "url": "https://www.chilevision.cl/chv-deportes/futbol-chileno/coquimbo-unido-goleo-a-colo-colo-y-le-corto-su-racha-en-la-liga-de-primera/"
+          },
+          {
+            "medio": "ANFP",
+            "url": "https://www.anfp.cl/comunicado-de-prensa-18/"
+          }
+        ]
+      },
+      {
+        "titular": "La Roja Femenina de Luis Mena golea 7-0 a Bolivia",
+        "cifra": {
+          "valor": "7-0",
+          "leyenda": "Chile-Bolivia, La Florida"
+        },
+        "bajada": [
+          "El domingo 11, en el Bicentenario de La Florida, la Roja Femenina de Luis Mena goleó 7-0 a Bolivia con doce debutantes. La figura fue Adriana Moreno, de Coquimbo Unido: la federación le cuenta cuatro goles; varios medios, tres y un autogol."
+        ],
+        "fuentes": [
+          {
+            "medio": "ANFP",
+            "url": "https://www.anfp.cl/selecciones/la-roja-femenina-adulta-goleo-7-0-a-bolivia-en-el-inicio-de-la-fecha-fifa-de-octubre/"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/futbol-femenino/la-roja-femenina-vivio-en-la-florida-una-fiesta-de-goles-ante-bolivia/2026-10-11/202837.html"
+          }
+        ]
+      }
+    ],
+    "agenda": [
+      {
+        "fecha": "lun 12",
+        "texto": "La U recibe a Ñublense y cierra la fecha 24 de la Liga de Primera."
+      },
+      {
+        "fecha": "jue 15",
+        "texto": "Colo-Colo debuta en la Copa Libertadores Femenina ante Corinthians, en Quito."
+      },
+      {
+        "fecha": "vie 16",
+        "texto": "La U femenina enfrenta a Nacional de Uruguay por la Libertadores, en Sangolquí."
+      },
+      {
+        "fecha": "dom 18",
+        "texto": "Colo-Colo femenino juega su segunda fecha de la Libertadores ante Santa Fe."
+      }
+    ]
+  },
+  "preguntas": [
+    {
+      "pregunta": "¿A cuánto bajará desde 2029 el impuesto de primera categoría del régimen general?",
+      "respuesta": "A 23%. Hoy es 27%; baja a 25,5% en 2027 y a 24% en 2028."
+    },
+    {
+      "pregunta": "¿Cuánto subió el diésel en el IPC entre diciembre de 2025 y septiembre de 2026?",
+      "respuesta": "36,8%. La gasolina, 20,8%."
+    },
+    {
+      "pregunta": "¿Con qué marcador le ganó Coquimbo Unido al líder Colo-Colo el domingo 11?",
+      "respuesta": "5-2, con dos goles de Nicolás Johansen."
+    }
+  ],
+  "aparte": {
+    "titulo": "Un feriado de verdad",
+    "texto": "Hoy es feriado. Si puedes, que lo sea: deja el teléfono en otra pieza por una hora y anota en un papel lo único que quieres dejar hecho el martes. Lo demás puede esperar."
+  }
+}
