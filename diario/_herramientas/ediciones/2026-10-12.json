@@ -39,7 +39,7 @@
     {
       "nombre": "Cobre",
       "valor": "US$6,66/lb",
-      "nota": "Londres, viernes 9 · +2,33% en la semana",
+      "nota": "cierre del viernes 9 · +2,33% en la semana",
       "fuente": {
         "medio": "Cochilco",
         "url": "https://www.cochilco.cl/web/download/1006/2026/16972/informe-del-mercado-internacional-del-cobre-semana-del-5-a-9-de-octubre-de-2026.pdf"
@@ -56,9 +56,9 @@
       "titular": "Kast promulga la Ley de Reconstrucción: el impuesto a las empresas bajará de 27% a 23%",
       "bajada": [
         "El viernes 9, el Presidente José Antonio Kast firmó la promulgación de la Ley de Reconstrucción Nacional y Desarrollo Económico y Social, sin ceremonia por el aluvión en Las Condes. El impuesto de primera categoría del régimen general bajará de 27% a 25,5% en 2027, a 24% en 2028 y a 23% desde 2029.",
-        "Para las deudas tributarias vencidas al 31 de diciembre de 2025, la Tesorería abrirá convenios durante 180 días, con condonación de hasta 100% de los intereses y 80% de las multas si se paga al contado. Los plazos corren desde que la ley se publique en el Diario Oficial, algo que al cierre de esta edición todavía no pasaba."
+        "Para las deudas tributarias vencidas al 31 de diciembre de 2025, la Tesorería abrirá convenios durante 180 días, con condonación de hasta 100% de los intereses y 80% de las multas si se paga al contado. Los plazos corren desde su publicación en el Diario Oficial, que al viernes 9 todavía estaba pendiente."
       ],
-      "importa": "Si la empresa arrastra deudas con el Fisco de 2025 o antes, se viene una ventana de 180 días para pagarlas con descuento: conviene sacar la cuenta ahora y tener la caja lista cuando se publique.",
+      "importa": "Si la empresa arrastra deudas con el Fisco de 2025 o antes, se viene una ventana de 180 días para pagarlas con condonación de hasta el 100% de los intereses y el 80% de las multas, si pagas al contado: conviene sacar la cuenta ahora y tener la caja lista cuando se publique.",
       "fuentes": [
         {
           "medio": "Emol",
@@ -117,11 +117,11 @@
   ],
   "dato": {
     "valor": "36,8%",
-    "leyenda": "Lo que subió el diésel en 2026",
+    "leyenda": "El alza del diésel en lo que va de 2026",
     "titular": "El diésel acumula 36,8% de alza en el año",
     "bajada": [
       "Es la variación del precio del petróleo diésel en el IPC entre diciembre de 2025 y septiembre de 2026, según el boletín que el INE publicó el jueves 8. Solo en septiembre subió 10,2%. Para comparar: la gasolina acumula 20,8% y el IPC completo, 4,0%.",
-      "El diésel mueve los camiones, la maquinaria, el campo y la pesca, así que su alza se cuela en casi todo lo que llega en camión. La causa es la guerra en Medio Oriente, que cortó el diésel del Golfo Pérsico."
+      "El diésel mueve los camiones, la maquinaria, el campo y la pesca, así que su alza se cuela en casi todo lo que llega en camión. Según La Tercera, detrás está la guerra en Medio Oriente, que cortó los envíos de diésel desde el Golfo Pérsico, sumada a las refinerías rusas golpeadas por la guerra con Ucrania."
     ],
     "importa": "Si tu negocio reparte o compra mercadería, mira cuánto pesa hoy el flete en tus costos y si tus precios ya lo recogen.",
     "fuentes": [
@@ -139,7 +139,7 @@
     {
       "titular": "Casi tres de cada cuatro pymes y startups gobiernan su IA de forma «frágil»",
       "bajada": [
-        "Un estudio de Endeavor Research e IAméricas, publicado por DF el viernes 9, midió 418 organizaciones de seis países, 300 de ellas chilenas: el 73% de las pymes y startups quedó en la categoría «frágil» y el 48%, en el nivel más básico de madurez. Lo mejor evaluado fue el compromiso declarado con el uso responsable (3,56 de 5); lo peor, tener políticas escritas con un responsable claro (1,76 de 5).",
+        "Un estudio de Endeavor Research e IAméricas, que DF dio a conocer el viernes 9, midió 418 organizaciones de seis países, 300 de ellas chilenas: el 73% de las pymes y startups quedó en la categoría «frágil», y el 48% de todas las organizaciones evaluadas, en el nivel más básico de madurez. Lo mejor evaluado fue el compromiso declarado con el uso responsable (3,56 de 5); lo peor, tener políticas escritas con un responsable claro (1,76 de 5).",
         "Mientras tanto, el uso de chatbots en Chile pasó de 29,9% de la población en 2024 a 60,4% en 2026, según el Índice de Ciudadanía Digital."
       ],
       "importa": "Escribe en una hoja la regla de IA de tu pyme: qué datos nunca se pegan en un chatbot, quién responde si algo sale mal y qué tarea vas a medir antes y después de usarla.",
@@ -158,7 +158,7 @@
       "titular": "El jefe que duerme poco, y lo esconde, le marca el ritmo al equipo",
       "bajada": [
         "En una encuesta a 1.009 gerentes y ejecutivos de Estados Unidos, publicada el martes 6 en Harvard Business Review, el 39% dijo dormir menos de lo necesario cuatro o más noches por semana, y el 52% de los altos ejecutivos ocultó su cansancio cuatro o más veces el último mes. La encuesta es de la propia autora, la neurocientífica Els van der Helm.",
-        "En Chile, el Termómetro de Salud Mental Achs-UC muestra que el insomnio moderado o severo pasó de 8,6% a 14,3% de la población."
+        "En Chile, el último Termómetro de Salud Mental Achs-UC muestra que el insomnio moderado o severo subió de 8,6% a 14,3% de los encuestados."
       ],
       "importa": "No mandes mensajes de trabajo de noche (prográmalos para la mañana) y no celebres en público al que contestó a las tres de la madrugada.",
       "fuentes": [
@@ -175,9 +175,9 @@
   ],
   "maquinas": [
     {
-      "titular": "Anthropic lanza Claude Haiku 5.5, su modelo chico, a una décima del precio anterior",
+      "titular": "Anthropic lanza Claude Haiku 5.5, su modelo chico, hasta 90% más barato",
       "bajada": [
-        "El miércoles 7, Anthropic lanzó Claude Haiku 5.5, su modelo para tareas repetitivas y de alto volumen: resúmenes, clasificación, atención al cliente. Cuesta US$0,10 por millón de tokens de entrada y US$0,50 de salida en instrucciones de hasta 100 mil tokens, 90% menos que Haiku 4.5. La propia empresa estima que el ahorro real por tarea ronda el 75%, porque el modelo nuevo usa algo más de tokens.",
+        "El miércoles 7, Anthropic lanzó Claude Haiku 5.5, su modelo para tareas repetitivas y de alto volumen: resúmenes, clasificación, atención al cliente. Cuesta US$0,10 por millón de tokens de entrada y US$0,50 de salida en instrucciones de hasta 100 mil tokens, 90% menos que Haiku 4.5. La propia empresa estima que, en promedio, cuesta alrededor de 75% menos, porque sobre 100 mil tokens el precio baja solo 50% y el modelo nuevo usa algo más de tokens por tarea.",
         "Un aviso: esta edición se arma con ayuda de Claude. Las cifras son las del anuncio de Anthropic."
       ],
       "importa": "Clasificar correos, ordenar facturas o resumir documentos con IA sale bastante más barato. Antes de presupuestar, pruébalo con tus propias tareas: el ahorro que declara la empresa es de 75%, no de 90%.",
@@ -194,7 +194,7 @@
         "El jueves 8, en Gemini at Work, Google Cloud presentó un agente de trabajo que funciona dentro de Gmail, Drive, Docs, Sheets y Calendar. Permite crear «agentes colegas» con su propia cuenta de Workspace, correo y calendario, que solo ven lo que se les comparte, y trae topes de gasto: si un proyecto llega al límite fijado, el agente se pausa.",
         "Google no dio fecha ni precio para que lo usen todas las empresas."
       ],
-      "importa": "Por ahora no cambia nada en tu Workspace. Dos ideas para copiar ya: que cada automatización tenga su propia cuenta con permisos acotados, y que la IA tenga un tope de gasto.",
+      "importa": "Google no dijo cuándo llegará a cada Workspace. Dos ideas para copiar ya: que cada automatización tenga su propia cuenta con permisos acotados, y que la IA tenga un tope de gasto.",
       "fuentes": [
         {
           "medio": "Google Cloud",
@@ -208,7 +208,7 @@
       "afirmacion": "El cruce de datos de la Contraloría hizo bajar en un millón las licencias médicas",
       "veredicto": "a medias",
       "bajada": [
-        "Lo dijo el Presidente Kast el martes 6, en el Summit País Digital. La cifra existe: según la Superintendencia de Seguridad Social, en 2025 se emitieron 7.016.470 licencias, 1.034.791 menos que en 2024. Pero la propia Suseso dice que la baja «responde a múltiples factores», entre ellos su fiscalización, y la caída ya venía de antes del informe de la Contraloría, de mayo de 2025."
+        "Lo dijo el Presidente Kast el martes 6, en el Summit País Digital. La cifra existe: según la Superintendencia de Seguridad Social, en 2025 se emitieron 7.016.470 licencias, 1.034.791 menos que en 2024. Pero la propia Suseso dice que la baja «responde a múltiples factores», entre ellos su fiscalización. Y, según La Tercera con cifras de la Suseso, la caída ya venía de antes del informe de la Contraloría, de mayo de 2025, aunque se hizo más pronunciada desde entonces."
       ],
       "fuentes": [
         {
@@ -220,6 +220,10 @@
           "url": "https://www.suseso.gob.cl/605/w3-article-774794.html"
         },
         {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/a-un-ano-de-denuncia-de-la-contraloria-licencias-medicas-se-desploman-casi-20-con-16-millones-menos/"
+        },
+        {
           "medio": "DF",
           "url": "https://www.df.cl/df-lab/tech-empresas/kast-en-summit-pais-digital-nuestra-meta-es-lograr-la-interoperabilidad"
         }
@@ -229,7 +233,7 @@
       "afirmacion": "El 70% de las pymes chilenas ya usa IA",
       "veredicto": "a medias",
       "bajada": [
-        "Se dijo en la inauguración del mismo Summit. La cifra calza con un estudio de Entel Digital de junio de 2025: una encuesta a más de 526 dueños, directores y gerentes, difundida por los gremios, que no es una muestra aleatoria. Y ahí «usar IA» incluye abrir ChatGPT: no quiere decir que siete de cada diez pymes tengan procesos automatizados."
+        "Lo dijo Pelayo Covarrubias, presidente de la Fundación País Digital, al inaugurar el mismo Summit, el martes 6. La cifra calza con un estudio de Entel Digital de junio de 2025: una encuesta que respondieron más de 526 dueños, directores y gerentes, a quienes les llegó por gremios, centros académicos y fundaciones; Entel no informa que sea una muestra aleatoria. Y ahí «usar IA» incluye abrir ChatGPT: no quiere decir que siete de cada diez pymes tengan procesos automatizados."
       ],
       "fuentes": [
         {
@@ -245,11 +249,11 @@
   ],
   "guardar": [
     {
-      "titular": "F29 de octubre: con el feriado, el plazo general corre al martes 13",
+      "titular": "F29 de octubre: con el feriado, el pago en línea corre al martes 13",
       "bajada": [
-        "Según el calendario del SII, el F29 del período de septiembre con pago en línea vence el martes 13 para los contribuyentes en general, porque el lunes 12 es feriado. Los facturadores electrónicos que declaran en sii.cl tienen hasta el lunes 19 si pagan con mandato al banco (PEC) y hasta el martes 20 si pagan en línea. Sin movimiento, hasta el miércoles 28."
+        "Según el calendario del SII, el F29 del período de septiembre con pago en línea vence el martes 13 para los contribuyentes en general, porque el lunes 12 es feriado. Los facturadores electrónicos que declaran y pagan en sii.cl tienen hasta el lunes 19 si pagan con mandato al banco (PEC) y hasta el martes 20 si pagan en línea. Sin movimiento, hasta el miércoles 28."
       ],
-      "importa": "Si emites factura electrónica, tu plazo es el 19 o el 20, según cómo pagues. El martes 13 es para los demás.",
+      "importa": "Si emites factura electrónica y declaras y pagas en sii.cl, tu plazo es el lunes 19 (con mandato al banco) o el martes 20 (pago en línea). Los demás tienen hasta el martes 13 si pagan en línea; con mandato al banco, el plazo era el domingo 11.",
       "fuentes": [
         {
           "medio": "SII",
@@ -262,7 +266,7 @@
       "bajada": [
         "El Ministerio de Economía organiza la Semana de la Pyme en las 16 regiones. El martes 13, en la Plaza de la Constitución, la «Formalizatón» orienta para constituir la empresa e iniciar actividades, y entrega gratis la firma electrónica avanzada."
       ],
-      "importa": "Entra a semanadelapyme.cl, elige tu región e inscríbete en una actividad. Si todavía no tienes firma electrónica avanzada, el martes 13 sale gratis.",
+      "importa": "Entra a semanadelapyme.cl, elige tu región e inscríbete en una actividad. Si todavía no tienes firma electrónica avanzada, el martes 13 la entregan gratis en la Formalizatón de la Plaza de la Constitución, en Santiago, de 11:00 a 18:00.",
       "fuentes": [
         {
           "medio": "Emol",
@@ -290,7 +294,7 @@
       ]
     },
     {
-      "titular": "Fintual pide partir el trámite para crear una AFP",
+      "titular": "Fintual habría pedido partir el trámite para crear una AFP, según DF",
       "bajada": [
         "Según DF, que cita a fuentes que conocen el proceso, Fintual presentó ante la Superintendencia de Pensiones la solicitud del certificado provisorio, la primera de tres etapas para constituir una AFP. Todo podría tomar entre seis y siete meses, y la empresa ya busca especialistas en operaciones de AFP. Sería la octava AFP del país."
       ],
@@ -317,7 +321,7 @@
       "bajada": [
         "Las actas de la reunión de septiembre, publicadas el miércoles 7, muestran que «la mayoría de los participantes» ve probable otra alza antes de fin de año. En septiembre, la Reserva Federal subió 25 puntos base, al rango de 3,75%-4%, su primera alza desde julio de 2023."
       ],
-      "importa": "Tasas más altas en Estados Unidos sostienen un dólar fuerte: las importaciones y el crédito en dólares siguen caros.",
+      "importa": "Tasas más altas en Estados Unidos tienden a sostener el dólar: si importas o tienes deudas en dólares, sigue de cerca el tipo de cambio.",
       "fuentes": [
         {
           "medio": "DF",
@@ -332,9 +336,9 @@
     {
       "titular": "Trump promete no atacar a Irán antes del 3 de noviembre, y el petróleo modera su alza",
       "bajada": [
-        "El jueves 8, Trump escribió que no atacará a Irán antes de las elecciones de mitad de mandato del 3 de noviembre, y que sigue el bloqueo naval a las exportaciones iraníes. El Brent llegó a subir más de 5% en el día y después moderó el alza, a US$103,73 el barril."
+        "El jueves 8, Trump escribió que no atacará a Irán antes de las elecciones de mitad de mandato del 3 de noviembre, y que sigue el bloqueo naval a las exportaciones iraníes. El Brent llegó a subir más de 5% en el día y después moderó el alza: a media tarde (16:41 GMT) subía 3,5%, a US$103,73 el barril."
       ],
-      "importa": "Con el petróleo sobre US$100, el diésel y los fletes siguen caros, por lo menos hasta noviembre.",
+      "importa": "Mientras el petróleo siga sobre US$100, el diésel y los fletes seguirán caros.",
       "fuentes": [
         {
           "medio": "DF",
@@ -388,13 +392,9 @@
           "leyenda": "Coquimbo-Colo-Colo"
         },
         "bajada": [
-          "El domingo 11, por la fecha 24, Coquimbo Unido goleó 5-2 a Colo-Colo con dos goles de Nicolás Johansen y uno de Guido Vadalá, Benjamín Chandía y Lucas Pratto; descontaron Javier Correa y Arturo Vidal. Colo-Colo perdió un invicto que traía desde abril, pero sigue líder con 54 puntos. La lluvia y el aluvión de Las Condes frenaron parte de la fecha: la ANFP suspendió Universidad Católica-Audax Italiano."
+          "El domingo 11, por la fecha 24, Coquimbo Unido goleó 5-2 a Colo-Colo con dos goles de Nicolás Johansen y uno de Guido Vadalá, Benjamín Chandía y Lucas Pratto; descontaron Javier Correa y Arturo Vidal. Colo-Colo perdió su racha, pero sigue líder. La lluvia y el aluvión de Las Condes frenaron parte de la fecha: la ANFP suspendió Universidad Católica-Audax Italiano."
         ],
         "fuentes": [
-          {
-            "medio": "Cooperativa",
-            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-primera/resumen-colo-colo-sufrio-con-coquimbo-y-la-u-recorto-distancia-con/2026-10-12/171150.html"
-          },
           {
             "medio": "Chilevisión",
             "url": "https://www.chilevision.cl/chv-deportes/futbol-chileno/coquimbo-unido-goleo-a-colo-colo-y-le-corto-su-racha-en-la-liga-de-primera/"
@@ -406,13 +406,13 @@
         ]
       },
       {
-        "titular": "La Roja Femenina abre la era de Luis Mena con un 7-0",
+        "titular": "La Roja Femenina de Luis Mena golea 7-0 a Bolivia",
         "cifra": {
           "valor": "7-0",
           "leyenda": "Chile-Bolivia, La Florida"
         },
         "bajada": [
-          "En el debut del técnico Luis Mena, el domingo 11 en el Bicentenario de La Florida, Chile goleó 7-0 a Bolivia con doce debutantes. La figura fue Adriana Moreno, de Coquimbo Unido: la federación le cuenta cuatro goles; varios medios, tres y un autogol."
+          "El domingo 11, en el Bicentenario de La Florida, la Roja Femenina de Luis Mena goleó 7-0 a Bolivia con doce debutantes. La figura fue Adriana Moreno, de Coquimbo Unido: la federación le cuenta cuatro goles; varios medios, tres y un autogol."
         ],
         "fuentes": [
           {
@@ -420,8 +420,8 @@
             "url": "https://www.anfp.cl/selecciones/la-roja-femenina-adulta-goleo-7-0-a-bolivia-en-el-inicio-de-la-fecha-fifa-de-octubre/"
           },
           {
-            "medio": "BioBioChile",
-            "url": "https://www.biobiochile.cl/noticias/deportes/futbol/la-roja/2026/10/12/la-roja-femenina-aplasto-a-bolivia-en-amistoso.shtml"
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/futbol-femenino/la-roja-femenina-vivio-en-la-florida-una-fiesta-de-goles-ante-bolivia/2026-10-11/202837.html"
           }
         ]
       }
