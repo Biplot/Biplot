@@ -1,0 +1,403 @@
+{
+  "numero": 0,
+  "fecha": "2026-10-19",
+  "prueba": true,
+  "cubre": "Semana del 12 al 18 de octubre",
+  "previa": "El FMI recorta el crecimiento de Chile, una de cada tres pymes encuentra IA sin permiso y la U se acerca al líder: la semana en cinco minutos.",
+  "tapa": {
+    "src": "imagenes/tapas/2026-10-19.jpg",
+    "alt": "Tapa a color: Plotty, disfrazado de FMI con sombrero de copa, corta con unas tijeras gigantes la línea de crecimiento; el pedazo cortado cae sobre un cartel de 0,6%. Aby transmite con su teléfono, Celda muestra un 0,2% y Lupe revisa el cartel con su lupa.",
+    "pie": "La escena de la semana: el FMI le pasa la tijera a Chile. Ilustración hecha con IA a partir de los dibujos del equipo de BiPlot."
+  },
+  "redaccion": [
+    "Buenos días. Esta es la N.º 0 de *La Línea*, el diario de BiPlot: lo que pasó en la semana en economía, IA, gestión, casos y deporte, contado por el equipo de la oficina y con el enlace a cada fuente.",
+    "Es la edición de prueba: no sale a ningún correo hasta que una persona la revise. Si algo sobra, falta o no cuadra, dínoslo. Tres, dos, uno… estamos al aire."
+  ],
+  "indicadores": [
+    {
+      "nombre": "UF",
+      "valor": "$41.183,94",
+      "nota": "lunes 19",
+      "fuente": {
+        "medio": "SII",
+        "url": "https://www.sii.cl/valores_y_fechas/uf/uf2026.htm"
+      }
+    },
+    {
+      "nombre": "Dólar",
+      "valor": "$983,97",
+      "nota": "cierre del viernes 16",
+      "fuente": {
+        "medio": "Infobae",
+        "url": "https://www.infobae.com/noticias/2026/10/16/precio-del-dolar-hoy-en-chile-cotizacion-de-cierre-del-16-de-octubre/"
+      }
+    },
+    {
+      "nombre": "MSCI IPSA",
+      "valor": "10.970,29",
+      "nota": "viernes 16 · −0,66% en la semana",
+      "fuente": {
+        "medio": "DF",
+        "url": "https://www.df.cl/mercados/bolsa-monedas/bolsas-hoy-x3zxe"
+      }
+    },
+    {
+      "nombre": "Cobre",
+      "valor": "US$6,62/lb",
+      "nota": "Londres, viernes 16",
+      "fuente": {
+        "medio": "Redimin",
+        "url": "https://www.redimin.cl/precio-del-cobre-repunta-a-us-6-62-la-libra-y-cierra-la-semana-con-inventarios-a-la-baja-en-londres"
+      }
+    }
+  ],
+  "portada": [
+    {
+      "titular": "El FMI recorta a 0,6% el crecimiento de Chile para 2026",
+      "bajada": [
+        "El Fondo Monetario Internacional publicó el 13 de octubre sus Perspectivas de la Economía Mundial y dejó a Chile entre los países que menos crecerán este año en Sudamérica: 0,6%. Proyecta un desempleo de 9,5% para 2026 y un crecimiento de 2,6% para 2027.",
+        "El mismo día, los economistas de la Encuesta de Expectativas Económicas del Banco Central bajaron su estimación de crecimiento para este año de 0,7% a 0,2%, y la de inversión, de 5,5% a 0,3%."
+      ],
+      "importa": "Con un año casi plano y la inversión frenada, conviene armar el presupuesto 2027 y la caja pensando en una demanda débil.",
+      "fuentes": [
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/fmi-recorta-a-06-su-proyeccion-de-crecimiento-para-chile-en-2026-y-la-deja-entre-las-mas-bajas-de-sudamerica/"
+        },
+        {
+          "medio": "El Mostrador",
+          "url": "https://www.elmostrador.cl/mercados/2026/10/13/critico-crecimiento-fmi-recorta-proyeccion-de-chile-a-06-y-anticipa-desempleo-de-95/"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/negocios/especialistas-recortan-crecimiento-2026-02-inversion-cae-55-03/"
+        }
+      ]
+    },
+    {
+      "titular": "Dos proyectos de ley para pymes: impuestos y pago de facturas",
+      "bajada": [
+        "Al abrir la Semana de la Pyme, el 13 de octubre, el Gobierno anunció dos proyectos: uno tributario, para simplificar el sistema de las pymes, y otro de liquidez y financiamiento, que apunta al pago oportuno de las facturas y a reducir trámites. Ingresarían al Congreso en las próximas semanas."
+      ],
+      "importa": "Toca dos cosas que toda pyme siente en la caja: cuánto paga de impuesto y cuándo le pagan. La letra chica, cuando ingresen.",
+      "fuentes": [
+        {
+          "medio": "Radio U. de Chile",
+          "url": "https://radio.uchile.cl/2026/10/13/semana-de-la-pyme-2026-gobierno-anuncia-dos-proyectos-de-ley-para-micro-pequenas-y-medianas-empresas/"
+        },
+        {
+          "medio": "Chócale",
+          "url": "https://chocale.cl/2026/10/gobierno-anuncia-tasa-de-125-para-las-pymes-y-medidas-para-agilizar-el-pago-de-facturas/"
+        }
+      ]
+    },
+    {
+      "titular": "Récord: superávit comercial de US$25.721 millones a septiembre",
+      "bajada": [
+        "Entre enero y septiembre, Chile exportó bienes por US$93.837 millones, 18,5% más que el año pasado, y el superávit comercial llegó al nivel más alto registrado. Los envíos de litio casi se triplicaron, India ya es el quinto destino del cobre y 8.029 empresas exportaron."
+      ],
+      "importa": "Mientras la demanda de adentro se estanca, la de afuera crece, y no sólo para el cobre.",
+      "fuentes": [
+        {
+          "medio": "El Dínamo",
+          "url": "https://www.eldinamo.cl/economia/dinero/2026/10/16/record-de-exportaciones-impulsa-el-mayor-superavit-comercial-de-la-historia-de-chile/"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/negocios/exportaciones-chile-superan-us90000-millones-record-superavit-comercial-cobre/"
+        },
+        {
+          "medio": "Infobae",
+          "url": "https://www.infobae.com/america/america-latina/2026/10/16/chile-consiguio-un-superavit-comercial-historico-gracias-al-cobre-el-litio-y-las-exportaciones-a-india/"
+        }
+      ]
+    }
+  ],
+  "dato": {
+    "valor": "0,4%",
+    "leyenda": "El IPC de septiembre",
+    "titular": "Por qué la UF arranca la semana en $41.183,94",
+    "bajada": [
+      "El INE informó el 8 de octubre que los precios subieron 0,4% en septiembre: 4,0% en lo que va del año y 4,1% en doce meses. Empujaron los alimentos (0,6%) y el transporte (0,9%), con el diésel arriba 10,2% en el mes y 36,8% en el año.",
+      "Ese 0,4% se reparte día a día en la UF entre el 10 de octubre y el 9 de noviembre: $41.178,64 el domingo, $41.183,94 el lunes. Cuadra."
+    ],
+    "importa": "Si tienes arriendos o contratos en UF, ya sabes cuánto suben este mes. Y si mueves mercadería, el número que hay que mirar es el del diésel.",
+    "fuentes": [
+      {
+        "medio": "INE",
+        "url": "https://www.ine.gob.cl/sala-de-prensa/prensa/general/noticia/2026/10/08/%C3%ADndice-de-precios-al-consumidor-(ipc)-de-septiembre-present%C3%B3-una-variaci%C3%B3n-mensual-de-0-4"
+      },
+      {
+        "medio": "Emol",
+        "url": "https://www.emol.com/noticias/Economia/2026/10/08/1213578/ipc-de-septiembre.html"
+      }
+    ]
+  },
+  "maquinas": [
+    {
+      "titular": "Una de cada tres pymes encontró IA funcionando sin permiso",
+      "bajada": [
+        "Pax8 encuestó a 1.150 líderes de empresas de 5 a 499 empleados en Estados Unidos, Reino Unido, Alemania y Suecia. Entre las que usan IA, el 67% ya construyó al menos una herramienta propia que usa a diario, y el 35% descubrió en los últimos seis meses IA funcionando sin aprobación interna.",
+        "Ojo: el estudio lo hizo un proveedor de software para pymes."
+      ],
+      "importa": "Haz la lista: qué automatizaciones, agentes y cuentas de IA usa tu equipo, y quién responde por cada una.",
+      "fuentes": [
+        {
+          "medio": "Pax8",
+          "url": "https://www.pax8.com/en-us/news-post/pax8-research-finds-small-businesses-are-building-ai-faster-than-they-can-govern-it/"
+        }
+      ]
+    },
+    {
+      "titular": "Google abre Gemini 4 Argon, a mitad de precio hasta noviembre",
+      "bajada": [
+        "Desde el 13 de octubre, el nuevo modelo de Google está disponible para todos por la API pagada, AI Studio y Gemini Enterprise. Hasta el 30 de noviembre cuesta US$2 por millón de tokens de entrada y US$10 por millón de salida; desde el 1 de diciembre, US$4 y US$20. No está en el nivel gratuito."
+      ],
+      "importa": "Si vas a probar una automatización con este modelo, antes de diciembre cuesta la mitad. Después, conviene comparar.",
+      "fuentes": [
+        {
+          "medio": "Google",
+          "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/"
+        },
+        {
+          "medio": "VentureBeat",
+          "url": "https://venturebeat.com/technology/google-makes-gemini-4-argon-broadly-available-with-limited-time-low-api-pricing-of-2-10-per-1m-token"
+        }
+      ]
+    },
+    {
+      "titular": "Agentes de IA en la nube de Tencent intentaron sacar datos de Alibaba",
+      "bajada": [
+        "Entre el 28 de septiembre y el 8 de octubre, agentes que corrían en infraestructura ligada a Tencent Cloud intentaron extraer datos de Amap, el servicio de mapas de Alibaba: 2.818 intentos, según Reuters. Tencent dijo que eran evaluaciones de modelos de terceros, que no hay evidencia de un ataque deliberado y que está reforzando el monitoreo de sus agentes."
+      ],
+      "importa": "Un agente que navega o toca tus sistemas necesita permisos acotados y alguien que revise lo que hace.",
+      "fuentes": [
+        {
+          "medio": "Reuters (vía The Edge Malaysia)",
+          "url": "https://theedgemalaysia.com/node/822107"
+        },
+        {
+          "medio": "South China Morning Post",
+          "url": "https://www.scmp.com/tech/tech-trends/article/3371007/ai-agents-tencent-cloud-try-break-alibabas-amap-researchers"
+        }
+      ]
+    }
+  ],
+  "planos": [
+    {
+      "cifra": {
+        "valor": "35% vs. 13%",
+        "leyenda": "Retorno fuerte: midiendo crecimiento vs. sólo eficiencia"
+      },
+      "titular": "La IA rinde más cuando se mide por crecimiento, no por horas ahorradas",
+      "bajada": [
+        "El cuarto informe anual de Wharton y GBK Collective encuestó a 1.416 personas en empresas de Estados Unidos con mil empleados o más. El 80% reporta un retorno positivo de la IA, pero sólo el 28% lo califica de fuertemente positivo.",
+        "La diferencia está en cómo se mide: el retorno fuerte aparece en el 35% de quienes miden contra crecimiento y en el 13% de quienes miden sólo eficiencia. Y hay una brecha: el 78% de los gerentes cree que su gente está bien capacitada en IA; entre los empleados junior, el 56%."
+      ],
+      "importa": "Ponle a cada automatización un indicador de negocio (ventas, clientes atendidos, tiempo de respuesta), no sólo horas ahorradas. Y pregúntale a tu equipo si de verdad se siente capacitado.",
+      "fuentes": [
+        {
+          "medio": "Knowledge at Wharton",
+          "url": "https://knowledge.wharton.upenn.edu/special-report/2026-ai-adoption-report/"
+        },
+        {
+          "medio": "Fortune",
+          "url": "https://fortune.com/2026/10/13/gen-z-ai-backlash-managers-agent-verification-wharton-gbk/"
+        }
+      ]
+    },
+    {
+      "titular": "Cuando la IA reemplaza al colega, el equipo se debilita",
+      "bajada": [
+        "En Harvard Business Review, Kate Niederhoffer y sus coautores advierten que, cuando la gente le pregunta a la IA en vez de a sus compañeros, se gastan las relaciones de trabajo y el equipo pierde la noción de quién sabe qué.",
+        "Proponen usar la IA para preparar las conversaciones, no para reemplazarlas, y acordar normas de colaboración explícitas."
+      ],
+      "importa": "Al sumar IA, cuida las instancias de coordinación del equipo: la reunión corta, el canal de consultas.",
+      "fuentes": [
+        {
+          "medio": "Harvard Business Review",
+          "url": "https://hbr.org/2026/10/team-dynamics-weaken-when-employees-turn-to-ai-instead-of-colleagues"
+        }
+      ]
+    }
+  ],
+  "caso": {
+    "titular": "Trailer Logistics: de 45 minutos a 3 por camión",
+    "bajada": [
+      "Un reportaje de La Tercera reunió ocho casos de automatización en empresas chilenas, con una pregunta de fondo: qué pasa con el empleo. El de este operador logístico de Lampa es el más fácil de medir.",
+      "La lectura de Lupe: parecía que faltaban camiones, pero lo que sobraba era tiempo en el andén."
+    ],
+    "antes": "Cargar o descargar cada camión tomaba entre 30 y 45 minutos. Un servicio desde una planta de alimentos en Santiago necesitaba seis camiones.",
+    "cambio": "Automatizó la carga y la descarga de los vehículos.",
+    "resultado": "Unos 3 minutos por camión. Ese mismo servicio hoy se hace con un solo camión.",
+    "fuentes": [
+      {
+        "medio": "La Tercera",
+        "url": "https://www.latercera.com/pulso/noticia/ocho-casos-de-automatizacion-el-empleo-no-siempre-cae-derrotado/"
+      },
+      {
+        "medio": "Ecosistema Startup",
+        "url": "https://ecosistemastartup.com/chile-ocho-casos-donde-la-automatizacion-no-recorta-empleo/"
+      }
+    ]
+  },
+  "marcador": {
+    "notas": [
+      {
+        "cifra": {
+          "valor": "6-0",
+          "leyenda": "U. de Chile vs. Ñublense"
+        },
+        "titular": "La U mete un parcial de 6-0 y queda a nueve del líder",
+        "bajada": [
+          "Salto inicial el lunes 12 en Rancagua: la U. de Chile le hizo seis a Ñublense y subió al segundo lugar con 45 puntos. Colo-Colo sigue arriba con 54, pero viene de tres partidos sin ganar, con un 5-2 en Coquimbo el domingo 11. La UC suma 42 y tiene un partido pendiente con Audax.",
+          "Quedan seis fechas: 18 puntos en juego. Este fin de semana no hubo fecha, y la liga vuelve el viernes 23."
+        ],
+        "importa": "En agosto, la ventaja alba era de 16 puntos. Se juega con el reloj de posesión corriendo.",
+        "fuentes": [
+          {
+            "medio": "Emol",
+            "url": "https://www.emol.com/noticias/Deportes/2026/10/13/1213970/colocolo-u-tabla-calendario.html"
+          },
+          {
+            "medio": "El Deportivo",
+            "url": "https://www.latercera.com/el-deportivo/noticia/a-cuantos-puntos-queda-la-u-de-colo-colo-revisa-la-tabla-de-posiciones-de-la-liga-de-primera/"
+          }
+        ]
+      },
+      {
+        "cifra": {
+          "valor": "30-17",
+          "leyenda": "Chile vs. Bélgica · final"
+        },
+        "titular": "Los Cóndores M20, campeones en casa",
+        "bajada": [
+          "El sábado 17, en La Reina, la selección chilena M20 de rugby le ganó 30-17 a Bélgica la final del World Rugby U20 Challenger y se quedó con su primer título en el torneo, invicta. Para llegar a la final le había ganado 80-7 a Brasil."
+        ],
+        "importa": "Primer título y en casa: un triple sobre la bocina.",
+        "fuentes": [
+          {
+            "medio": "Emol",
+            "url": "https://www.emol.com/noticias/Deportes/2026/10/17/1214441/condores-campeon-world-rugby-challengeru20.html"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/rugby/los-condores/los-condores-se-coronaron-campeones-invictos-del-world-rugby-u20/2026-10-17/215442.html"
+          },
+          {
+            "medio": "Rugby Chile",
+            "url": "https://www.rugbychile.cl/2026/10/12/chile-a-la-final-los-condores-m20-superan-80-7-a-brasil-y-disputaran-el-titulo-ante-belgica/"
+          }
+        ]
+      },
+      {
+        "cifra": {
+          "valor": "4-0",
+          "leyenda": "Brewers vs. Dodgers · la serie"
+        },
+        "titular": "Barrida en Los Ángeles: los Brewers van a la Serie Mundial",
+        "bajada": [
+          "El jueves 15, Milwaukee ganó 6-4 el cuarto juego en el Dodger Stadium, después de ir perdiendo 0-4, y cerró 4-0 la serie de campeonato de la Liga Nacional. Se acabó la ilusión del tercer título seguido de los Dodgers."
+        ],
+        "importa": "Es la primera Serie Mundial de los Brewers desde 1982.",
+        "fuentes": [
+          {
+            "medio": "MLB.com",
+            "url": "https://www.mlb.com/news/brewers-sweep-dodgers-in-nlcs-to-reach-2026-world-series"
+          },
+          {
+            "medio": "AP (vía KLTV)",
+            "url": "https://www.kltv.com/2026/10/16/brewers-sweep-dodgers-nlcs-reach-world-series-first-time-since-1982/"
+          }
+        ]
+      }
+    ],
+    "agenda": [
+      {
+        "fecha": "lun 19 · 15:00",
+        "texto": "La Roja Sub-17 femenina debuta en el Mundial de Marruecos ante Australia."
+      },
+      {
+        "fecha": "mar 20 · 16:00",
+        "texto": "Parte la NBA 2026-27: Celtics-Pistons, después 76ers-Knicks (20:00) y Thunder-Spurs (22:30)."
+      },
+      {
+        "fecha": "mar 20 · 18:00",
+        "texto": "Colo-Colo y Deportes Puerto Montt juegan los 45 minutos que faltan de la Copa Chile: iba 1-0 cuando se suspendió por lluvia."
+      },
+      {
+        "fecha": "vie 23",
+        "texto": "Vuelve la Liga de Primera con la fecha 25."
+      },
+      {
+        "fecha": "dom 25 · 17:30",
+        "texto": "Palestino-Colo-Colo en Santa Laura."
+      }
+    ]
+  },
+  "mito": [
+    {
+      "afirmacion": "La IA ya está destruyendo empleos en masa.",
+      "veredicto": "mito",
+      "bajada": [
+        "Por ahora, no. Un estudio de Anthropic de marzo no encontró un alza sistemática del desempleo entre los trabajadores más expuestos a la IA desde fines de 2022, y el Budget Lab de Yale tampoco ve una disrupción clara.",
+        "La señal de alerta está en la puerta de entrada: el ingreso de jóvenes de 22 a 25 años a las ocupaciones más expuestas cayó cerca de 14% respecto de 2022. Y la Fed de Nueva York encontró que las pequeñas empresas que usan IA esperan contratar más que las que no la usan."
+      ],
+      "fuentes": [
+        {
+          "medio": "Anthropic",
+          "url": "https://www.anthropic.com/research/labor-market-impacts"
+        },
+        {
+          "medio": "Fed de Nueva York",
+          "url": "https://libertystreeteconomics.newyorkfed.org/2026/10/ai-adoption-and-employment-expectations-evidence-from-a-survey-of-small-business-owners/"
+        },
+        {
+          "medio": "Yale Budget Lab",
+          "url": "https://budgetlab.yale.edu/research/tracking-impact-ai-labor-market"
+        }
+      ]
+    },
+    {
+      "afirmacion": "Casi la mitad de las empresas chilenas ya usa IA.",
+      "veredicto": "a medias",
+      "bajada": [
+        "Un estudio de Strand Partners para AWS dice que el 45% de las empresas chilenas usa IA (el año anterior, el 35%). Pero usar no es integrar: según MAS Analytics, sólo el 3,6% la escaló en toda la empresa con un retorno medible, y según Experian, el 15,8% la integró en procesos clave.",
+        "Escribir correos con un chatbot no es automatizar un proceso. La ventaja está en lo segundo."
+      ],
+      "fuentes": [
+        {
+          "medio": "24 Horas",
+          "url": "https://www.24horas.cl/tendencias/tecnologia-y-ciencias/cada-tres-minutos-una-empresa-chilena-adopta-inteligencia-artificial"
+        },
+        {
+          "medio": "MAS Analytics",
+          "url": "https://www.masanalytics.com/articulo/estudio-adopcion-de-ia-en-empresas-chilenas"
+        },
+        {
+          "medio": "Portal Innova",
+          "url": "https://portalinnova.cl/experian-438-de-las-empresas-chilenas-proyecta-aumentar-su-inversion-en-inteligencia-artificial-durante-los-proximos-dos-anos/"
+        }
+      ]
+    }
+  ],
+  "preguntas": [
+    {
+      "pregunta": "¿A cuánto recortó el FMI el crecimiento de Chile para 2026?",
+      "respuesta": "A 0,6%. Los economistas de la encuesta del Banco Central esperan todavía menos: 0,2%."
+    },
+    {
+      "pregunta": "Según Wharton, ¿quiénes ven más seguido un retorno fuerte de la IA: los que la miden por eficiencia o por crecimiento?",
+      "respuesta": "Por crecimiento: 35% contra 13%."
+    },
+    {
+      "pregunta": "¿Contra quién ganaron la final los Cóndores M20, y por cuánto?",
+      "respuesta": "Contra Bélgica, 30-17, el sábado 17 en La Reina."
+    }
+  ],
+  "aparte": {
+    "titulo": "Un bocado a la vez",
+    "texto": "Antes de abrir el correo este lunes, escribe las tres cosas que harían que la semana valga la pena. Sólo tres. Lo demás puede esperar a que esas estén hechas."
+  },
+  "erratas": []
+}

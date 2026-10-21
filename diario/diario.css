@@ -1,0 +1,220 @@
+/* =============================================================
+   La Línea — el diario de BiPlot, como un tomo de manga
+   La tapa va a color (una ilustración en la que el equipo actúa la noticia de la semana) y, al abrir el tomo, las
+   páginas siguen en blanco y negro, como un manga impreso: paneles con borde de tinta, tramas de puntos, líneas de
+   velocidad, globos y onomatopeyas. Las firmas son los recuadros de esquina del cómic. El coral sigue siendo sólo
+   para agendar el diagnóstico: es el único color de las páginas. Lo arma armar.mjs.
+   ============================================================= */
+:root{
+  --papel:#FAFAF7;        --tinta:#0B0B0B;        --tinta-rgb:11,11,11;
+  --trama-clara:#D4D4CE;  --trama-oscura:#6E6E68; --gris:#55554F;
+  --mesa:#E2E1DC;                                    /* la mesa donde está abierto el tomo */
+  --cta:#FF6B4A;          --cta-2:#FF8467;        --cta-text:#2b0f08;     /* sólo para agendar el diagnóstico */
+
+  --titulo:'Dela Gothic One','Arial Black',Impact,sans-serif;
+  --golpe:'Bangers','Impact',sans-serif;            /* onomatopeyas y cifras */
+  --texto:'Archivo Narrow','Arial Narrow',Arial,sans-serif;
+  --globo:'Patrick Hand','Comic Sans MS',cursive;
+  --maquina:'IBM Plex Mono',ui-monospace,monospace;
+
+  --hoja:1120px;
+  --gutter:clamp(16px,3vw,36px);
+  --borde:4px solid var(--tinta);
+  /* Tramas: puntos claros y oscuros, como las de un manga impreso */
+  --trama-c:radial-gradient(circle,var(--trama-oscura) 1.1px,transparent 1.5px) 0 0/6px 6px,var(--trama-clara);
+  --trama-o:radial-gradient(circle,var(--tinta) 1.5px,transparent 1.9px) 0 0/6px 6px,var(--trama-oscura);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--mesa);color:var(--tinta);font:400 1.04rem/1.5 var(--texto);-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:.16em}
+:focus-visible{outline:3px solid var(--tinta);outline-offset:3px}
+h1,h2,h3,h4,p{margin:0}
+h1,h2,h3,h4{font-weight:400}
+.saltar{position:absolute;left:-9999px}
+.saltar:focus{left:1rem;top:1rem;z-index:5;background:var(--tinta);color:var(--papel);padding:.6rem 1rem}
+
+/* ===== La barra ===== */
+.barra{background:var(--tinta);color:var(--papel)}
+.barra>div{max-width:var(--hoja);margin:0 auto;padding:0 var(--gutter);display:flex;justify-content:space-between;align-items:center;gap:1rem;min-height:50px;
+  font:700 .8rem/1.2 var(--texto);letter-spacing:.08em;text-transform:uppercase}
+.barra a{text-decoration:none;display:inline-flex;align-items:center;gap:.55rem}
+.barra svg{width:24px;height:24px;flex:none}
+.barra .marca{font:400 1rem/1 var(--titulo);letter-spacing:0;text-transform:none}
+.barra nav{display:flex;gap:1.2rem}
+
+/* ===== El tomo: la tapa y las hojas ===== */
+.tomo{display:grid;gap:clamp(1.4rem,3vw,2.2rem);padding:clamp(1.4rem,3vw,2.4rem) clamp(0px,2vw,24px) clamp(2rem,5vw,4rem)}
+.tapa{margin:0 auto;width:min(100%,620px);display:grid;gap:.7rem;justify-items:center}
+.tapa img{width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;box-shadow:0 30px 60px -26px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.2);background:var(--trama-c)}
+.tapa figcaption{font:400 .82rem/1.4 var(--maquina);color:var(--gris);text-align:center;max-width:52ch;padding:0 16px}
+.abrir{display:inline-flex;align-items:center;gap:.5rem;background:var(--tinta);color:var(--papel);text-decoration:none;font:400 .95rem/1 var(--titulo);padding:.75rem 1.2rem}
+.abrir:hover{background:#2a2a2a}
+.tapa-tipografica{width:100%;aspect-ratio:2/3;background:var(--tinta);color:var(--papel);display:grid;align-content:center;gap:1rem;padding:2rem;text-align:center}
+.tapa-tipografica b{font:400 clamp(3rem,12vw,5rem)/1 var(--titulo)}
+.tapa-tipografica span{font:400 1.4rem/1.2 var(--titulo)}
+.hoja{position:relative;max-width:var(--hoja);width:100%;margin:0 auto;padding:clamp(1rem,2.4vw,1.6rem) var(--gutter) clamp(1rem,2vw,1.4rem);
+  background:var(--papel);box-shadow:0 18px 40px -24px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.08)}
+/* El capítulo, arriba, y el folio con el número de página, abajo, como en un tomo */
+.capitulo{display:flex;align-items:baseline;flex-wrap:wrap;gap:.3rem 1rem;background:var(--tinta);color:var(--papel);padding:.55rem .9rem;margin-bottom:1rem}
+.capitulo span{font:700 .78rem/1 var(--texto);letter-spacing:.14em;text-transform:uppercase}
+.capitulo h2{font:400 clamp(1.4rem,3.4vw,2.2rem)/1.05 var(--titulo)}
+.folio{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:1.2rem;padding-top:.6rem;border-top:2px solid var(--tinta);
+  font:400 .74rem/1.2 var(--maquina);text-transform:uppercase;letter-spacing:.06em}
+.folio b{background:var(--tinta);color:var(--papel);font:400 1rem/1 var(--golpe);letter-spacing:.06em;padding:.3rem .55rem}
+
+/* ===== Paneles ===== */
+.panel{position:relative;border:var(--borde);background:var(--papel);padding:1rem 1.1rem 1.1rem;min-width:0;overflow:hidden}
+.paneles{display:grid;gap:12px}
+@media (min-width:760px){.paneles{grid-template-columns:repeat(var(--cols,3),minmax(0,1fr))}.paneles.n-2{--cols:2}.paneles.n-1{--cols:1}}
+.panel.trama{background:var(--trama-c)}
+.panel.trama>*{position:relative}
+.panel.trama h4,.panel.trama .bajada,.panel.trama .importa,.panel.trama .fuente{background:var(--papel)}
+.panel.trama h4{border:3px solid var(--tinta);padding:.4rem .55rem}
+.narra{display:inline-block;background:var(--papel);border:3px solid var(--tinta);padding:.15rem .5rem;font:700 .78rem/1.3 var(--texto);letter-spacing:.08em;text-transform:uppercase}
+.onomatopeya{position:absolute;font:400 clamp(2.6rem,6vw,4.4rem)/1 var(--golpe);color:var(--papel);-webkit-text-stroke:3px var(--tinta);paint-order:stroke fill;text-shadow:4px 4px 0 var(--tinta);letter-spacing:.04em;pointer-events:none}
+
+/* Las notas */
+.nota h3,.nota h4{font:400 clamp(1.2rem,2.2vw,1.5rem)/1.15 var(--titulo);text-wrap:balance}
+.nota .bajada{margin-top:.55rem;font-size:1.02rem;line-height:1.5}
+.nota .bajada+.bajada{margin-top:.45rem}
+.panel.trama .bajada,.panel.trama .fuente{padding:.35rem .5rem;border:2px solid var(--tinta)}
+.nota .cifra{display:inline-block;background:var(--tinta);color:var(--papel);font:400 clamp(2rem,4vw,2.8rem)/1 var(--golpe);letter-spacing:.04em;padding:.15rem .6rem;transform:skewX(-8deg);margin-bottom:.5rem}
+.nota .cifra small{display:block;font:700 .66rem/1.3 var(--texto);letter-spacing:.12em;text-transform:uppercase;transform:skewX(8deg);margin-top:.15rem}
+/* «Por qué importa» va en el globo de quien firma la sección */
+.importa{position:relative;margin-top:1rem;background:var(--papel);border:3px solid var(--tinta);border-radius:22px;padding:.65rem .9rem;font:400 1.08rem/1.3 var(--globo)}
+.importa::before{content:"";position:absolute;left:22px;top:-15px;border:8px solid transparent;border-bottom:13px solid var(--tinta);border-top:0}
+.importa::after{content:"";position:absolute;left:25px;top:-9px;border:5px solid transparent;border-bottom:9px solid var(--papel);border-top:0}
+.importa b{font:400 .78rem/1 var(--titulo);margin-right:.3rem}
+.fuente{margin-top:.7rem;font:400 .74rem/1.45 var(--maquina);color:var(--gris)}
+.fuente a{color:var(--tinta)}
+
+/* La firma: el recuadro de esquina del cómic y su frase en un globo */
+.sec-cab{display:grid;grid-template-columns:auto 1fr;gap:.8rem 1rem;align-items:center;margin:1.4rem 0 .9rem}
+.sec-cab .recuadro{grid-row:span 2}
+.recuadro{width:84px;height:84px;border:var(--borde);background:var(--trama-c);flex:none}
+.recuadro img{width:100%;height:100%}
+.sec-nombre{display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .8rem}
+.sec-nombre h3{font:400 clamp(1.6rem,3.6vw,2.3rem)/1 var(--titulo)}
+.sec-nombre span{font:700 .76rem/1 var(--texto);letter-spacing:.14em;text-transform:uppercase}
+.sec-firma{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .8rem}
+.sec-firma b{font:700 .8rem/1 var(--texto);letter-spacing:.1em;text-transform:uppercase}
+.sec-firma i{font:400 1.05rem/1.2 var(--globo);font-style:normal;border:2px solid var(--tinta);border-radius:16px;padding:.15rem .6rem}
+
+/* ===== La portada (capítulo 1) ===== */
+.mercados{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:0 0 12px}
+@media (min-width:760px){.mercados{grid-template-columns:repeat(var(--n,4),1fr)}}
+.mercados div{border:3px solid var(--tinta);padding:.4rem .6rem}
+.mercados dt{font:700 .7rem/1.1 var(--texto);letter-spacing:.12em;text-transform:uppercase}
+.mercados dd{margin:.15rem 0 0;font:400 1.6rem/1.05 var(--golpe);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.mercados small{display:block;font:400 .68rem/1.3 var(--maquina);color:var(--gris)}
+.mercados small a{color:var(--gris)}
+.portada-paneles{display:grid;gap:12px}
+@media (min-width:860px){.portada-paneles{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}.principal{grid-row:span 2}}
+/* La nota principal: líneas de velocidad hacia el centro de la acción */
+.principal{background:radial-gradient(circle at 78% 18%,var(--papel) 0 16%,rgba(250,250,247,0) 42%),repeating-conic-gradient(from 2deg at 78% 18%,rgba(var(--tinta-rgb),.9) 0 .6deg,transparent .6deg 5deg),var(--papel)}
+.principal .contenido{position:relative;background:var(--papel);border:3px solid var(--tinta);padding:1rem;margin-top:5.2rem}
+.principal h2{font:400 clamp(1.7rem,4.4vw,2.9rem)/1.06 var(--titulo);text-wrap:balance;margin:.5rem 0 .6rem}
+.principal .onomatopeya{left:1rem;top:.6rem;transform:rotate(-8deg)}
+.principal .bajada{font-size:1.08rem}
+.principal .dice{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:start;margin-top:1rem}
+.principal .dice .importa{margin-top:.3rem}
+.principal .dice .importa::before{left:-15px;top:22px;border:8px solid transparent;border-right:13px solid var(--tinta);border-left:0}
+.principal .dice .importa::after{left:-9px;top:25px;border:5px solid transparent;border-right:9px solid var(--papel);border-left:0}
+.redaccion{border:var(--borde);padding:.9rem 1rem;margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:.8rem 1rem;align-items:start}
+.redaccion p{font-size:1rem}
+.redaccion p+p{margin-top:.4rem}
+.redaccion .narra{margin-bottom:.5rem}
+.indice{border:var(--borde);padding:.8rem 1rem;margin-top:12px}
+.indice h2{font:400 1rem/1 var(--titulo);margin-bottom:.5rem}
+.indice ol{list-style:none;margin:0;padding:0;display:grid;gap:.3rem}
+@media (min-width:760px){.indice ol{grid-template-columns:repeat(2,1fr);column-gap:2rem}}
+.indice a{display:flex;align-items:baseline;gap:.4rem;text-decoration:none}
+.indice a::after{content:"";flex:1;order:1;border-bottom:2px dotted var(--tinta);transform:translateY(-.25em)}
+.indice a b{order:2;font:400 1.1rem/1 var(--golpe);letter-spacing:.04em}
+.indice a:hover span{text-decoration:underline}
+
+/* El dato (Celda): la cifra grande en negativo */
+.el-dato{display:grid;gap:12px}
+@media (min-width:760px){.el-dato{grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr)}}
+.el-dato .grande{display:grid;place-content:center;text-align:center;background:var(--tinta);color:var(--papel);border:var(--borde);padding:1.2rem}
+.el-dato .grande b{font:400 clamp(4.4rem,12vw,7rem)/.9 var(--golpe);letter-spacing:.03em}
+.el-dato .grande small{font:700 .74rem/1.3 var(--texto);letter-spacing:.14em;text-transform:uppercase;margin-top:.5rem}
+
+/* El caso (Lupe): una tira de tres viñetas */
+.tira{display:grid;gap:12px;margin-top:12px}
+@media (min-width:760px){.tira{grid-template-columns:repeat(3,1fr)}}
+.tira .panel{padding-top:2.4rem}
+.tira .narra{position:absolute;left:-3px;top:-3px}
+.tira p{font-size:1.02rem}
+.tira .panel:nth-child(2){background:var(--trama-c)}
+.tira .panel:nth-child(2) p{background:var(--papel);border:2px solid var(--tinta);padding:.35rem .5rem}
+
+/* ¿Mito o dato? (Tamandúa): el timbre */
+.timbre{display:inline-block;transform:rotate(-5deg);border:4px double var(--tinta);padding:.1rem .6rem;margin-bottom:.6rem;font:400 1.1rem/1.1 var(--titulo);letter-spacing:.12em}
+.timbre.v-medias{background:var(--trama-c)}
+.afirmacion{font:400 1.25rem/1.25 var(--globo);border:3px solid var(--tinta);border-radius:22px;padding:.5rem .8rem;margin-bottom:.3rem}
+
+/* El marcador (Felipe): líneas de movimiento y los resultados en negativo */
+.marcador{position:relative;background:repeating-linear-gradient(-8deg,var(--tinta) 0 2px,transparent 2px 10px),var(--papel);padding:12px;border:var(--borde)}
+.marcador .onomatopeya{right:1rem;top:.4rem;transform:rotate(9deg);z-index:1}
+.marcador .panel{padding-top:1rem}
+.agenda{border:var(--borde);margin-top:12px;padding:.8rem 1rem}
+.agenda h4{font:400 1rem/1 var(--titulo)}
+.agenda ul{list-style:none;margin:.6rem 0 0;padding:0;display:grid;gap:.35rem}
+.agenda li{display:grid;grid-template-columns:8.5rem 1fr;gap:1rem}
+.agenda li b{font:600 .8rem/1.7 var(--maquina);text-transform:uppercase}
+@media (max-width:520px){.agenda li{grid-template-columns:1fr;gap:0}}
+@media (max-width:520px){.principal .dice{grid-template-columns:56px 1fr}.principal .dice .recuadro{width:56px !important;height:56px !important}}
+
+/* ===== Pasatiempos y avisos ===== */
+.preguntas{list-style:none;margin:0;padding:0;counter-reset:p;display:grid;gap:.8rem}
+.preguntas li{counter-increment:p;display:grid;grid-template-columns:2.2rem 1fr;gap:.5rem;align-items:start}
+.preguntas li::before{content:counter(p);display:grid;place-items:center;width:2.2rem;height:2.2rem;background:var(--tinta);color:var(--papel);font:400 1.3rem/1 var(--golpe)}
+.preguntas li span{font:400 1.12rem/1.3 var(--globo);border:3px solid var(--tinta);border-radius:20px;padding:.4rem .8rem}
+/* Las soluciones, de cabeza, como en los pasatiempos del diario */
+.soluciones{margin-top:1rem;padding-top:.6rem;border-top:2px dotted var(--tinta);transform:rotate(180deg);font:400 .82rem/1.4 var(--maquina);color:var(--gris)}
+.cierre{display:grid;gap:12px}
+@media (min-width:860px){.cierre{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}}
+.consultorio{display:grid;grid-template-columns:auto 1fr;gap:.8rem 1rem;align-items:start}
+.consultorio img{width:64px;height:64px;border:3px solid var(--tinta)}
+.consultorio h3{font:400 1.25rem/1.1 var(--titulo);margin-top:.4rem}
+.consultorio p{margin-top:.35rem}
+.consultorio a{display:inline-block;margin-top:.45rem;font:400 .76rem/1.3 var(--maquina);text-transform:uppercase}
+/* Se busca: el aviso de BiPlot, con el único color de las páginas */
+.se-busca{border:6px solid var(--tinta);outline:2px solid var(--tinta);outline-offset:-12px;padding:1.4rem 1.2rem 1.5rem;text-align:center;background:var(--trama-c)}
+.se-busca>*{background:var(--papel)}
+.se-busca .narra{border-width:3px}
+.se-busca h3{display:inline-block;font:400 clamp(2.6rem,7vw,4rem)/1 var(--titulo);padding:.2rem .6rem;margin:.6rem 0 .5rem;border:4px solid var(--tinta)}
+.se-busca p{display:inline-block;padding:.3rem .6rem;border:2px solid var(--tinta);margin-top:.4rem;font-size:1.02rem}
+.se-busca .recompensa{font:400 .95rem/1.3 var(--titulo)}
+.se-busca .accion{display:block;background:none;border:0;margin-top:.9rem;padding:0}
+.btn-cta{display:inline-flex;align-items:center;gap:.6rem;background:var(--cta);color:var(--cta-text);border:3px solid var(--tinta);border-radius:999px;padding:.8rem 1.3rem;
+  font:400 .98rem/1 var(--titulo);text-decoration:none;box-shadow:4px 4px 0 var(--tinta)}
+.btn-cta:hover{background:var(--cta-2)}
+.btn-cta::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--cta-text)}
+.cajas{display:grid;gap:12px;margin-top:12px}
+@media (min-width:760px){.cajas{grid-template-columns:1.6fr 1fr 1fr}}
+.cajas>div{border:3px solid var(--tinta);padding:.7rem .9rem}
+.cajas h3{font:400 .9rem/1 var(--titulo);margin-bottom:.45rem}
+.cajas p{font:400 .78rem/1.6 var(--maquina);color:var(--gris)}
+.cajas p a{color:var(--tinta)}
+.cajas sup{font-size:.7em}
+
+/* ===== El pie ===== */
+.pie{max-width:var(--hoja);margin:0 auto;padding:0 var(--gutter) 2.6rem;font:400 .78rem/1.6 var(--maquina);color:var(--gris);text-align:center}
+.pie a{color:var(--tinta)}
+
+/* ===== La hemeroteca: los tomos en el estante ===== */
+.estante{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.4rem}
+.estante a{display:grid;gap:.5rem;text-decoration:none}
+.estante img,.estante .tapa-tipografica{aspect-ratio:2/3;width:100%;object-fit:cover;box-shadow:0 12px 28px -16px rgba(0,0,0,.6)}
+.estante .tapa-tipografica{padding:1rem}.estante .tapa-tipografica b{font-size:2rem}.estante .tapa-tipografica span{font-size:1rem}
+.estante b.vol{font:400 1.2rem/1 var(--golpe);letter-spacing:.04em}
+.estante .fecha{font:400 .72rem/1.3 var(--maquina);text-transform:uppercase;color:var(--gris)}
+.estante .tit{font:400 1rem/1.2 var(--titulo)}
+.etiqueta{font:700 .62rem/1 var(--texto);letter-spacing:.12em;text-transform:uppercase;border:2px solid currentColor;padding:.15rem .35rem;margin-left:.4rem}
+
+@media (prefers-reduced-motion:no-preference){.btn-cta,.abrir{transition:background .15s}}
+@media print{body{background:#fff}.barra,.pie,.abrir{display:none}.hoja{box-shadow:none}}

@@ -1,0 +1,47 @@
+# Que cada página de La Línea salga de su JSON: arma de nuevo todas las ediciones con diario/_herramientas/armar.mjs y
+# falla si algo cambia (una página editada a mano, una edición sin su página o la hemeroteca atrasada). La sección
+# «La Línea» del CRM sólo publica una edición con este check en verde: lo que se validó allí es el JSON. No necesita llaves.
+name: Diario · verificar
+
+on:
+  pull_request:
+    paths:
+      - "diario/**"
+      - ".github/workflows/diario.yml"
+  push:
+    branches: [main]
+    paths:
+      - "diario/**"
+      - ".github/workflows/diario.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    # El CRM busca el check por este nombre (VERIFICAR en src/lib/la-linea.ts de biplot-crm): si cambia, cambia allá.
+    name: Diario · verificar
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Armar de nuevo cada edición y comparar
+        run: |
+          for f in diario/_herramientas/ediciones/*.json; do
+            node diario/_herramientas/armar.mjs "$(basename "$f" .json)"
+          done
+          cambios="$(git status --porcelain -- diario)"
+          if [ -n "$cambios" ]; then
+            echo "$cambios"
+            git --no-pager diff --stat -- diario
+            echo "::error::Hay páginas del diario que no salen de su JSON. Corre «node diario/_herramientas/armar.mjs AAAA-MM-DD» y sube lo que cambie."
+            exit 1
+          fi
+          echo "Cada página del diario sale de su JSON."

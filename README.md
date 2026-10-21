@@ -36,6 +36,12 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   dos recortes de los dibujos de la oficina: `oficina-adentro.webp` (el equipo en sus estaciones; se vuelve a sacar con
   `node oficina/_herramientas/fotografiar-adentro.mjs <salida.png>` y se pasa a WebP con calidad 78) y `local-libre.webp`
   (el local «Tu proyecto aquí»).
+- `diario/` — **La Línea**, el diario de BiPlot: un newsletter que es un diario de verdad, armado como tomo de manga (una
+  tapa a color donde el equipo actúa la noticia de la semana y, adentro, capítulos en blanco y negro con paneles, tramas y
+  globos, y las caras del equipo dibujadas en anime), con secciones firmadas por el equipo de la oficina (IA, gestión, casos
+  de éxito, economía, deporte…) y su fuente en cada nota. Cada edición en biplot.cl/diario/AAAA-MM-DD/ y la hemeroteca en
+  biplot.cl/diario/; el correo se arma desde el mismo contenido con `node diario/_herramientas/armar.mjs`. La N.º 0 es la
+  edición de prueba (no indexada). Ver `diario/README.md`.
 - `propuestas/fundos-inmobiliaria/` — propuesta de sitio para Fundos Inmobiliaria (no indexada; ver su README).
 
 ## Desarrollo local
