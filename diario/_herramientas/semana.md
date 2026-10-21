@@ -24,7 +24,7 @@ Hora de Chile. La edición cubre de lunes a domingo y sale el lunes siguiente, c
 | domingo, 10:00 | Cierre de la recolección (viernes a domingo) y la principal | redacción | 24 min, cuatro búsquedas en paralelo |
 | domingo, 10:30 | Tres escenas para la tapa | redacción | 4 min, más 6 de rehacer dos |
 | domingo, 11:00 | Redacción del JSON | redacción | 10 min |
-| domingo, 11:30 | Verificación y correcciones | Tamandúa y redacción | ver «La verificación» |
+| domingo, 11:30 | Verificación y correcciones | Tamandúa y redacción | 17 min, más 10 de correcciones |
 | domingo, 12:30 | Armar, fotografiar, revisar las capturas y abrir el PR | redacción | 10 min |
 | domingo, en la tarde | Elegir la tapa en La Línea | socio | — |
 | domingo, 20:00 | Poner la tapa elegida, sacar `escenas` y subir | redacción | — |
@@ -101,6 +101,11 @@ esa fecha, y la nota de la redacción dice qué indicadores son del viernes.
   número, unidad, fecha, día de la semana, atribución y que nada dependa de lo publicado después del domingo. Entrega
   cada problema con lo que dice la nota, lo que dice la fuente, la corrección y la gravedad.
 - Se corrige todo lo de gravedad alta y media antes de abrir el PR; lo que no se pudo verificar se dice en el PR.
+- En la práctica encontró 27 problemas: 1 alto (el plazo del F29 para quien paga con mandato al banco no era el martes
+  13, sino el día 11), 14 medios y 12 de estilo. Los medios fueron casi todos de atribución: una causa dicha como única
+  («la causa es la guerra»), una cifra de todas las organizaciones atribuida sólo a las pymes, un precio a media tarde
+  presentado como cierre, un titular que daba por hecho lo que venía de fuentes anónimas, y datos tomados de notas
+  publicadas después del domingo.
 - La Línea del CRM lee la edición con un esquema estricto: un campo que el CRM no conoce o un enlace que no sea https
   impiden aprobarla. Conviene probarlo antes del PR con `leerEdicion` de `biplot-crm/src/lib/la-linea.ts`.
 
@@ -140,6 +145,7 @@ esa fecha, y la nota de la redacción dice qué indicadores son del viernes.
 - Las fuentes se contradicen a menudo en detalles (cierres del dólar, minutos de un gol, cuántos goles marcó una
   jugadora): se elige una, se cita esa, o se dice que hay dos versiones.
 - Las imágenes se equivocan en los números: hay que mirarlas siempre antes de proponerlas.
-- Una edición escrita después de su fecha no debe anunciar en «Lo que viene» lo que ya se sabe que se suspendió.
+- «Lo que viene» se escribe con lo que se sabía el domingo. Si la edición se arma después (como la práctica), se deja
+  fuera lo que ya se sabe que se suspendió y el PR lo dice: es preferible a publicar una agenda que se sabe falsa.
 - Una edición de práctica (`"prueba": true`) muestra en La Línea las preguntas del diseño, no las de la semana: el CRM
   todavía no distingue una de otra.
