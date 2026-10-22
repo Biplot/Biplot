@@ -293,6 +293,9 @@ ficha ya estaba abierta (un enlace directo como #felipe) cuando llega el archivo
 Si la edición trae su video de la semana (`video` en `ultima.json`, de `diario/_herramientas/video.mjs`), la tele
 suma el canal «La Línea de la semana» justo antes de «Tu proyecto» (`canalesTele`), con «Leer La Línea»: el horizontal
 en la pantalla grande y el vertical en el celular parado, como los demás canales.
+En El Archivo, debajo de «La primera oficina», está el estante de La Línea (la zona `hemeroteca` en
+`salas-propias/archivo.mjs`, con su parada en el recorrido con Pepa): su tarjeta lista un tomo por número publicado (`tomos`
+de `ultima.json`, el más nuevo primero, con su tapa; `tomosLinea`) y, mientras no hay ninguno, cuándo llega el primero.
 
 **Las vitrinas, en 3D.** Al tocar una vitrina del museo (cada época, cada desarrollo y el pedestal libre) se abre en
 grande y en 3D, sobre la sala oscurecida: su pedestal con su cédula, su vidrio y la pieza del centro van girando, una

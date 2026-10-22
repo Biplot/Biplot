@@ -22,15 +22,22 @@
   // El quiosco de la plaza y el cintillo de la tele muestran la última edición, de ../diario/ultima.json (lo arma
   // diario/_herramientas/armar.mjs, sólo con ediciones que no son de prueba). Lo que trae se revisa y se pone como texto;
   // si no llega o no hay edición, el quiosco dice cuándo sale la próxima y la tele va sin cintillo.
-  var DIARIO = { edicion: null, proxima: null };
+  var DIARIO = { edicion: null, proxima: null, tomos: [] };
   function revisarDiario(d) {
     var FECHA = /^\d{4}-\d{2}-\d{2}$/, texto = function (t, n) { return typeof t === 'string' ? t.slice(0, n) : ''; };
     var e = d && d.edicion, tapa = e && e.tapa && typeof e.tapa.src === 'string' && /^(\/diario\/imagenes\/[\w.\/-]+|https:\/\/[^\s"'<>]+)$/.test(e.tapa.src) ? e.tapa : null;
     var VIDEO = /^\/diario\/\d{4}-\d{2}-\d{2}\/video\/[hv]\.(mp4|jpg)$/;
     var video = e && e.video && VIDEO.test(e.video.h || '') && VIDEO.test(e.video.v || '') && VIDEO.test(e.video.poster || '') ? e.video : null;
     var ok = e && typeof e.numero === 'number' && FECHA.test(e.fecha || '') && /^\/diario\/\d{4}-\d{2}-\d{2}\/$/.test(e.url || '') && texto(e.titular, 200);
+    // Los números publicados, para el estante de El Archivo (sólo los que se pueden mostrar enteros)
+    var tomos = (d && Array.isArray(d.tomos) ? d.tomos : []).filter(function (t) {
+      return t && typeof t.numero === 'number' && FECHA.test(t.fecha || '') && /^\/diario\/\d{4}-\d{2}-\d{2}\/$/.test(t.url || '') && texto(t.titular, 200);
+    }).slice(0, 60).map(function (t) {
+      return { numero: t.numero, fecha: t.fecha, url: '..' + t.url, titular: texto(t.titular, 200), tapa: /^\/diario\/imagenes\/[\w.\/-]+$/.test(t.tapa || '') ? '..' + t.tapa : null };
+    });
     return {
       proxima: d && FECHA.test(d.proxima || '') ? d.proxima : null,
+      tomos: tomos,
       edicion: ok ? { numero: e.numero, fecha: e.fecha, url: '..' + e.url, titular: texto(e.titular, 200),
         titulares: (Array.isArray(e.titulares) ? e.titulares : []).map(function (t) { return texto(t, 200); }).filter(Boolean).slice(0, 3),
         tapa: tapa ? { src: (/^\//.test(tapa.src) ? '..' : '') + tapa.src, alt: texto(tapa.alt, 400) } : null,
@@ -65,6 +72,15 @@
     p.innerHTML = '<span class="intro-linea-cara" aria-hidden="true">' + avatar('plotty') + '</span><span><b>Salió La Línea N.º ' + esc(String(ed.numero)) + ':</b> ' + esc(ed.titular) +
       ' <a href="' + esc(ed.url) + '">Leer el diario</a></span>';
     var acc = intro.querySelector('.intro-acciones'); intro.insertBefore(p, acc || null);
+  }
+  // El estante de La Línea en El Archivo: un tomo por número publicado, el más nuevo primero; sin ninguno, cuándo sale
+  function tomosLinea() {
+    var T = DIARIO.tomos;
+    if (!T.length) return '<p class="tomos-vacio">' + esc(DIARIO.proxima ? 'El primer tomo llega el ' + diaDiario(DIARIO.proxima) + '.' : 'Sale los lunes.') + '</p>';
+    return '<ol class="tomos-linea">' + T.map(function (t) {
+      return '<li><a href="' + esc(t.url) + '">' + (t.tapa ? '<img src="' + esc(t.tapa) + '" alt="" width="48" height="72" loading="lazy">' : '<span class="tomos-sin-tapa" aria-hidden="true">N.º ' + esc(String(t.numero)) + '</span>') +
+        '<span><b>N.º ' + esc(String(t.numero)) + ' · ' + esc(diaDiario(t.fecha)) + '</b>' + esc(t.titular) + '</span></a></li>';
+    }).join('') + '</ol>';
   }
   // En la pantalla del centro de BiPlot.TV, el marcador de la semana: el de Felipe en La Línea
   function marcadorLinea() {
@@ -1601,7 +1617,7 @@
         '<figcaption>' + esc(piePantalla(pr, d.imagen)) + '</figcaption></figure>' : '') +
       (d.video ? htmlVideoZona(d) : '') +
       (d.texto ? '<p>' + esc(d.texto) + '</p>' : '') +
-      (d.marcadorLinea ? marcadorLinea() : '') +
+      (d.marcadorLinea ? marcadorLinea() : '') + (d.tomosLinea ? tomosLinea() : '') +
       (d.chips && d.chips.length ? '<ul class="tarjeta-chips">' + d.chips.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' : '') +
       (d.fases ? htmlFases(d.atlas) : '') + (d.hitos ? htmlHitos(d.hitos) : '') + (d.fichero ? '<div class="tarjeta-fichero">' + htmlFichero('h4', true) + '</div>' : '') +
       (d.programas ? '<div class="tarjeta-programas">' + htmlProgramas(programasTv(), true) + '</div>' : '') +

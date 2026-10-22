@@ -7,7 +7,8 @@
 // 360, el QR de la mesa de Haru 360, el módulo de Nu Home 360, la huella de Eleven 360 y el elefante de Rumbo). Termina en
 // el punto coral, frente al pedestal libre: tu turno. En los muros, la línea de tiempo de 2026 y el nombre del museo; a la
 // izquierda, el fichero con todos los casos por rubro, BiPlot HQ el día que abrió, el primer plano de la oficina y los
-// diseños anteriores de The Architect y The Engine; en el fondo, junto al fichero, la primera oficina, en dos pisos. Lo
+// diseños anteriores de The Architect y The Engine; en el fondo, junto al fichero, la primera oficina, en dos pisos, y
+// debajo los tomos de La Línea, el diario de BiPlot. Lo
 // cuida Pepa (Cosecha): «Lo que sirve dos veces se guarda». Sus
 // textos (tarjetas, burbujas y recorrido) están en datos.js (salas.archivo.salaPropia).
 import { montar, base, registrar, planoXen, plantaAlta, txt, mono, PELO, Z, PIEL, EA, r1 } from './comun.mjs';
@@ -281,6 +282,21 @@ export function salaArchivo(o = {}) {
     L.planoY(xo, 0.02, 0.86, 220, 20, mono(0, 14, 'LA PRIMERA OFICINA', 11, GRIS, ' letter-spacing="1.2"'), -38.9);
     zona('primera', { formas: [{ plano: [[xo, 0.03, 1.05], [xo + 2.2, 0.03, 1.05], [xo + 2.2, 0.03, 2.38], [xo, 0.03, 2.38]] }], lugar: [xo + 1.1, 0.05, 2.58], guia: [xo + 1.1, 1.5],
       frente: { img: 'archivo-primera-oficina', ancho: 1400, alto: 820, alt: 'La primera oficina de BiPlot HQ, el 25 de septiembre de 2026, en isométrico y en dos pisos: abajo, el equipo (la recepción con Plotty, el muro del equipo, la mesa de dos, el set y el tubo a producción); arriba, una sala por proyecto (Nu Home 360, Fundos 360, Haru 360, Eleven 360 y Rumbo) y la sala libre', pie: 'BiPlot HQ · 25 sep 2026' } });
+    // Debajo, los tomos de La Línea, el diario de BiPlot: un mueble bajo con un tomo por número, en blanco y negro como
+    // el manga y el de la semana en cian (la lista de los publicados va en su tarjeta, desde diario/ultima.json)
+    L.caja(1.0, 0.06, 0, 2.1, 0.38, 0.3, NOGAL, 1.3);
+    L.caja(0.98, 0.04, 0.3, 2.14, 0.42, 0.03, ROBLE, 1.32);
+    L.planoY(1.08, 0.441, 0.24, 190, 16, mono(0, 11, 'LA LÍNEA · LOS TOMOS', 9.5, '#F4ECD8', ' letter-spacing="1.4"'), 1.34);
+    const LOMOS = ['#FAFAF7', '#0B0B0B', '#FAFAF7', '#D4D4CE', '#0B0B0B', '#FAFAF7', '#6E6E68', '#FAFAF7', '#0B0B0B', '#FAFAF7', '#D4D4CE', '#0B0B0B', CIAN];
+    LOMOS.forEach((c, i) => {
+      const x = 1.14 + i * 0.075, alto = 0.22 + (i % 3) * 0.014;
+      L.caja(x, 0.12, 0.33, 0.062, 0.2, alto, { t: '#E8E6E0', l: c, r: c === '#0B0B0B' ? '#000000' : '#B7B1A6' }, 1.4 + i * 0.002);
+    });
+    // Un sujetalibros y, al lado, dos tomos acostados
+    L.caja(1.14 + LOMOS.length * 0.075, 0.12, 0.33, 0.02, 0.2, 0.18, { t: CIAN2, l: CIAN, r: '#0A8A7E' }, 1.44);
+    L.caja(2.42, 0.12, 0.33, 0.2, 0.2, 0.03, { t: '#FAFAF7', l: '#0B0B0B', r: '#D4D4CE' }, 1.45);
+    L.caja(2.43, 0.13, 0.36, 0.18, 0.18, 0.03, { t: '#0B0B0B', l: '#FAFAF7', r: '#6E6E68' }, 1.46);
+    zona('hemeroteca', { formas: [{ piso: [[0.98, 0.04], [3.12, 0.04], [3.12, 0.46], [0.98, 0.46]], alto: 0.62 }], lugar: [2.05, 0.3, 0.82], guia: [2.7, 1.5] });
 
     // ── Adelante, las épocas: la misma línea, contada con herramientas distintas ──
     // 1985 · El papel: la libreta abierta sobre su atril, con el lápiz al lado
