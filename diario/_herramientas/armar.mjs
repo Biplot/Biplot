@@ -278,7 +278,7 @@ function cierreWeb(ed, base) {
         <p>Tu proceso es el próximo punto. Una sesión corta, sin costo.</p>
         <span class="accion"><a class="btn-cta" href="${AGENDAR}" rel="noopener">Agenda tu diagnóstico</a></span>
       </aside>
-      ${ed.aparte ? `<section class="panel consultorio" aria-label="Consultorio"><img src="${base}imagenes/rumbo.png" alt="" width="64" height="64"><div><p class="narra">Consultorio · Psst… ¿y tu día?</p><h3>${md(ed.aparte.titulo)}</h3><p>${md(ed.aparte.texto)}</p><a href="${esc(ed.aparte.enlace || RUMBO)}" rel="noopener">Conoce Rumbo, la app de BiPlot para ordenar tu día →</a></div></section>` : ''}
+      ${ed.aparte ? `<section class="panel consultorio" id="consultorio" aria-label="Consultorio"><img src="${base}imagenes/rumbo.png" alt="" width="64" height="64"><div><p class="narra">Consultorio · Psst… ¿y tu día?</p><h3>${md(ed.aparte.titulo)}</h3><p>${md(ed.aparte.texto)}</p><a href="${esc(ed.aparte.enlace || RUMBO)}" rel="noopener">Conoce Rumbo, la app de BiPlot para ordenar tu día →</a></div></section>` : ''}
     </div>
   </div>
   <div class="cajas">
@@ -835,6 +835,8 @@ function ultimaJson(ediciones) {
     tapa: ed.tapa ? { src: /^https:\/\//.test(ed.tapa.src) ? ed.tapa.src : `/diario/${ed.tapa.src}`, alt: ed.tapa.alt || '' } : null,
     titular: plano(lista(ed.portada)[0].titular),
     titulares: lista(ed.portada).map((n) => plano(n.titular)),
+    // El consejo de «El consultorio» (lo firma el elefante de Rumbo): Rumbo lo muestra en su Inicio
+    consultorio: ed.aparte ? { titulo: plano(ed.aparte.titulo), texto: plano(ed.aparte.texto) } : null,
     // La nota de cada integrante de la oficina en esta edición: la primera de su sección, con su cifra si la trae (en El
     // dato, la de la sección) y el ancla de la sección en su página (la portada no tiene: se abre arriba)
     // El video de la semana (video.mjs), si la edición lo trae: el canal de La Línea en BiPlot.TV
@@ -846,7 +848,10 @@ function ultimaJson(ediciones) {
         titular: plano(n.titular || n.afirmacion || n.empresa), cifra: c && c.valor ? { valor: plano(c.valor), leyenda: plano(c.leyenda || '') } : null };
     }),
   } : null;
-  return JSON.stringify({ nota: 'Lo arma diario/_herramientas/armar.mjs: no se edita a mano.', edicion, proxima: sumarDias(ediciones.at(-1).fecha, 7) }, null, 2) + '\n';
+  // Todos los números publicados, el más nuevo primero: los tomos del estante de La Línea en El Archivo de la oficina
+  const tomos = ediciones.filter((e) => !e.prueba).reverse().map((e) => ({ numero: e.numero, fecha: e.fecha, url: `/diario/${e.fecha}/`,
+    tapa: e.tapa && !/^https:\/\//.test(e.tapa.src) ? `/diario/${e.tapa.src}` : null, titular: plano(lista(e.portada)[0].titular) }));
+  return JSON.stringify({ nota: 'Lo arma diario/_herramientas/armar.mjs: no se edita a mano.', edicion, tomos, proxima: sumarDias(ediciones.at(-1).fecha, 7) }, null, 2) + '\n';
 }
 
 // ---------- Armar ----------

@@ -20,9 +20,11 @@ personajes ni logos de ninguna serie o editorial.
 - Cada edición en la web: **biplot.cl/diario/AAAA-MM-DD/** (`diario/<fecha>/index.html`).
 - La hemeroteca: **biplot.cl/diario/** (`diario/index.html`), con todas las ediciones, la más nueva arriba.
 - La última edición, para el resto del sitio: `diario/ultima.json`, con su número, su fecha, su tapa, sus titulares y la
-  nota de cada integrante (con su cifra y el ancla de su sección), su video si lo trae y la fecha de la próxima. Lo leen
-  el bloque «La Línea» de la portada de biplot.cl, el quiosco de la plaza de la oficina, el cintillo y el canal de La
-  Línea en la tele de BiPlot.TV. Sólo lleva ediciones que no son de prueba: mientras no
+  nota de cada integrante (con su cifra y el ancla de su sección), el consejo de El consultorio, su video si lo trae, la
+  lista de todos los números publicados (`tomos`) y la fecha de la próxima. Lo leen el bloque «La Línea» de la portada
+  de biplot.cl, el quiosco de la plaza de la oficina, el cintillo y el canal de La Línea en la tele de BiPlot.TV, el
+  estante de El Archivo y el Inicio de Rumbo (que está en otro dominio: `vercel.json` le da permiso de leerlo, sólo a ese
+  archivo). Sólo lleva ediciones que no son de prueba: mientras no
   haya ninguna, `edicion` va en `null` y cada lugar dice cuándo sale la próxima. Viaja en el mismo PR que la edición, así
   que nada aparece antes de publicarla.
 - El correo: `diario/_herramientas/salida/<fecha>-correo.html` (no se sube; se arma de nuevo al enviarlo).
@@ -211,6 +213,7 @@ se cambia esa etiqueta.
 - Un workflow semanal que deja el borrador como PR, para que un socio lo valide en La Línea (con el token de una App
   de la org: un PR abierto con el `GITHUB_TOKEN` del workflow no hace correr «Diario · verificar»).
 - El envío por Brevo desde La Línea, después de publicar.
-- La suscripción en el bloque de la portada, cuando esté la cuenta de Brevo.
-- El canal 12 de BiPlot.TV, «La Línea»: un video de la semana por edición, presentado por Aby.
+- La suscripción en el bloque de la portada, cuando esté la cuenta de Brevo: el formulario inscribe en Brevo, con doble
+  confirmación, y el CRM muestra la lista y las cifras (suscriptores, aperturas, clics) leyéndolas de Brevo, sin guardar
+  suscriptores en su base (decisión de los socios, 22-10).
 - Un campo `escena` en el JSON (quién actúa, de qué se disfraza, qué objeto usa) para que la tapa se pida sola.

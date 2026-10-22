@@ -577,9 +577,9 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     /datos de ejemplo/.test(ar.fundosFoto.pie) && ar.fundosFoto.sala && !ar.fundosFoto.desborde && ar.fundosFoto.cierra, 'al tocar su pantalla real, se abre en grande y completa, con su tarjeta al lado, y Escape vuelve al museo');
   ok(ar.fichero.t === 'Todos los casos tienen su carpeta' && ar.fichero.n === 5 && ar.fichero.vis === 'Haru 360', 'el fichero, desde la barra, lista los 5 casos por rubro y los busca (' + ar.fichero.vis + ')');
   ok(/^https:\/\/wa\.me\/\d+\?text=/.test(ar.turno.cta) && ar.turno.chat && ar.turno.tres, 'el pedestal libre gira en 3D y lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
-  ok(ar.rec.p1.n === '1 de 14' && ar.rec.p1.t === 'La entrada' && ar.rec.p2.t === '1985 · La libreta' && ar.rec.p1.guia === ar.rec.esperado[0] && ar.rec.p2.guia === ar.rec.esperado[1] && ar.rec.fin,
+  ok(ar.rec.p1.n === '1 de 15' && ar.rec.p1.t === 'La entrada' && ar.rec.p2.t === '1985 · La libreta' && ar.rec.p1.guia === ar.rec.esperado[0] && ar.rec.p2.guia === ar.rec.esperado[1] && ar.rec.fin,
     '«Recorrer con Pepa» va de la entrada a la libreta, Pepa habla en cada parada y Escape lo termina');
-  ok(ar.rec.enHoy.frente && ar.rec.enHoy.n === (ar.rec.iHoy + 1) + ' de 14' && ar.rec.enHoy.sigue, '«Ver más» en la parada de las diez fases las abre de frente, y al cerrarla el recorrido sigue en la misma parada');
+  ok(ar.rec.enHoy.frente && ar.rec.enHoy.n === (ar.rec.iHoy + 1) + ' de 15' && ar.rec.enHoy.sigue, '«Ver más» en la parada de las diez fases las abre de frente, y al cerrarla el recorrido sigue en la misma parada');
   ok(await js(`(async () => { const z = document.querySelector('.zona-sala[data-zona="fundos"]'); z.focus(); z.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); await ${W(300)};
       document.querySelector('#sala-frente [data-sala-ir="fundos"]').click(); await ${W(700)};
       return location.hash === '#fundos' && document.querySelector('#sala-nombre').textContent === 'Fundos 360' && document.body.classList.contains('en-sala-propia'); })()`), '«Entrar a su sala» pasa del museo a la sala de Fundos 360');
