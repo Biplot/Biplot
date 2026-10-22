@@ -241,7 +241,7 @@
     }, { rootMargin: '-30% 0px 0px 0px' }).observe(hero);   // la portada «se fue» cuando su borde baja pasa el primer tercio (la barra fija tapa el resto)
   })();
 
-  /* ============ FORMULARIOS: arman el mensaje y abren WhatsApp ============ */
+  /* ============ FORMULARIOS: arman el mensaje, lo dejan en la bandeja de consultas y abren WhatsApp ============ */
   const WA_NUMBER = '56966275675';
   document.querySelectorAll('form[data-wa]').forEach((form) => {
     form.addEventListener('submit', (e) => {
@@ -249,6 +249,8 @@
       if (!form.checkValidity()) { form.reportValidity(); return; }
       const val = (n) => { const el = form.elements.namedItem(n); return el && el.value ? el.value.trim() : ''; };
       const name = val('name'), email = val('email'), message = val('message');
+      // La consulta queda también en la bandeja (assets/consulta.js), sin esperar: WhatsApp se abre en el mismo clic.
+      if (window.BiplotConsulta) window.BiplotConsulta.enviar({ nombre: name, correo: email, mensaje: message, origen: 'landing', sitio: val('sitio') });
       let text = 'Hola BiPlot 👋';
       if (name) text += ', soy ' + name;
       text += '. Quiero agendar un diagnóstico.';

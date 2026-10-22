@@ -897,13 +897,13 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   // Y la del museo
   {
     const og = fs.readFileSync(path.join(raiz, 'oficina', 'archivo', 'index.html'), 'utf8');
-    ok(/og:image" content="https:\/\/biplot\.cl\/oficina\/kit\/png\/sala-archivo-og\.png"/.test(og) && og.includes("location.replace('../#archivo')") && fs.existsSync(path.join(raiz, 'oficina', 'kit', 'png', 'sala-archivo-og.png')),
+    ok(/og:image" content="https:\/\/biplot\.cl\/oficina\/kit\/png\/sala-archivo-og\.png"/.test(og) && og.includes("location.replace('../' + location.search + '#archivo')") && fs.existsSync(path.join(raiz, 'oficina', 'kit', 'png', 'sala-archivo-og.png')),
       'la página del museo (biplot.cl/oficina/archivo) trae su vista previa y lleva a El Archivo');
   }
   // Y la del canal
   {
     const og = fs.readFileSync(path.join(raiz, 'oficina', 'tv', 'index.html'), 'utf8');
-    ok(/og:image" content="https:\/\/biplot\.cl\/oficina\/kit\/png\/sala-tv-og\.png"/.test(og) && og.includes("location.replace('../#tv')") && fs.existsSync(path.join(raiz, 'oficina', 'kit', 'png', 'sala-tv-og.png')),
+    ok(/og:image" content="https:\/\/biplot\.cl\/oficina\/kit\/png\/sala-tv-og\.png"/.test(og) && og.includes("location.replace('../' + location.search + '#tv')") && fs.existsSync(path.join(raiz, 'oficina', 'kit', 'png', 'sala-tv-og.png')),
       'la página del canal (biplot.cl/oficina/tv) trae su vista previa y lleva a BiPlot.TV');
   }
   ok(consola.length === 0, 'sin errores de consola' + (consola.length ? ': ' + [...new Set(consola)].join(' | ') : ''));
