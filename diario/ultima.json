@@ -1,6 +1,125 @@
 {
   "nota": "Lo arma diario/_herramientas/armar.mjs: no se edita a mano.",
-  "edicion": null,
-  "tomos": [],
-  "proxima": "2026-10-26"
+  "edicion": {
+    "numero": 1,
+    "fecha": "2026-10-26",
+    "fechaLarga": "lunes 26 de octubre de 2026",
+    "cubre": "Semana del 19 al 25 de octubre",
+    "url": "/diario/2026-10-26/",
+    "tapa": null,
+    "titular": "El diésel sube $91,5 por litro: quinta alza seguida de los combustibles",
+    "titulares": [
+      "El diésel sube $91,5 por litro: quinta alza seguida de los combustibles",
+      "Deudas con la Tesorería: hasta el 15 de abril para pagarlas con condonación",
+      "Desde el 1 de noviembre, las guías de despacho piden patente, conductor y destino"
+    ],
+    "consultorio": {
+      "titulo": "Lo que sí depende de ti",
+      "texto": "Semana de alzas: es fácil gastarla mirando lo que no controlas. Escribe una sola cosa que sí depende de ti (llamar a ese cliente, revisar un precio, cobrar esa factura) y hazla antes del almuerzo. Lo demás, después."
+    },
+    "video": {
+      "h": "/diario/2026-10-26/video/h.mp4",
+      "v": "/diario/2026-10-26/video/v.mp4",
+      "poster": "/diario/2026-10-26/video/h.jpg",
+      "duracion": "0:40"
+    },
+    "notas": [
+      {
+        "id": "portada",
+        "seccion": "Portada",
+        "firma": "aby",
+        "nombre": "Aby",
+        "titular": "El diésel sube $91,5 por litro: quinta alza seguida de los combustibles",
+        "cifra": null
+      },
+      {
+        "id": "dato",
+        "seccion": "El dato",
+        "firma": "celda",
+        "nombre": "Celda",
+        "titular": "El combustible ya venía subiendo en la fábrica",
+        "cifra": {
+          "valor": "8,4%",
+          "leyenda": "Alza de septiembre en la refinación de petróleo"
+        }
+      },
+      {
+        "id": "maquinas",
+        "seccion": "Las máquinas",
+        "firma": "engine",
+        "nombre": "The Engine",
+        "titular": "PHP2Shell: actualizar WordPress no basta, el parche va en el servidor",
+        "cifra": null
+      },
+      {
+        "id": "planos",
+        "seccion": "Sala de planos",
+        "firma": "architect",
+        "nombre": "The Architect",
+        "titular": "Ley de datos personales: el Gobierno acelera la postergación, pero la fecha sigue siendo el 1 de diciembre",
+        "cifra": null
+      },
+      {
+        "id": "caso",
+        "seccion": "El caso de la semana",
+        "firma": "lupe",
+        "nombre": "Lupe",
+        "titular": "Undurraga arrancó los tintos que costaban más y rendían menos",
+        "cifra": null
+      },
+      {
+        "id": "marcador",
+        "seccion": "El marcador",
+        "firma": "felipe",
+        "nombre": "Felipe",
+        "titular": "El Ascenso se define en la última fecha: Cobreloa y San Luis, empatados en 54",
+        "cifra": {
+          "valor": "54",
+          "leyenda": "Los puntos de Cobreloa y de San Luis, a una fecha del final"
+        }
+      },
+      {
+        "id": "mito",
+        "seccion": "¿Mito o dato?",
+        "firma": "tamandua",
+        "nombre": "Tamandúa",
+        "titular": "El Fondo E no pierde plata.",
+        "cifra": null
+      },
+      {
+        "id": "guardar",
+        "seccion": "Para guardar",
+        "firma": "pepa",
+        "nombre": "Pepa",
+        "titular": "¿El temporal dañó tu local o bodega? El SII rebaja las contribuciones",
+        "cifra": null
+      },
+      {
+        "id": "lanzamientos",
+        "seccion": "A producción",
+        "firma": "faro",
+        "nombre": "Faro",
+        "titular": "Global66 mueve más de US$ 850 millones en Chile en un trimestre, 74% más",
+        "cifra": null
+      },
+      {
+        "id": "mundo",
+        "seccion": "Desde arriba",
+        "firma": "atlas",
+        "nombre": "Atlas",
+        "titular": "EE.UU. e Israel preparan ataques a Irán para después del 3 de noviembre, según el New York Times",
+        "cifra": null
+      }
+    ]
+  },
+  "tomos": [
+    {
+      "numero": 1,
+      "fecha": "2026-10-26",
+      "url": "/diario/2026-10-26/",
+      "tapa": null,
+      "titular": "El diésel sube $91,5 por litro: quinta alza seguida de los combustibles"
+    }
+  ],
+  "proxima": "2026-11-02"
 }
