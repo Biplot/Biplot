@@ -6,7 +6,10 @@
     "fechaLarga": "lunes 26 de octubre de 2026",
     "cubre": "Semana del 19 al 25 de octubre",
     "url": "/diario/2026-10-26/",
-    "tapa": null,
+    "tapa": {
+      "src": "/diario/imagenes/tapas/2026-10-26.jpg",
+      "alt": "Tapa a color: en una bencinera, The Engine sostiene asustado la pistola del surtidor de diésel, cuya pantalla marca +$91,5; Plotty vuela encima con la baliza roja prendida y Aby, con su credencial de prensa, apunta al marcador. Abajo, la faja: «El diésel sube por quinta vez»."
+    },
     "titular": "El diésel sube $91,5 por litro: quinta alza seguida de los combustibles",
     "titulares": [
       "El diésel sube $91,5 por litro: quinta alza seguida de los combustibles",
@@ -21,7 +24,7 @@
       "h": "/diario/2026-10-26/video/h.mp4",
       "v": "/diario/2026-10-26/video/v.mp4",
       "poster": "/diario/2026-10-26/video/h.jpg",
-      "duracion": "0:40"
+      "duracion": "0:44"
     },
     "notas": [
       {
@@ -117,7 +120,7 @@
       "numero": 1,
       "fecha": "2026-10-26",
       "url": "/diario/2026-10-26/",
-      "tapa": null,
+      "tapa": "/diario/imagenes/tapas/2026-10-26.jpg",
       "titular": "El diésel sube $91,5 por litro: quinta alza seguida de los combustibles"
     }
   ],

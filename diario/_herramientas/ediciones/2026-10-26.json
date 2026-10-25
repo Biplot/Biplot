@@ -3,20 +3,11 @@
   "fecha": "2026-10-26",
   "cubre": "Semana del 19 al 25 de octubre",
   "previa": "El diésel sube por quinta vez seguida, la Tesorería abre la repactación con condonación y las guías de despacho cambian el 1 de noviembre: la semana en cinco minutos.",
-  "escenas": [
-    {
-      "imagen": "_herramientas/escenas/2026-10-26-a.jpg",
-      "escena": "Escena A: en la bencinera, The Engine sostiene la pistola del surtidor de diésel, que marca +$91,5; Plotty vuela encima con la baliza prendida y Aby, con su credencial de prensa, apunta al marcador."
-    },
-    {
-      "imagen": "_herramientas/escenas/2026-10-26-b.jpg",
-      "escena": "Escena B: Felipe maneja una camioneta de reparto con el estanque casi vacío por una línea que sube en cinco escalones hasta la bandera de la quinta alza; Celda la empuja desde atrás."
-    },
-    {
-      "imagen": "_herramientas/escenas/2026-10-26-c.jpg",
-      "escena": "Escena C: The Engine, con jockey de bombero de bencinera, mete la pistola de diésel en el chanchito de la pyme y le chupa las monedas; Lupe lo pilla con su lupa."
-    }
-  ],
+  "tapa": {
+    "src": "imagenes/tapas/2026-10-26.jpg",
+    "alt": "Tapa a color: en una bencinera, The Engine sostiene asustado la pistola del surtidor de diésel, cuya pantalla marca +$91,5; Plotty vuela encima con la baliza roja prendida y Aby, con su credencial de prensa, apunta al marcador. Abajo, la faja: «El diésel sube por quinta vez».",
+    "pie": "La escena de la semana: el diésel sube por quinta vez. Ilustración hecha con IA a partir de los dibujos del equipo de BiPlot."
+  },
   "redaccion": [
     "Buenos días. Esta es la N.º 1 de *La Línea*, el diario de BiPlot, la primera después del número de prueba: lo que pasó en la semana en economía, IA, gestión y deporte, contado por el equipo de la oficina y con el enlace a cada fuente.",
     "Esta semana manda el surtidor: el diésel subió por quinta vez seguida y el dólar cerró el viernes en $995,3. Los indicadores son del viernes 23, salvo la UF, que es la de hoy. Si algo sobra, falta o no cuadra, dínoslo."
