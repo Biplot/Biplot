@@ -979,7 +979,16 @@
       vitrina: 'Te dejé en la vitrina de la recepción los tres casos más cercanos a tu rubro.',
       rubroCasos: 'Mira la calle: te marqué los casos de tu rubro: {casos}. Toca uno para verlo por dentro.',
       rubroSinCasos: 'Todavía no hay un caso de tu rubro en la calle. Te marqué el local libre: puede ser el tuyo.',
-      mensaje: 'Hola BiPlot, vengo de la oficina. Mi negocio: {rubro}. Mi operación vive {donde}. Horas a la semana en tareas que se repiten: {horas}. Quiero agendar un diagnóstico.'
+      mensaje: 'Hola BiPlot, vengo de la oficina. Mi negocio: {rubro}. Mi operación vive {donde}. Horas a la semana en tareas que se repiten: {horas}. Quiero agendar un diagnóstico.',
+      // Al final, para quien prefiere que le escriban: la consulta va a la bandeja de BiPlot (assets/consulta.js).
+      datos: {
+        titulo: '¿Prefieres que te escribamos?',
+        ayuda: 'Déjanos tu nombre y tu correo. Guardamos tu consulta solo para responderte.',
+        boton: 'Que me escriban',
+        enviando: 'Enviando…',
+        listo: 'Listo, {nombre}. Te escribimos a {correo} dentro de 48 horas hábiles.',
+        error: 'No pudimos enviarlo. Escríbenos por WhatsApp con el botón de arriba.'
+      }
     }
   };
 })();

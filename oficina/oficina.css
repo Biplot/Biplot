@@ -304,6 +304,17 @@ button { font: inherit; color: inherit; }
   font: 600 14px/1.2 var(--bp-f-display); cursor: pointer; text-align: left; }
 .chat-opciones button:hover { background: var(--bp-acento-suave); }
 .chat-fin { display: flex; flex-wrap: wrap; gap: 10px; padding: 6px 14px 16px; }
+/* «¿Prefieres que te escribamos?»: nombre y correo al final del chat (la consulta va a la bandeja de BiPlot) */
+.chat-datos { flex-basis: 100%; display: grid; gap: 8px; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--bp-borde); }
+.chat-datos-titulo { margin: 0; font: 700 15px/1.3 var(--bp-f-display); color: var(--bp-texto-fuerte); }
+.chat-datos-ayuda, .chat-datos-estado { margin: 0; font-size: 13px; line-height: 1.4; color: var(--bp-texto-2); }
+.chat-datos-estado:empty { display: none; }
+.chat-datos label { display: grid; gap: 4px; font-size: 13px; color: var(--bp-texto-2); }
+.chat-datos input { min-height: 44px; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--bp-borde-fuerte); background: var(--bp-fondo); color: var(--bp-texto); font: 16px/1.3 var(--bp-f-texto); }
+.chat-datos input:focus { outline: none; border-color: var(--bp-acento); box-shadow: var(--bp-foco); }
+.chat-datos .bp-btn { justify-self: start; }
+.chat-datos-listo { margin: 0; font-size: 14px; line-height: 1.45; color: var(--bp-acento-texto); }
+.hp { position: absolute !important; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 .guia-n { display: flex; align-items: center; gap: 6px; }
 .guia-atlas .avatar { width: 30px; height: 30px; background: none; }
 
