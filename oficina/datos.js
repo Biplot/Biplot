@@ -967,7 +967,7 @@
               texto: 'Trabajamos con pymes de servicios profesionales que sienten que su operación creció más rápido que sus procesos. Si hoy todo vive en planillas, en un cuaderno o en WhatsApp, llegaste al lugar correcto.',
               chips: ['En planillas', 'En WhatsApp y papel', 'En un sistema que no conversa con nada'], botones: [{ chat: true }] },
             maqueta: { nombre: 'La maqueta del barrio', ceja: 'La maqueta', titulo: 'Un local para cada proyecto',
-              texto: 'Así es la calle principal: un local por proyecto, cada uno con su marca en el techo y su sala adentro. El sitio libre, entre Rumbo y El Archivo, espera el próximo. Encima flota Atlas, que proyecta el mapa y ve todo el panorama. Los proyectos que no se muestran con su propio dibujo van en la calle de su rubro.' },
+              texto: 'Así es la calle principal: un local por proyecto, cada uno con su marca en el techo y su sala adentro. El sitio libre, entre Rococoro.studio y El Archivo, espera el próximo. Encima flota Atlas, que proyecta el mapa y ve todo el panorama. Los proyectos que no se muestran con su propio dibujo van en la calle de su rubro.' },
             piloto: { nombre: 'El local piloto', ceja: 'El local piloto', titulo: 'Así se vería el tuyo',
               texto: 'Tu nombre y tu logo en el techo, tus productos a la vista de quien pasa por el barrio y, adentro, tu sala con tus pantallas y un enlace para mostrarla a tus clientes. Sólo si quieres: si prefieres no aparecer, se muestra sólo tu rubro.',
               chips: ['Tu marca en el techo', 'Tu sala, con un enlace', 'biplot.cl/oficina/tu-empresa'] },

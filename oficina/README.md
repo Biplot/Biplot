@@ -205,7 +205,7 @@ catorce paradas (los diseños anteriores y la primera oficina van después de ho
 **La sala de ventas de BiPlot.** El local libre de la calle principal («Se arrienda · Tu proyecto aquí») también tiene su
 sala propia (su dibujo en `barrio/salas-propias/ventas.mjs`; sus textos en `datos.js`, en `proyectos` → `libre` →
 `salaPropia`). Se entra desde su panel en la calle («Entrar a la sala de ventas»), con `#libre` o con
-**biplot.cl/oficina/libre/**, y va entre Rumbo y El Archivo en las salas vecinas. Es una sala de ventas como la de una
+**biplot.cl/oficina/libre/**, y va entre Rococoro y El Archivo en las salas vecinas. Es una sala de ventas como la de una
 inmobiliaria: Plotty recibe en la entrada, en su tótem de las tres preguntas, y guía el recorrido de nueve paradas; la
 sala de espera, con otras pymes y sus planillas; la maqueta de la calle principal, con el sitio libre marcado «Tu local» y
 Atlas flotando encima, que proyecta el mapa y ve todo el panorama; un local piloto armado adentro, con «Tu marca» y el

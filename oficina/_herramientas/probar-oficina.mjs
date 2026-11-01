@@ -635,8 +635,8 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     r.rec = { p1, p2, pn, esperado: PP.recorrido.slice(0, 2).map(p => PP.textos.guia + p.texto), total: PP.recorrido.length, fin: !b.classList.contains('recorriendo') };
     return r; })()`);
   ok(vt.vista === 'Tu proyecto aquí' && vt.boton === 'Entrar a la sala de ventas' && vt.chat, 'en la calle, el local «Tu proyecto aquí» ofrece «Entrar a la sala de ventas» y sigue con la conversación con Plotty');
-  ok(vt.hash === '#libre' && vt.sala && vt.nombre === 'Tu proyecto aquí' && /SALA DE VENTAS DE BIPLOT/.test(vt.barra) && /Recorrer con Plotty/.test(vt.barra) && /Lista de precios/.test(vt.barra) && vt.ant === 'Rumbo' && vt.sig === 'El Archivo',
-    'oficina/#libre es la sala de ventas de BiPlot: su barra con «Recorrer con Plotty» y «Lista de precios», entre Rumbo y El Archivo');
+  ok(vt.hash === '#libre' && vt.sala && vt.nombre === 'Tu proyecto aquí' && /SALA DE VENTAS DE BIPLOT/.test(vt.barra) && /Recorrer con Plotty/.test(vt.barra) && /Lista de precios/.test(vt.barra) && vt.ant === 'Rococoro.studio' && vt.sig === 'El Archivo',
+    'oficina/#libre es la sala de ventas de BiPlot: su barra con «Recorrer con Plotty» y «Lista de precios», entre Rococoro.studio y El Archivo');
   ok(!vt.faltan.length && !vt.desborde, 'en la sala de ventas están todas sus zonas y toda su gente, Atlas incluido' + (vt.faltan.length ? ' (faltan: ' + vt.faltan.join(', ') + ')' : ''));
   ok(vt.precios.frente && vt.precios.t === 'Precios claros, sin letra chica' && vt.precios.vb === '0 0 1000 470' && /^https:\/\/wa\.me\/\d+\?text=Hola BiPlot, vengo de la sala de ventas/.test(vt.precios.cta) && vt.precios.sitio === '_blank',
     'la lista de precios se abre de frente, con «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y los precios del sitio');
