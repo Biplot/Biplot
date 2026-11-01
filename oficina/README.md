@@ -168,8 +168,10 @@ empresa (su sitio, su carta, su app) y sus propios textos de ejemplo:
   Directora, el taller con sus figurines y «Del boceto a tu clóset», la sala de redacción con la votación de la próxima
   colección, la caja con la tarjeta abanico, el rincón de la Directora (su retrato, la tinta de su tatuaje tal cual, y sus
   cartas) y Grillo en el rincón de BiPlot (prototipo en desarrollo). **La Directora es un personaje de la sala** y guía el
-  recorrido: la mujer con cabeza de pez del tatuaje de la marca, con la cabeza de su sitio (`cabeza: 'pez'` en
-  `visitantes.mjs`, pasada desde `cabezaPez()` de Biplot/rococoro-studio). Barra en Dark Rose: «Ver la colección» (su
+  recorrido: la mujer con cabeza de pez del tatuaje de la marca, con la cabeza de su sitio (`cabezaPez()` en
+  `visitantes.mjs`, pasada desde la de Biplot/rococoro-studio). Es cabezona como el resto, pero es la única con su propio
+  cuerpo (`directora()`): cintura y caderas marcadas, top corto, mangas de malla, pretina alta, pantalón pitillo, las
+  piernas largas y cruzadas en los tobillos, taco aguja, pestañas, rubor y un contorno más fino. Barra en Dark Rose: «Ver la colección» (su
   sitio) y «Recorrer con la Directora». Sus prendas, tallas y textos son de ejemplo, como en su sitio, y la sala no muestra
   precios mientras la marca no los confirme. Todavía no tiene pieza en El Archivo: llega cuando su caso se publique en
   biplot.cl.

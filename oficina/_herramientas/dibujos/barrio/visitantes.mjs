@@ -418,6 +418,72 @@ export function persona(o) {
   return f;
 }
 
+// La Directora de Rococoro: cabezona como el resto, pero con su figura marcada y su delicadeza (la del tatuaje): cintura
+// y caderas, top corto, pretina alta negra, pantalón pitillo, mangas de malla, zapatos en punta y la mano en la cadera.
+// o: cintura ('marcada' | 'suave'), piernas ('rectas' | 'cruzadas'), largo (cuánto se alargan las piernas), tacon,
+// brazoI (estirado si no se dice, 'cadera' o 'suelto'), pestanas, rubor, silueta (el grosor de su contorno; el resto lleva 1.7).
+// La de la oficina es la propuesta A del casting: piernas largas y cruzadas, taco aguja, pestañas, rubor y el contorno fino.
+export function directora(o = {}) {
+  const f = figura();
+  const piel = ['#F4EEE4', '#DCD3C4'], top = o.top || ['#FFFFFF', '#E7E1D6'], pantalon = o.pantalon || ['#E9E3D8', '#CFC7B9'], negro = '#151312';
+  const L = o.largo || 0, marcada = o.cintura !== 'suave', tacon = !!o.tacon;
+  f.raw('<defs><pattern id="pj-malla-dir" width="1.3" height="1.3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0H1.3M0 0V1.3" stroke="#151312" stroke-width=".24" fill="none"/></pattern></defs>');
+  // Zapatos finos en punta (con taco aguja si lo lleva), mirando a la derecha desde el tobillo (x, y)
+  const zap = (x, y) => {
+    if (tacon) {
+      f.forma(`M${x + 0.2} ${y + 1.6}H${x + 1.2}L${x + 0.8} ${y + 3}H${x + 0.5}Z`, negro, { w: 0.25 });
+      f.forma(`M${x} ${y}H${x + 2}Q${x + 2.5} ${y + 1.6} ${x + 4.5} ${y + 2.4}Q${x + 5.3} ${y + 2.8} ${x + 4.6} ${y + 3}H${x + 3.1}Q${x + 1.9} ${y + 2.2} ${x + 0.5} ${y + 1.9}Q${x - 0.1} ${y + 1.7} ${x} ${y}Z`, negro, { w: 0.3 });
+    } else f.forma(`M${x} ${y}H${x + 2}Q${x + 2.6} ${y + 1} ${x + 4.6} ${y + 1.5}Q${x + 5.2} ${y + 1.8} ${x + 4.6} ${y + 2.1}H${x + 0.6}Q${x} ${y + 2.1} ${x} ${y + 1.5}Z`, negro, { w: 0.3 });
+  };
+  // El pantalón pitillo, de una pieza desde la pretina: rectas, o cruzadas en los tobillos como en su tatuaje
+  const yT = 46.4 + L;
+  if (o.piernas === 'cruzadas') {
+    f.forma(`M10.9 35.2H23.1Q24 36.6 23.2 38.4Q20.4 40.2 19.2 ${yT}H17.2L11.4 38.6Q10.3 36.8 10.9 35.2Z`, pantalon[0]);
+    f.mancha(`M20.2 ${yT - 5}Q19.4 ${yT - 2.4} 19.2 ${yT}H18.6Q19 ${yT - 2.6} 20.2 ${yT - 5}Z`, pantalon[1]);
+    zap(17.2, yT);
+    f.forma(`M17.6 35.2H23.1Q24 36.6 23.2 38.4Q21.6 ${yT - 4.6} 14.6 ${yT}H12.6Q18.6 ${yT - 5.6} 17.6 35.2Z`, pantalon[0]);
+    f.mancha(`M22 35.4H23.1Q24 36.6 23.2 38.4Q21.6 ${yT - 4.6} 14.5 ${yT - 0.2}H13.9Q20.6 ${yT - 4.8} 22 35.4Z`, pantalon[1]);
+    zap(12.6, yT + 0.3);
+  } else {
+    f.forma(`M10.9 35.2H23.1Q24 36.6 23.2 38.6L21.3 ${yT}H19.3L17.6 39.4Q17 38.4 16.4 39.4L14.7 ${yT}H12.7L10.8 38.6Q10.1 36.6 10.9 35.2Z`, pantalon[0]);
+    f.mancha(`M21.6 35.4H23.1Q24 36.6 23.2 38.6L21.3 ${yT}H20.6L22.2 38.4Q22.6 36.6 21.6 35.4ZM15.5 38.8L16.4 39.4L14.7 ${yT}H14.1Z`, pantalon[1]);
+    zap(12.7, yT); zap(19.3, yT);
+  }
+  // El torso: busto, cintura angosta y caderas (o una cintura suave); la piel del abdomen, el top corto y la pretina alta
+  const tronco = marcada
+    ? 'M11.2 23.9C12.6 23.3 21.4 23.3 22.8 23.9Q24.3 24.6 24.2 26.6Q24 28.6 22.6 30Q20.6 31.6 21 33Q22.8 34.4 23.4 35.8H10.6Q11.2 34.4 13 33Q13.4 31.6 11.4 30Q10 28.6 9.8 26.6Q9.7 24.6 11.2 23.9Z'
+    : 'M10.8 23.9C12.4 23.3 21.6 23.3 23.2 23.9Q24.2 24.4 24.1 26.2Q23.9 29.4 22.6 31.6Q22.4 33.6 22.9 35.8H11.1Q11.6 33.6 11.4 31.6Q10.1 29.4 9.9 26.2Q9.8 24.4 10.8 23.9Z';
+  f.forma(tronco, piel[0]);
+  f.mancha(marcada ? 'M21.4 24Q24.3 24.6 24.2 26.6Q24 28.6 22.6 30Q20.6 31.6 21 33Q22.8 34.4 23.4 35.8H22Q20.2 34 20 32.2Q21.8 29 21.4 24Z'
+    : 'M21.6 24Q24.2 24.4 24.1 26.2Q23.9 29.4 22.6 31.6Q22.4 33.6 22.9 35.8H21.6Q21.2 33.4 21.4 31.4Q22.6 28.6 21.6 24Z', piel[1]);
+  f.forma(marcada ? 'M11.2 23.9C12.6 23.3 21.4 23.3 22.8 23.9Q24.3 24.6 24.2 26.6Q24.1 28.4 23 29.6Q17 30.9 10.9 29.6Q9.8 28.4 9.8 26.6Q9.7 24.6 11.2 23.9Z'
+    : 'M10.8 23.9C12.4 23.3 21.6 23.3 23.2 23.9Q24.2 24.4 24.1 26.2Q24 28.4 23.2 29.6Q17 30.8 10.8 29.6Q9.9 28.4 9.9 26.2Q9.8 24.4 10.8 23.9Z', top[0], { w: 0.45 });
+  f.mancha('M21.4 24Q24.2 24.5 24.2 26.6Q24.1 28.4 23 29.6Q22.2 29.9 21.5 30Q22.6 27 21.4 24Z', top[1]);
+  if (marcada) f.linea('M13.4 27.8Q15 28.9 16.6 27.8M17.6 27.8Q19.2 28.9 20.8 27.8', 0.32, '#B8AE9F');
+  f.linea('M16.9 31.9Q17.1 32.3 16.9 32.6', 0.32, '#B8AE9F');
+  f.forma(marcada ? 'M12.1 33.6Q17 34.3 21.9 33.6Q22.9 34.6 23.4 35.8H10.6Q11.1 34.6 12.1 33.6Z' : 'M11.5 33.6Q17 34.3 22.6 33.6L22.9 35.8H11.1Z', negro, { w: 0.35 });
+  // Los brazos con mangas de malla: el derecho en la cadera con el codo afuera; el izquierdo estirado, en la otra cadera o suelto
+  const I = [10.6, 25.1], D = [23.4, 25.2];
+  const bI = o.brazoI === 'cadera' ? [[4.8, 29], [11.2, 35]] : o.brazoI === 'suelto' ? [[7.6, 30], [8.6, 34.6]] : [[6.4, 29.2], [4.2, 32.6]];
+  const bD = [[29.4, 28.6], [22.8, 35]];
+  const brazo = (h, b, estirada) => {
+    const d = `M${h[0]} ${h[1]}Q${b[0][0]} ${b[0][1]} ${b[1][0]} ${b[1][1]}`, [x, y] = b[1];
+    f.tubo(d, piel[0], 1.5); f.linea(d, 1.4, 'url(#pj-malla-dir)');
+    if (estirada) f.forma(`M${x + 0.3} ${y - 0.6}Q${x - 1.4} ${y - 0.7} ${x - 2.4} ${y + 0.6}Q${x - 1.2} ${y + 1.2} ${x + 0.4} ${y + 0.7}Z`, piel[0], { w: 0.35 });
+    else f.forma(elipse(x, y + 0.1, 0.85, 0.7), piel[0], { w: 0.35 });
+  };
+  brazo(I, bI, !o.brazoI);
+  // La cabeza de pez, con pestañas y rubor si los lleva
+  cabezaPez(f, o);
+  if (o.pestanas) f.linea('M21.5 5.3L22 4.4M20.7 5.1L20.8 4.1M22.3 5.8L23.1 5.2', 0.3, negro);
+  if (o.rubor) f.mancha(elipse(18.6, 10.6, 1.3, 0.75), o.rubor, { op: 0.55 });
+  brazo(D, bD);
+  f.pies = yT + (o.piernas === 'cruzadas' ? 0.3 : 0) + (tacon ? 3 : 2.1);
+  const sil = o.silueta;
+  if (sil) { const svg = f.svg; f.svg = (op = {}) => svg({ silueta: sil, ...op }); }
+  return f;
+}
+
 // Perro quiltro: mira a la derecha, patas en y ≈ 50
 export function perro(o = {}) {
   const c = o.color || ['#C9924E', '#A87A45', '#F4DDA8'];
@@ -477,9 +543,9 @@ export const VISITANTES = {
   paseadora: () => persona({ piel: PIEL.media, pelo: ['#D9A441', '#B8862A', '#F4DDA8'], peinado: 'cola', cuerpo: 'fino', arriba: 'parka', arribaCol: ['#3E7A4E', '#2F6440', '#1F3B2A'], abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.botas, brazoD: 'correa', piernas: 'camina', ojos: 'grandes', rubor: '#E9967A' }),
   turista: () => persona({ piel: PIEL.rosada, pelo: ['#EBC98F', '#C9A26A', '#F8E6BE'], peinado: 'corto', sombrero: 'jockey', sombreroCol: ['#F2F4F7', '#C4D2E0', '#17C3B2'], arriba: 'polera', arribaCol: ['#F29A6B', '#D97E50'], manga: 'corta', abajo: 'short', abajoCol: CAQUI, zapatos: Z.blancas, brazoD: 'telefono', objeto: 'camara', atras: 'mochila', lentes: 'sol' }),
   perro: () => perro({ collar: '#17C3B2' }),
-  // Rococoro: la Directora, el personaje de la marca (la mujer con cabeza de pez de su tatuaje: top corto, mangas de malla,
-  // pretina negra y pantalón ajustado), y el maniquí del probador, que lleva su cabeza (como en su sitio)
-  directora: () => persona({ cabeza: 'pez', cuerpo: 'fino', arriba: 'polera', arribaCol: ['#F4EEE4', '#DCD3C4', ['#151312', 'M10.4 33.6H23.6V36.4H10.4Z']], abajo: 'pantalon', abajoCol: ['#E9E3D8', '#D2CABB'], zapatos: ['#151312', '#151312', null], brazoD: 'cadera', brazoI: 'frente', piernas: 'camina' }),
+  // Rococoro: la Directora, el personaje de la marca (la mujer con cabeza de pez de su tatuaje, con su figura: ver directora()),
+  // y el maniquí del probador, que lleva su cabeza (como en su sitio)
+  directora: () => directora({ piernas: 'cruzadas', largo: 3.5, tacon: true, pestanas: true, rubor: '#E9A0A8', silueta: 1.3 }),
   maniqui: () => persona({ cabeza: 'pez', pezCol: ['#FFFFFF', '#E3E1DC'], piel: ['#FFFFFF', '#E3E1DC'], cuerpo: 'fino', arriba: 'polera', arribaCol: ['#151312', '#000000', ['#F4F1EA', 'M15.6 24.4L17.4 27.6L19.2 24.4Z']], manga: 'corta', abajo: 'pantalon', abajoCol: ['#151312', '#000000'], zapatos: ['#FFFFFF', '#E3E1DC', null] }),
   // Sentados (bancas, sillones): lectora con tablet y señor con café
   lectora: () => persona({ piel: PIEL.oscura, pelo: ['#1A1613', '#0B0908', '#3A322C'], peinado: 'rizado', cuerpo: 'fino', arriba: 'cardigan', arribaCol: ['#C9824E', '#A8683A', ['#F2F4F7']], abajo: 'pantalon', abajoCol: OSCURO, zapatos: Z.cafe, piernas: 'sentado', brazoD: 'sostiene', objeto: 'tablet', brazoI: 'frente', lentes: 'redondos', ojos: 'grandes' }),
