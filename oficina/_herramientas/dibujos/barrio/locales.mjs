@@ -219,6 +219,33 @@ export function eleven(L) {
   L.linea([[4.12, 3.7, 0.55], [4.12, 4.2, 0.55]], '#B9C8D8', 3, 7.9);
 }
 
+// ───────── Rococoro.studio · ropa de diseño de autor ─────────
+// Su tienda-taller en chico: la portada de El Rococoro, la colección colgada, el probador con su cortina Dark Rose y el
+// maniquí con la cabeza de la Directora (barrio.mjs pone al maniquí y a la Directora, que recorre su tienda)
+export function rococoro(L) {
+  base(L, '#DCCAAD', { muroY: '#FCFCFA', muroX: '#F1F0EC' });
+  L.piso(0, 0, Array.from({ length: 18 }, (_, i) => `<path d="M${i * 25 + 12} 0V430" stroke="#C7B290" stroke-width="1.6"/>`).join(''), -55);
+  const gotica = (x, y, t, fs, color, extra = '') => `<text x="${x}" y="${y}" font-family="'UnifrakturMaguntia','Old English Text MT',serif" font-size="${fs}" fill="${color}"${extra}>${t}</text>`;
+  // La portada en el muro
+  L.planoY(0.2, 0.02, 1.78, 210, 74, `<rect width="210" height="74" fill="#FCFCFA" stroke="#121214" stroke-width="2.4"/><path d="M8 12H202M8 50H202M8 53H202" stroke="#121214" stroke-width="1.2"/>` +
+    gotica(105, 44, 'Rococoro', 30, '#121214', ' text-anchor="middle"') + `<path d="M8 60H90M8 66H70M120 60H202M120 66H190" stroke="#8F4151" stroke-width="2"/>`);
+  // La colección colgada en el perchero
+  L.caja(0.25, 1.15, 0, 0.05, 0.05, 1.3, OSCURO); L.caja(2.35, 1.15, 0, 0.05, 0.05, 1.3, OSCURO, 3.6);
+  L.linea([[0.27, 1.17, 1.28], [2.37, 1.17, 1.28]], '#B9C8D8', 2.2, 3.0);
+  L.planoY(0.4, 1.2, 1.24, 190, 58, ['#151312', '#3E5A80', '#151312', '#7A7A4E', '#151312', '#C9707F', '#3B3B40'].map((c, i) =>
+    `<path d="M${i * 27 + 4} 6L${i * 27 + 8} 2H${i * 27 + 16}L${i * 27 + 20} 6L${i * 27 + 19} ${i % 3 ? 30 : 54}H${i * 27 + 5}Z" fill="${c}" stroke="#0B0B0B" stroke-width="1"/>`).join(''), 3.1);
+  // El probador, con su cortina Dark Rose
+  L.caja(3.15, 0.05, 0, 0.05, 0.95, 1.7, { t: '#FFFFFF', l: '#EDEBE6', r: '#DEDBD4' }, 3.9);
+  L.planoY(3.2, 1.0, 1.66, 120, 160, `<rect width="120" height="160" fill="#481925"/>` + Array.from({ length: 12 }, (_, i) => `<path d="M${i * 10 + 5} 0V160" stroke="${i % 2 ? '#36121C' : '#6E2F3D'}" stroke-width="4"/>`).join(''), 4.6);
+  L.cil(3.75, 1.35, 0, 0.3, 0.05, '#FFFFFF', '#E3E1DC', 5.0);
+  // La caja en Dark Rose, con la R de la cabecera
+  L.caja(0.12, 2.5, 0, 0.6, 1.1, 0.85, { t: '#5C2533', l: '#481925', r: '#36121C' }, 3.8);
+  L.planoX(3.55, 0.78, 100, 60, `<rect width="100" height="60" fill="#36121C"/>` + gotica(50, 42, 'R', 34, '#D58A9C', ' text-anchor="middle"'), 3.81);
+  // Diarios en el piso
+  for (const [x, y, g] of [[1.4, 2.0, -10], [2.1, 2.5, 16]]) L.piso(x, y, `<g transform="rotate(${g} 25 32)"><rect width="50" height="64" fill="#F4F1EA" stroke="#CFC8BC" stroke-width="1.2"/>` +
+    gotica(25, 12, 'Rococoro', 8, '#121214', ' text-anchor="middle"') + `<path d="M5 18H45M5 26H45M5 31H45M5 40H45M5 45H32" stroke="#9A958C" stroke-width="1.6"/></g>`, -50);
+}
+
 // ───────── Nu Home 360 · casas modulares ─────────
 export function nuhome(L) {
   base(L, '#56687B');

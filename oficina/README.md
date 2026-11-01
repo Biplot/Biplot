@@ -11,8 +11,8 @@ sus enlaces y el equipo que la hizo. Las mismas piezas sirven para Instagram y p
 - Enlaces directos: `/oficina/#oficina` (adentro), `/oficina/#lupe`, `/oficina/#haru` (la sala de Haru), `/oficina/#archivo`,
   `/oficina/#calle-salud`, `/oficina/#conversar`… (cualquier integrante, lugar, sala o calle). Lo de adentro abre la
   oficina solo.
-- Para compartir una sala: **biplot.cl/oficina/haru/** (y `fundos/`, `eleven/`, `nuhome/`, `rumbo/` y `archivo/`, el
-  museo): en un chat se ve su imagen y al abrirlo se entra a la oficina, directo en esa sala.
+- Para compartir una sala: **biplot.cl/oficina/haru/** (y `fundos/`, `eleven/`, `nuhome/`, `rumbo/`, `rococoro/` y
+  `archivo/`, el museo): en un chat se ve su imagen y al abrirlo se entra a la oficina, directo en esa sala.
 - Kit para Instagram: `oficina/kit/` (galería) y `oficina/kit/png/` (los PNG).
 
 ## El equipo
@@ -67,7 +67,9 @@ mapa y el tubo del plano que baja a los racks), **el set** donde graban Aby y Fe
 reuniones**. La **Puerta 404** es una caja cerrada: nunca se abre.
 
 **La calle principal.** Por delante de la oficina: un local por proyecto con sala dibujada a mano (Nu Home 360,
-Fundos 360, Haru 360 y Eleven 360, el pasaje a BiPlot HQ, Rumbo), el local libre "Tu proyecto aquí" y **El Archivo**.
+Fundos 360, Haru 360 y Eleven 360, el pasaje a BiPlot HQ, Rumbo y Rococoro.studio), el local libre "Tu proyecto aquí" y
+**El Archivo**. La calle creció un local con Rococoro (el 1 de noviembre de 2026): el local libre y El Archivo se corrieron
+un lugar y la plaza ganó un tramo, con dos jacarandas, un árbol, una banca y un farol.
 Los locales se ven cerrados: el nombre corto de la empresa y su logo pintados en el techo, el borde del techo del color
 de su marca, su toldo y su letrero. **Al tocar uno se abre**: el techo se desvanece y se ve por dentro, un adelanto de
 su sala con su gente y alguien que camina entre los muebles (el vecino de la derecha, que lo taparía, se vuelve
@@ -84,6 +86,7 @@ oficina, está el edificio de **BiPlot.TV**, el canal de BiPlot (más abajo).
 | Haru 360 | Su logo (el cuadrado rojo) y HARU | La barra de sushi y las mesas; la mesera va y viene | Su vista previa, con su video |
 | Eleven 360 | El 11 de su sala y ELEVEN | La trotadora, las pesas y el torniquete; el instructor recorre | Su vista previa, con su sala dibujada |
 | Rumbo | La bandera de su sala y RUMBO | El camino del día 1 al 30; la corredora lo recorre | Su vista previa, con su sala dibujada |
+| Rococoro.studio | El abanico de su logo y ROCOCORO | Su portada, la colección colgada y el probador con el maniquí que lleva la cabeza de la Directora; ella recorre su tienda | Su vista previa, con su sala dibujada |
 | Tu proyecto aquí | «Se arrienda · Tu proyecto aquí», punteado | El local disponible; una visita lo recorre | La sala de ventas dibujada, «Entrar a la sala de ventas» y la conversación con Plotty |
 | El Archivo | Su carpeta de colores y EL ARCHIVO | Los estantes de carpetas; alguien busca un caso | El museo dibujado, «Entrar al museo» y el fichero con todos los casos |
 
@@ -92,7 +95,7 @@ en `barrio/barrio.mjs`).
 
 **La sala de cada empresa.** La vista previa de un local trae su video (o su sala dibujada), lo que hicimos, los enlaces,
 quién trabajó y el botón **Entrar a la sala**: la cámara entra y se abre su sala en grande (`salas.js`, se carga recién
-la primera vez). Las cinco salas de la calle principal son **salas propias**: al entrar se está en el lugar de la
+la primera vez). Las seis salas de la calle principal son **salas propias**: al entrar se está en el lugar de la
 empresa (su sala de ventas, su restaurante, su club, su día), en sus colores y con su letra, sin números ni panel. Lo que
 se toca se ilumina con su nombre y abre su tarjeta; su gente habla sola en burbujas; abajo va su barra, con su marca, su
 frase, su botón y un recorrido con alguien de la empresa (si sus botones no caben en una línea, como en una pantalla
@@ -137,7 +140,7 @@ los tres modelos en maqueta, la recepción con su felpudo y, chico, el rincón d
 tarjetas son borradores («los diálogos los vemos después»), marcados en `datos.js`, hasta que Nu Home los revise. Las
 medidas de las tarjetas son las del diseñador de Nu Home 360 y las asesoras y asesores son ilustraciones sin nombre.
 
-**Las salas propias de Fundos, Haru, Eleven y Rumbo.** Siguen el modelo de la de Nu Home, cada una con lo real de la
+**Las salas propias de Fundos, Haru, Eleven, Rumbo y Rococoro.** Siguen el modelo de la de Nu Home, cada una con lo real de la
 empresa (su sitio, su carta, su app) y sus propios textos de ejemplo:
 
 - **Fundos 360**: la sala de ventas de Fundos Inmobiliaria, en su verde y dorado. La recepción con sus valores, el
@@ -157,6 +160,19 @@ empresa (su sitio, su carta, su app) y sus propios textos de ejemplo:
   mañana y de noche, los objetivos, las lecturas, la rueda de la vida, los hábitos y la racha, las recompensas, el
   diario, las finanzas, la salud, la tienda y el elefante que crece (de Cría a Sabio), con Tamandúa en el rincón de
   BiPlot («Hecho en BiPlot», porque Rumbo es nuestro). Barra: «Abrir Rumbo» y «Recorrer un día».
+- **Rococoro.studio**: la tienda-taller de una marca de ropa de diseño de autor, que es también la redacción de «El
+  Rococoro», su diario, en su paleta (papel blanco, tinta, Burgundy Rose y Dark Rose), con Instrument Serif en las
+  tarjetas, Jost en los rótulos y la gótica de su cabecera (UnifrakturMaguntia) en su marca, la de la barra (`fuente.logo`
+  en su `salaPropia`). La vitrina con el look de la portada, «Lectura obligada» en el sofá, la portada en el muro, la
+  colección en dos percheros, el set del lookbook entre diarios, el probador con el maniquí que lleva la cabeza de la
+  Directora, el taller con sus figurines y «Del boceto a tu clóset», la sala de redacción con la votación de la próxima
+  colección, la caja con la tarjeta abanico, el rincón de la Directora (su retrato, la tinta de su tatuaje tal cual, y sus
+  cartas) y Grillo en el rincón de BiPlot (prototipo en desarrollo). **La Directora es un personaje de la sala** y guía el
+  recorrido: la mujer con cabeza de pez del tatuaje de la marca, con la cabeza de su sitio (`cabeza: 'pez'` en
+  `visitantes.mjs`, pasada desde `cabezaPez()` de Biplot/rococoro-studio). Barra en Dark Rose: «Ver la colección» (su
+  sitio) y «Recorrer con la Directora». Sus prendas, tallas y textos son de ejemplo, como en su sitio, y la sala no muestra
+  precios mientras la marca no los confirme. Todavía no tiene pieza en El Archivo: llega cuando su caso se publique en
+  biplot.cl.
 
 Como en Nu Home, las frases, lo que dice quien guía el recorrido y los textos de las tarjetas son de ejemplo (marcados en
 `datos.js`) hasta que cada empresa los revise; la gente de las salas son ilustraciones sin nombre, y ninguna sala tiene
@@ -189,7 +205,7 @@ catorce paradas (los diseños anteriores y la primera oficina van después de ho
 **La sala de ventas de BiPlot.** El local libre de la calle principal («Se arrienda · Tu proyecto aquí») también tiene su
 sala propia (su dibujo en `barrio/salas-propias/ventas.mjs`; sus textos en `datos.js`, en `proyectos` → `libre` →
 `salaPropia`). Se entra desde su panel en la calle («Entrar a la sala de ventas»), con `#libre` o con
-**biplot.cl/oficina/libre/**, y va entre Rumbo y El Archivo en las salas vecinas. Es una sala de ventas como la de una
+**biplot.cl/oficina/libre/**, y va entre Rococoro y El Archivo en las salas vecinas. Es una sala de ventas como la de una
 inmobiliaria: Plotty recibe en la entrada, en su tótem de las tres preguntas, y guía el recorrido de nueve paradas; la
 sala de espera, con otras pymes y sus planillas; la maqueta de la calle principal, con el sitio libre marcado «Tu local» y
 Atlas flotando encima, que proyecta el mapa y ve todo el panorama; un local piloto armado adentro, con «Tu marca» y el
@@ -309,7 +325,8 @@ oscurecida detrás (se sigue viendo), y debajo (o al lado, si la imagen es angos
 botones. En el museo: el mural de las diez fases (el proceso completo, con quién lleva cada fase), la línea de tiempo de
 2026, el cuadro de BiPlot HQ el día que abrió, el primer plano, la primera oficina y los diseños anteriores; en Nu Home, las terminaciones y la pantalla real del
 diseñador; en Fundos, los tres paisajes del ventanal y el letrero del equipo; en Haru, la pizarra de los rolls; en
-Eleven, el horario y el team; en Rumbo, la rueda de la vida, los hábitos, las recompensas y la noche; en BiPlot.TV,
+Eleven, el horario y el team; en Rumbo, la rueda de la vida, los hábitos, las recompensas y la noche; en Rococoro, la
+portada, los figurines, «Del boceto a tu clóset», la votación, la tarjeta abanico y el retrato de la Directora; en BiPlot.TV,
 «Así se hace un capítulo» y la pantalla del centro. Lo que tiene su
 propia explicación (un mueble, un rincón con su gente) sigue abriendo su tarjeta (las vitrinas del museo, en 3D), y la foto que traiga (una
 pantalla real) se toca y se abre igual, en grande y completa, con su pie «datos de ejemplo»; también las pantallas del
@@ -365,16 +382,17 @@ sólo para su vitrina.
 | `locales.js` | *Generado.* Cada local por dentro, como se ve al abrirlo: los de la calle principal y el de un caso según su plantilla o su estado, con su gente y quien camina; se carga al abrir el primer local (o con el mouse encima de uno) |
 | `salas.js` | *Generado.* La sala grande de cada empresa, con su gente, quienes caminan y sus puntos (una sala propia, en vez de puntos, trae sus lugares, sus zonas y dónde está su gente); se carga (después de `locales.js`) al entrar a la primera sala o con la primera vista previa sin video |
 | `ilustraciones.js` | *Generado.* Las ilustraciones de ficha; se cargan recién al abrir la primera ficha |
-| `<sala>/index.html` | *Generado.* La página para compartir cada sala (`fundos/`, `haru/`, `eleven/`, `nuhome/`, `rumbo/`, `archivo/` el museo, `libre/` la sala de ventas y `tv/` el canal): su vista previa y el paso a la oficina |
+| `<sala>/index.html` | *Generado.* La página para compartir cada sala (`fundos/`, `haru/`, `eleven/`, `nuhome/`, `rumbo/`, `rococoro/`, `archivo/` el museo, `libre/` la sala de ventas y `tv/` el canal): su vista previa y el paso a la oficina |
 | `kit/` | Galería y plantilla de las piezas de Instagram y de cada sala (`?pieza=sala-haru&formato=og`) |
-| `kit/png/` | Los PNG exportados (41 archivos) |
+| `kit/png/` | Los PNG exportados (40 archivos) |
 | `casos/` | Copias publicables de las demos y documentos de los casos de referencia del núcleo |
 | `media/` | El teaser de Nu Home 360 (horizontal, vertical y póster); en `media/salas/`, las pantallas reales de cada sala (de los videos de cada caso, con datos de ejemplo), sus recortes y los logos; y en `media/tv/`, los videos de BiPlot.TV en versión web (los capítulos, el estreno y el teaser del equipo, con sus pósters) y la miniatura de cada video de su programación |
 | `_herramientas/` | Scripts internos y las fuentes de los dibujos. **No se publican en biplot.cl** (Jekyll ignora carpetas con `_`) |
 
 Sin librerías ni build para la página: SVG, CSS y JavaScript planos. Lo único externo son las fuentes de Google Fonts
 (Inter, Space Grotesk y Space Mono; y, para los letreros y las barras y tarjetas de las salas propias, Cormorant Garamond
-(Nu Home y Fundos), Montserrat (Haru) y Anton y Chakra Petch (Eleven)). Al abrir la página sólo se dibujan el barrio y la oficina cerrada: el interior se
+(Nu Home y Fundos), Montserrat (Haru), Anton y Chakra Petch (Eleven) e Instrument Serif, Jost y UnifrakturMaguntia
+(Rococoro)). Al abrir la página sólo se dibujan el barrio y la oficina cerrada: el interior se
 dibuja y se anima al entrar, los videos se cargan al abrir la vista previa de su local, y las salas grandes y los
 locales por dentro, recién cuando se necesitan. Un local se dibuja por dentro sólo mientras está abierto, y su gente
 camina sólo mientras se ve.
@@ -398,7 +416,7 @@ camina sólo mientras se ve.
   `barrio/salas-propias/<id>.mjs` (con sus zonas; se suma a `salas-propias/index.mjs`) o, para partir con puntos, en
   `barrio/salas-grandes.mjs` con un `pin()` por módulo, y se regenera todo; después, `exportar-kit.mjs --solo sala-<id>`
   para su vista previa. Lo que se mueve en una sala lleva una clase `loc-…` con su animación en `oficina.css`.
-- **Una sala propia** (como las cinco de la calle principal), en vez de puntos: en su dibujo (`barrio/salas-propias/<id>.mjs`) cada cosa que se
+- **Una sala propia** (como las seis de la calle principal), en vez de puntos: en su dibujo (`barrio/salas-propias/<id>.mjs`) cada cosa que se
   toca va con `zona(id, { formas, lugar, guia })`: sus formas son pedazos de piso levantados hasta un alto
   (`{ piso: [[x, y], …], alto }`, un mueble o un rincón con su gente) o planos (`{ plano: [[x, y, z], …] }`, una pantalla
   o un cuadro en el muro); `lugar` es donde va su nombre y `guia`, el punto del piso donde se para la asesora cuando el
@@ -435,7 +453,8 @@ camina sólo mientras se ve.
   ```
 
   Escribe `elenco.js`, `ilustraciones.js`, `barrio.js`, `salas.js`, `locales.js` y las páginas para compartir de cada
-  sala.
+  sala. Esas páginas llevan las visitas de Vercel Web Analytics (sin cookies), como cada página publicada; la del canal
+  (`tv/`) no, igual que antes.
 - **Videos de las salas**: Fundos y Haru usan los teasers del sitio (`assets/casos/`); el de Nu Home vive en `oficina/media/`,
   comprimido con `ffmpeg -crf 28 -preset slow -movflags +faststart` y con el póster en el segundo 10.
 - **El estreno de BiPlot.TV**: el capítulo nuevo va en `datos.js` (la zona `estreno` de `salas.tv.salaPropia`, con su
@@ -463,8 +482,8 @@ Abrir http://localhost:5480/oficina/. La prueba funcional (el barrio cerrado con
 se abre al entrar y se cierra con Escape y con el botón atrás, menú y buscador del barrio, recorrido guiado, el local que
 se abre al tocarlo con su gente caminando y su vista previa, su sala con gente caminando y su pantalla real,
 la sala propia de Nu Home (sin números ni panel, su barra, sus zonas y sus tarjetas, la gente que habla, la cámara, el
-recorrido con una asesora, la tarjeta de BiPlot, las salas vecinas y el botón atrás), las de Fundos, Haru, Eleven y
-Rumbo (su barra con su letra, todas sus zonas y su gente, una tarjeta con lo real, su recorrido y el rincón de BiPlot),
+recorrido con una asesora, la tarjeta de BiPlot, las salas vecinas y el botón atrás), las de Fundos, Haru, Eleven,
+Rumbo y Rococoro (su barra con su letra, todas sus zonas y su gente, una tarjeta con lo real, su recorrido y el rincón de BiPlot),
 el museo de El Archivo (sus épocas con su capítulo, las diez fases, sus casos con su sala, el fichero, el pedestal libre
 y el recorrido con Pepa), la vista de frente (las diez fases, la línea de tiempo y el cuadro de BiPlot HQ del museo, una
 pieza de cada sala, la pantalla del diseñador de Nu Home con un clic de verdad, las fotos de las tarjetas y las pantallas

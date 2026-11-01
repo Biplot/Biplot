@@ -284,6 +284,20 @@ function objetoAdelante(f, obj, o) {
     case 'llave': f.tubo('M27 31.4L30.4 35.4', '#B9C8D8', 0.8); f.forma('M29.6 35.2A1.4 1.4 0 1 0 31.8 36.6L30.8 35.8Z', '#B9C8D8', { w: 0.35 }); break;
     case 'camara': f.forma(rr(22.4, 17.8, 5.2, 3.6, 0.5), '#1C1C1E'); f.forma(elipse(25.8, 19.6, 1.3, 1.3), '#35679A', { w: 0.35 }); f.mancha(rr(22.8, 17, 1.6, 1, 0.3), '#1C1C1E'); break;
     case 'taza': f.forma(rr(22, 29.6, 2.6, 2.8, 0.4), '#F2F4F7'); f.tubo('M24.6 30.4Q25.8 30.6 25.6 31.6', '#F2F4F7', 0.4); break;
+    // Rococoro: el abanico abierto (con brazoD 'telefono' queda junto a la cara) y el diario abierto (con los dos brazos 'frente')
+    case 'abanico': {
+      const [hx, hy] = BRAZO_D[o.brazoD || 'abajo'][1], c = o.abanicoCol || '#151312', v = o.varillaCol || '#8F4151';
+      f.forma(`M${hx} ${hy}L${r(hx - 5.6)} ${r(hy - 3.4)}A6.6 6.6 0 0 1 ${r(hx + 5.6)} ${r(hy - 3.6)}Z`, c, { w: 0.4 });
+      f.linea([-4.2, -2.1, 0, 2.1, 4.2].map(dx => `M${hx} ${hy}L${r(hx + dx)} ${r(hy - 6.1 + Math.abs(dx) * 0.38)}`).join(''), 0.3, v);
+      f.linea(`M${r(hx - 5.4)} ${r(hy - 3.6)}A6.4 6.4 0 0 1 ${r(hx + 5.4)} ${r(hy - 3.8)}`, 0.45, v);
+      break;
+    }
+    case 'diario':
+      f.forma('M11.2 24.6L19.4 25.6L27.8 24.4L28.6 33.4L19.6 34.6L10.6 33.6Z', '#F4F1EA', { w: 0.45 });
+      f.linea('M19.4 25.6L19.6 34.6', 0.35, '#B9B2A6');
+      f.linea('M12.6 26.6L18 27.2M21 27.1L26.6 26.4', 0.9, '#151312');
+      f.linea('M12.6 28.6L18 29.2M12.6 30.1L18 30.7M12.6 31.6L16.4 32M21 28.8L26.8 28.1M21 30.3L26.8 29.6M21 31.8L25.2 31.3', 0.3, '#7B7B80');
+      break;
     // El balde de cabritas, a rayas, con las cabritas asomando
     case 'cabritas':
       f.forma('M20.4 27.6H26L25.2 33.6H21.2Z', '#F2F4F7', { w: 0.45 });
@@ -329,13 +343,41 @@ function rasgos(f, o) {
   }
 }
 
+// La cabeza de pez de la Directora de Rococoro: la misma de su sitio (cabezaPez() en probador.js de Biplot/rococoro-studio,
+// el ícono #pez de su index.html), pasada de su cuadro (4 3 92 118) a la cabeza del personaje y entintada como el resto.
+const PEZ = {
+  borde: 'M51.8 7.6C55.8 7.4 63.1 11.3 68.5 16.8C73.9 22.3 80.5 31.9 84.3 40.6C88.1 49.2 90.6 59.5 91.4 68.6C92.1 77.8 91.1 88.4 88.7 95.6C86.4 102.8 83.7 108.2 77.3 111.8C70.8 115.4 59.1 117.2 50 117.2C40.9 117.2 29.3 116 22.7 111.8C16.1 107.7 12.8 100.1 10.4 92.4C8 84.7 7.6 74.4 8.2 65.4C8.8 56.4 11 46.1 13.9 38.4C16.9 30.7 22 23.7 25.8 19C29.6 14.2 33.7 9.9 36.8 9.8L44.3 18.4Z',
+  sombra: 'M51.8 7.6C55.8 7.4 63.1 11.3 68.5 16.8C73.9 22.3 80.5 31.9 84.3 40.6C88.1 49.2 90.6 59.5 91.4 68.6C92.1 77.8 91.1 88.4 88.7 95.6C86.4 102.8 83.7 108.2 77.3 111.8C72.9 92.4 82.6 68.6 79 47C75.5 27.6 65.8 16.8 51.8 7.6Z',
+  linea: 'M8.2 74Q50 57.8 91.8 71.9', collar: 'M22 111.4Q50 121.6 77.3 111.6', boca: 'M35.5 11.4L44.3 21.1L52.6 8.7',
+  branquias: 'M31.5 48.1Q41.2 50.8 50.9 46.5M33.7 54.1Q42.1 56.2 49.1 53'
+};
+const pezXY = (d) => d.replace(/(-?\d+(?:\.\d+)?)[ ,](-?\d+(?:\.\d+)?)/g, (_, x, y) => `${r(9.2 + (x - 8) * 0.2)} ${r(1.3 + (y - 7.6) * 0.2)}`);
+function cabezaPez(f, o = {}) {
+  const piel = o.pezCol || ['#E9E1D3', '#D6CCBB'];
+  f.forma(pezXY(PEZ.borde), piel[0], { w: 0.5 });
+  f.mancha(pezXY(PEZ.sombra), piel[1], { op: 0.75 });
+  // Las escamas, de la línea lateral hacia el cuello
+  let esc = '';
+  for (const [y, x0, x1] of [[80, 12, 88], [87, 12, 88], [94, 14, 86], [101, 18, 82], [108, 26, 74]]) {
+    for (let x = x0 + ((y / 7) % 2 ? 3.5 : 0); x <= x1 - 6; x += 7) esc += `M${r(9.2 + (x - 8) * 0.2)} ${r(1.3 + (y - 7.6) * 0.2)}q.7 .9 1.4 0`;
+  }
+  f.linea(esc, 0.28, '#5A524A');
+  f.linea(pezXY(PEZ.linea), 0.5, '#151312');
+  f.linea(pezXY(PEZ.collar), 1.1, '#151312', { op: 0.85 });
+  f.linea(pezXY(PEZ.branquias), 0.45, '#151312');
+  f.linea(pezXY(PEZ.boca), 1.05, '#151312');
+  // El ojo (la pupila parpadea, como los ojos de todos)
+  f.forma(elipse(20.8, 7.02, 1.84, 1.84), '#F6F2EA', { w: 0.5, sil: false });
+  f.raw(`<g class="pj-ojo"><path d="${elipse(20.96, 7.12, 1.08, 1.08)}" fill="#151312"/><path d="${elipse(20.48, 6.62, 0.36, 0.36)}" fill="#F6F2EA"/></g>`);
+}
+
 // Persona completa
 export function persona(o) {
   const f = figura();
   const piel = o.piel || PIEL.media;
   const pelo = o.pelo || ['#2B2622', '#1A1613', '#4A3F36'];
   const estilo = o.peinado || 'corto';
-  peloAtras(f, estilo, pelo, o.lazo);
+  if (o.cabeza !== 'pez') peloAtras(f, estilo, pelo, o.lazo);
   objetoAtras(f, o.atras);
   const pies = piernasDe(f, { ...o, piel });
   const tb = torso(f, { ...o, piel });
@@ -354,11 +396,19 @@ export function persona(o) {
   };
   brazo(tb.I, bi, 'I');
   if (o.objetoI) objetoAdelante(f, o.objetoI, { ...o, piel });
-  // Cabeza
+  // Cabeza (la de la Directora de Rococoro es de pez)
+  if (o.cabeza === 'pez') cabezaPez(f, o);
+  else if (o.cabeza === 'liso') {
+    // La cabeza lisa de un maniquí de vitrina: sin cara ni pelo
+    f.forma(rr(15.4, 19.4, 3.4, 4.4, 0.8), piel[0], { w: 0.45 });
+    f.forma(elipse(17.2, 12.6, 6.2, 7.8), piel[0]);
+    f.mancha(elipse(19.8, 13.4, 2.6, 6.2), piel[1], { op: 0.6 });
+  } else {
   cara(f, { piel: piel[0], sombra: piel[1], ojos: o.ojos || 'chicos', boca: o.boca || 'sonrisa', labio: o.labio, rubor: o.rubor, cejas: o.cejas || pelo[1], oreja: !['largo', 'melena', 'moto'].includes(estilo) });
   rasgos(f, { ...o, piel });
   peloAdelante(f, estilo, [...pelo.slice(0, 3), piel[0]]);
   if (o.sombrero) peloAdelante(f, o.sombrero, o.sombreroCol);
+  }
   if (o.cintillo) { f.forma('M1.4 8.6Q10 7.2 18.6 8.4L18.5 10.2Q10 9 1.3 10.4Z', o.cintillo, { cab: true, w: 0.4 }); f.forma('M1.6 8.8L-1.2 7.8L-0.8 10.6Z', o.cintillo, { cab: true, w: 0.35 }); }
   // Brazo derecho y lo que lleva
   brazo(tb.D, bd, 'D');
@@ -427,6 +477,10 @@ export const VISITANTES = {
   paseadora: () => persona({ piel: PIEL.media, pelo: ['#D9A441', '#B8862A', '#F4DDA8'], peinado: 'cola', cuerpo: 'fino', arriba: 'parka', arribaCol: ['#3E7A4E', '#2F6440', '#1F3B2A'], abajo: 'pantalon', abajoCol: NEGRO, zapatos: Z.botas, brazoD: 'correa', piernas: 'camina', ojos: 'grandes', rubor: '#E9967A' }),
   turista: () => persona({ piel: PIEL.rosada, pelo: ['#EBC98F', '#C9A26A', '#F8E6BE'], peinado: 'corto', sombrero: 'jockey', sombreroCol: ['#F2F4F7', '#C4D2E0', '#17C3B2'], arriba: 'polera', arribaCol: ['#F29A6B', '#D97E50'], manga: 'corta', abajo: 'short', abajoCol: CAQUI, zapatos: Z.blancas, brazoD: 'telefono', objeto: 'camara', atras: 'mochila', lentes: 'sol' }),
   perro: () => perro({ collar: '#17C3B2' }),
+  // Rococoro: la Directora, el personaje de la marca (la mujer con cabeza de pez de su tatuaje: top corto, mangas de malla,
+  // pretina negra y pantalón ajustado), y el maniquí del probador, que lleva su cabeza (como en su sitio)
+  directora: () => persona({ cabeza: 'pez', cuerpo: 'fino', arriba: 'polera', arribaCol: ['#F4EEE4', '#DCD3C4', ['#151312', 'M10.4 33.6H23.6V36.4H10.4Z']], abajo: 'pantalon', abajoCol: ['#E9E3D8', '#D2CABB'], zapatos: ['#151312', '#151312', null], brazoD: 'cadera', brazoI: 'frente', piernas: 'camina' }),
+  maniqui: () => persona({ cabeza: 'pez', pezCol: ['#FFFFFF', '#E3E1DC'], piel: ['#FFFFFF', '#E3E1DC'], cuerpo: 'fino', arriba: 'polera', arribaCol: ['#151312', '#000000', ['#F4F1EA', 'M15.6 24.4L17.4 27.6L19.2 24.4Z']], manga: 'corta', abajo: 'pantalon', abajoCol: ['#151312', '#000000'], zapatos: ['#FFFFFF', '#E3E1DC', null] }),
   // Sentados (bancas, sillones): lectora con tablet y señor con café
   lectora: () => persona({ piel: PIEL.oscura, pelo: ['#1A1613', '#0B0908', '#3A322C'], peinado: 'rizado', cuerpo: 'fino', arriba: 'cardigan', arribaCol: ['#C9824E', '#A8683A', ['#F2F4F7']], abajo: 'pantalon', abajoCol: OSCURO, zapatos: Z.cafe, piernas: 'sentado', brazoD: 'sostiene', objeto: 'tablet', brazoI: 'frente', lentes: 'redondos', ojos: 'grandes' }),
   // Plantillas nuevas: clínica dental y taller mecánico

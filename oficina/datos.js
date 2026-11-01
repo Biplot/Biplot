@@ -839,6 +839,92 @@
         }
       },
       {
+        id: 'rococoro', nombre: 'Rococoro.studio', cliente: 'Rococoro.studio', rubro: 'Ropa de autor, Santiago', estado: 'Tienda en línea · prototipo',
+        calle: 'comercio', corto: 'Prototipo',
+        pines: [
+          ['Portada tipo diario', 'El Rococoro, con la fecha del día.', 'La marca usa diarios en sus fotos: su tienda abre como un diario.', 'rococoro-1-portada'],
+          ['Colección', 'Cada prenda, con su ficha.', 'Tops, vestidos, faldas y pantalones, con filtros y la foto que cambia al pasar.', 'rococoro-2-coleccion'],
+          ['Probador con maniquí', 'Pruébatelo con tus medidas.', 'El maniquí toma tu forma y te dice la talla y cómo te calza cada prenda.', 'rococoro-3-probador'],
+          ['Bolsa sin cobro en línea', 'El pedido sale por mensaje.', 'Por WhatsApp o Instagram, con tus medidas del probador si quieres.', 'rococoro-4-bolsa']
+        ],
+        medicion: 'Es un prototipo: la medición parte cuando la tienda esté en uso.',
+        acento: '#8F4151',
+        esencia: 'Ropa de autor que te pruebas con tus medidas antes de pedirla.',
+        resumen: 'Tienda en línea para una marca de ropa de diseño de autor hecha en Chile. La portada es un diario, como sus fotos; cada prenda se prueba en un maniquí con tus medidas, y el pedido sale por WhatsApp o Instagram, sin cobro en línea.',
+        puntos: [
+          ['Portada tipo diario', 'la tienda abre como El Rococoro'],
+          ['Probador con maniquí', 'la talla y el calce de cada prenda, con tus medidas'],
+          ['Bolsa por mensaje', 'el pedido sale por WhatsApp o Instagram']
+        ],
+        enlaces: [{ texto: 'Ver el sitio', url: 'https://rococoro-studio.vercel.app' }],
+        equipo: ['lupe', 'architect', 'grilla', 'bucle', 'tamandua'],
+        media: null,
+        nota: 'Prendas, tallas y textos de ejemplo.',
+        /* Sala propia: su tienda-taller, que es también la redacción de El Rococoro (ver la de Nu Home). TEXTOS DE EJEMPLO
+           hasta que Rococoro los apruebe; las secciones, la votación, la tarjeta abanico y las cartas, las de su sitio
+           (Biplot/rococoro-studio, octubre de 2026), sin precios (siguen por confirmar con la marca). La recorre la
+           Directora, el personaje de la marca (la mujer con cabeza de pez de su tatuaje); la demás gente va sin nombre. */
+        salaPropia: {
+          textosDeEjemplo: true,
+          marca: { nombre: 'Rococoro', sub: 'DISEÑO DE AUTOR', texto: 'Ropa de autor cortada y cosida en Chile, en tiradas cortas. Pruébatela con tus medidas antes de pedirla.' },
+          colores: { fondo: '#FCFCFA', fondo2: '#F1F0EC', tinta: '#121214', tinta2: '#3B3B40', oro: '#8F4151', ceja: '#8F4151', cejaBurbuja: '#481925',
+            borde: '#E3E1DC', brillo: '143, 65, 81', sub: '#8F4151', pie: '#7B7B80', velo: 'rgba(18, 18, 20, .06)', hover: '#6E2F3D',
+            boton: '#481925', botonTinta: '#FCFCFA', botonPunto: '#D58A9C' },
+          // La barra va en Dark Rose, como la cinta y el pie de su sitio
+          coloresBarra: { fondo: '#481925', tinta: '#FCFCFA', tinta2: '#EBCBD3', sub: '#D58A9C', borde: 'rgba(213, 138, 156, .35)', ceja: '#D58A9C',
+            velo: 'rgba(255, 255, 255, .08)', hover: '#F1F0EC', boton: '#FCFCFA', botonTinta: '#481925', botonPunto: '#8F4151' },
+          // Los títulos en Instrument Serif y la marca de la barra en la gótica de su cabecera (fuente.logo)
+          fuente: { familia: "'Instrument Serif', 'Times New Roman', serif", logo: "UnifrakturMaguntia, 'Old English Text MT', serif", peso: 400, espacio: '0', titulo: '31px', sub: "500 10.5px/1.4 Jost, sans-serif" },
+          textos: { recorrer: 'Recorrer con la Directora', hablar: 'Escribir a Rococoro', recorrido: 'Recorrido con la Directora', guia: 'La directora · Rococoro' },
+          disenar: { texto: 'Ver la colección', url: 'https://rococoro-studio.vercel.app/#coleccion' },
+          // Quien guía el recorrido: la Directora, el personaje de la marca
+          guia: 'directora',
+          // Sin WhatsApp todavía: su sitio manda los pedidos al chat de Instagram mientras no tenga número
+          whatsapp: null,
+          mensaje: 'Hola Rococoro, vi su tienda en la oficina de BiPlot y quiero conocer la colección.',
+          burbujas: [
+            { quien: 'directora', nombre: 'La directora', rol: 'Directora · Rococoro', texto: 'No grito, pero me transformo. ¿Te muestro la tienda?' },
+            { quien: 'roClienta', nombre: 'Una clienta en el probador', rol: 'Clienta', texto: 'Puse mis medidas: el Top Lazo me queda en S.' },
+            { quien: 'roModelo', nombre: 'La modelo del lookbook', rol: 'Lookbook', texto: 'Una más, con el abanico.' },
+            { quien: 'roFotografa', nombre: 'La fotógrafa', rol: 'Edición impresa', texto: 'Los diarios al piso, que salen en la foto.' },
+            { quien: 'roCostura', nombre: 'La costurera', rol: 'Taller · Rococoro', texto: 'Los encajes y las cintas van a mano.' },
+            { quien: 'roEditora', nombre: 'La editora', rol: 'Sala de redacción', texto: 'Esta semana se vota la tela: ¿listado, mezclilla o escocés?' },
+            { quien: 'roVendedora', nombre: 'La vendedora', rol: 'Caja · Rococoro', texto: 'Tu pedido va envuelto en el diario, con tu tarjeta abanico.' },
+            { quien: 'roLectora2', nombre: 'Una lectora en el sofá', rol: 'Lectura obligada', texto: 'Lectura obligada: la edición de hoy.' },
+            { quien: 'grilla', nombre: 'Grillo, de BiPlot', rol: 'Grillo · BiPlot', texto: 'Diseñé el sitio de Rococoro: la portada es un diario y el probador, un maniquí con tus medidas. ¿Lo vemos?', biplot: true }
+          ],
+          zonas: {
+            vitrina: { nombre: 'La vitrina', ceja: 'En portada', titulo: 'Top Lazo y Pantalón Pliegue', texto: 'Tela listada con ojal, encaje y cinta de raso, y un pantalón de tiro alto y pierna ancha: el look de la portada.', botones: ['disenar'] },
+            lectura: { nombre: 'Lectura obligada', ceja: 'Lectura obligada', titulo: 'El diario, en el sofá', texto: 'Como en su lookbook: la edición del día, para leer mientras alguien se prueba algo. Y tu pedido también llega envuelto en él.' },
+            portada: { nombre: 'La portada', ceja: 'El Rococoro · Edición Nº 39', titulo: 'Una historia que no grita, pero se transforma', texto: 'La marca usa diarios en sus fotos, así que su tienda abre como un diario: la cabecera gótica, la fecha del día y la última hora. En portada, el Top Lazo y el Pantalón Pliegue.', botones: [{ url: 'https://rococoro-studio.vercel.app', texto: 'Ver la portada' }] },
+            coleccion: { nombre: 'La colección', ceja: 'Sección A · Tienda', titulo: 'Texturas, siluetas y detalle', texto: 'Tops con encaje y cinta, pantalones de pierna ancha, faldas que se recogen y vestidos con volante: nueve prendas, en tiradas cortas.', chips: ['Tops', 'Vestidos', 'Faldas y pantalones'], imagen: 'rococoro-2-coleccion', botones: ['disenar'] },
+            probador: { nombre: 'El probador', ceja: 'Sección B · El probador', titulo: 'Tu maniquí, tus medidas', texto: 'Ingresas estatura, busto, cintura y cadera, y el maniquí toma tu forma. Le cuelgas prendas del perchero y te dice qué talla te calza y dónde te quedaría justa u holgada.', chips: ['Talla recomendada', 'Calce por zona', 'Hasta dónde te llega'], imagen: 'rococoro-3-probador', botones: [{ url: 'https://rococoro-studio.vercel.app/#probador', texto: 'Abrir el probador' }] },
+            lookbook: { nombre: 'El lookbook', ceja: 'Sección E · Edición impresa', titulo: 'Entre diarios y con abanico', texto: 'Las fotos de la colección, sobre papel blanco y con diarios en el piso, como las de su Instagram.', imagen: 'rococoro-lookbook', botones: [{ url: 'https://www.instagram.com/rococoro.studio/', texto: 'Ver en Instagram' }] },
+            taller: { nombre: 'El taller', ceja: 'Sección C · El taller', titulo: 'Del boceto a tu clóset', texto: 'Cada prenda parte en papel, se patrona y se prueba hasta que cae como quieren, y se corta y se cose en Chile, con terminaciones a mano: encajes, cintas, broches y alamares.', chips: ['Hecho en Chile', 'Tiradas cortas', 'También a medida'] },
+            pasos: { nombre: 'Del boceto a tu clóset', ceja: 'El taller', titulo: 'Boceto, molde, confección y tu clóset', texto: 'Por eso las tiradas son cortas. Y si ninguna talla te calza, trabajan a pedido con tus medidas.' },
+            figurines: { nombre: 'Los figurines', ceja: 'El taller', titulo: 'Figurines de la colección', texto: 'La colección dibujada antes de cortarla: la silueta, el detalle y la tela de cada prenda.' },
+            redaccion: { nombre: 'Sala de redacción', ceja: 'Sección D · Sala de redacción', titulo: 'La próxima colección la eliges tú', texto: 'Antes de cortar una colección, la votan en sus historias de Instagram. Las que votan forman el consejo editorial, y sus nombres salen impresos en el diario de esa edición.', botones: [{ url: 'https://www.instagram.com/rococoro.studio/', texto: 'Votar en Instagram' }] },
+            votacion: { nombre: 'En votación', ceja: 'En votación', titulo: 'La tela de la próxima colección', texto: 'Listado negro, mezclilla o escocés rojo: la que gane en Instagram se corta para la próxima colección.', botones: [{ url: 'https://www.instagram.com/rococoro.studio/', texto: 'Votar en Instagram' }] },
+            caja: { nombre: 'La caja', ceja: 'La bolsa', titulo: 'Sin cobro en línea', texto: 'Armas tu bolsa y el pedido sale por WhatsApp o por Instagram, con tus medidas del probador si quieres. Te responden con el total con envío y los datos para pagar. Despachan a todo Chile.', imagen: 'rococoro-4-bolsa', botones: ['disenar'] },
+            abanico: { nombre: 'La tarjeta abanico', ceja: 'Sección F · Clientas frecuentes', titulo: 'Cada compra abre una varilla', texto: 'La tarjeta llega con tu primer pedido, dentro del diario. Con 3 varillas, un arreglo gratis en el taller; con 6, preventa 24 horas antes de cada colección; con 9, una pieza a medida con 15 % de descuento.' },
+            directora: { nombre: 'La directora', ceja: 'Sección G · Cartas', titulo: 'Cartas a la directora', texto: 'Ella responde lo que más preguntan: qué talla pedir (para eso está el probador), envíos a todo Chile, cómo pagar, prendas a medida y cambios. No grita, pero se transforma.', botones: [{ url: 'https://rococoro-studio.vercel.app/#cartas', texto: 'Leer las cartas' }] },
+            biplot: { nombre: 'Rincón de BiPlot', ceja: 'Hecho con BiPlot', titulo: 'Rococoro.studio', biplot: true }
+          },
+          recorrido: [
+            { zona: 'vitrina', titulo: 'La vitrina', ver: ['lectura'], texto: 'Bienvenida a Rococoro. Soy la directora. En la vitrina, el look de la portada; en el sofá, la lectura obligada.' },
+            { zona: 'portada', titulo: 'La portada', texto: 'Somos un diario: cada colección sale en portada. Hoy, una historia que no grita, pero se transforma.' },
+            { zona: 'coleccion', titulo: 'La colección', texto: 'Tops, vestidos, faldas y pantalones, en tiradas cortas. Cada prenda se prueba antes de pedirla.' },
+            { zona: 'probador', titulo: 'El probador', texto: 'Pones tus medidas y el maniquí toma tu forma. Ah, y lleva mi cabeza.' },
+            { zona: 'lookbook', titulo: 'El lookbook', texto: 'Aquí sale la edición impresa: el lookbook, entre diarios y con abanico.' },
+            { zona: 'taller', titulo: 'El taller', ver: ['pasos', 'figurines'], texto: 'Del boceto a tu clóset: aquí se patrona, se corta y se cose, en Chile.' },
+            { zona: 'redaccion', titulo: 'La sala de redacción', ver: ['votacion'], texto: 'La próxima colección la eliges tú: la votamos en Instagram.' },
+            { zona: 'caja', titulo: 'La caja', ver: ['abanico'], texto: 'Arma tu bolsa y te respondemos con el envío. Cada compra abre una varilla de tu abanico.' },
+            { zona: 'directora', titulo: 'Mi escritorio', texto: 'Aquí respondo las cartas: qué talla pedir, envíos, pagos y cambios.' },
+            { zona: 'biplot', titulo: 'El rincón de BiPlot', texto: 'Este rincón es de BiPlot, que hizo nuestro sitio. Grillo te cuenta cómo.' }
+          ]
+        }
+      },
+      {
         id: 'libre', nombre: 'Tu proyecto aquí', cliente: '', rubro: 'Local disponible', estado: 'Disponible', libre: true, corto: 'Disponible',
         acento: '#7FD8CF',
         esencia: 'El local que espera al próximo proyecto.',
@@ -881,7 +967,7 @@
               texto: 'Trabajamos con pymes de servicios profesionales que sienten que su operación creció más rápido que sus procesos. Si hoy todo vive en planillas, en un cuaderno o en WhatsApp, llegaste al lugar correcto.',
               chips: ['En planillas', 'En WhatsApp y papel', 'En un sistema que no conversa con nada'], botones: [{ chat: true }] },
             maqueta: { nombre: 'La maqueta del barrio', ceja: 'La maqueta', titulo: 'Un local para cada proyecto',
-              texto: 'Así es la calle principal: un local por proyecto, cada uno con su marca en el techo y su sala adentro. El sitio libre, entre Rumbo y El Archivo, espera el próximo. Encima flota Atlas, que proyecta el mapa y ve todo el panorama. Los proyectos que no se muestran con su propio dibujo van en la calle de su rubro.' },
+              texto: 'Así es la calle principal: un local por proyecto, cada uno con su marca en el techo y su sala adentro. El sitio libre, entre Rococoro.studio y El Archivo, espera el próximo. Encima flota Atlas, que proyecta el mapa y ve todo el panorama. Los proyectos que no se muestran con su propio dibujo van en la calle de su rubro.' },
             piloto: { nombre: 'El local piloto', ceja: 'El local piloto', titulo: 'Así se vería el tuyo',
               texto: 'Tu nombre y tu logo en el techo, tus productos a la vista de quien pasa por el barrio y, adentro, tu sala con tus pantallas y un enlace para mostrarla a tus clientes. Sólo si quieres: si prefieres no aparecer, se muestra sólo tu rubro.',
               chips: ['Tu marca en el techo', 'Tu sala, con un enlace', 'biplot.cl/oficina/tu-empresa'] },
@@ -895,8 +981,8 @@
               texto: 'El diagnóstico define el alcance real antes de cualquier número. Parte con una primera sesión sin costo; el proyecto se cotiza según su alcance, y el soporte continuo es mensual, desde el mes 2.',
               botones: [{ cta: true }, { url: '../#precios', texto: 'Ver los precios en el sitio' }] },
             vecinos: { nombre: 'La ventana a la calle', ceja: 'Los vecinos', titulo: 'Cada proyecto, con su local y su sala',
-              texto: 'Por la ventana se ve la calle principal: Nu Home 360, Fundos 360, Haru 360, Eleven 360 y Rumbo, cada uno con su marca en el techo y su sala adentro. Pasa a verlas.',
-              botones: [{ sala: 'nuhome', texto: 'Nu Home 360' }, { sala: 'fundos', texto: 'Fundos 360' }, { sala: 'haru', texto: 'Haru 360' }, { sala: 'eleven', texto: 'Eleven 360' }, { sala: 'rumbo', texto: 'Rumbo' }] },
+              texto: 'Por la ventana se ve la calle principal: Nu Home 360, Fundos 360, Haru 360, Eleven 360, Rumbo y Rococoro.studio, cada uno con su marca en el techo y su sala adentro. Pasa a verlas.',
+              botones: [{ sala: 'nuhome', texto: 'Nu Home 360' }, { sala: 'fundos', texto: 'Fundos 360' }, { sala: 'haru', texto: 'Haru 360' }, { sala: 'eleven', texto: 'Eleven 360' }, { sala: 'rumbo', texto: 'Rumbo' }, { sala: 'rococoro', texto: 'Rococoro.studio' }] },
             diagnostico: { nombre: 'La mesa de Lupe', ceja: 'Lupe · Diagnóstico', titulo: 'La primera sesión es sin costo',
               texto: 'Lupe se sienta con quien hace el trabajo, mira las planillas y los chats, y cronometra cuánto se va en cada paso. Te llevas la revisión de tu proceso, el mapa de dónde se pierde tiempo, con la línea base, y una propuesta de alcance, sin compromiso. Si no hay algo real que automatizar, te lo decimos de frente.',
               botones: [{ cta: true }, { chat: true }] }
