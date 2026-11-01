@@ -17,7 +17,7 @@ const MARINO = { t: '#17446F', l: '#0F3558', r: '#0B2B45' };
 const ROBLE = { t: '#D2B48C', l: '#B8986E', r: '#9C7F57' };
 const TELA = { t: '#3F6F9E', l: '#2F5A86', r: '#244A70' };
 // Los colores de los vecinos (su acento, el de datos.js) y el de «tu marca» (el de la plantilla básica)
-const VECINOS = [['NU HOME', '#E0B341', NOCHE], ['FUNDOS', '#6FAF6B', NOCHE], ['HARU', '#E0524A', '#FFFFFF'], ['ELEVEN', '#17C3B2', NOCHE], ['RUMBO', '#3E9C95', '#FFFFFF']];
+const VECINOS = [['NU HOME', '#E0B341', NOCHE], ['FUNDOS', '#6FAF6B', NOCHE], ['HARU', '#E0524A', '#FFFFFF'], ['ELEVEN', '#17C3B2', NOCHE], ['RUMBO', '#3E9C95', '#FFFFFF'], ['ROCOCORO', '#8F4151', '#FFFFFF']];
 const TU_MARCA = '#8E6BB8';
 
 // El isotipo de BiPlot (la línea con su punto final coral), de 22 × 22
@@ -135,23 +135,26 @@ const VENTANA = (() => {
     Array.from({ length: 18 }, (_, i) => `<rect x="${488 + (i % 6) * 40}" y="${112 + Math.floor(i / 6) * 34}" width="24" height="18" fill="${i % 4 ? '#F2C14E' : '#5B86B0'}" opacity=".85"/>`).join('') +
     txt(600, 82, 'BIPLOT HQ', 18, '#FFFFFF', ' text-anchor="middle" letter-spacing="3"');
   // Los locales de la calle principal, cada uno con su letrero
+  // (los locales se reparten a lo ancho: cada uno mide lo que le toca, con su vereda entre medio)
+  const PASO = (VENTANA_A - 30) / VECINOS.length, AN = Math.round(PASO - 22), sx = AN / 210;
   VECINOS.forEach(([n, c, t], i) => {
-    const x = 34 + i * 232, y = 196;
-    s += `<rect x="${x}" y="${y}" width="210" height="140" fill="#15395E"/><rect x="${x - 6}" y="${y - 20}" width="222" height="30" rx="3" fill="${c}"/>` +
-      txt(x + 105, y + 1, n, 17, t, ' text-anchor="middle" letter-spacing="2"') +
-      `<path d="M${x} ${y + 14}H${x + 210}L${x + 200} ${y + 34}H${x + 10}Z" fill="${c}" opacity=".85"/>` +
-      Array.from({ length: 6 }, (_, k) => `<path d="M${x + 12 + k * 33} ${y + 14}L${x + 20 + k * 33} ${y + 34}" stroke="#FFFFFF" stroke-width="6" opacity=".35"/>`).join('') +
-      `<rect x="${x + 16}" y="${y + 50}" width="110" height="74" fill="#F2C14E" opacity=".85"/><rect x="${x + 140}" y="${y + 50}" width="54" height="90" fill="#0B2B45"/>` +
-      `<circle cx="${x + 52}" cy="${y + 96}" r="11" fill="#0B2B45" opacity=".55"/><rect x="${x + 42}" y="${y + 104}" width="20" height="20" rx="8" fill="#0B2B45" opacity=".55"/>`;
+    const x = Math.round(26 + i * PASO), y = 196;
+    s += `<rect x="${x}" y="${y}" width="${AN}" height="140" fill="#15395E"/><rect x="${x - 6}" y="${y - 20}" width="${AN + 12}" height="30" rx="3" fill="${c}"/>` +
+      txt(x + AN / 2, y + 1, n, 17, t, ' text-anchor="middle" letter-spacing="2"') +
+      `<path d="M${x} ${y + 14}H${x + AN}L${x + AN - 10} ${y + 34}H${x + 10}Z" fill="${c}" opacity=".85"/>` +
+      Array.from({ length: Math.floor((AN - 14) / 33) }, (_, k) => `<path d="M${x + 12 + k * 33} ${y + 14}L${x + 20 + k * 33} ${y + 34}" stroke="#FFFFFF" stroke-width="6" opacity=".35"/>`).join('') +
+      `<rect x="${x + 16}" y="${y + 50}" width="${Math.round(110 * sx)}" height="74" fill="#F2C14E" opacity=".85"/><rect x="${x + AN - 70 * sx}" y="${y + 50}" width="${Math.round(54 * sx)}" height="90" fill="#0B2B45"/>` +
+      `<circle cx="${x + 16 + 36 * sx}" cy="${y + 96}" r="11" fill="#0B2B45" opacity=".55"/><rect x="${x + 6 + 36 * sx}" y="${y + 104}" width="20" height="20" rx="8" fill="#0B2B45" opacity=".55"/>`;
   });
+  const ENTRE = VECINOS.slice(1).map((_, i) => Math.round(26 + (i + 1) * PASO - 11));
   // La vereda, los árboles, los faroles y la calzada
   s += `<rect y="336" width="${VENTANA_A}" height="18" fill="#2A5A88"/><rect y="354" width="${VENTANA_A}" height="${VENTANA_H - 354}" fill="#1D4A72"/>` +
     `<path d="M0 388H${VENTANA_A}" stroke="#F2F4F7" stroke-width="3" stroke-dasharray="26 22" opacity=".6"/>` +
-    [250, 482, 714, 946].map((x) => `<path d="M${x} 336V296" stroke="#4A3F2E" stroke-width="4"/><circle cx="${x}" cy="284" r="20" fill="#168A86"/><circle cx="${x - 9}" cy="292" r="13" fill="#0A8A7E"/>`).join('') +
+    ENTRE.map((x) => `<path d="M${x} 336V296" stroke="#4A3F2E" stroke-width="4"/><circle cx="${x}" cy="284" r="20" fill="#168A86"/><circle cx="${x - 9}" cy="292" r="13" fill="#0A8A7E"/>`).join('') +
     [140, 1060].map((x) => `<path d="M${x} 336V250" stroke="#0B1726" stroke-width="3.4"/><path d="M${x} 250H${x + 18}" stroke="#0B1726" stroke-width="3"/><ellipse cx="${x + 18}" cy="256" rx="8" ry="4" fill="#FFF1CF"/><ellipse cx="${x + 18}" cy="268" rx="26" ry="10" fill="#FFF1CF" opacity=".25"/>`).join('');
   // El marco de la ventana y el reflejo del vidrio
   s += `<path d="M90 0L30 ${VENTANA_H}H70L130 0ZM700 0L640 ${VENTANA_H}H660L720 0Z" fill="#FFFFFF" opacity=".12"/>` +
-    [0, 251, 483, 715, 947, VENTANA_A - 8].map((u) => `<rect x="${u}" width="8" height="${VENTANA_H}" fill="${AZUL}"/>`).join('') + `<rect width="${VENTANA_A}" height="8" fill="${AZUL}"/><rect y="${VENTANA_H - 8}" width="${VENTANA_A}" height="8" fill="${AZUL}"/>`;
+    [0, ...ENTRE.map((x) => x - 4), VENTANA_A - 8].map((u) => `<rect x="${u}" width="8" height="${VENTANA_H}" fill="${AZUL}"/>`).join('') + `<rect width="${VENTANA_A}" height="8" fill="${AZUL}"/><rect y="${VENTANA_H - 8}" width="${VENTANA_A}" height="8" fill="${AZUL}"/>`;
   return s;
 })();
 
@@ -215,7 +218,7 @@ export function salaVentas() {
       lugar: [0.05, 3.9, 2.6], guia: [2.0, 4.4], frente: { svg: PROMESA, ancho: PROMESA_A, alto: PROMESA_H, fondo: '#5A4330' } });
     plantaAlta(L, 0.6, 0.65, 0.95, ['#FFFFFF', '#DCE2E7']);
 
-    // ── La maqueta del barrio: la calle principal, con el sitio libre entre Rumbo y El Archivo ──
+    // ── La maqueta del barrio: la calle principal, con el sitio libre entre Rococoro y El Archivo ──
     L.caja(6.0, 3.6, 0, 4.8, 2.8, 0.7, BLANCO, 8.4 + 5.0);
     L.caja(5.94, 3.54, 0.7, 4.92, 2.92, 0.06, { t: '#FFFFFF', l: '#D5DEE8', r: '#B9C8D8' }, 8.4 + 5.02);
     L.caja(6.15, 3.72, 0.76, 4.5, 2.56, 0.04, { t: '#12344F', l: '#0E2A47', r: '#0B2240' }, 8.4 + 5.04);
@@ -224,20 +227,20 @@ export function salaVentas() {
     // los locales, cada uno con su color en el techo; al medio, BiPlot HQ, y el sitio libre marcado (todo lo de encima de
     // la maqueta va después de su base y antes de quienes la miran)
     const km = (x) => 13.5 + x * 0.02;
-    const fila = [['nuhome', '#E0B341'], ['fundos', '#6FAF6B'], ['haru', '#E0524A'], ['eleven', '#17C3B2'], ['hq', null], ['rumbo', '#3E9C95'], ['libre', null], ['archivo', '#7FD8CF']];
+    const fila = [['nuhome', '#E0B341'], ['fundos', '#6FAF6B'], ['haru', '#E0524A'], ['eleven', '#17C3B2'], ['hq', null], ['rumbo', '#3E9C95'], ['rococoro', '#8F4151'], ['libre', null], ['archivo', '#7FD8CF']];
     fila.forEach(([id, c], i) => {
-      const x = 6.32 + i * 0.54;
+      const x = 6.27 + i * 0.485;
       if (id === 'hq') {
-        L.caja(x - 0.02, 3.86, 0.8, 0.52, 1.1, 0.78, { t: AZUL, l: '#17446F', r: '#0F3558' }, km(x));
-        L.caja(x - 0.02, 3.86, 1.58, 0.52, 1.1, 0.03, { t: CIAN, l: '#0A8A7E', r: '#087066' }, km(x) + 0.001);
-        for (let f = 0; f < 3; f++) L.add(km(x) + 0.002, L.poly([[x + 0.06, 4.961, 0.95 + f * 0.2], [x + 0.42, 4.961, 0.95 + f * 0.2], [x + 0.42, 4.961, 1.05 + f * 0.2], [x + 0.06, 4.961, 1.05 + f * 0.2]], `fill="#F2C14E" opacity=".85"`));
+        L.caja(x - 0.02, 3.86, 0.8, 0.46, 1.1, 0.78, { t: AZUL, l: '#17446F', r: '#0F3558' }, km(x));
+        L.caja(x - 0.02, 3.86, 1.58, 0.46, 1.1, 0.03, { t: CIAN, l: '#0A8A7E', r: '#087066' }, km(x) + 0.001);
+        for (let f = 0; f < 3; f++) L.add(km(x) + 0.002, L.poly([[x + 0.05, 4.961, 0.95 + f * 0.2], [x + 0.37, 4.961, 0.95 + f * 0.2], [x + 0.37, 4.961, 1.05 + f * 0.2], [x + 0.05, 4.961, 1.05 + f * 0.2]], `fill="#F2C14E" opacity=".85"`));
       } else if (id === 'libre') {
-        L.piso(x, 4.3, `<rect x="2" y="2" width="42" height="62" rx="4" fill="rgba(127,216,207,.3)" stroke="${MENTA}" stroke-width="3" stroke-dasharray="6 5"/>`, km(x), 0.81);
+        L.piso(x, 4.3, `<rect x="2" y="2" width="38" height="62" rx="4" fill="rgba(127,216,207,.3)" stroke="${MENTA}" stroke-width="3" stroke-dasharray="6 5"/>`, km(x), 0.81);
         L.caja(x + 0.2, 4.95, 0.8, 0.03, 0.03, 0.42, { t: NIEBLA, l: '#C9D1D9', r: '#AEB8C2' }, km(x) + 0.001);
         L.planoY(x - 0.04, 4.99, 1.3, 56, 20, `<rect width="56" height="20" rx="5" fill="${MENTA}"/>` + mono(28, 13.8, 'TU LOCAL', 9.4, NOCHE, ' text-anchor="middle"'), km(x) + 0.002);
       } else {
-        L.caja(x, 4.3, 0.8, 0.46, 0.66, 0.3, { t: c, l: '#1B4670', r: '#15395E' }, km(x));
-        L.add(km(x) + 0.001, L.poly([[x + 0.05, 4.961, 0.84], [x + 0.41, 4.961, 0.84], [x + 0.41, 4.961, 0.98], [x + 0.05, 4.961, 0.98]], `fill="#F2C14E" opacity=".8"`));
+        L.caja(x, 4.3, 0.8, 0.41, 0.66, 0.3, { t: c, l: '#1B4670', r: '#15395E' }, km(x));
+        L.add(km(x) + 0.001, L.poly([[x + 0.05, 4.961, 0.84], [x + 0.36, 4.961, 0.84], [x + 0.36, 4.961, 0.98], [x + 0.05, 4.961, 0.98]], `fill="#F2C14E" opacity=".8"`));
       }
     });
     // los árboles de la vereda de enfrente

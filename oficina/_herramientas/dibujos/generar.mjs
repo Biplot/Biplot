@@ -278,6 +278,11 @@ console.log('salas.js', kb(salasJs), '·', Object.keys(salas).join(', '), '·', 
 // Quien pega biplot.cl/oficina/haru en un chat ve la imagen de la sala; quien lo abre llega a la oficina, en esa sala.
 const escHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const ICONO = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230E2A47'/%3E%3Cpath d='M9 8 V24 H25' stroke='%233f6da0' stroke-width='1.7' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='11.5' cy='20.5' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='16' cy='17' r='2.2' fill='%2317C3B2'/%3E%3Ccircle cx='23' cy='11' r='2.8' fill='%23FF6B4A'/%3E%3C/svg%3E`;
+// Las visitas con Vercel Web Analytics, sin cookies (las direcciones van sin parámetros ni #fragmento), como en cada página
+// publicada; fuera queda la del canal (oficina/tv), igual que en el sitio
+const VISITAS = `<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};va("beforeSend",function(e){var u=new URL(e.url);u.search="";u.hash="";e.url=u.toString();return e});</script>
+<script defer src="/_vercel/insights/script.js"></script>
+`;
 for (const id of Object.keys(SALAS)) {
   // El Archivo no es un proyecto: es el museo de BiPlot (datos.js, salas.archivo). BiPlot.TV tampoco: es su canal (salas.tv)
   const museo = id === 'archivo' && DATOS.salas.archivo && DATOS.salas.archivo.salaPropia;
@@ -297,7 +302,7 @@ for (const id of Object.keys(SALAS)) {
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+${canal ? '' : VISITAS}<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escHtml(titulo)}</title>
 <!-- Generado por _herramientas/dibujos/generar.mjs desde datos.js. No se edita a mano. -->
 <meta name="description" content="${escHtml(desc)}">

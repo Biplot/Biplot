@@ -1253,7 +1253,7 @@
     var f = PP.fuente || {};
     // (la vista de frente vive fuera de la sala, sobre toda la página: lleva los mismos)
     pintarColores(salaEl, PP.colores); pintarColores(frenteEl, PP.colores); pintarColores(barraSala, PP.coloresBarra);
-    [['--p-serif', f.familia], ['--p-peso', f.peso], ['--p-espacio', f.espacio], ['--p-caja', f.caja], ['--p-titulo-tam', f.titulo], ['--p-sub-letra', f.sub]
+    [['--p-serif', f.familia], ['--p-logo', f.logo], ['--p-peso', f.peso], ['--p-espacio', f.espacio], ['--p-caja', f.caja], ['--p-titulo-tam', f.titulo], ['--p-sub-letra', f.sub]
     ].forEach(function (t) { salaEl.style.setProperty(t[0], t[1] || ''); frenteEl.style.setProperty(t[0], t[1] || ''); });
     // Con avances del CRM, las pantallas fijas del proyecto no aparecen en su sala: ni en sus tarjetas ni de frente
     var fuera = pr.avances ? pantallasFijas(pr) : null;
@@ -2681,6 +2681,7 @@
     ['zona', 'haru', 'Haru 360', 'Una barra de sushi con ventas, cocina, delivery y caja en un solo sistema.'],
     ['zona', 'eleven', 'Eleven 360', 'Un gimnasio que suma socios y no los suelta.'],
     ['zona', 'rumbo', 'Rumbo', 'Nuestra app para ordenar lo personal, un día a la vez.'],
+    ['zona', 'rococoro', 'Rococoro.studio', 'Ropa de autor con portada de diario: te la pruebas con tus medidas antes de pedirla. La recorre su directora.'],
     ['zona', 'archivo', 'El Archivo', 'El museo de BiPlot: del papel a hoy, con una pieza de cada desarrollo. Y el fichero, con todos los casos por rubro.'],
     ['zona', 'tv', 'BiPlot.TV', 'El canal de BiPlot: los capítulos animados, la oficina y los casos, en video. Hoy se estrena «Un bocado a la vez».'],
     ['zona', 'quiosco', 'El quiosco', 'Aquí se vende La Línea, el diario de BiPlot: cada lunes, la semana de las pymes en cinco minutos.'],

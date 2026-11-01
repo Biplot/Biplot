@@ -129,6 +129,11 @@ const SALAS_PROPIAS = [
   { id: 'rumbo', nombre: 'Rumbo', barra: ['Rumbo', 'by BiPlot', 'Abrir Rumbo', 'Recorrer un día'], letra: 'Space Grotesk',
     disenar: 'https://rumbo.biplot.cl', zona: 'elefante', titulo: '¿Cómo te comes un elefante?', chips: 'Cría · Joven · Adulto · Sabio | Seis tipos', enlace: 'Abrir Rumbo https://rumbo.biplot.cl', paradas: 7,
     recorrido: ['Tu día', 'El ritual de mañana'], ceja: 'Hecho en BiPlot', chip: 'Publicado', pantallas: 3, frente: 'habitos', frenteT: 'Marca cada día y cuida tu racha' },
+  // Rococoro: la marca de la barra va en la gótica de su cabecera (fuente.logo) y la recorre la Directora
+  { id: 'rococoro', nombre: 'Rococoro.studio', barra: ['Rococoro', 'DISEÑO DE AUTOR', 'Ver la colección', 'Recorrer con la Directora'], letra: 'UnifrakturMaguntia',
+    disenar: 'https://rococoro-studio.vercel.app/#coleccion', zona: 'probador', titulo: 'Tu maniquí, tus medidas', chips: 'Talla recomendada | Calce por zona | Hasta dónde te llega',
+    enlace: 'Abrir el probador https://rococoro-studio.vercel.app/#probador', paradas: 10, recorrido: ['La vitrina', 'La portada'],
+    ceja: 'Hecho con BiPlot', chip: 'Prototipo', pantallas: 4, frente: 'portada', frenteT: 'Una historia que no grita, pero se transforma', fotos: true },
 ];
 
 for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, true]]) {
@@ -138,9 +143,9 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   await js("try{localStorage.clear()}catch(e){}; true"); await abrir(w, h, movil, false);
   ok(await js("!document.querySelector('#intro').hidden"), 'la bienvenida aparece en la primera visita');
   ok(await js('document.documentElement.scrollWidth <= innerWidth'), 'sin desborde horizontal');
-  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 34 && !!document.querySelector('#recorrer .menu-tv[data-id=\"tv\"]') && !!document.querySelector('#recorrer [data-id=\"quiosco\"]')"), 'el menú lista 11 integrantes, 2 mascotas, 10 lugares de la oficina, 10 del barrio (con el quiosco de La Línea) y el botón de BiPlot.TV (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
+  ok(await js("document.querySelectorAll('#recorrer [data-id]').length === 35 && !!document.querySelector('#recorrer .menu-tv[data-id=\"tv\"]') && !!document.querySelector('#recorrer [data-id=\"quiosco\"]')"), 'el menú lista 11 integrantes, 2 mascotas, 10 lugares de la oficina, 11 del barrio (con el quiosco de La Línea) y el botón de BiPlot.TV (' + await js("document.querySelectorAll('#recorrer [data-id]').length") + ')');
   ok(await js("document.querySelectorAll('.actor').length === 13"), 'los 11 integrantes y las 2 mascotas están en la escena');
-  ok(await js("document.querySelectorAll('.barrio-atras .local[data-local]').length === 7 && document.querySelectorAll('.caminante').length === 2"), 'la calle principal tiene sus 7 locales cerrados y 2 personas caminando por la vereda');
+  ok(await js("document.querySelectorAll('.barrio-atras .local[data-local]').length === 8 && document.querySelectorAll('.caminante').length === 2"), 'la calle principal tiene sus 8 locales cerrados y 2 personas caminando por la vereda');
   ok(await js("[...document.querySelectorAll('.barrio-atras image')].map(i => i.getAttribute('href')).filter(h => /logo-/.test(h)).sort().join() === 'media/salas/logo-fundos.webp,media/salas/logo-haru.webp,media/salas/logo-nuhome.webp'"), 'los techos de Fundos, Haru y Nu Home llevan su logo real');
   ok(await js("[...document.querySelectorAll('.barrio image')].some(i => /tv\\/pantalla-estreno\\.webp$/.test(i.getAttribute('href')))"), 'en la plaza, el edificio de BiPlot.TV muestra el estreno en su pantalla gigante');
   ok(await js("!document.querySelector('.barrio').innerHTML.includes('§') && !document.querySelector('.hq-cerrada').innerHTML.includes('§')"), 'no queda ninguna marca §…§ sin reemplazar en el barrio');
@@ -149,9 +154,9 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(await js("[...document.querySelectorAll('button, a[href]')].every(b => { const r = b.getBoundingClientRect(); return r.width === 0 || (r.width >= 24 && r.height >= 24); })"), 'todo botón o enlace visible mide al menos 24 px');
   // Recorrido guiado completo
   const pasos = await js(`(async () => { document.querySelector('#intro-guia').click(); await ${W(300)}; const t = [], dentro = [];
-    for (let i = 0; i < 22; i++) { t.push(document.querySelector('#guia-t').textContent); dentro.push(document.querySelector('#svg-escena').classList.contains('oficina-abierta')); document.querySelector('#guia-sig').click(); await ${W(120)}; }
+    for (let i = 0; i < 23; i++) { t.push(document.querySelector('#guia-t').textContent); dentro.push(document.querySelector('#svg-escena').classList.contains('oficina-abierta')); document.querySelector('#guia-sig').click(); await ${W(120)}; }
     return { t, dentro, oculto: document.querySelector('#guia').hidden, intro: document.querySelector('#intro').hidden, chat: !!document.querySelector('#panel:not([hidden]) .chat') }; })()`);
-  ok(pasos.t.length === 22 && pasos.oculto && pasos.intro && pasos.t[0] === 'BiPlot HQ' && pasos.t.includes('El pasaje') && pasos.t[19] === 'BiPlot.TV' && pasos.t[20] === 'El quiosco' && pasos.t[21] === 'Tu proyecto aquí', 'el recorrido guiado pasa por 22 paradas, de la oficina cerrada a la calle, a BiPlot.TV y al quiosco, en la plaza (' + pasos.t[0] + ' → ' + pasos.t[21] + ')');
+  ok(pasos.t.length === 23 && pasos.oculto && pasos.intro && pasos.t[0] === 'BiPlot HQ' && pasos.t.includes('El pasaje') && pasos.t.includes('Rococoro.studio') && pasos.t[20] === 'BiPlot.TV' && pasos.t[21] === 'El quiosco' && pasos.t[22] === 'Tu proyecto aquí', 'el recorrido guiado pasa por 23 paradas, de la oficina cerrada a la calle, a BiPlot.TV y al quiosco, en la plaza (' + pasos.t[0] + ' → ' + pasos.t[22] + ')');
   ok(!pasos.dentro[0] && pasos.dentro.slice(1, 12).every(Boolean) && pasos.dentro.slice(12).every((d) => !d), 'el recorrido entra a la oficina en la recepción y sale a la calle en el pasaje');
   ok(pasos.chat, 'al terminar el recorrido se abre la conversación con Plotty');
   // Cada entrada del menú abre su panel con título (las salas de las empresas, con su vista de sala)
@@ -251,7 +256,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     for (let k = 0; k < 40 && !document.querySelector('#panel .vista-sala svg'); k++) await ${W(100)};
     return { n, vis: [...document.querySelectorAll('.archivo-grupo:not([hidden]) li:not([hidden]) b')].map(b => b.textContent), titulo: document.querySelector('#panel-titulo')?.textContent,
       museo: !!document.querySelector('#panel .vista-sala svg use'), entrar: !!document.querySelector('#panel [data-entrar="archivo"]') }; })()`);
-  ok(archivo.n === 5 && archivo.vis.join() === 'Eleven 360', 'El Archivo lista los 5 casos por rubro y los busca (' + archivo.vis.join(', ') + ')');
+  ok(archivo.n === 6 && archivo.vis.join() === 'Eleven 360', 'El Archivo lista los 6 casos por rubro y los busca (' + archivo.vis.join(', ') + ')');
   ok(archivo.titulo === 'El museo de BiPlot' && archivo.museo && archivo.entrar, 'desde la calle, El Archivo muestra el museo dibujado y «Entrar al museo»');
   // Entrar desde el menú y salir con Escape; la vista previa de un local sin video muestra su sala dibujada
   const entra = await js(`(async () => { document.querySelector('#panel-cerrar').click(); await ${W(60)};
@@ -575,7 +580,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
     'la escritura de Fundos 360 gira en 3D, con su pantalla real y «Entrar a su sala»');
   ok(ar.fundosFoto.abierta && /media\/salas\/fundos-5-postventa\.webp$/.test(ar.fundosFoto.img) && ar.fundosFoto.carga && ar.fundosFoto.entera && ar.fundosFoto.t === 'La escritura inscrita' &&
     /datos de ejemplo/.test(ar.fundosFoto.pie) && ar.fundosFoto.sala && !ar.fundosFoto.desborde && ar.fundosFoto.cierra, 'al tocar su pantalla real, se abre en grande y completa, con su tarjeta al lado, y Escape vuelve al museo');
-  ok(ar.fichero.t === 'Todos los casos tienen su carpeta' && ar.fichero.n === 5 && ar.fichero.vis === 'Haru 360', 'el fichero, desde la barra, lista los 5 casos por rubro y los busca (' + ar.fichero.vis + ')');
+  ok(ar.fichero.t === 'Todos los casos tienen su carpeta' && ar.fichero.n === 6 && ar.fichero.vis === 'Haru 360', 'el fichero, desde la barra, lista los 6 casos por rubro y los busca (' + ar.fichero.vis + ')');
   ok(/^https:\/\/wa\.me\/\d+\?text=/.test(ar.turno.cta) && ar.turno.chat && ar.turno.tres, 'el pedestal libre gira en 3D y lleva «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y «Conversar con Plotty»');
   ok(ar.rec.p1.n === '1 de 15' && ar.rec.p1.t === 'La entrada' && ar.rec.p2.t === '1985 · La libreta' && ar.rec.p1.guia === ar.rec.esperado[0] && ar.rec.p2.guia === ar.rec.esperado[1] && ar.rec.fin,
     '«Recorrer con Pepa» va de la entrada a la libreta, Pepa habla en cada parada y Escape lo termina');
@@ -636,7 +641,7 @@ for (const [w, h, movil] of [[1440, 900, false], [1366, 768, false], [375, 812, 
   ok(vt.precios.frente && vt.precios.t === 'Precios claros, sin letra chica' && vt.precios.vb === '0 0 1000 470' && /^https:\/\/wa\.me\/\d+\?text=Hola BiPlot, vengo de la sala de ventas/.test(vt.precios.cta) && vt.precios.sitio === '_blank',
     'la lista de precios se abre de frente, con «Agenda tu diagnóstico» (el WhatsApp de BiPlot) y los precios del sitio');
   ok(vt.avance.frente && vt.avance.fases === 11 && /Atlas ve las diez a la vez/.test(vt.avance.atlas), 'cómo avanza tu proyecto: las diez fases con quién las lleva, y Atlas, que las ve todas a la vez');
-  ok(vt.vecinos === 'nuhome,fundos,haru,eleven,rumbo', 'la ventana a la calle lleva a la sala de cada vecino (' + vt.vecinos + ')');
+  ok(vt.vecinos === 'nuhome,fundos,haru,eleven,rumbo,rococoro', 'la ventana a la calle lleva a la sala de cada vecino (' + vt.vecinos + ')');
   ok(vt.lupe.tarjeta && vt.lupe.t === 'La primera sesión es sin costo' && vt.lupe.cta && vt.lupe.chat && vt.lupe.cierra, 'la mesa de Lupe abre su tarjeta con «Agenda tu diagnóstico» y «Conversar con Plotty», y Escape la cierra');
   ok(/Atlas · 360°/.test(vt.atlas) && /Desde aquí arriba se ve todo/.test(vt.atlas), 'Atlas, sobre la maqueta, dice que desde arriba se ve todo');
   ok(vt.rec.p1.n === '1 de ' + vt.rec.total && vt.rec.p1.t === 'La entrada' && vt.rec.p2.t === 'La sala de espera' && vt.rec.p1.guia === vt.rec.esperado[0] && vt.rec.p2.guia === vt.rec.esperado[1] &&

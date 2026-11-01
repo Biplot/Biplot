@@ -11,9 +11,10 @@ va la barra de su marca y BiPlot aparece en un kiosco «Hecho con BiPlot», con 
 | Haru (restaurante) | `sala-haru/` | Faro, en implementación |
 | Eleven (gimnasio) | `sala-eleven/` | Lupe, propuesta |
 | Rumbo (app de BiPlot) | `sala-rumbo/` | Tamandúa, publicada |
+| Rococoro (ropa de autor) | `sala-rococoro/` | Grillo, prototipo en desarrollo |
 
 Los dibujos son los mismos de la oficina: la sala de Nu Home vive en `../dibujos/barrio/salas-grandes.mjs` y las de
-Fundos, Haru, Eleven y Rumbo en `../dibujos/barrio/salas-propias/`, una por archivo, con sus piezas comunes en
+Fundos, Haru, Eleven, Rumbo y Rococoro en `../dibujos/barrio/salas-propias/`, una por archivo, con sus piezas comunes en
 `salas-propias/comun.mjs` (el armado con su gente, la base con piso y muros, vidrios, sillas, plantas, planos en caras
 de muebles y el kiosco de BiPlot, con su video o con una pantalla propia). Cada `sala-<id>/sala.mjs` de aquí sólo los
 reexporta, con sus acercamientos (`ZONAS`), para las fotos y las maquetas. Lo que cuenta cada sala (tarjetas, burbujas,
@@ -31,13 +32,17 @@ SALIDA=/tmp/sala-haru node oficina/_herramientas/propuestas/sala-haru/mock.mjs
 
 Las páginas y las fotos van a `SALIDA`, nunca al repo. Las letras de cada marca tienen que estar instaladas para que
 las fotos salgan con ellas: Montserrat (Haru), Anton, Chakra Petch y Manrope (Eleven), Cormorant Garamond (Nu Home y
-Fundos) y Space Grotesk (Rumbo y BiPlot).
+Fundos), Space Grotesk (Rumbo y BiPlot) e Instrument Serif, Jost y UnifrakturMaguntia (Rococoro).
 
 De dónde sale cada cosa:
 
 - Haru: rolls y precios de su carta digital (carta impresa vigente); los servicios y la paleta, de la misma carta.
 - Eleven: zonas, cifras, horario de clases, planes, pase diario, tienda y acceso con huella, de su sitio (`data.js`,
   septiembre de 2026). Su team va sin nombres.
+- Rococoro: sus secciones (la portada tipo diario, la colección, el probador con maniquí, el taller, la sala de redacción,
+  el lookbook, la tarjeta abanico y las cartas), su paleta E y sus letras, de su sitio (Biplot/rococoro-studio, octubre de
+  2026), sin precios. La Directora, el personaje de la marca, es un personaje de la sala (pedido de Chris, 01-11-2026):
+  su cabeza sale de `cabezaPez()` de su sitio y su retrato es la tinta del tatuaje tal cual (`media/salas/rococoro-directora.webp`).
 - Rumbo: sus módulos, rangos, insignias, la rueda de la vida y el elefante con su propio dibujo, exportado desde la app
   (`dibujos/barrio/salas-propias/exportar-elefantes.mjs <carpeta del repo rumbo>` rehace `elefantes.mjs`).
 

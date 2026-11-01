@@ -31,7 +31,7 @@ export const G = {
   yf: 20.15,            // fondo de los locales de la calle principal
   paseo: 24.45,         // donde empieza la vereda
   calzada: 29, y1: 31,  // la calzada de la calle principal
-  x1: 40.4,             // donde terminan la calle y la plaza
+  x1: 45.1,             // donde terminan la calle y la plaza
   plaza: 24,            // la plaza parte al costado de la oficina
   paso: 4.7,            // de un local al siguiente
   banda: [25.8, 27.3],  // la franja de la vereda por donde caminan los caminantes
@@ -39,11 +39,11 @@ export const G = {
   avenida: [-3.2, -0.6] // la avenida que une las calles por rubro, al costado izquierdo
 };
 // Los locales de la calle principal, de izquierda a derecha, con el pasaje a BiPlot HQ entre Eleven y Rumbo
-export const PRINCIPAL = [['nuhome', 0.15], ['fundos', 4.85], ['haru', 9.55], ['eleven', 14.25], ['rumbo', 26.15], ['libre', 30.85], ['archivo', 35.55]];
+export const PRINCIPAL = [['nuhome', 0.15], ['fundos', 4.85], ['haru', 9.55], ['eleven', 14.25], ['rumbo', 26.15], ['rococoro', 30.85], ['libre', 35.55], ['archivo', 40.25]];
 const PASAJE = [18.95, 24.05];
 
 // El nombre de cada empresa, en su techo y en su letrero
-const LETRERO = { nuhome: 'NU HOME', fundos: 'FUNDOS', haru: 'HARU', eleven: 'ELEVEN', rumbo: 'RUMBO', libre: 'SE ARRIENDA', archivo: 'EL ARCHIVO' };
+const LETRERO = { nuhome: 'NU HOME', fundos: 'FUNDOS', haru: 'HARU', eleven: 'ELEVEN', rumbo: 'RUMBO', rococoro: 'ROCOCORO', libre: 'SE ARRIENDA', archivo: 'EL ARCHIVO' };
 // Los que caminan por la vereda (escena.js los mueve)
 export const CAMINANTES = ['caminante', 'atleta'];
 // La gente de paso en las calles por rubro (escena.js pone una por calle)
@@ -58,6 +58,11 @@ const LOGO = {
   nuhome: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#1C1917"/><image href="§M§logo-nuhome.webp" x="${r1(s * .1)}" y="${r1(s * .2)}" width="${r1(s * .8)}" height="${r1(s * .565)}"/>`,
   eleven: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#17C3B2"/><text x="${r1(s / 2)}" y="${r1(s * .7)}" text-anchor="middle" ${FUENTE} font-weight="700" font-size="${r1(s * .56)}" fill="#0B1726">11</text>`,
   rumbo: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#0E2A47" stroke="#3E9C95" stroke-width="${r1(s * .04)}"/><g transform="translate(${r1(s * .1)} ${r1(s * .22)}) scale(${r1(s / 62 * 100) / 100})"><path d="M26 18L26 -4" stroke="#F2F4F7" stroke-width="2.4"/><path d="M26 -4L48 3L26 10Z" fill="#17C3B2"/><path d="M2 38L26 18L46 34L34 40L26 32L16 42Z" fill="#DDF4F1"/></g>`,
+  // Rococoro: el abanico de su logo (el de su sitio, en assets/favicon.svg), sobre papel blanco
+  rococoro: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#FCFCFA" stroke="#8F4151" stroke-width="${r1(s * .035)}"/><g transform="scale(${r1(s / 64 * 100) / 100})">` +
+    `<g transform="translate(-8 -6.5) scale(.8)" fill="none" stroke="#151312" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M50 58L15.56 41.94M47.85 54.63L32 29.75M50 54L50 24.5M52.15 54.63L68 29.75M50 58L84.44 41.94"/><path d="M19.64 43.84A33.5 33.5 0 0 1 80.36 43.84"/>` +
+    `<path d="M15.56 41.94A2.69 2.69 0 0 1 18.18 37.23A2.69 2.69 0 0 1 21.43 32.94A2.69 2.69 0 0 1 25.26 29.16A2.69 2.69 0 0 1 29.58 25.95A2.69 2.69 0 0 1 34.32 23.39A2.69 2.69 0 0 1 39.37 21.52A2.69 2.69 0 0 1 44.63 20.38A2.69 2.69 0 0 1 50 20A2.69 2.69 0 0 1 55.37 20.38A2.69 2.69 0 0 1 60.63 21.52A2.69 2.69 0 0 1 65.68 23.39A2.69 2.69 0 0 1 70.42 25.95A2.69 2.69 0 0 1 74.74 29.16A2.69 2.69 0 0 1 78.57 32.94A2.69 2.69 0 0 1 81.82 37.23A2.69 2.69 0 0 1 84.44 41.94"/></g>` +
+    `<path fill="#8F4151" d="M32 39.6l1.1 2.6 2.2 1-2.2 1L32 48.8l-1.1-4.6-2.2-1 2.2-1z"/></g>`,
   archivo: (s) => `<rect width="${s}" height="${s}" rx="${r1(s * .16)}" fill="#0E2A47" stroke="#7FD8CF" stroke-width="${r1(s * .035)}"/>` +
     ['#6FAF6B', '#E0524A', '#17C3B2', '#E0B341', '#8E6BB8'].map((c, i) => `<rect x="${r1(s * (.16 + i * .14))}" y="${r1(s * (.2 + (i % 2) * .05))}" width="${r1(s * .1)}" height="${r1(s * .58)}" rx="${r1(s * .02)}" fill="${c}"/>`).join('')
 };
@@ -127,6 +132,9 @@ const ADENTRO = {
     caminan: [['mesera', [[2.2, 1.5, 2.5], [3.0, 2.25, 2], [4.2, 2.6], [4.2, 3.9, 1.5], [4.2, 2.6], [3.0, 2.25]]]] },
   eleven: { fn: S.eleven, quietos: [['atleta2', 2.45, 1.5, 0.21, 'd']],
     caminan: [['instructor', [[3.2, 3.85, 2], [1.7, 3.1], [1.45, 2.0, 2.5], [1.7, 3.1]]]] },
+  // Rococoro: su portada, la colección y el probador, con el maniquí que lleva la cabeza de la Directora; ella recorre su tienda
+  rococoro: { fn: S.rococoro, quietos: [['maniqui', 3.75, 1.35, 0.05, 'i']],
+    caminan: [['directora', [[1.0, 3.6, 2.5], [2.3, 3.0], [3.4, 3.2, 2], [2.3, 3.0]]]] },
   rumbo: { fn: S.rumbo, quietos: [['meditadora', 0.95, 1.4, 0.14, 'd']],
     caminan: [['corredora', [[0.6, 3.7, 1.5], [1.2, 3.25], [1.9, 2.8], [2.8, 2.95], [3.6, 3.3, 2], [2.8, 2.95], [1.9, 2.8], [1.2, 3.25]], { vel: 0.9 }]] },
   libre: { fn: (L) => S.libre(L, { sinPlotty: true }), quietos: [['mama', 1.5, 3.3, 0, 'd']],
@@ -256,10 +264,14 @@ function plaza(E, pj) {
   for (const [x, y, s] of [[25.9, 2.8, 1.15], [33.9, 3.2, 1.2], [26.2, 12.8, 1], [34.2, 13.2, 1.05], [31.2, 1.9, 0.95], [37.9, 2.6, 1.1], [38.8, 12.2, 1.0], [36.3, 9.3, 0.85]]) if (!sin.has(`arbol ${x},${y}`)) EN.arbol(E, x, y, { s });
   EN.arbol(E, 27.2, 17.6, { s: 0.9, tipo: 'jacaranda' });
   EN.arbol(E, 39.3, 16.9, { s: 0.8, tipo: 'jacaranda' });
+  // El tramo que llegó con Rococoro (la calle creció un local): jacarandas, una banca y un farol
+  EN.arbol(E, 42.4, 3.4, { s: 1.05 }); EN.arbol(E, 43.6, 11.8, { s: 0.95, tipo: 'jacaranda' }); EN.arbol(E, 41.6, 17.2, { s: 0.85 });
+  EN.banca(E, 41.4, 8.4, 'y', { largo: 1.4 });
+  EN.farol(E, 42.2, 6.6);
   EN.banca(E, 27.1, 9.6, 'y', { largo: 1.4 });
   EN.banca(E, 31.6, 13.6, 'x', { largo: 1.4 });
   for (const [x, y] of [[26.4, 6.2], [33.2, 9.4], [32.4, 17.2], [37.4, 7.4], ...CANAL.faroles]) if (!sin.has(`farol ${x},${y}`)) EN.farol(E, x, y);
-  EN.arbusto(E, 24.8, 19.2, { s: 0.9 }); EN.arbusto(E, 35, 18.6, { s: 0.8 }); EN.arbusto(E, 40.0, 19.0, { s: 0.8 });
+  EN.arbusto(E, 24.8, 19.2, { s: 0.9 }); EN.arbusto(E, 35, 18.6, { s: 0.8 }); EN.arbusto(E, 40.0, 19.0, { s: 0.8 }); EN.arbusto(E, 44.6, 19.1, { s: 0.85 });
   // El quiosco de diarios
   {
     const [x, y] = CANAL.quiosco, k = x + y + 0.5;
@@ -439,6 +451,7 @@ export function callePrincipal(datos) {
   EN.pizarra(E, 8.6, 24.72, ['VISITA LA', 'MAQUETA', 'del loteo'], { k: 4.85 + YF + W + D + 0.7 });
   EN.pizarra(E, 13.3, 24.72, ['HOY', 'Pide con', 'el QR'], { color: '#F29A6B', k: 9.55 + YF + W + D + 0.7 });
   EN.pizarra(E, 17.9, 24.72, ['19:00', 'Spinning', 'cupos'], { color: '#7FD8CF', k: 14.25 + YF + W + D + 0.7 });
+  EN.pizarra(E, 34.55, 24.72, ['HOY', 'Probador', 'abierto'], { color: '#D58A9C', k: 30.85 + YF + W + D + 0.7 });
   // Bicicleta en su soporte, junto al pasaje
   { const x = 24.3, y = 24.95; E.planoY(x, y, 0.62, `<g fill="none" stroke="#1E2A38" stroke-width="5"><circle cx="14" cy="44" r="16"/><circle cx="70" cy="44" r="16"/></g><path d="M14 44L34 18H58L70 44M34 18L44 44L58 18M30 10H40M58 18L60 8H68" stroke="#E0B341" stroke-width="4" fill="none" stroke-linejoin="round"/>`, x + y + 0.45, 86, 62); }
 
@@ -460,7 +473,7 @@ export function callePrincipal(datos) {
 
   // La vereda: faroles, árboles, bancas, la moto de reparto y la gente de adelante
   enFrente(() => {
-    for (const x of [4.75, 14.2, 24.1, 30.8, 38.3]) EN.farol(E, x, 28.4);
+    for (const x of [4.75, 14.2, 24.1, 30.8, 38.3, 43.0]) EN.farol(E, x, 28.4);
     for (const [x, s] of [[9.5, 0.8], [18.6, 0.85], [35.0, 0.8]]) EN.arbol(E, x, 28.3, { s, alto: 2.1 });
     EN.banca(E, 1.3, 27.5, 'x'); EN.banca(E, 15.4, 27.5, 'x');
     letreroCalle(E, 0.45, 28.55, 'CALLE PRINCIPAL');

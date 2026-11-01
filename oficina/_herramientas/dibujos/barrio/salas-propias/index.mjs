@@ -9,5 +9,6 @@ import { rumbo } from './rumbo.mjs';
 import { archivo } from './archivo.mjs';
 import { ventas } from './ventas.mjs';
 import { tv } from './tv.mjs';
+import { rococoro } from './rococoro.mjs';
 
-export const SALAS_PROPIAS = { fundos, haru, eleven, rumbo, archivo, libre: ventas, tv };
+export const SALAS_PROPIAS = { fundos, haru, eleven, rumbo, rococoro, archivo, libre: ventas, tv };
