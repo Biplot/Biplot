@@ -84,23 +84,11 @@
         },
         {
           "medio": "Emol",
-          "url": "https://www.emol.com/noticias/Nacional/2026/10/29/1215503/camioneros-paro-san-antonio.html"
-        },
-        {
-          "medio": "Emol",
           "url": "https://www.emol.com/noticias/Economia/2026/10/29/1215542/camioneros-paro-san-antonio-cndc.html"
         },
         {
           "medio": "Emol",
           "url": "https://www.emol.com/noticias/Economia/2026/10/29/1215595/paro-camionero-sanantonio-gobierno-privados.html"
-        },
-        {
-          "medio": "CNN Chile",
-          "url": "https://www.cnnchile.com/negocios/paro-camioneros-san-antonio-sin-fecha-termino-negociacion-tarifas/"
-        },
-        {
-          "medio": "Cooperativa",
-          "url": "https://www.cooperativa.cl/noticias/pais/manifestaciones/san-antonio-camioneros-mantienen-bloqueos-a-la-espera-de-cita-clave-con/2026-10-30/140238.html"
         },
         {
           "medio": "Cooperativa",
@@ -333,10 +321,6 @@
             "url": "https://www.cooperativa.cl/noticias/deportes/futbol/anfp/primera-sala-del-tribunal-desafilio-a-san-marcos-de-arica-y-rechazo/2026-10-27/195203.html"
           },
           {
-            "medio": "La Tercera",
-            "url": "https://www.latercera.com/el-deportivo/noticia/el-tribunal-de-disciplina-sacude-a-la-primera-b-desafilia-a-san-marcos-de-arica/"
-          },
-          {
             "medio": "Cooperativa",
             "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-ascenso/tribunal-desafiliacion-de-san-marcos-no-tiene-consecuencias-deportivas/2026-10-28/133517.html"
           },
@@ -351,10 +335,6 @@
           {
             "medio": "La Tercera",
             "url": "https://www.latercera.com/el-deportivo/noticia/zoom-de-emergencia-votacion-y-exigencia-de-tnt-la-trama-de-la-suspension-de-la-fecha-final-que-tensiona-la-primera-b/"
-          },
-          {
-            "medio": "La Tercera",
-            "url": "https://www.latercera.com/el-deportivo/noticia/primera-sala-del-tribunal-ratifica-desafiliacion-de-san-marcos-de-arica-pero-mantiene-el-orden-en-la-tabla/"
           },
           {
             "medio": "La Tercera",
@@ -393,10 +373,6 @@
           {
             "medio": "Cooperativa",
             "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-primera/goleada-y-desahogo-albo-colo-colo-volvio-al-triunfo-con-una-exhibicion/2026-10-30/204756.html"
-          },
-          {
-            "medio": "BioBioChile",
-            "url": "https://www.biobiochile.cl/noticias/deportes/futbol/futbol-nacional/2026/10/30/colo-colo-aplasto-a-udec-con-una-exhibicion-de-javier-correa-y-dio-un-gran-paso-hacia-el-titulo.shtml"
           },
           {
             "medio": "BioBioChile",
@@ -528,20 +504,6 @@
           "url": "https://www.biobiochile.cl/noticias/servicios/toma-nota/2026/10/29/como-calcular-el-monto-de-tu-boleta-de-honorarios-sin-equivocarte-con-esta-herramienta-del-sii.shtml"
         }
       ]
-    },
-    {
-      "titular": "¿Tu empresa tiene plata olvidada en un banco? La CMF tiene un buscador",
-      "bajada": [
-        "Las acreencias bancarias son fondos no cobrados o sin movimiento por dos años en bancos, cooperativas y emisores de tarjetas. Si nadie los cobra en tres años desde que aparecen en la lista, van a Bomberos (BioBioChile).",
-        "La CMF tiene un buscador en acreencias.cmfchile.cl para revisar si una persona o una empresa tiene montos por cobrar."
-      ],
-      "importa": "Busca por nombre la razón social de tu empresa y el tuyo: una cuenta antigua olvidada puede tener plata.",
-      "fuentes": [
-        {
-          "medio": "BioBioChile",
-          "url": "https://www.biobiochile.cl/noticias/servicios/toma-nota/2026/10/28/si-no-lo-cobras-se-entrega-a-bomberos-revisa-si-tienes-acreencias-bancarias-por-retirar-en-tu-banco.shtml"
-        }
-      ]
     }
   ],
   "lanzamientos": [
@@ -628,27 +590,6 @@
         {
           "medio": "DF",
           "url": "https://www.df.cl/internacional/ft/exxonmobil-y-chevron-registran-ganancias-record-y-advierten-sobre-la"
-        }
-      ]
-    },
-    {
-      "titular": "Chile pide en Washington sacar más productos del arancel de 12,5%",
-      "bajada": [
-        "La subsecretaria de Relaciones Económicas Internacionales, Paula Estévez, se reunió el miércoles 28 con el representante comercial de EE.UU., Jamieson Greer, para pedir que más productos chilenos queden fuera de la sobretasa de 12,5%. Hoy están exentos productos que suman el 53,6% del valor de lo que Chile le vende a EE.UU. No hubo anuncios (CNN Chile, La Tercera, DF)."
-      ],
-      "importa": "Si exportas a EE.UU., confirma con tu agente de aduanas si tu producto está entre los exentos, y no cuentes con un cambio hasta que haya un anuncio.",
-      "fuentes": [
-        {
-          "medio": "CNN Chile",
-          "url": "https://www.cnnchile.com/negocios/gobierno-negocia-washington-exenciones-arancel-125-estados-unidos/"
-        },
-        {
-          "medio": "La Tercera",
-          "url": "https://www.latercera.com/pulso/noticia/subrei-concreta-reunion-co-estados-unidos-por-aranceles-y-anticipa-que-buscara-una-solucion-pragmatica/"
-        },
-        {
-          "medio": "DF",
-          "url": "https://www.df.cl/economia-y-politica/pais/subrei-concreta-reunion-con-el-ustr-e-insiste-con-la-exencion-de-mas"
         }
       ]
     }
