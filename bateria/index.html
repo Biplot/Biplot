@@ -169,6 +169,13 @@ button{cursor:pointer}
 .bpm-unit svg{width:8px;height:16px;color:var(--ink)}
 .tap{height:52px;min-width:58px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px}
 .tap.flash{background:var(--ink);color:var(--bg)}
+/* columna angosta (escritorio y tablet): el tap baja a su propia fila para que quepan tempos de 3 cifras */
+@media (min-width:760px){ .controls{container:ctrl / inline-size} }
+@container ctrl (max-width: 400px){
+  .transport{grid-template-columns:auto minmax(0,1fr)}
+  .tap{grid-column:1 / -1;height:42px}
+  .bpm-read output{font-size:52px}
+}
 
 .slider{position:relative;padding-bottom:18px}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:transparent;margin:0}
@@ -203,6 +210,7 @@ details.more[open] summary::after{content:"−"}
 .sw .t{font-weight:700;font-size:14px}
 .sw .help{grid-column:1}
 .sw input{grid-column:2;grid-row:1 / span 2}
+.sw.sub{background:var(--surface-2);border-radius:11px;padding:10px 12px}
 input[type=checkbox].tog{-webkit-appearance:none;appearance:none;width:42px;height:25px;border-radius:13px;background:var(--surface-2);border:1px solid var(--line);position:relative;cursor:pointer;transition:background .15s;margin:0}
 input[type=checkbox].tog::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .15s}
 input[type=checkbox].tog:checked{background:var(--ink);border-color:var(--ink)}
@@ -380,6 +388,8 @@ input[type=checkbox].tog:checked::after{transform:translateX(17px)}
         </div>
       </div>
 
+      <label class="sw sub" id="nextNowRow" hidden><span class="t">Pasar de inmediato</span><span class="help">Al terminar las repeticiones sigue con el próximo ejercicio sin pausa ni cuenta de 4. La cuenta del comienzo se mantiene.</span><input class="tog" type="checkbox" id="optNextNow"></label>
+
       <details class="more" id="more">
         <summary>Más opciones</summary>
         <div class="opts">
@@ -473,7 +483,7 @@ const pageOf = n => (PAGES.find(p => n >= p[0] && n <= p[1]) || PAGES[0])[2];
 const STORE = 'mano-a-mano.v1';
 const DEF = {
   bpm: 60, npc: 2, ex: 1, custom: '', target: 20, onDone: 'repeat',
-  countIn: true, accent: true, hands: false, internal: false, lane: true,
+  countIn: true, accent: true, hands: false, internal: false, lane: true, nextNow: false,
   ramp: { on: false, step: 4, every: 4, max: 120 },
   vol: 80, latency: 0, records: {}, today: { d: '', s: 0 }
 };
@@ -619,7 +629,8 @@ function step(gen) {
         const nx = nextKey(gen.ex, false);
         if (nx == null) gen.done = true;
         else {
-          Object.assign(gen, { ex: nx, rep: 0, note: 0, count: 0, phase: S.countIn ? 'count' : 'play', g: S.countIn ? 0 : gen.g });
+          const counted = S.countIn && !S.nextNow;
+          Object.assign(gen, { ex: nx, rep: 0, note: 0, count: 0, phase: counted ? 'count' : 'play', g: counted ? 0 : gen.g });
           if (S.ramp.on && gen.bpm !== gen.base) { gen.bpm = gen.base; ev.newBpm = gen.base; }
           ev.next = nx;
         }
@@ -745,6 +756,10 @@ function onShow(ev) {
   }
   hideCount();
   if (ev.i === 0) { if (ev.rep === 0) setRep(0); if (pat(S.ex).length % S.npc) updateTicks(ev.g); }
+  if (ev.i === 0 && S.onDone === 'next' && ev.rep === S.target - 1) {
+    const nx = nextKey(ev.ex, false);
+    if (nx != null) toast('Última repetición · sigue el N.º ' + nx);
+  }
   highlight(ev.i);
   flash(ev.hand);
   if (ev.click) lightBeat(ev.beat);
@@ -1101,7 +1116,7 @@ function bind() {
   });
   $('doneSeg').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
-    S.onDone = b.dataset.v; save(); segSet('doneSeg', S.onDone); replan();
+    S.onDone = b.dataset.v; save(); segSet('doneSeg', S.onDone); $('nextNowRow').hidden = S.onDone !== 'next'; replan();
   });
 
   const setTarget = v => {
@@ -1119,6 +1134,7 @@ function bind() {
   tog('optAccent', 'accent', () => { updateTicks(0); replan(); if (!SEQ.playing) drawLane(0); });
   tog('optHands', 'hands');
   tog('optInternal', 'internal', () => replan());
+  tog('optNextNow', 'nextNow', () => replan());
   tog('optLane', 'lane', () => { canvas.hidden = !S.lane; $('laneHint').hidden = SEQ.playing || !S.lane; sizeCanvas(); drawLane(0); });
 
   const ramp = $('optRamp');
@@ -1199,7 +1215,7 @@ function scaleLabels() {
 readColors();
 scaleLabels();
 segSet('npcSeg', S.npc); $('npcHelp').textContent = NPC_HELP[S.npc];
-segSet('doneSeg', S.onDone);
+segSet('doneSeg', S.onDone); $('nextNowRow').hidden = S.onDone !== 'next';
 $('target').value = S.target;
 if (S.custom) $('customIn').value = S.custom.match(/.{1,4}/g).join(' ');
 canvas.hidden = !S.lane; $('laneHint').hidden = !S.lane;
