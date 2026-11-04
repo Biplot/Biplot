@@ -2,10 +2,10 @@
   "numero": 2,
   "fecha": "2026-11-02",
   "cubre": "Semana del 26 de octubre al 1 de noviembre",
-  "previa": "Los camioneros paran en San Antonio, el SII corre al 1 de mayo de 2027 las nuevas guías de despacho y el desempleo llega a 9,8%: la semana en cinco minutos.",
+  "previa": "Los camioneros paran en San Antonio, el SII dice ahora que las nuevas guías de despacho rigen el 1 de mayo de 2027 y el desempleo llega a 9,8%: la semana en cinco minutos.",
   "redaccion": [
     "Buenos días. Esta es la N.º 2 de *La Línea*, el diario de BiPlot, y sale con atraso: cuenta lo que pasó entre el lunes 26 de octubre y el domingo 1 de noviembre, como si fuera lunes. Lo que vino después queda para la N.º 3.",
-    "Esta semana manda el puerto: los camioneros de San Antonio bloquean los depósitos de contenedores desde el miércoles 28 en la noche, por el diésel y las tarifas del flete. Y una corrección: el SII aclaró las fechas de las nuevas guías de despacho, que la semana pasada contamos mal (está en la portada y en la fe de erratas). Los indicadores son del viernes 30, salvo la UF, que es la de hoy. Si algo sobra, falta o no cuadra, dínoslo."
+    "Esta semana manda el puerto: los camioneros de San Antonio bloquean los depósitos de contenedores desde el miércoles 28 en la noche, por el diésel y las tarifas del flete. Y una actualización: el jueves 29, el SII dijo que las nuevas exigencias de las guías de despacho rigen el 1 de mayo de 2027. El 23 de octubre había dicho que quien tuviera los datos debía ponerlos desde el 1 de noviembre, y así lo contamos (está en la portada y en la fe de erratas). Los indicadores son del viernes 30, salvo la UF, que es la de hoy. Si algo sobra, falta o no cuadra, dínoslo."
   ],
   "indicadores": [
     {
@@ -38,7 +38,7 @@
     {
       "nombre": "Cobre",
       "valor": "US$6,55/lb",
-      "nota": "Londres, viernes 30 · +0,24% en la semana",
+      "nota": "viernes 30 · +0,24% en la semana",
       "fuente": {
         "medio": "Cochilco",
         "url": "https://www.cochilco.cl/web/download/1006/2026/17031/informe-del-mercado-internacional-del-cobre-semana-del-26-al-30-de-octubre-de-2026.pdf"
@@ -63,10 +63,10 @@
     {
       "titular": "Los camioneros de San Antonio paran por el diésel y bloquean los depósitos de contenedores",
       "bajada": [
-        "Desde las 23:00 del miércoles 28, la agrupación de camioneros independientes de San Antonio, los que mueven contenedores entre el puerto y los depósitos, está en paro indefinido y bloquea los accesos a los depósitos de fuera del puerto (BioBioChile, DF). «No entra ni sale ningún contenedor de los diferentes generadores de carga», dijo a La Tercera su dirigente Manuel Araya. Las cifras de camiones y contenedores varían según el medio: DF habló de al menos 600 contenedores afectados en las primeras horas.",
-        "Piden reajustar las tarifas que les pagan los generadores de carga y los intermediarios, que dicen estancadas hace años mientras el diésel sube. El presidente de la Confederación Nacional de Dueños de Camiones (CNDC), Juan Araya, dijo a Emol que los intermediarios les pagan «unas tarifas miserables, $30 mil, $20 mil». También reclaman por los nuevos pórticos de TAG en la Ruta 78 (DF).",
-        "El Gobierno lo llama «un problema entre privados», pero dijo que mediará con las siete empresas del puerto seco. El subsecretario de Economía, Karlfranz Koehler, dijo que «el objetivo es que este aumento de costos se traspase efectivamente a las tarifas» que esas empresas pagan a sus transportistas (Emol). El viernes 30 hubo una reunión con la delegada presidencial, sin acuerdo, y el sábado 31 el bloqueo seguía, con una nueva negociación el lunes 2 a las 9:00 (Cooperativa, BioBioChile).",
-        "Puede crecer: la CNDC decide el miércoles 4 si llama a una movilización nacional (Emol), y la Confederación de Camioneros Centro Sur advirtió que sus bases podrían parar si hay otra alza de combustibles (BioBioChile). El informe de ENAP del miércoles 28 no movió el diésel; el próximo ajuste es el jueves 12. Por ahora, el economista Carlos Smith (UDD) ve un impacto «bastante acotado», pero un riesgo serio para la temporada de cerezas (Cooperativa)."
+        "Desde las 23:00 del miércoles 28, la agrupación de camioneros independientes de San Antonio, los que mueven contenedores entre el puerto y los depósitos, está en paro indefinido y bloquea los accesos a los depósitos de fuera del puerto (BioBioChile, DF). «No entra ni sale ningún contenedor de los diferentes generadores de carga», dijo a La Tercera su dirigente Manuel Araya. Las cifras de camiones y contenedores varían según el medio: según los dirigentes, citados por DF, en las primeras horas quedaron afectados al menos 600 contenedores.",
+        "Piden reajustar las tarifas que les pagan los generadores de carga y los intermediarios, que dicen estancadas, en algunos casos desde hace años, mientras el diésel sube. El presidente de la Confederación Nacional de Dueños de Camiones (CNDC), Juan Araya, dijo a Emol que los intermediarios les pagan «unas tarifas miserables, $30 mil, $20 mil». También reclaman por los nuevos pórticos de TAG en la Ruta 78 (DF).",
+        "El Gobierno lo llama «un problema entre privados», pero dijo que mediará con las siete empresas del puerto seco. El subsecretario de Economía, Karlfranz Koehler, dijo que «el objetivo es que este aumento de costos se traspase efectivamente a las tarifas» que esas empresas pagan a sus transportistas (Emol). El viernes 30 hubo una reunión con la delegada presidencial y los gerentes de los depósitos, sin acuerdo, y el sábado 31 el bloqueo seguía, con una nueva negociación el lunes 2 a las 9:00 (Cooperativa, BioBioChile).",
+        "Puede crecer: la CNDC decide el miércoles 4 si llama a una movilización nacional (Emol), y la Confederación de Camioneros Centro Sur advirtió que sus bases podrían parar si hay otra alza de combustibles (BioBioChile). El informe de ENAP del miércoles 28 no movió el diésel; el próximo ajuste debería regir el jueves 12 (Emol). Por ahora, el economista Carlos Smith (UDD) ve un impacto «bastante acotado», pero advierte por la temporada de cerezas: «una semana de atraso no es un costo logístico, sino que fruta que simplemente llega mala» (Cooperativa)."
       ],
       "importa": "Si importas o exportas por San Antonio, pregúntale hoy a tu agente de aduanas o a tu transportista si tu contenedor pasa por un depósito bloqueado y pide otra fecha o lugar de retiro. Y si pagas flete, prepárate para un reajuste: acuérdalo por escrito, con un índice, antes del 12 de noviembre.",
       "fuentes": [
@@ -125,16 +125,20 @@
       ]
     },
     {
-      "titular": "Aclaración del SII: las nuevas guías de despacho rigen el 1 de mayo de 2027",
+      "titular": "El SII cambia el mensaje: las nuevas guías de despacho rigen el 1 de mayo de 2027",
       "bajada": [
-        "El jueves 29, el SII aclaró que las exigencias de la Resolución 144 (patente, conductor, transportista y destino en las guías de despacho y en las facturas que amparan un traslado) rigen desde el 1 de mayo de 2027. Desde el 1 de noviembre, sólo quien ya tiene esos datos «podrá» ponerlos. No hace falta pedir prórroga, dice el SII.",
-        "Y fijó una fecha nueva: hasta el 31 de enero de 2027 hay plazo para informarle al SII si el transporte de cada empresa es propio («autogestionado») o de terceros («tercerizado»), en un acceso que habilitará en las próximas semanas. También adaptará su sistema gratuito de facturación, «especialmente» para micro y pequeñas empresas."
+        "El jueves 29, el SII dijo que las exigencias de la Resolución 144 rigen desde el 1 de mayo de 2027 y que, desde el 1 de noviembre, sólo quien ya tiene los datos «podrá» ponerlos. El 23 de octubre había dicho que esos contribuyentes «deberán» empezar el 1 de noviembre, y así lo contamos en la N.º 1. La resolución no cambió; el SII dice que no hace falta pedir prórroga.",
+        "Y recordó que hasta el 31 de enero de 2027 hay plazo para informarle el modelo de transporte: «Transporte Autogestionado» si al emitir tienes todos los datos del traslado, con flota propia o con un transportista que te los da antes, o «Transporte Tercerizado» si te falta alguno, por ejemplo porque despacha un courier. Quien no lo informa queda como autogestionado."
       ],
-      "importa": "No tienes que cambiar tu facturación de un día para otro. Anota el 31 de enero: hasta ese día tienes para decirle al SII si tu transporte es propio o de terceros. Si ya tienes la patente, el conductor y el destino al emitir, puedes ponerlos desde ya.",
+      "importa": "No tienes que cambiar tu facturación de un día para otro. Anota el 31 de enero e informa tu modelo en el acceso que el SII abrirá en las próximas semanas; si no lo haces, quedas como autogestionado.",
       "fuentes": [
         {
           "medio": "SII",
           "url": "https://www.sii.cl/noticias/2026/291026noti01aav.htm"
+        },
+        {
+          "medio": "SII",
+          "url": "https://www.sii.cl/noticias/2026/231026noti03sss.htm"
         },
         {
           "medio": "SII",
@@ -146,7 +150,7 @@
       "titular": "El desempleo sube a 9,8% y los desocupados pasan del millón",
       "bajada": [
         "El INE informó el jueves 29 que la desocupación llegó a 9,8% entre julio y septiembre, 1,3 puntos más que hace un año (9,6% si se descuenta la estacionalidad). Son 1.007.976 personas sin trabajo, la primera vez que se pasa el millón fuera de la pandemia, según el INE, y hay 102.875 ocupados menos que hace un año, casi todos en empleos formales (DF).",
-        "También bajaron las personas que emplean a otros: 2,8% en un año (INE). Juan Bravo, del OCEC-UDP, calcula que las mipymes perdieron 129.296 empleos asalariados formales en un año (La Tercera). El ministro del Trabajo, Tomás Rau, dijo que las cifras «no son buenas», y el biministro Daniel Mas anunció para el 9 de noviembre un proyecto Propyme (DF)."
+        "También bajaron las personas que emplean a otros: 2,8% en un año (INE). Juan Bravo, del OCEC-UDP, calcula que las mipymes perdieron 129.296 empleos asalariados formales en un año (La Tercera). El biministro Daniel Mas reiteró que el 9 de noviembre ingresará el proyecto Propyme (DF)."
       ],
       "importa": "Si vas a contratar, hay más gente buscando: tómate el tiempo de elegir bien y, antes de firmar, pregunta si calificas para los subsidios a la contratación. Y planifica el verano con ventas prudentes.",
       "fuentes": [
@@ -175,10 +179,10 @@
   ],
   "dato": {
     "valor": "20,2%",
-    "leyenda": "Alza de las ventas por internet en septiembre",
+    "leyenda": "Alza en doce meses de la venta por internet",
     "titular": "La venta por internet crece mucho más rápido que la tienda",
     "bajada": [
-      "El INE informó el viernes 30 que las ventas del comercio electrónico minorista subieron 20,2% en doce meses en septiembre, a precios corrientes (sin descontar la inflación), y acumulan 15,8% en el año. El índice de actividad de todo el comercio, que sí descuenta la inflación, creció 2,7%.",
+      "El INE informó el viernes 30 que las ventas del comercio electrónico minorista subieron 20,2% en doce meses en septiembre, a precios corrientes (sin descontar la inflación), y acumulan 15,8% en el año. El comercio minorista creció 4,1% real, y el INE lo explica «fundamentalmente» por la venta por correo y por internet; todo el comercio, 2,7%.",
       "En la Región Metropolitana, las ventas presenciales del comercio minorista cayeron 0,2% real en septiembre, según la Cámara Nacional de Comercio (La Tercera)."
     ],
     "importa": "Si vendes sólo en tienda, prueba este verano un canal en línea, aunque sea un catálogo con despacho, y mide cuánto vende antes de invertir más.",
@@ -252,10 +256,10 @@
     {
       "titular": "Ley de datos personales: el Senado la posterga al 15 de octubre de 2027, pero falta la Cámara",
       "bajada": [
-        "El miércoles 28, el Senado aprobó por 33 votos contra 6 el proyecto que posterga la Ley 21.719 hasta el 15 de octubre de 2027, antes del 1 de diciembre de 2027 que pedía el Gobierno (DF, Emol). Ahora pasa a la Cámara: mientras no se despache, la ley empieza a regir el 1 de diciembre de 2026 (La Tercera).",
+        "El miércoles 28, el Senado aprobó por 33 votos contra 6 el proyecto que posterga la Ley 21.719 hasta el 15 de octubre de 2027, antes del 1 de diciembre de 2027 que pedía el Gobierno (DF, Emol). Ahora pasa a la Cámara: mientras la postergación no sea ley, la ley empieza a regir el 1 de diciembre de 2026 (La Tercera).",
         "El texto mantiene que, en los primeros 12 meses, a las empresas de menor tamaño sólo se las podrá amonestar por escrito, sin multas (DF). Y el consejo de la nueva Agencia de Protección de Datos pasa de tres a cinco integrantes (DF)."
       ],
-      "importa": "No cuentes con la prórroga hasta que la Cámara la apruebe. Lo que sirve para las dos fechas: el inventario de qué datos personales guardas, dónde, quién los ve y para qué, y alguien que sepa responder si un cliente pide ver o borrar sus datos.",
+      "importa": "No cuentes con la prórroga hasta que se publique como ley. Lo que sirve para las dos fechas: el inventario de qué datos personales guardas, dónde, quién los ve y para qué, y alguien que sepa responder si un cliente pide ver o borrar sus datos.",
       "fuentes": [
         {
           "medio": "DF",
@@ -276,7 +280,7 @@
       ]
     },
     {
-      "titular": "Ley Karin: el nuevo reglamento vuelve a la Contraloría y dice que una denuncia no probada no es mala fe",
+      "titular": "Ley Karin: el nuevo reglamento vuelve a la Contraloría y dice que no probar una denuncia no basta para tenerla por mala fe",
       "bajada": [
         "El Gobierno reingresó a la Contraloría el decreto 91, que modifica el reglamento de la Ley Karin, informó DF el miércoles 28. Todavía no rige: si la Contraloría lo aprueba, los cambios valen 90 días después de publicados en el Diario Oficial.",
         "Entre los cambios: que una denuncia no se logre probar no basta para tenerla por maliciosa ni para sancionar a quien la hizo; si una denuncia llega incompleta, el empleador debe avisar y dar un plazo para completarla (cinco días, según El Desconcierto); y si los hechos no son de Ley Karin, se pueden investigar por otra vía sólo con el acuerdo escrito de quien denunció (DF)."
@@ -295,14 +299,14 @@
     }
   ],
   "caso": {
-    "titular": "Arauco dejó de premiar la rapidez y bajó de 3% a 1% la madera que quedaba botada",
+    "titular": "Arauco empezó a medir con drones la madera que quedaba botada y, según la empresa, la bajó de 3% a 1%",
     "bajada": [
       "En una nota de DF del viernes 30, que sale de su podcast IA Lab, Rodrigo Sobarzo, gerente de operaciones y planificación forestal de Arauco, cuenta que durante años la empresa evaluó a sus faenas de cosecha por los metros cúbicos que sacaban por hora, y que esa presión dejaba madera comercial botada en el terreno.",
-      "La lectura de Lupe: las cifras las da la propia empresa, en una sola fuente, y la nota no dice cuánto tardaron. Lo que sirve es el método: medir lo que importa, fijar una línea base y un umbral que obligue a corregir. Y un aprendizaje que Sobarzo cuenta sin adornos: un sistema anterior pasó dos años chocando con los operadores, hasta que los sumaron a su desarrollo."
+      "La lectura de Lupe: las cifras las da la propia empresa, en una sola fuente, y la nota no dice cuánto tardaron. Lo que sirve es el método: medir lo que importa, fijar una línea base y un umbral que obligue a corregir. Y un aprendizaje que Sobarzo cuenta sin adornos: un sistema de trazabilidad pasó dos años chocando con los operadores, hasta que los sumaron a su desarrollo."
     ],
-    "antes": "Quedaba en el terreno el 3% de la madera comercial de cada cosecha: la línea base que fijaron después de calibrar la medición (la primera daba 5%, porque el sistema confundía la corteza con madera).",
+    "antes": "La línea base: un 3% de la madera comercial quedaba en el terreno después de las cosechas, cifra que fijaron tras calibrar la medición (la primera daba 5%, porque el sistema confundía la corteza con madera).",
     "cambio": "Con parte de sus cerca de 300 drones y algoritmos de visión computacional revisan cada cosecha terminada; la faena que supera el umbral vuelve a terminar el trabajo.",
-    "resultado": "Según Sobarzo, la madera que queda en el terreno bajó mes a mes hasta 1%. Y en sus líneas de madereo aéreo, la producción por línea subió de 5 mil a más de 8 mil metros cúbicos al mes, con costos fijos similares.",
+    "resultado": "Según Sobarzo, la madera que queda en el terreno bajó mes a mes hasta 1%. Y en otro frente, con algoritmos que definen dónde instalar sus líneas de madereo aéreo según la pendiente y el equipo, la producción por línea subió de 5 mil a más de 8 mil metros cúbicos al mes, con costos fijos similares.",
     "fuentes": [
       {
         "medio": "DF",
@@ -651,8 +655,8 @@
   ],
   "preguntas": [
     {
-      "pregunta": "Según la aclaración del SII, ¿desde cuándo rigen las nuevas exigencias de las guías de despacho?",
-      "respuesta": "Desde el 1 de mayo de 2027. Antes, hasta el 31 de enero de 2027, hay plazo para informarle al SII si el transporte es propio o de terceros."
+      "pregunta": "Según lo que dijo el SII el jueves 29, ¿desde cuándo rigen las nuevas exigencias de las guías de despacho?",
+      "respuesta": "Desde el 1 de mayo de 2027. Antes, hasta el 31 de enero de 2027, hay plazo para informarle al SII el modelo de transporte: autogestionado o tercerizado."
     },
     {
       "pregunta": "¿Cuántas personas estaban sin trabajo entre julio y septiembre?",
@@ -668,6 +672,6 @@
     "texto": "Noviembre se pasa rápido y diciembre, más. Elige hoy un día de descanso de aquí a fin de año, anótalo en la agenda como si fuera una reunión con un cliente y no lo muevas. Lo que no se agenda, no pasa."
   },
   "erratas": [
-    "En la N.º 1 (lunes 26 de octubre) dijimos que quien tuviera la patente, el conductor y el destino al emitir una guía de despacho «debe ponerlos» desde el 1 de noviembre. El jueves 29, el SII aclaró que las exigencias rigen el 1 de mayo de 2027 y que, desde el 1 de noviembre, quien ya tenga esos datos «podrá» ponerlos. Está en la portada."
+    "En la N.º 1 (lunes 26 de octubre), en la portada, la previa y «Tres preguntas», dijimos que desde el domingo 1 de noviembre quien tuviera la patente, el conductor y el destino al emitir una guía de despacho «debe ponerlos», y que quien no los tuviera debía indicarlo en el documento. Era lo que decían la Resolución 144 y el comunicado del SII del 23 de octubre. El jueves 29, el SII dijo que las exigencias rigen el 1 de mayo de 2027 y que, desde el 1 de noviembre, quien ya tenga esos datos «podrá» ponerlos. Está en la portada."
   ]
 }

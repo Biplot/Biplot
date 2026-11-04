@@ -10,14 +10,19 @@
     "titular": "Los camioneros de San Antonio paran por el diésel y bloquean los depósitos de contenedores",
     "titulares": [
       "Los camioneros de San Antonio paran por el diésel y bloquean los depósitos de contenedores",
-      "Aclaración del SII: las nuevas guías de despacho rigen el 1 de mayo de 2027",
+      "El SII cambia el mensaje: las nuevas guías de despacho rigen el 1 de mayo de 2027",
       "El desempleo sube a 9,8% y los desocupados pasan del millón"
     ],
     "consultorio": {
       "titulo": "Un día que no se mueve",
       "texto": "Noviembre se pasa rápido y diciembre, más. Elige hoy un día de descanso de aquí a fin de año, anótalo en la agenda como si fuera una reunión con un cliente y no lo muevas. Lo que no se agenda, no pasa."
     },
-    "video": null,
+    "video": {
+      "h": "/diario/2026-11-02/video/h.mp4",
+      "v": "/diario/2026-11-02/video/v.mp4",
+      "poster": "/diario/2026-11-02/video/h.jpg",
+      "duracion": "0:40"
+    },
     "notas": [
       {
         "id": "portada",
@@ -35,7 +40,7 @@
         "titular": "La venta por internet crece mucho más rápido que la tienda",
         "cifra": {
           "valor": "20,2%",
-          "leyenda": "Alza de las ventas por internet en septiembre"
+          "leyenda": "Alza en doce meses de la venta por internet"
         }
       },
       {
@@ -59,7 +64,7 @@
         "seccion": "El caso de la semana",
         "firma": "lupe",
         "nombre": "Lupe",
-        "titular": "Arauco dejó de premiar la rapidez y bajó de 3% a 1% la madera que quedaba botada",
+        "titular": "Arauco empezó a medir con drones la madera que quedaba botada y, según la empresa, la bajó de 3% a 1%",
         "cifra": null
       },
       {
