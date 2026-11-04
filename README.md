@@ -52,7 +52,7 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   ajustable con dos módulos. **Sticking** (`#sticking`): las 72 combinaciones de golpes simples (R/L) con carril de notas
   por mano. **Ritmos** (`#ritmos`): 38 ritmos de rock de un compás (hi-hat en corcheas, caja en 2 y 4, el bombo cambia),
   con grilla, carril por pieza y una batería dibujada que se ilumina. Repeticiones, cuenta previa, subida de tempo y
-  anticipo del ejercicio siguiente. Un solo archivo; los ajustes y récords quedan en el navegador.
+  anticipo del ejercicio siguiente. Un solo archivo; los ajustes y récords quedan en el navegador. Ver `bateria/README.md`.
 
 ## Desarrollo local
 

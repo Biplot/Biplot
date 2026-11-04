@@ -381,7 +381,7 @@ input[type=checkbox].tog:checked::after{transform:translateX(17px)}
     </div>
     <div class="modes" role="group" aria-label="Módulo" id="modeSeg">
       <button type="button" data-v="st">Sticking <small>72</small></button>
-      <button type="button" data-v="gr">Ritmos <small>38</small></button>
+      <button type="button" data-v="gr">Ritmos <small id="grCount">38</small></button>
     </div>
     <div class="legend only-st" aria-label="Leyenda de manos">
       <span><b class="key l">L</b> izquierda</span>
@@ -624,7 +624,8 @@ const KICKS = {
       '.x..x...','.x..xx..','.x..x..x','.x..xx.x','.x.xx...','.x.xxx..','.x.xx..x','.x.xxx.x']
 };
 const SHEETS = { a: { name: 'hoja 1', long: 'Hoja 1 · caja en 2 y 4' }, b: { name: 'hoja 2', long: 'Hoja 2 · pág. 125' } };
-const GKEYS = KICKS.a.map((_, i) => 'a' + (i + 1)).concat(KICKS.b.map((_, i) => 'b' + (i + 1)));
+const SHEET_IDS = Object.keys(KICKS);   // una letra por hoja; cada ritmo es hoja + número (a1, b12…)
+const GKEYS = SHEET_IDS.flatMap(sh => KICKS[sh].map((_, i) => sh + (i + 1)));
 const kickOf = k => KICKS[k[0]][+k.slice(1) - 1];
 const COUNT = ['1', 'y', '2', 'y', '3', 'y', '4', 'y'];
 
@@ -645,7 +646,7 @@ const NPC_HELP = {
 };
 const LIB = {
   st: ['Combinaciones de golpes simples', '72 ejercicios de tus hojas (pág. 5 a 7). Repite cada uno 20 veces.'],
-  gr: ['Ritmos de rock', '38 ritmos de un compás: hi-hat en corcheas, caja en 2 y 4, y el bombo cambia en cada uno.']
+  gr: ['Ritmos de rock', GKEYS.length + ' ritmos de un compás: hi-hat en corcheas, caja en 2 y 4, y el bombo cambia en cada uno.']
 };
 
 const $ = id => document.getElementById(id);
@@ -1450,7 +1451,7 @@ function renderList() {
       }
     });
   } else {
-    ['a', 'b'].forEach(sh => {
+    SHEET_IDS.forEach(sh => {
       h += '<li class="sep">' + SHEETS[sh].long + ' · 1–' + KICKS[sh].length + '</li>';
       KICKS[sh].forEach((kb, i) => {
         const k = sh + (i + 1);
@@ -1667,6 +1668,7 @@ function scaleLabels() {
 })();
 readColors();
 scaleLabels();
+$('grCount').textContent = GKEYS.length;
 segSet('doneSeg', S.onDone); $('nextOpts').hidden = S.onDone !== 'next';
 $('target').value = S.target;
 if (S.custom) $('customIn').value = S.custom.match(/.{1,4}/g).join(' ');
