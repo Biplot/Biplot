@@ -1,0 +1,673 @@
+{
+  "numero": 2,
+  "fecha": "2026-11-02",
+  "cubre": "Semana del 26 de octubre al 1 de noviembre",
+  "previa": "Los camioneros paran en San Antonio, el SII corre al 1 de mayo de 2027 las nuevas guías de despacho y el desempleo llega a 9,8%: la semana en cinco minutos.",
+  "redaccion": [
+    "Buenos días. Esta es la N.º 2 de *La Línea*, el diario de BiPlot, y sale con atraso: cuenta lo que pasó entre el lunes 26 de octubre y el domingo 1 de noviembre, como si fuera lunes. Lo que vino después queda para la N.º 3.",
+    "Esta semana manda el puerto: los camioneros de San Antonio bloquean los depósitos de contenedores desde el miércoles 28 en la noche, por el diésel y las tarifas del flete. Y una corrección: el SII aclaró las fechas de las nuevas guías de despacho, que la semana pasada contamos mal (está en la portada y en la fe de erratas). Los indicadores son del viernes 30, salvo la UF, que es la de hoy. Si algo sobra, falta o no cuadra, dínoslo."
+  ],
+  "indicadores": [
+    {
+      "nombre": "UF",
+      "valor": "$41.258,26",
+      "nota": "lunes 2",
+      "fuente": {
+        "medio": "SII",
+        "url": "https://www.sii.cl/valores_y_fechas/uf/uf2026.htm"
+      }
+    },
+    {
+      "nombre": "Dólar",
+      "valor": "$993,9",
+      "nota": "cierre del viernes 30 · quinto mes seguido al alza",
+      "fuente": {
+        "medio": "DF",
+        "url": "https://www.df.cl/mercados/bolsa-monedas/dolar-hoy-yuugr"
+      }
+    },
+    {
+      "nombre": "MSCI IPSA",
+      "valor": "10.254,15",
+      "nota": "viernes 30 · −4,6% en la semana",
+      "fuente": {
+        "medio": "DF",
+        "url": "https://www.df.cl/mercados/bolsa-monedas/bolsas-hoy-j5cik"
+      }
+    },
+    {
+      "nombre": "Cobre",
+      "valor": "US$6,55/lb",
+      "nota": "Londres, viernes 30 · +0,24% en la semana",
+      "fuente": {
+        "medio": "Cochilco",
+        "url": "https://www.cochilco.cl/web/download/1006/2026/17031/informe-del-mercado-internacional-del-cobre-semana-del-26-al-30-de-octubre-de-2026.pdf"
+      }
+    }
+  ],
+  "escenas": [
+    {
+      "imagen": "_herramientas/escenas/2026-11-02-a.jpg",
+      "escena": "El bloqueo: The Engine, de camionero, cruza su camión en el portón de un depósito de contenedores con un letrero «PARO»; Aby lo transmite en vivo y Faro mira preocupado desde una bita, con su farol."
+    },
+    {
+      "imagen": "_herramientas/escenas/2026-11-02-b.jpg",
+      "escena": "El contenedor que no sale: Pepa, dueña de una pyme, espera sentada sobre un contenedor detenido tras la barrera, con su caja de cerezas; Atlas flota a su lado y, detrás, un barco espera en la rada."
+    },
+    {
+      "imagen": "_herramientas/escenas/2026-11-02-c.jpg",
+      "escena": "La fila: Tamandúa, parado sobre un camión y con los binoculares en la mano, mira asombrado la fila de camiones con las luces de emergencia hasta las grúas del puerto; Celda saca cuentas con su portapapeles."
+    }
+  ],
+  "portada": [
+    {
+      "titular": "Los camioneros de San Antonio paran por el diésel y bloquean los depósitos de contenedores",
+      "bajada": [
+        "Desde las 23:00 del miércoles 28, la agrupación de camioneros independientes de San Antonio, los que mueven contenedores entre el puerto y los depósitos, está en paro indefinido y bloquea los accesos a los depósitos de fuera del puerto (BioBioChile, DF). «No entra ni sale ningún contenedor de los diferentes generadores de carga», dijo a La Tercera su dirigente Manuel Araya. Las cifras de camiones y contenedores varían según el medio: DF habló de al menos 600 contenedores afectados en las primeras horas.",
+        "Piden reajustar las tarifas que les pagan los generadores de carga y los intermediarios, que dicen estancadas hace años mientras el diésel sube. El presidente de la Confederación Nacional de Dueños de Camiones (CNDC), Juan Araya, dijo a Emol que los intermediarios les pagan «unas tarifas miserables, $30 mil, $20 mil». También reclaman por los nuevos pórticos de TAG en la Ruta 78 (DF).",
+        "El Gobierno lo llama «un problema entre privados», pero dijo que mediará con las siete empresas del puerto seco. El subsecretario de Economía, Karlfranz Koehler, dijo que «el objetivo es que este aumento de costos se traspase efectivamente a las tarifas» que esas empresas pagan a sus transportistas (Emol). El viernes 30 hubo una reunión con la delegada presidencial, sin acuerdo, y el sábado 31 el bloqueo seguía, con una nueva negociación el lunes 2 a las 9:00 (Cooperativa, BioBioChile).",
+        "Puede crecer: la CNDC decide el miércoles 4 si llama a una movilización nacional (Emol), y la Confederación de Camioneros Centro Sur advirtió que sus bases podrían parar si hay otra alza de combustibles (BioBioChile). El informe de ENAP del miércoles 28 no movió el diésel; el próximo ajuste es el jueves 12. Por ahora, el economista Carlos Smith (UDD) ve un impacto «bastante acotado», pero un riesgo serio para la temporada de cerezas (Cooperativa)."
+      ],
+      "importa": "Si importas o exportas por San Antonio, pregúntale hoy a tu agente de aduanas o a tu transportista si tu contenedor pasa por un depósito bloqueado y pide otra fecha o lugar de retiro. Y si pagas flete, prepárate para un reajuste: acuérdalo por escrito, con un índice, antes del 12 de noviembre.",
+      "fuentes": [
+        {
+          "medio": "BioBioChile",
+          "url": "https://www.biobiochile.cl/noticias/nacional/region-de-valparaiso/2026/10/28/gremio-de-camioneros-ratifica-paralizacion-en-san-antonio-por-alza-de-combustibles-inicia-esta-noche.shtml"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/agrupacion-de-camioneros-de-san-antonio-inicia-paralizacion-por-alza-del-diesel-no-entra-ni-sale-ningun-contenedor/"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/regiones/valparaiso/camioneros-paralizan-operaciones-en-san-antonio-y-bloquean-depositos"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Nacional/2026/10/29/1215503/camioneros-paro-san-antonio.html"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/29/1215542/camioneros-paro-san-antonio-cndc.html"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/29/1215595/paro-camionero-sanantonio-gobierno-privados.html"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/negocios/paro-camioneros-san-antonio-sin-fecha-termino-negociacion-tarifas/"
+        },
+        {
+          "medio": "Cooperativa",
+          "url": "https://www.cooperativa.cl/noticias/pais/manifestaciones/san-antonio-camioneros-mantienen-bloqueos-a-la-espera-de-cita-clave-con/2026-10-30/140238.html"
+        },
+        {
+          "medio": "Cooperativa",
+          "url": "https://www.cooperativa.cl/noticias/pais/region-de-valparaiso/camioneros-mantendran-bloqueo-en-depositos-de-san-antonio-al-menos-hasta/2026-10-31/160348.html"
+        },
+        {
+          "medio": "BioBioChile",
+          "url": "https://www.biobiochile.cl/noticias/nacional/region-de-valparaiso/2026/10/31/camioneros-mantienen-paro-indefinido-en-san-antonio-ante-negativa-de-mejorar-tarifas-de-fletes.shtml"
+        },
+        {
+          "medio": "BioBioChile",
+          "url": "https://www.biobiochile.cl/noticias/nacional/region-de-la-araucania/2026/10/29/es-insostenible-camioneros-centro-sur-advierten-movilizaciones-si-hay-nueva-alza-de-combustibles.shtml"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/21/1214815/combustibles-precio-alza-enap-hoy.html"
+        },
+        {
+          "medio": "ENAP",
+          "url": "https://www.enap.cl/files/get/3283"
+        }
+      ]
+    },
+    {
+      "titular": "Aclaración del SII: las nuevas guías de despacho rigen el 1 de mayo de 2027",
+      "bajada": [
+        "El jueves 29, el SII aclaró que las exigencias de la Resolución 144 (patente, conductor, transportista y destino en las guías de despacho y en las facturas que amparan un traslado) rigen desde el 1 de mayo de 2027. Desde el 1 de noviembre, sólo quien ya tiene esos datos «podrá» ponerlos. No hace falta pedir prórroga, dice el SII.",
+        "Y fijó una fecha nueva: hasta el 31 de enero de 2027 hay plazo para informarle al SII si el transporte de cada empresa es propio («autogestionado») o de terceros («tercerizado»), en un acceso que habilitará en las próximas semanas. También adaptará su sistema gratuito de facturación, «especialmente» para micro y pequeñas empresas."
+      ],
+      "importa": "No tienes que cambiar tu facturación de un día para otro. Anota el 31 de enero: hasta ese día tienes para decirle al SII si tu transporte es propio o de terceros. Si ya tienes la patente, el conductor y el destino al emitir, puedes ponerlos desde ya.",
+      "fuentes": [
+        {
+          "medio": "SII",
+          "url": "https://www.sii.cl/noticias/2026/291026noti01aav.htm"
+        },
+        {
+          "medio": "SII",
+          "url": "https://www.sii.cl/normativa_legislacion/resoluciones/2026/reso144.pdf"
+        }
+      ]
+    },
+    {
+      "titular": "El desempleo sube a 9,8% y los desocupados pasan del millón",
+      "bajada": [
+        "El INE informó el jueves 29 que la desocupación llegó a 9,8% entre julio y septiembre, 1,3 puntos más que hace un año (9,6% si se descuenta la estacionalidad). Son 1.007.976 personas sin trabajo, la primera vez que se pasa el millón fuera de la pandemia, según el INE, y hay 102.875 ocupados menos que hace un año, casi todos en empleos formales (DF).",
+        "También bajaron las personas que emplean a otros: 2,8% en un año (INE). Juan Bravo, del OCEC-UDP, calcula que las mipymes perdieron 129.296 empleos asalariados formales en un año (La Tercera). El ministro del Trabajo, Tomás Rau, dijo que las cifras «no son buenas», y el biministro Daniel Mas anunció para el 9 de noviembre un proyecto Propyme (DF)."
+      ],
+      "importa": "Si vas a contratar, hay más gente buscando: tómate el tiempo de elegir bien y, antes de firmar, pregunta si calificas para los subsidios a la contratación. Y planifica el verano con ventas prudentes.",
+      "fuentes": [
+        {
+          "medio": "INE",
+          "url": "https://www.ine.gob.cl/sala-de-prensa/prensa/general/noticia/2026/10/29/la-tasa-de-desocupaci%C3%B3n-nacional-fue-9-8-en-el-trimestre-julio-septiembre-de-2026"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/economia-y-politica/laboral-personas/tasa-de-desocupacion-nacional-sube-a-9-8-en-el-trimestre-julio-septiembre"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/economia-y-politica/laboral-personas/ministro-rau-admite-que-cifras-de-desempleo-no-son-buenas-y-llama-a"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/crisis-laboral-creacion-de-empleo-formal-se-desploma-y-registra-la-mayor-caida-en-mas-de-cinco-anos/"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/29/1215510/desempleo-en-chile-ine.html"
+        }
+      ]
+    }
+  ],
+  "dato": {
+    "valor": "20,2%",
+    "leyenda": "Alza de las ventas por internet en septiembre",
+    "titular": "La venta por internet crece mucho más rápido que la tienda",
+    "bajada": [
+      "El INE informó el viernes 30 que las ventas del comercio electrónico minorista subieron 20,2% en doce meses en septiembre, a precios corrientes (sin descontar la inflación), y acumulan 15,8% en el año. El índice de actividad de todo el comercio, que sí descuenta la inflación, creció 2,7%.",
+      "En la Región Metropolitana, las ventas presenciales del comercio minorista cayeron 0,2% real en septiembre, según la Cámara Nacional de Comercio (La Tercera)."
+    ],
+    "importa": "Si vendes sólo en tienda, prueba este verano un canal en línea, aunque sea un catálogo con despacho, y mide cuánto vende antes de invertir más.",
+    "fuentes": [
+      {
+        "medio": "INE",
+        "url": "https://www.ine.gob.cl/sala-de-prensa/prensa/general/noticia/2026/10/30/%C3%ADndice-de-actividad-del-comercio-anot%C3%B3-una-variaci%C3%B3n-de-2-7-interanualmente-en-septiembre-de-2026"
+      },
+      {
+        "medio": "La Tercera",
+        "url": "https://www.latercera.com/pulso/noticia/ventas-del-comercio-en-la-rm-caen-02-en-septiembre/"
+      }
+    ]
+  },
+  "maquinas": [
+    {
+      "titular": "El mayor robo de criptomonedas de la historia entró, según Binance, por el notebook de un ingeniero",
+      "bajada": [
+        "Binance, la mayor plataforma de criptomonedas del mundo, sufrió un ataque que se conoció el jueves 29 y que la propia empresa estimó en unos US$ 6.300 millones (DF, con el Financial Times). Según su investigación inicial, el atacante entró por el computador portátil de un ingeniero y desde ahí ordenó retiros no autorizados (CNN Chile). El sábado 31, el FBI se lo atribuyó a Corea del Norte (La Tercera). El récord anterior era el robo a Bybit en 2025: US$ 1.500 millones.",
+        "Binance dice que cubrirá las pérdidas con fondos propios, y el domingo 1 reabrió los retiros por fases (La Tercera).",
+        "Dos noticias de la semana con la misma puerta de entrada, una persona y su equipo: la empresa de seguridad ESET advirtió de páginas con un falso «No soy un robot» que piden pegar un código en el computador para instalar programas que roban contraseñas (BioBioChile), y se supo que Sodimac se querelló el 10 de octubre contra un exgerente al que acusa de copiar 17.622 archivos a pendrives antes de jubilar (La Tercera, con la versión de la empresa)."
+      ],
+      "importa": "Que ningún pago lo apruebe una sola persona desde un solo equipo: dos firmas y verificación en dos pasos. Corta las cuentas y pide el equipo el día que alguien se va. Y enséñales a todos que ninguna página pide pegar un código para probar que eres humano.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/mercados/bolsa-monedas/binance-suspende-los-retiros-tras-sufrir-el-mayor-hackeo-de-la-historia-un"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/mundo/binance-la-principal-plataforma-de-criptomonedas-del-mundo-sufre-el-mayor-robo-de-la-historia-por-presuntos-ciberpiratas-norcoreanos/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/el-fbi-atribuye-a-corea-del-norte-el-robo-de-mas-de-us6000-millones-en-criptomonedas-a-binance/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/binance-restablece-retiros-de-fondos-tras-ciberataque-y-anuncia-que-cubrira-perdidas-de-usuarios-con-fondos-propios/"
+        },
+        {
+          "medio": "BioBioChile",
+          "url": "https://www.biobiochile.cl/noticias/ciencia-y-tecnologia/pc-e-internet/2026/10/27/la-peligrosa-estafa-detras-del-no-soy-un-robot-asi-pueden-tomar-el-control-de-tu-computador.shtml"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/sodimac-se-querella-contra-exgerente-por-delitos-informaticos-lo-acusa-de-sacar-17622-archivos-en-un-pendrive-antes-de-jubilar/"
+        }
+      ]
+    },
+    {
+      "titular": "Nueve de cada diez empresas dicen usar IA, pero sólo el 8% la llevó a toda la organización",
+      "bajada": [
+        "El estudio ConvergencIA 2026 de Deloitte, que publicó DF el miércoles 28, entrevistó a ejecutivos de 176 organizaciones con operación en Chile: el 91% declara usar IA «en algún grado», pero sólo el 8% escaló su uso de forma transversal y el 52% sigue en pruebas o en pilotos sin impacto relevante en la productividad.",
+        "Por primera vez midió los agentes de IA: el 69% dice usarlos, pero apenas el 0,6% tiene un modelo formal para supervisarlos, auditarlos y saber qué hicieron (DF). En Enade, el presidente de Icare, Renzo Corona, dijo que «sería un error usar la tecnología para hacer algo más barato o hacer más rápido lo mismo de siempre» (DF)."
+      ],
+      "importa": "Antes de pagar por una herramienta, anota cuánto toma hoy la tarea y cuántos errores tiene: sin esa línea base no sabrás si sirvió (es lo que hizo Arauco, el caso de esta semana). Si usas un agente, que una persona lo supervise y quede registro de lo que hizo.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/df-lab/tech-empresas/la-mayoria-de-las-empresas-en-chile-dice-usar-ia-pero-la-mitad-no-ve-un"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/economia-y-politica/pais/el-llamado-del-presidente-de-icare-en-la-enade-2026-seria-un-error-usar"
+        }
+      ]
+    }
+  ],
+  "planos": [
+    {
+      "titular": "Ley de datos personales: el Senado la posterga al 15 de octubre de 2027, pero falta la Cámara",
+      "bajada": [
+        "El miércoles 28, el Senado aprobó por 33 votos contra 6 el proyecto que posterga la Ley 21.719 hasta el 15 de octubre de 2027, antes del 1 de diciembre de 2027 que pedía el Gobierno (DF, Emol). Ahora pasa a la Cámara: mientras no se despache, la ley empieza a regir el 1 de diciembre de 2026 (La Tercera).",
+        "El texto mantiene que, en los primeros 12 meses, a las empresas de menor tamaño sólo se las podrá amonestar por escrito, sin multas (DF). Y el consejo de la nueva Agencia de Protección de Datos pasa de tres a cinco integrantes (DF)."
+      ],
+      "importa": "No cuentes con la prórroga hasta que la Cámara la apruebe. Lo que sirve para las dos fechas: el inventario de qué datos personales guardas, dónde, quién los ve y para qué, y alguien que sepa responder si un cliente pide ver o borrar sus datos.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/senado-aprueba-modificaciones-al-proyecto-que-posterga-la-entrada-en"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/nacional/noticia/senado-aprueba-postergacion-de-entrada-en-vigencia-de-ley-de-proteccion-de-datos-personales-iniciativa-pasa-a-la-camara/"
+        },
+        {
+          "medio": "Emol",
+          "url": "https://www.emol.com/noticias/Economia/2026/10/28/1215480/ley-datos-personales-senado-postergacion.html"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/pais/avanza-en-el-senado-proyecto-que-posterga-hasta-octubre-de-2027-la-entrada-en-vigor-de-la-ley-de-proteccion-de-datos-personales/"
+        }
+      ]
+    },
+    {
+      "titular": "Ley Karin: el nuevo reglamento vuelve a la Contraloría y dice que una denuncia no probada no es mala fe",
+      "bajada": [
+        "El Gobierno reingresó a la Contraloría el decreto 91, que modifica el reglamento de la Ley Karin, informó DF el miércoles 28. Todavía no rige: si la Contraloría lo aprueba, los cambios valen 90 días después de publicados en el Diario Oficial.",
+        "Entre los cambios: que una denuncia no se logre probar no basta para tenerla por maliciosa ni para sancionar a quien la hizo; si una denuncia llega incompleta, el empleador debe avisar y dar un plazo para completarla (cinco días, según El Desconcierto); y si los hechos no son de Ley Karin, se pueden investigar por otra vía sólo con el acuerdo escrito de quien denunció (DF)."
+      ],
+      "importa": "Todavía no cambia nada, pero conviene preparar el procedimiento interno: un formulario de denuncia con lo mínimo para investigar, un plazo escrito para completar antecedentes y la regla de no sancionar a quien denunció sólo porque no se probó.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/economia-y-politica/laboral-personas/ley-karin-gobierno-reingresa-reglamento-a-contraloria-y-aborda-denuncias"
+        },
+        {
+          "medio": "El Desconcierto",
+          "url": "https://eldesconcierto.cl/actualidad/gobierno-kast-reingreso-decreto-ley-karin-los-cambios-que-aplico-reglas-denuncias-mala-fe-n5463568"
+        }
+      ]
+    }
+  ],
+  "caso": {
+    "titular": "Arauco dejó de premiar la rapidez y bajó de 3% a 1% la madera que quedaba botada",
+    "bajada": [
+      "En una nota de DF del viernes 30, que sale de su podcast IA Lab, Rodrigo Sobarzo, gerente de operaciones y planificación forestal de Arauco, cuenta que durante años la empresa evaluó a sus faenas de cosecha por los metros cúbicos que sacaban por hora, y que esa presión dejaba madera comercial botada en el terreno.",
+      "La lectura de Lupe: las cifras las da la propia empresa, en una sola fuente, y la nota no dice cuánto tardaron. Lo que sirve es el método: medir lo que importa, fijar una línea base y un umbral que obligue a corregir. Y un aprendizaje que Sobarzo cuenta sin adornos: un sistema anterior pasó dos años chocando con los operadores, hasta que los sumaron a su desarrollo."
+    ],
+    "antes": "Quedaba en el terreno el 3% de la madera comercial de cada cosecha: la línea base que fijaron después de calibrar la medición (la primera daba 5%, porque el sistema confundía la corteza con madera).",
+    "cambio": "Con parte de sus cerca de 300 drones y algoritmos de visión computacional revisan cada cosecha terminada; la faena que supera el umbral vuelve a terminar el trabajo.",
+    "resultado": "Según Sobarzo, la madera que queda en el terreno bajó mes a mes hasta 1%. Y en sus líneas de madereo aéreo, la producción por línea subió de 5 mil a más de 8 mil metros cúbicos al mes, con costos fijos similares.",
+    "fuentes": [
+      {
+        "medio": "DF",
+        "url": "https://www.df.cl/df-lab/tech-empresas/como-uber-chile-y-arauco-lograron-generar-valor-a-sus-negocios-con"
+      }
+    ]
+  },
+  "marcador": {
+    "notas": [
+      {
+        "cifra": {
+          "valor": "15",
+          "leyenda": "El domingo 15 de noviembre, la nueva última fecha del Ascenso"
+        },
+        "titular": "El Ascenso se queda sin campeón hasta el 15 de noviembre: el título depende también del escritorio",
+        "bajada": [
+          "El martes 27, la Primera Sala del Tribunal de Disciplina desafilió a San Marcos de Arica por seis votos contra uno, por presentar documentación falsa sobre su capital, y rechazó la denuncia contra Deportes Puerto Montt. El tribunal dijo que el fallo no mueve la tabla: Cobreloa y San Luis siguen empatados en 54. El miércoles 28, la ANFP suspendió la última fecha porque, dijo, los efectos del fallo «impiden determinar con certeza un equipo campeón»: sólo se jugó Curicó-Temuco (4-1), y el jueves 29 pasó los otros siete partidos al domingo 15 de noviembre.",
+          "El viernes 30 en la noche se conoció un informe del gerente de ligas de la ANFP, Yamal Rajab, que reconoce un «error de transcripción» en las bases: el Consejo de Presidentes había votado que un club desafiliado queda último y pierde todos sus partidos 3-0, pero el texto no lo copió así. Con esa regla, Cobreloa y San Luis quedarían con 57. Lo decidirán los tribunales, y San Marcos apelará (Cooperativa, BioBioChile, La Tercera)."
+        ],
+        "importa": "Se votó una regla y el papel dijo otra cosa; nadie lo notó hasta que hubo que aplicarla. En tu empresa, lo que se acuerda en una reunión vale lo que diga el documento: antes de firmar un contrato o una cotización, compáralo punto por punto con lo acordado.",
+        "fuentes": [
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/anfp/primera-sala-del-tribunal-desafilio-a-san-marcos-de-arica-y-rechazo/2026-10-27/195203.html"
+          },
+          {
+            "medio": "La Tercera",
+            "url": "https://www.latercera.com/el-deportivo/noticia/el-tribunal-de-disciplina-sacude-a-la-primera-b-desafilia-a-san-marcos-de-arica/"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-ascenso/tribunal-desafiliacion-de-san-marcos-no-tiene-consecuencias-deportivas/2026-10-28/133517.html"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-ascenso/anfp-suspendio-la-ultima-fecha-de-la-liga-de-ascenso/2026-10-28/143104.html"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-ascenso/fin-al-misterio-la-anfp-confirmo-cuando-se-jugara-la-ultima-fecha-del/2026-10-29/190634.html"
+          },
+          {
+            "medio": "La Tercera",
+            "url": "https://www.latercera.com/el-deportivo/noticia/zoom-de-emergencia-votacion-y-exigencia-de-tnt-la-trama-de-la-suspension-de-la-fecha-final-que-tensiona-la-primera-b/"
+          },
+          {
+            "medio": "La Tercera",
+            "url": "https://www.latercera.com/el-deportivo/noticia/primera-sala-del-tribunal-ratifica-desafiliacion-de-san-marcos-de-arica-pero-mantiene-el-orden-en-la-tabla/"
+          },
+          {
+            "medio": "La Tercera",
+            "url": "https://www.latercera.com/el-deportivo/noticia/remezon-total-en-la-tabla-de-primera-b-informe-de-la-anfp-ratifica-el-descenso-y-la-perdida-de-los-puntos-de-san-marcos/"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-ascenso/curico-unido-termino-su-temporada-en-el-ascenso-con-goleada-a-deportes/2026-10-30/232156.html"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-ascenso/papelon-anfp-reconocio-error-de-transcripcion-en-las-bases-del/2026-10-31/102844.html"
+          },
+          {
+            "medio": "BioBioChile",
+            "url": "https://www.biobiochile.cl/noticias/deportes/futbol/futbol-nacional/2026/10/31/gerencia-de-ligas-admite-error-en-bases-y-arica-seria-restado-de-puntos-tabla-del-ascenso-cambiaria.shtml"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/san-marcos-de-arica/san-marcos-de-arica-apela-tras-desafiliacion-y-no-descarto-recurrir-a-la/2026-10-28/084031.html"
+          }
+        ]
+      },
+      {
+        "cifra": {
+          "valor": "10",
+          "leyenda": "Los puntos de ventaja de Colo-Colo, con 12 por jugar"
+        },
+        "titular": "Colo-Colo, a un triunfo del título: 6-1 con cuatro goles de Correa, y la U pierde el clásico",
+        "bajada": [
+          "El viernes 30, Colo-Colo le ganó 6-1 a la U. de Concepción en el Monumental, con cuatro goles de Javier Correa en el primer tiempo, y cortó cuatro partidos sin ganar. El domingo 1, la UC le ganó 1-0 el clásico a la U, con un gol de Clemente Montes a los 4 minutos (Cooperativa, La Tercera).",
+          "La tabla: Colo-Colo 58, la U 48 y la UC 46, con cuatro fechas por jugar. Si Colo-Colo le gana a Ñublense el domingo 8 en Chillán, es campeón (Cooperativa). Había llegado a tener 16 puntos de ventaja (BioBioChile)."
+        ],
+        "importa": "Una ventaja grande no se cuida sola: la de Colo-Colo bajó a 7 puntos en cuatro partidos sin ganar. Mira cada semana la distancia con tu competencia y, cuando venga una mala racha, vuelve primero a lo que te funcionaba.",
+        "fuentes": [
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-primera/goleada-y-desahogo-albo-colo-colo-volvio-al-triunfo-con-una-exhibicion/2026-10-30/204756.html"
+          },
+          {
+            "medio": "BioBioChile",
+            "url": "https://www.biobiochile.cl/noticias/deportes/futbol/futbol-nacional/2026/10/30/colo-colo-aplasto-a-udec-con-una-exhibicion-de-javier-correa-y-dio-un-gran-paso-hacia-el-titulo.shtml"
+          },
+          {
+            "medio": "BioBioChile",
+            "url": "https://www.biobiochile.cl/noticias/deportes/futbol/futbol-nacional/2026/10/29/catolica-se-complico-por-el-chile-2-asi-quedo-la-tabla-de-liga-de-primera-tras-duelo-pendiente.shtml"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-primera/la-uc-tumbo-a-la-u-en-un-clasico-caliente-y-hasta-colo-colo-celebro/2026-11-01/143130.html"
+          },
+          {
+            "medio": "La Tercera",
+            "url": "https://www.latercera.com/el-deportivo/noticia/la-pizarra-de-garnero-brilla-la-uc-supera-a-la-u-en-el-clasico-universitario-y-le-deja-servido-el-titulo-a-colo-colo/"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/colo-colo/la-calculadora-para-la-estrella-35-que-necesita-colo-colo-para-ganar/2026-11-01/155021.html"
+          },
+          {
+            "medio": "Cooperativa",
+            "url": "https://www.cooperativa.cl/noticias/deportes/futbol/liga-de-primera/la-u-goleo-a-everton-para-acortar-distancia-con-el-lider-y-llegar/2026-10-26/200238.html"
+          }
+        ]
+      },
+      {
+        "cifra": {
+          "valor": "4-1",
+          "leyenda": "Brewers vs. Rays · la serie"
+        },
+        "titular": "Los Brewers ganan su primera Serie Mundial: 4-1 a los Rays",
+        "bajada": [
+          "Milwaukee ganó 10-1 el juego 3 el lunes 26, perdió el 4 el martes 27 en 12 entradas (4-3), a tres outs del título, y lo cerró el miércoles 28 con un 4-1. El receptor William Contreras fue el jugador más valioso (MLB.com).",
+          "Es el primer título de la franquicia. Según MLB.com, son el equipo del mercado más chico de las Grandes Ligas y ganaron dejando ir a sus figuras y renovando el plantel con un método que mezcla los datos con el ojo de los buscadores de talento."
+        ],
+        "importa": "No hace falta el presupuesto del grande: hace falta un método que se repita y que no dependa de una sola persona. Y después de un mal día, como el juego 4, se vuelve al plan; no se cambia.",
+        "fuentes": [
+          {
+            "medio": "MLB.com",
+            "url": "https://www.mlb.com/news/brewers-win-world-series-game-3-2026"
+          },
+          {
+            "medio": "MLB.com",
+            "url": "https://www.mlb.com/news/rays-win-world-series-game-4-2026"
+          },
+          {
+            "medio": "MLB.com",
+            "url": "https://www.mlb.com/news/brewers-beat-rays-game-5-win-2026-world-series"
+          },
+          {
+            "medio": "MLB.com",
+            "url": "https://www.mlb.com/news/brewers-win-world-series-2026"
+          }
+        ]
+      }
+    ],
+    "agenda": [
+      {
+        "fecha": "lun 2 · 19:00",
+        "texto": "Colo-Colo y Puerto Montt juegan en el Monumental el segundo tiempo que les falta de la Copa Chile; Colo-Colo gana 1-0."
+      },
+      {
+        "fecha": "mié 4 · 17:00",
+        "texto": "Champions League: el Betis de Pellegrini visita al Borussia Dortmund."
+      },
+      {
+        "fecha": "dom 8 · 15:00",
+        "texto": "Ñublense-Colo-Colo en Chillán: si gana, Colo-Colo es campeón. A la misma hora juegan la U y Cobresal."
+      },
+      {
+        "fecha": "dom 15",
+        "texto": "Ascenso: los siete partidos de la última fecha, con horarios por definir."
+      }
+    ]
+  },
+  "mito": [
+    {
+      "afirmacion": "Los resultados de la elección en Brasil son matemáticamente imposibles (Flávio Bolsonaro, viernes 30).",
+      "veredicto": "mito",
+      "bajada": [
+        "Lula ganó el balotaje con 51,79% contra 48,21%, por más de 4 millones de votos (DF, CNN Chile). El argumento de Flávio es que se alargó el horario de votación, pero en el horario extendido se registraron unos 34.000 votos, según EFE (en CNN Chile), y su propia campaña había pedido extenderlo en algunas zonas (DF).",
+        "El presidente del tribunal electoral, Kassio Nunes Marques, a quien La Tercera, citando a Folha, describe como vinculado al bolsonarismo, defendió la «absoluta normalidad» de la elección, y el partido de Flávio reconoció el resultado el lunes 26 (CNN Chile). Flávio no presentó pruebas (La Tercera)."
+      ],
+      "fuentes": [
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/mundo/flavio-bolsonaro-desconoce-las-elecciones-en-brasil-y-afirma-que-los-resultados-son-matematicamente-imposibles/"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/mundo/el-bolsonarismo-culpa-a-chatgpt-por-proclamar-a-flavio-bolsonaro-como-presidente-electo-de-brasil/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/flavio-bolsonaro-califica-de-matematicamente-imposibles-los-resultados-electorales-y-pronostica-que-lula-no-terminara-su-mandato/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/brasil-el-presidente-del-tse-defiende-la-absoluta-normalidad-de-las-elecciones-frente-a-las-denuncias-de-flavio-bolsonaro/"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/internacional/politica/ministros-de-la-justicia-electoral-de-brasil-descartan-anular-eleccion-pese"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/mundo/partido-de-flavio-bolsonaro-reconoce-la-victoria-de-lula-da-silva-pero-cuestiona-las-condiciones-de-la-eleccion/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/en-historica-remontada-lula-vence-a-flavio-bolsonaro-en-el-balotaje-y-obtiene-su-cuarto-mandato/"
+        }
+      ]
+    }
+  ],
+  "guardar": [
+    {
+      "titular": "El simulador del SII para boletas de honorarios, antes de que la retención suba a 16%",
+      "bajada": [
+        "El SII tiene un simulador gratuito en sii.cl/destacados/boletas_honorarios: eliges si el monto es bruto o líquido y calcula la retención del año. La retención es de 15,25% en 2026, sube a 16% en 2027 y a 17% en 2028 (SII).",
+        "Un ejemplo de BioBioChile: para que alguien reciba $500.000 líquidos este año, la boleta tiene que ser de $589.971."
+      ],
+      "importa": "Si pagas a profesionales a honorarios, úsalo para saber cuánto te cuesta de verdad un monto líquido. Y revisa antes de enero los acuerdos en líquido: con la retención de 16%, te cuestan más o el prestador recibe menos.",
+      "fuentes": [
+        {
+          "medio": "SII",
+          "url": "https://www.sii.cl/destacados/boletas_honorarios/"
+        },
+        {
+          "medio": "BioBioChile",
+          "url": "https://www.biobiochile.cl/noticias/servicios/toma-nota/2026/10/29/como-calcular-el-monto-de-tu-boleta-de-honorarios-sin-equivocarte-con-esta-herramienta-del-sii.shtml"
+        }
+      ]
+    },
+    {
+      "titular": "¿Tu empresa tiene plata olvidada en un banco? La CMF tiene un buscador",
+      "bajada": [
+        "Las acreencias bancarias son fondos no cobrados o sin movimiento por dos años en bancos, cooperativas y emisores de tarjetas. Si nadie los cobra en tres años desde que aparecen en la lista, van a Bomberos (BioBioChile).",
+        "La CMF tiene un buscador en acreencias.cmfchile.cl para revisar si una persona o una empresa tiene montos por cobrar."
+      ],
+      "importa": "Busca por nombre la razón social de tu empresa y el tuyo: una cuenta antigua olvidada puede tener plata.",
+      "fuentes": [
+        {
+          "medio": "BioBioChile",
+          "url": "https://www.biobiochile.cl/noticias/servicios/toma-nota/2026/10/28/si-no-lo-cobras-se-entrega-a-bomberos-revisa-si-tienes-acreencias-bancarias-por-retirar-en-tu-banco.shtml"
+        }
+      ]
+    }
+  ],
+  "lanzamientos": [
+    {
+      "titular": "Toku dice que triplicó sus ingresos en Chile y cobra por resultado el trabajo de sus agentes de IA",
+      "bajada": [
+        "La fintech chilena de pagos y cobranza para grandes empresas dice que triplicó sus ingresos en Chile en los últimos dos años, sin dar montos (DF, martes 27). Desarrolló 50 agentes de IA, de cobranza, soporte y ventas, y los cobra por resultado: por pago recuperado, venta concretada o ticket resuelto.",
+        "Ha levantado US$ 65 millones en seis años y opera en Chile, Brasil y México, según la empresa."
+      ],
+      "importa": "Cuando contrates un software de cobranza o un agente de IA, pregunta si el proveedor cobra por resultado y no sólo por licencia: así el riesgo es compartido.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/df-lab/innovacion-y-startups/toku-triplica-ingresos-en-chile-y-centra-su-estrategia-en-el-desarrollo-de"
+        }
+      ]
+    },
+    {
+      "titular": "RedMat: ferreterías de barrio que compran juntas y apuntan a vender $15 mil millones este año",
+      "bajada": [
+        "La formaron en 2022 un ex ejecutivo de Construmart y tres ferreteros, y opera desde marzo de 2023. Junta ferreterías pequeñas entre Pica y Valdivia: cada una compra una acción, que hoy vale $35 millones, y piden juntas a unos 200 proveedores en un portal común (La Tercera, miércoles 28).",
+        "Según la empresa, pasó de mover $30 millones al mes en marzo de 2023 a más de $1.000 millones al mes a fines de 2025, y su meta es vender $15.000 millones en 2026. Si un socio no paga una factura a los pocos días, puede quedar bloqueado para seguir comprando."
+      ],
+      "importa": "Si eres chico frente a un gigante, júntate con otros chicos para comprar, pero con reglas duras: una línea de crédito por socio y bloqueo al primer atraso.",
+      "fuentes": [
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/redmat-la-red-de-ferreterias-de-barrio-que-espera-vender-15-mil-millones-en-2026/"
+        }
+      ]
+    }
+  ],
+  "mundo": [
+    {
+      "titular": "Lula gana y el real cae 8,85% frente al peso en un día",
+      "bajada": [
+        "Lula ganó el balotaje del domingo 25 con 51,79% contra 48,21% de Flávio Bolsonaro (DF, CNN Chile). El lunes 26, la bolsa de São Paulo cerró con −13,88%, tras suspender sus operaciones media hora, y el dólar subió más de 8% frente al real (CNN Chile). Frente al peso, el real cayó 8,85% ese lunes (Investing, citado por La Tercera). El mercado había apostado a Bolsonaro y a un ajuste fiscal (DF).",
+        "Brasil es el tercer socio comercial de Chile: en 2025 le vendimos US$ 4.899 millones y le compramos US$ 7.851 millones (Subrei, en La Tercera). Para los brasileños se encarece lo chileno, como el salmón o venir de vacaciones, y para los chilenos se abarata viajar a Brasil: Despegar estima ventas cerca de 10% más altas en las próximas semanas (La Tercera)."
+      ],
+      "importa": "Si exportas a Brasil o atiendes turistas brasileños, revisa tus precios en reales: un real más barato te hace más caro. Si importas desde Brasil, es buen momento para cotizar.",
+      "fuentes": [
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/internacional/economia/los-mercados-de-brasil-se-preparan-para-fuertes-perdidas-tras-la-victoria"
+        },
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/negocios/bolsa-brasil-cae-13-real-se-deprecia-8-triunfo-lula/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/el-real-tambien-se-desplomo-frente-al-peso-chileno-elecciones-brasil/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/agencias-de-viajes-anticipan-mayor-interes-de-chilenos-de-viajar-a-brasil-tras-caida-del-real/"
+        }
+      ]
+    },
+    {
+      "titular": "Más minas en Ormuz, y Chevron avisa que la falta de diésel sigue en 2027",
+      "bajada": [
+        "Irán informó en la semana de petroleros que chocaron con minas en el estrecho de Ormuz: uno el martes 27, cuatro el viernes 30 y dos el domingo 1, según anuncios iraníes que recogió La Tercera. Según The Wall Street Journal, citado por La Tercera, EE.UU. advirtió a los países del Golfo que se preparen para una campaña «breve pero intensa» después de sus elecciones del martes 3.",
+        "El viernes 30, ExxonMobil y Chevron advirtieron que la escasez de diésel llegó para quedarse, según el Financial Times: la directora financiera de Chevron dice que seguirá «hasta finales de este año y durante el próximo». El mes pasado, el diésel mayorista llegó a US$ 220 por barril en Europa y EE.UU., más del doble que antes de la guerra (DF, con el Financial Times)."
+      ],
+      "importa": "Presupuesta el primer semestre de 2027 con el diésel caro, no con una baja, y revisa ya tus contratos de flete: el paro de San Antonio muestra que los transportistas presionan para traspasar el alza a sus tarifas.",
+      "fuentes": [
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/iran-afirma-que-un-buque-se-incendio-tras-colisionar-con-minas-navales-en-el-estrecho-de-ormuz/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/iran-anuncia-que-cuatro-petroleros-explotaron-en-ormuz-en-las-ultimas-horas-tras-chocar-con-minas-submarinas/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/iran-informa-de-dos-nuevas-explosiones-por-el-impacto-de-petroleros-contra-minas-en-ormuz/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/mundo/noticia/iran-se-atiene-a-su-plan-para-ormuz-y-advierte-a-eeuu-que-la-estrategia-del-palo-y-la-zanahoria-no-funciona/"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/internacional/ft/exxonmobil-y-chevron-registran-ganancias-record-y-advierten-sobre-la"
+        }
+      ]
+    },
+    {
+      "titular": "Chile pide en Washington sacar más productos del arancel de 12,5%",
+      "bajada": [
+        "La subsecretaria de Relaciones Económicas Internacionales, Paula Estévez, se reunió el miércoles 28 con el representante comercial de EE.UU., Jamieson Greer, para pedir que más productos chilenos queden fuera de la sobretasa de 12,5%. Hoy están exentos productos que suman el 53,6% del valor de lo que Chile le vende a EE.UU. No hubo anuncios (CNN Chile, La Tercera, DF)."
+      ],
+      "importa": "Si exportas a EE.UU., confirma con tu agente de aduanas si tu producto está entre los exentos, y no cuentes con un cambio hasta que haya un anuncio.",
+      "fuentes": [
+        {
+          "medio": "CNN Chile",
+          "url": "https://www.cnnchile.com/negocios/gobierno-negocia-washington-exenciones-arancel-125-estados-unidos/"
+        },
+        {
+          "medio": "La Tercera",
+          "url": "https://www.latercera.com/pulso/noticia/subrei-concreta-reunion-co-estados-unidos-por-aranceles-y-anticipa-que-buscara-una-solucion-pragmatica/"
+        },
+        {
+          "medio": "DF",
+          "url": "https://www.df.cl/economia-y-politica/pais/subrei-concreta-reunion-con-el-ustr-e-insiste-con-la-exencion-de-mas"
+        }
+      ]
+    }
+  ],
+  "preguntas": [
+    {
+      "pregunta": "Según la aclaración del SII, ¿desde cuándo rigen las nuevas exigencias de las guías de despacho?",
+      "respuesta": "Desde el 1 de mayo de 2027. Antes, hasta el 31 de enero de 2027, hay plazo para informarle al SII si el transporte es propio o de terceros."
+    },
+    {
+      "pregunta": "¿Cuántas personas estaban sin trabajo entre julio y septiembre?",
+      "respuesta": "1.007.976, con una tasa de desocupación de 9,8%, según el INE."
+    },
+    {
+      "pregunta": "¿Por dónde entró el ataque a Binance?",
+      "respuesta": "Por el computador portátil de un ingeniero, según la investigación inicial de la propia Binance."
+    }
+  ],
+  "aparte": {
+    "titulo": "Un día que no se mueve",
+    "texto": "Noviembre se pasa rápido y diciembre, más. Elige hoy un día de descanso de aquí a fin de año, anótalo en la agenda como si fuera una reunión con un cliente y no lo muevas. Lo que no se agenda, no pasa."
+  },
+  "erratas": [
+    "En la N.º 1 (lunes 26 de octubre) dijimos que quien tuviera la patente, el conductor y el destino al emitir una guía de despacho «debe ponerlos» desde el 1 de noviembre. El jueves 29, el SII aclaró que las exigencias rigen el 1 de mayo de 2027 y que, desde el 1 de noviembre, quien ya tenga esos datos «podrá» ponerlos. Está en la portada."
+  ]
+}
