@@ -119,6 +119,16 @@ button{cursor:pointer}
 .note.r.now .hand{background:var(--r)} .note.l.now .hand{background:var(--l)}
 .note.r.now .head{background:var(--r)} .note.l.now .head{background:var(--l)}
 
+/* anticipo del ejercicio siguiente: ocupa siempre su lugar, así nada salta al aparecer */
+.upnext{position:relative;overflow:hidden;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 14px;padding:8px 12px 10px;border:1.5px dashed var(--line);border-radius:12px;transition:background .2s, border-color .2s}
+.up-label{display:flex;flex-direction:column;line-height:1.1;min-width:52px}
+.up-num{font-family:var(--font-display);font-weight:800;font-size:22px;white-space:nowrap}
+.up-pat{font-weight:700;font-size:17px;letter-spacing:.14em;white-space:nowrap;overflow:hidden;opacity:.28;transition:opacity .2s}
+.upnext.live{border-style:solid;border-color:var(--ink);background:var(--surface-2)}
+.upnext.live .up-pat{opacity:1}
+.upnext.live .kicker{color:var(--ink)}
+.up-bar{position:absolute;left:0;right:0;bottom:0;height:3px}
+.up-bar b{display:block;height:100%;width:0;background:var(--ink)}
 .status{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
 .beats{display:flex;gap:7px;align-items:center}
 .beat{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--muted);transition:background .05s, transform .05s}
@@ -210,7 +220,10 @@ details.more[open] summary::after{content:"−"}
 .sw .t{font-weight:700;font-size:14px}
 .sw .help{grid-column:1}
 .sw input{grid-column:2;grid-row:1 / span 2}
-.sw.sub{background:var(--surface-2);border-radius:11px;padding:10px 12px}
+.subopts{display:grid;gap:12px;background:var(--surface-2);border-radius:11px;padding:12px}
+.subopts .seg{background:var(--bg)}
+.subopts .seg[aria-disabled="true"]{opacity:.5}
+.seg.sm button{font-size:12.5px;min-height:36px;padding:6px 4px}
 input[type=checkbox].tog{-webkit-appearance:none;appearance:none;width:42px;height:25px;border-radius:13px;background:var(--surface-2);border:1px solid var(--line);position:relative;cursor:pointer;transition:background .15s;margin:0}
 input[type=checkbox].tog::after{content:"";position:absolute;top:2px;left:2px;width:19px;height:19px;border-radius:50%;background:var(--surface);box-shadow:0 1px 2px rgba(0,0,0,.3);transition:transform .15s}
 input[type=checkbox].tog:checked{background:var(--ink);border-color:var(--ink)}
@@ -270,6 +283,7 @@ input[type=checkbox].tog:checked::after{transform:translateX(17px)}
 @media (max-width:420px){
   .bar{padding-inline:4px;gap:5px}
   .note .hand{width:20px;margin-left:-10px;font-size:14px}
+  .up-pat{font-size:15px;letter-spacing:.1em}
 }
 @media (prefers-reduced-motion: reduce){
   .pad.hit,.pad.hit .pad-letter,.pad.hit .pad-label{animation-duration:.08s}
@@ -314,6 +328,11 @@ input[type=checkbox].tog:checked::after{transform:translateX(17px)}
 
       <div class="stage-body">
         <div class="strip" id="strip" role="group" aria-label="Sticking del ejercicio"></div>
+        <div class="upnext" id="upNext" hidden>
+          <div class="up-label"><span class="kicker" id="upKicker">Después</span><span class="up-num" id="upNum">N.º 2</span></div>
+          <div class="up-pat p" id="upPat" aria-live="off"></div>
+          <div class="up-bar" aria-hidden="true"><b id="upBar"></b></div>
+        </div>
         <div class="status">
           <div class="beats" id="beats" aria-hidden="true"></div>
           <div class="reps">
@@ -388,7 +407,14 @@ input[type=checkbox].tog:checked::after{transform:translateX(17px)}
         </div>
       </div>
 
-      <label class="sw sub" id="nextNowRow" hidden><span class="t">Pasar de inmediato</span><span class="help">Al terminar las repeticiones sigue con el próximo ejercicio sin pausa ni cuenta de 4. La cuenta del comienzo se mantiene.</span><input class="tog" type="checkbox" id="optNextNow"></label>
+      <div class="subopts" id="nextOpts" hidden>
+        <label class="sw"><span class="t">Pasar de inmediato</span><span class="help">Al terminar las repeticiones sigue con el próximo ejercicio sin pausa ni cuenta de 4. La cuenta del comienzo se mantiene.</span><input class="tog" type="checkbox" id="optNextNow"></label>
+        <label class="sw"><span class="t">Anticipar el siguiente</span><span class="help">Antes de pasar, el sticking del próximo ejercicio se enciende bajo la pauta y una marca baja por el carril donde empieza.</span><input class="tog" type="checkbox" id="optPreview"></label>
+        <div class="seg sm" role="group" aria-label="Cuándo anticiparlo" id="previewSeg">
+          <button type="button" data-v="bar">En el último compás</button>
+          <button type="button" data-v="rep">En la última repetición</button>
+        </div>
+      </div>
 
       <details class="more" id="more">
         <summary>Más opciones</summary>
@@ -483,7 +509,7 @@ const pageOf = n => (PAGES.find(p => n >= p[0] && n <= p[1]) || PAGES[0])[2];
 const STORE = 'mano-a-mano.v1';
 const DEF = {
   bpm: 60, npc: 2, ex: 1, custom: '', target: 20, onDone: 'repeat',
-  countIn: true, accent: true, hands: false, internal: false, lane: true, nextNow: false,
+  countIn: true, accent: true, hands: false, internal: false, lane: true, nextNow: false, preview: true, previewWhen: 'bar',
   ramp: { on: false, step: 4, every: 4, max: 120 },
   vol: 80, latency: 0, records: {}, today: { d: '', s: 0 }
 };
@@ -502,6 +528,7 @@ function load() {
   if (o.ex === 'c' && !o.custom) o.ex = 1;
   o.target = clamp(Math.round(+o.target) || 20, 1, 200);
   if (!['repeat', 'stop', 'next'].includes(o.onDone)) o.onDone = 'repeat';
+  if (!['bar', 'rep'].includes(o.previewWhen)) o.previewWhen = 'bar';
   o.vol = clamp(+o.vol, 0, 100); if (isNaN(o.vol)) o.vol = 80;
   o.latency = clamp(+o.latency || 0, -100, 300);
   o.ramp.step = clamp(Math.round(+o.ramp.step) || 4, 1, 20);
@@ -720,7 +747,7 @@ function stop() {
     setTimeout(() => { try { s.click.disconnect(); s.hit.disconnect(); } catch (e) {} }, 150);
   }
   SEQ.tl = [];
-  hideCount(); clearStrip(); lightBeat(-1);
+  hideCount(); clearStrip(); lightBeat(-1); setUpLive(false);
   setPlayUI(false); lockOff(); save();
   drawLane(0);
 }
@@ -749,14 +776,15 @@ let repDone = 0;
 function onShow(ev) {
   if (ev.ex !== S.ex) { S.ex = ev.ex; save(); renderExercise(); scrollListTo(S.ex); }
   if (ev.type === 'count') {
-    if (ev.n === 0) { setRep(0); clearStrip(); }
+    if (ev.n === 0) { setRep(0); clearStrip(); setUpLive(false); }
     showCount(ev.n + 1);
     lightBeat(ev.n % (BAR / S.npc));
     return;
   }
   hideCount();
   if (ev.i === 0) { if (ev.rep === 0) setRep(0); if (pat(S.ex).length % S.npc) updateTicks(ev.g); }
-  if (ev.i === 0 && S.onDone === 'next' && ev.rep === S.target - 1) {
+  updatePreview(ev);
+  if (ev.i === 0 && S.onDone === 'next' && !S.preview && ev.rep === S.target - 1) {
     const nx = nextKey(ev.ex, false);
     if (nx != null) toast('Última repetición · sigue el N.º ' + nx);
   }
@@ -866,7 +894,40 @@ function showCount(n) {
   countBig.classList.remove('pop'); void countBig.offsetWidth; countBig.classList.add('pop');
 }
 function hideCount() { countBig.hidden = true; }
-function showRest() { setRep(0); clearStrip(); lightBeat(-1); hideCount(); $('laneHint').hidden = true; }
+function showRest() { setRep(0); clearStrip(); lightBeat(-1); hideCount(); setUpLive(false); $('laneHint').hidden = true; }
+
+/* anticipo del siguiente ejercicio */
+function previewOn() { return S.onDone === 'next' && S.preview && nextKey(S.ex, false) != null; }
+function renderUpNext() {
+  const el = $('upNext'), on = previewOn();
+  el.hidden = !on;
+  if (!on) return;
+  const nx = nextKey(S.ex, false);
+  if (el.dataset.k !== String(nx)) {
+    el.dataset.k = String(nx);
+    $('upNum').textContent = 'N.º ' + nx;
+    $('upPat').innerHTML = patHTML(pat(nx));
+    el.setAttribute('aria-label', 'Siguiente: ejercicio ' + nx);
+  }
+  setUpLive(false);
+}
+let upLive = false;
+function setUpLive(live, frac, secs) {
+  const el = $('upNext'), bar = $('upBar');
+  if (live !== upLive) {
+    upLive = live;
+    el.classList.toggle('live', live);
+    $('upKicker').textContent = live ? 'Prepárate' : 'Después';
+  }
+  bar.style.transition = live && secs ? 'width ' + secs.toFixed(3) + 's linear' : 'none';
+  bar.style.width = live ? (Math.min(1, frac) * 100).toFixed(2) + '%' : '0';
+}
+function updatePreview(ev) {
+  if (!previewOn()) return;
+  const len = pat(ev.ex).length, win = S.previewWhen === 'rep' ? len : Math.min(BAR, len);
+  const live = ev.rep === S.target - 1 && ev.i >= len - win;
+  setUpLive(live, (ev.i - (len - win) + 1) / win, noteDur(ev.bpm));
+}
 
 /* ---------- carril de notas (canvas) ---------- */
 const canvas = $('lane'), c2 = canvas.getContext('2d');
@@ -931,6 +992,11 @@ function drawLane(now) {
   }
   c2.globalAlpha = 1;
 
+  const starts = nextStarts(evs, t0, pps, hitY);
+  c2.strokeStyle = col.ink; c2.lineWidth = 2; c2.setLineDash([6, 5]);
+  for (const m of starts) { c2.beginPath(); c2.moveTo(0, m.y); c2.lineTo(W, m.y); c2.stroke(); }
+  c2.setLineDash([]);
+
   // ranuras donde aterrizan las notas
   c2.lineWidth = 2;
   for (let k = 0; k < 2; k++) {
@@ -960,6 +1026,28 @@ function drawLane(now) {
     c2.fillText(ev.hand, x + gw / 2, y + 1);
   }
   c2.globalAlpha = 1;
+
+  // marca donde empieza el ejercicio siguiente
+  c2.font = '700 12px "Atkinson Hyperlegible", sans-serif';
+  c2.textAlign = 'center'; c2.textBaseline = 'middle';
+  for (const m of starts) {
+    const tw = c2.measureText(m.txt).width + 16;
+    c2.fillStyle = col.ink; rr(W / 2 - tw / 2, m.y - 10, tw, 20, 10); c2.fill();
+    c2.fillStyle = col.surf; c2.fillText(m.txt, W / 2, m.y + 0.5);
+  }
+}
+
+function nextStarts(evs, t0, pps, hitY) {
+  const out = [];
+  if (!SEQ.playing || !S.preview || S.onDone !== 'next') return out;
+  for (const ev of evs) {
+    if (ev.type !== 'note' || ev.sid !== SEQ.sid || ev.i !== 0 || ev.rep !== 0 || ev.ex === S.ex) continue;
+    const y = hitY - (ev.t - t0) * pps;
+    if (y > hitY + 1) continue;
+    if (y < -12) break;
+    out.push({ y, txt: ev.ex === 'c' ? 'Tu patrón' : 'N.º ' + ev.ex });
+  }
+  return out;
 }
 
 /* ---------- interfaz ---------- */
@@ -968,7 +1056,7 @@ function renderExercise() {
   $('exPrefix').textContent = k === 'c' ? '' : 'N.º';
   $('exNum').textContent = k === 'c' ? 'Tu patrón' : k;
   $('exKicker').textContent = k === 'c' ? 'Patrón propio · ' + p.length + ' golpes' : 'Golpes simples · pág. ' + pageOf(k);
-  renderStrip(); renderBest(); markList(); setRep(SEQ.playing ? repDone : 0);
+  renderStrip(); renderUpNext(); renderBest(); markList(); setRep(SEQ.playing ? repDone : 0);
   if (!SEQ.playing) drawLane(0);
 }
 function noteIcon(npc) { return '<svg aria-hidden="true"><use href="#nv-' + npc + '"/></svg>'; }
@@ -1116,7 +1204,7 @@ function bind() {
   });
   $('doneSeg').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
-    S.onDone = b.dataset.v; save(); segSet('doneSeg', S.onDone); $('nextNowRow').hidden = S.onDone !== 'next'; replan();
+    S.onDone = b.dataset.v; save(); segSet('doneSeg', S.onDone); $('nextOpts').hidden = S.onDone !== 'next'; renderUpNext(); replan();
   });
 
   const setTarget = v => {
@@ -1135,6 +1223,13 @@ function bind() {
   tog('optHands', 'hands');
   tog('optInternal', 'internal', () => replan());
   tog('optNextNow', 'nextNow', () => replan());
+  const previewUI = () => $('previewSeg').setAttribute('aria-disabled', String(!S.preview));
+  tog('optPreview', 'preview', () => { previewUI(); renderUpNext(); });
+  $('previewSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    S.previewWhen = b.dataset.v; save(); segSet('previewSeg', S.previewWhen);
+  });
+  segSet('previewSeg', S.previewWhen); previewUI();
   tog('optLane', 'lane', () => { canvas.hidden = !S.lane; $('laneHint').hidden = SEQ.playing || !S.lane; sizeCanvas(); drawLane(0); });
 
   const ramp = $('optRamp');
@@ -1215,7 +1310,7 @@ function scaleLabels() {
 readColors();
 scaleLabels();
 segSet('npcSeg', S.npc); $('npcHelp').textContent = NPC_HELP[S.npc];
-segSet('doneSeg', S.onDone); $('nextNowRow').hidden = S.onDone !== 'next';
+segSet('doneSeg', S.onDone); $('nextOpts').hidden = S.onDone !== 'next';
 $('target').value = S.target;
 if (S.custom) $('customIn').value = S.custom.match(/.{1,4}/g).join(' ');
 canvas.hidden = !S.lane; $('laneHint').hidden = !S.lane;
