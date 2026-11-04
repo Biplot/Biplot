@@ -140,8 +140,11 @@ Para una cara nueva (o para rehacer una): generar la de color con la ficha y la 
 blanco y negro desde la de color, y anotar las dos URL en `caras.json`. Antes de bajarlas, mirarlas: al pasar a blanco y
 negro, la IA tiende a rellenar de negro el pelo claro (a Aby y a Lupe hubo que decirle que el suyo queda en blanco, con
 trama suave). A The Architect **nunca se le ven los ojos**: lleva lentes opacos con el brillo blanco del anime y el
-flequillo le da sombra (más misterioso, pedido del 21-10). Su barba es **italiana**: costados cortos que se funden con
-las patillas, más volumen en el mentón, contornos marcados y algunas canas. En cada tapa donde salga, el prompt lo dice.
+flequillo le da sombra (más misterioso, pedido del 21-10). Desde el 04-11 es un genio desordenado y cínico, no un
+ingeniero pulcro: pelo negro revuelto en todas direcciones, barba crecida con barba de tres días, una ceja arqueada sobre
+los lentes, sonrisa torcida, bata blanca con post-its de colores y apenas una gota de café, un lápiz digital en la mano y
+bocetos de edificios tachados flotando alrededor. El aire de científico loco viene de Rick Sanchez, pero sin nada que sea
+de él (ni pelo celeste, ni uniceja, ni petaca). En cada tapa donde salga, el prompt lo dice.
 
 ### La tapa
 
