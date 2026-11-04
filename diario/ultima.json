@@ -6,7 +6,10 @@
     "fechaLarga": "lunes 2 de noviembre de 2026",
     "cubre": "Semana del 26 de octubre al 1 de noviembre",
     "url": "/diario/2026-11-02/",
-    "tapa": null,
+    "tapa": {
+      "src": "/diario/imagenes/tapas/2026-11-02.jpg",
+      "alt": "Tapa a color: en el portón de un depósito de contenedores, The Engine, de camionero, se asoma con los brazos cruzados desde su camión rojo, cruzado en la entrada con las balizas encendidas y un letrero «PARO»; Aby, con su credencial de prensa, lo transmite con el teléfono, y Faro mira preocupado desde una bita, con su farol. Abajo, la faja: «Los camiones paran en San Antonio»."
+    },
     "titular": "Los camioneros de San Antonio paran por el diésel y bloquean los depósitos de contenedores",
     "titulares": [
       "Los camioneros de San Antonio paran por el diésel y bloquean los depósitos de contenedores",
@@ -21,7 +24,7 @@
       "h": "/diario/2026-11-02/video/h.mp4",
       "v": "/diario/2026-11-02/video/v.mp4",
       "poster": "/diario/2026-11-02/video/h.jpg",
-      "duracion": "0:40"
+      "duracion": "0:44"
     },
     "notas": [
       {
@@ -117,7 +120,7 @@
       "numero": 2,
       "fecha": "2026-11-02",
       "url": "/diario/2026-11-02/",
-      "tapa": null,
+      "tapa": "/diario/imagenes/tapas/2026-11-02.jpg",
       "titular": "Los camioneros de San Antonio paran por el diésel y bloquean los depósitos de contenedores"
     },
     {

@@ -45,20 +45,11 @@
       }
     }
   ],
-  "escenas": [
-    {
-      "imagen": "_herramientas/escenas/2026-11-02-a.jpg",
-      "escena": "El bloqueo: The Engine, de camionero, cruza su camión en el portón de un depósito de contenedores con un letrero «PARO»; Aby lo transmite en vivo y Faro mira preocupado desde una bita, con su farol."
-    },
-    {
-      "imagen": "_herramientas/escenas/2026-11-02-b.jpg",
-      "escena": "El contenedor que no sale: Pepa, dueña de una pyme, espera sentada sobre un contenedor detenido tras la barrera, con su caja de cerezas; Atlas flota a su lado y, detrás, un barco espera en la rada."
-    },
-    {
-      "imagen": "_herramientas/escenas/2026-11-02-c.jpg",
-      "escena": "La fila: Tamandúa, parado sobre un camión y con los binoculares en la mano, mira asombrado la fila de camiones con las luces de emergencia hasta las grúas del puerto; Celda saca cuentas con su portapapeles."
-    }
-  ],
+  "tapa": {
+    "src": "imagenes/tapas/2026-11-02.jpg",
+    "alt": "Tapa a color: en el portón de un depósito de contenedores, The Engine, de camionero, se asoma con los brazos cruzados desde su camión rojo, cruzado en la entrada con las balizas encendidas y un letrero «PARO»; Aby, con su credencial de prensa, lo transmite con el teléfono, y Faro mira preocupado desde una bita, con su farol. Abajo, la faja: «Los camiones paran en San Antonio».",
+    "pie": "La escena de la semana: los camiones paran en San Antonio. Ilustración hecha con IA a partir de los dibujos del equipo de BiPlot."
+  },
   "portada": [
     {
       "titular": "Los camioneros de San Antonio paran por el diésel y bloquean los depósitos de contenedores",
