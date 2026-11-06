@@ -48,6 +48,11 @@ Sitio estático (HTML, CSS y JavaScript, sin build). Se sirve tal cual:
   biplot.cl/diario/; el correo se arma desde el mismo contenido con `node diario/_herramientas/armar.mjs`. La N.º 0 es la
   edición de prueba (no indexada). Ver `diario/README.md`.
 - `propuestas/fundos-inmobiliaria/` — propuesta de sitio para Fundos Inmobiliaria (no indexada; ver su README).
+- `bateria/` — **Mano a Mano**, app personal para practicar batería (no indexada ni enlazada desde el sitio): metrónomo
+  ajustable con dos módulos. **Sticking** (`#sticking`): las 72 combinaciones de golpes simples (R/L) con carril de notas
+  por mano. **Ritmos** (`#ritmos`): 38 ritmos de rock de un compás (hi-hat en corcheas, caja en 2 y 4, el bombo cambia),
+  con grilla, carril por pieza y una batería dibujada que se ilumina. Repeticiones, cuenta previa, subida de tempo y
+  anticipo del ejercicio siguiente. Un solo archivo; los ajustes y récords quedan en el navegador. Ver `bateria/README.md`.
 
 ## Desarrollo local
 
